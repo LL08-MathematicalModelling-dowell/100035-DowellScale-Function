@@ -91,7 +91,8 @@ start
 				if starting with zero,is chosen,						
 					then 0/1/2/...Nn					
 				if starting without zero,is chosen						
-					then 1/2/.../Nn					
+					then 1/2/.../Nn			
+					
 										
 										
 		Function output(display rank,ranking method 1,ranking method 2,Main Stage ranking=yes/no,No of Main stages, no of substages, Stages, Substages)								
