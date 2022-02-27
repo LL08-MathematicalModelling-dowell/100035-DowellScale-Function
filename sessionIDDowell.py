@@ -7,7 +7,7 @@ import requests
 def main(request):
     session_id = request.POST.get("session_id")
     url = "http://100002.pythonanywhere.com/"
-    # adding eddited field in article
+    # adding edited field in article
     payload = json.dumps({
       "cluster": "login",
       "database": "login",
@@ -32,7 +32,7 @@ def main(request):
         print(data)
         return render(request, 'main.html')
     else:
-        return redirect("https://100014.pythonanywhere.com/%22")
+        return redirect("https://100014.pythonanywhere.com/")
 
 
 
