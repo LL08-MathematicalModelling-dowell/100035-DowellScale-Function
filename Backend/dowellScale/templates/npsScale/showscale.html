@@ -1,0 +1,57 @@
+<!DOCTYPE>
+<html>
+	{% load static %}
+  <head>
+  <meta http-equiv="content-type" content="button/html; charset=windows-1250">
+  <title>Show Scale</title>
+  <style type="text/css">
+  		.forBtn {
+  			border-radius: 25px;
+  			font-size: 80px;
+  			background-color: gainsboro;
+  		}
+  		.forBtn:focus{
+  			background-color: #739982;
+  			color: white;
+  		}
+  		#btn {
+  			font-size: 15px;
+
+  		}
+
+  </style>
+  </head>
+  <body>
+
+	  <center style="display: grid; margin-top: 50px; background-color: wheat;">
+	  	<h3>Considering your experience with Mercedes, how likely would you be to recommend Mercedes to your friend or colleague?</h3>
+		<form method="POST" action="http://localhost:4000/api/send-scale-score/">
+		
+			{% csrf_token %}
+			<!--
+			<input class="forBtn" type="button" name="SCALE" value="0">
+			<input class="forBtn" type="button" name="SCALE" value="1">
+			<input class="forBtn" type="button" name="SCALE" value="2">
+			<input class="forBtn" type="button" name="SCALE" value="3">
+			<input class="forBtn" type="button" name="SCALE" value="4">
+			<input class="forBtn" type="button" name="SCALE" value="5">
+			<input class="forBtn" type="button" name="SCALE" value="6">
+			<input class="forBtn" type="button" name="SCALE" value="7">
+			<input class="forBtn" type="button" name="SCALE" value="8">
+			<input class="forBtn" type="button" name="SCALE" value="9">
+			<input class="forBtn" type="button" name="SCALE" value="10">
+			 <br><br><br>
+			 -->
+			 <input type="text" name="name" placeholder="Please type Scale Name">
+			 <input type="text" name="score" placeholder="Please between 1 and 10">
+
+			<input id='btn' type="submit" value="Submit">
+			
+		</form>
+			<!--<a href="http://localhost:4000/api/sendScaleScore/"><button>Click to Show Scale </button></a>-->
+	  </center>
+	  
+		
+  </body>
+</html>
+
