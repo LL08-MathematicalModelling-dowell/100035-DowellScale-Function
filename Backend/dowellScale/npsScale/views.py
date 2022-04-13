@@ -52,6 +52,7 @@ def index(request):
 	print('Testttttt')  
 	return render(request, 'npsScale/main.html')
 
+# test for login
 def afterLogin(request):
 	url = 'https://100014.pythonanywhere.com'
 	payload = {"user": "Sally", "pass": "sallysally"}
@@ -72,55 +73,18 @@ def afterLogin(request):
 @api_view(['GET'])
 def apiOverview(request):
 	api_urls = {
-			'List': '/some-list/',
-			'Detail View': '/some-detail/<str:pk>/',
-			'Create': '/some-create/',
-			'Update': '/some-update/<str:pk>/',
-			'Delete': 'some-delete/<str:pk>/',
-
+            'Add Products': 'add-products/',
+            'List Products': 'list-products/',
+            'Chck for SessionID': 'check-session/',
+            
 	}
 
 	return Response(api_urls)
 
 
-@api_view(['GET'])
-def someList(request):
-	some_tasks = SomeModel.objects.all()
-	serializer = SomeModelSerializer(some_tasks, many=True)
-	return Response(serializer.data)
-
-
-@api_view(['POST'])
-def someCreate(request):
-	serializer = SomeModelSerializer(data=request.data)
-	if serializer.is_valid():
-		serializer.save()
-
-	return Response(serializer.data)
-
-
-@api_view(['POST'])
-def someUpdate(request, pk):
-	some_tasks = SomeModel.objects.get(id=pk)
-	serializer = SomeModelSerializer(instance=some_tasks, data=request.data)
-	if serializer.is_valid():
-		serializer.save()
-	return Response(serializer.data)
-
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def someDelete(request, pk):
-	some_tasks = SomeModel.objects.get(id=pk)
-	some_tasks.delete()
-	return Response("Item Sucessfully Deleted")
-
-
-
- 
  # NPSScale Starts Here
 
- # For UnAuthenticated Users
+ # Test for UnAuthenticated Users
 @api_view(['POST'])
 def unAuthUser(request):
 	serializer = unAuthUserSerializer(data=request.data)
@@ -194,34 +158,6 @@ def showScaleScore(request):
 	return redirect('https://100014.pythonanywhere.com/')
 
 
-'''
-# (works) HTML Form w/o dowellFunction()
-def showScaleScore(request):
-	form = NPSScaleForm()
-	if request.method == 'POST':
-		form = NPSScaleForm(request.POST)
-		if form.is_valid():
-			cleanInit= form.cleaned_data
-			cleanedData = nps_scores(
-										name = cleanInit['name'],
-										score = cleanInit['score'],
-				)
-			cleanedData.save()
-			return HttpResponse("Score submitted")
-	else:
-		print('#####', form.errors)
-
-	return render(request, 'npsScale/showscale.html', {'form': form})
-'''			
-
-def test1(request):
-	# 'main.html' has a button that renders `views.showScaleScore'
-	return render(request, 'npsScale/main.html')
-
-def test2(request):
-	# Renders 'showcscale.html' which shows the scale
-	return render(request, 'npsScale/showscale.html')
-
 # Updated 1
 #LEGIT USE
 def checkSession(request):
@@ -240,25 +176,7 @@ def checkSession(request):
 			pass
 	return redirect('https://100014.pythonanywhere.com/')
 
-#updated 2
-#def sendScore(request):
 
-
-
-
-#************************************************
-
-# Test for timer in form (under construction)
-def TestTimer(request):
-	start = time.time()
-	end = time.time()
-	total = end-start
-	disct = [i for i in form.fields]
-	#NPscore = nps_scores(name=form.value, score=form.value, time=total)
-	#NPscore.save()
-	#print('######', form.value, form.value, total)	
-
-      
 
 
 
