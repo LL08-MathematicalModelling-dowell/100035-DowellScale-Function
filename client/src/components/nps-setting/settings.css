@@ -1,0 +1,179 @@
+.formInput{
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.formInput label{
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    /* font-weight: bold; */
+}
+
+.title{
+    display: flex;
+    justify-content: center;
+    margin-left: 10px;
+    /* margin-bottom: 15px; */
+    align-items: center;
+    /* text-decoration: underline; */
+}
+
+.scale-box{
+    min-width: 25px;
+    cursor: pointer;
+    height: 25px;
+    padding: 5px;
+    margin: 5px;
+    font-size: 20px;
+    background-color: aliceblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+}
+
+.scale-content{
+    padding: 10px;
+    background-color: #ccc;
+    /* width: 585px; */
+}
+
+.scale-container-hor{
+    display: flex;
+}
+
+.scale-vertical{
+    display: flex;
+    background-color: #ccc;
+    /* justify-content: center; */
+    width: 110px;
+    margin: auto;
+}
+
+.scale-label-horizontal{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+
+.scale-label-vertical{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 15px;
+}
+
+.label-a, .label-b{
+    font-weight: bold;
+}
+
+.label-a-emoji{
+    margin-left: 15px;
+}
+
+.label-b-emoji{
+    margin-right: 7px;
+}
+
+label{
+    font-weight: bold;
+}
+
+.scale-content-setting{
+    padding: 10px;
+    background-color: #ccc;
+    width: 195px;
+}
+
+.row{
+    display: flex;
+    flex-wrap: wrap;
+    width: 500px;
+}
+
+.setting-container{
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+}
+
+.setting-container:hover{
+    background-color: rgb(60, 60, 60);
+}
+
+.scale-vertical-setting{
+    display: flex;
+    background-color: #ccc;
+    justify-content: center;
+    width: 110px;
+    margin: auto;
+}
+
+.scale-box-setting{
+    width: 4.5px;
+    cursor: pointer;
+    height: 4.5px;
+    padding: 3.5px;
+    margin: 2px;
+    font-size: 10px;
+    font-weight: 200;
+    background-color: aliceblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+}
+
+.scale-label-vertical-settings{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* margin: 15px; */
+}
+
+.scale-label-horizontal-settings{
+    display: flex;
+    justify-content: space-between;
+    /* margin-top: 10px; */
+}
+
+.label-a-setting,.label-b-setting{
+    font-size: 10px;
+}
+
+.pagination{
+    display: flex;
+    justify-content: flex-start;
+    list-style: none;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.pagination a{
+    padding: 10px;
+    border: 1px solid teal;
+    color: teal;
+}
+
+.pagination__link{
+    font-weight: bold;
+}
+
+.pagination__link--disabled a{
+    color: rgb(198, 197, 202);
+    border: 1px solid rgb(198, 197, 202);
+}
+
+.back-btn{
+    font-size: 12px;
+    text-decoration: underline;
+    color: lightblue;
+    cursor: pointer;
+}
