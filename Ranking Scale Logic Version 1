@@ -1,0 +1,105 @@
+start										
+	Call dowellranking scale function()									
+										
+		Define Number of Stages as variable "N"								
+			Input from Frontend programmer or project owner							
+		Define Number of substages as variable "n"								
+			Input from Frontend programmer or project owner							
+		State all the Stages (i= 1,2,...N )in an array								
+			Input from Frontend programmer or project owner							
+		For each Stage i=1,2,...N								
+			state all the substages(j=1,2,...n) in an array							
+				Input from Frontend programmer or project owner						
+										
+		Check the arrangement of the stages and substages								
+			how is it required?							
+			Select one from the list							
+				Alphabetically ordered						
+				Shuffled (Randomly)						
+				Using ID numbers						
+				Programmer's Choice						
+					Input from Frontend programmer or project owner					
+			if "Alphabetically ordered" is selected,							
+				the stages and substages to be arranged in alphabetic order						
+			if "shuffled" is selected,							
+				Call dowellshuffling()						
+			if "Using ID numbers" is selected,							
+				List of ID numbers will be displayed						
+					Project owner can select from options					
+						Ascending order				
+						Descending order				
+						Custom Choice				
+			if "Programmer's Choice" is selected,							
+				Frontend programmer or the project owner can arrange the stages and substages according to their choice						
+										
+		Check the direction of the scale,which is required?								
+			Display a list and ask  Frontend programmer or project owner to select one from the list							
+				Horizontal						
+				Vertical						
+										
+		Check if Colour is required or not								
+			if yes,							
+				Display a list of Colour HEX code						
+					Frontend programmer or project owner can select one from the list					
+										
+		Check if time for getting an answer for each question is required,								
+			Yes/No							
+				Input from Frontend programmer or project owner						
+										
+		Decide the ranking method based on Stages,								
+			Display a list containing methods 							
+				Ranks limited to Main Stage						
+				Overall Ranking						
+					Ask  Frontend programmer or project owner to select one from the list					
+										
+				if "Ranks limited to Main Stage" is selected,						
+					ranking will be done within the main stages only for each main stage seperately					
+						check if ranking for main stage is required,				
+							if yes,			
+								Ranking can be done on the basis of		
+									Mean	
+									Median	
+									Mode	
+									Total	
+							if no,			
+								then "no ranking" for main stage should be selected		
+				if "Overall Ranking" is selected,						
+					Combined ranking will be done without considering main stages separately					
+										
+		Decide the ranking method based on Number of things receiving ranks,								
+			Display a list containing methods 							
+				Unique Ranking						
+				Tied Ranking						
+					Ask  Frontend programmer or project owner to select one from the list					
+				if Unique ranking is selected,						
+					One rank can be given to one thing only					
+				if Tied Ranking is selected,						
+					One rank can be given to multiple things					
+										
+		Select Reference based,with which the ranking to be done								
+			Main Stage							
+			Sub Stage							
+				Input from Frontend programmer or project owner						
+										
+		Display ranks based on Number of substages								
+			In case of "Rank limited to Main Stage" 							
+				if starting with zero,is chosen,						
+					then 0/1/2/...n					
+				if starting without zero,is chosen						
+					then 1/2/.../n					
+			in case of "Overall ranking"							
+				if starting with zero,is chosen,						
+					then 0/1/2/...Nn					
+				if starting without zero,is chosen						
+					then 1/2/.../Nn		
+					....
+					
+										
+										
+		Function output(display rank,ranking method 1,ranking method 2,Main Stage ranking=yes/no,No of Main stages, no of substages, Stages, Substages)								
+										
+										
+										
+										
+										
+										
