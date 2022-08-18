@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+      integrity="sha512-5PV92qsds/16vyYIJo3T/As4m2d8b6oWYfoqV+vtizRB6KhF1F9kYzWzQmsO6T3z3QG2Xdhrx7FQ+5R1LiQdUA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <title>Embedd link</title>
+    <style>
+      .url-clipboard {
+        padding: 10px;
+        border: 1px solid #ccc;
+        max-width: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 20px auto;
+        background-color: #f0f2f5;
+      }
+
+      input {
+        border: none;
+        outline: none;
+        width: 95%;
+        display: flex;
+        flex-wrap: wrap;
+        background-color: transparent;
+      }
+
+      i:hover {
+        color: lightblue;
+      }
+
+      i {
+        cursor: pointer;
+        font-size: 2rem;
+      }
+
+      .hint {
+        width: 900px;
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+        justify-content: center;
+        align-items: flex-start;
+      }
+      .syntax{
+        background-color: #ccc;
+        padding: 10px 20px;
+        color: rgb(18, 18, 18);
+        border-radius: 10px;
+        margin-bottom: 15px;
+      }
+
+      .hint{
+        background-color: rgb(220, 217, 217);
+        padding:10px 50px;
+        color: #fff;
+        border-radius: 10px;
+      }
+      .bulb{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .bulb:first-child{
+        margin-left: 10px;
+        color: rgb(62, 57, 28);
+        font-size: 1.3em;
+      }
+    </style>
+  </head>
+  <body style="background-color: black;">
+    <div class="url-clipboard">
+      <p id="mytext"></p>
+      <!-- <button id="TextToCopy" ><img src="button_image.png"></button> -->
+      <i class="bi bi-clipboard" id="clip-icon" onclick="copy_function('mytext')"></i>
+    </div>
+
+    <div class="hint">
+      <div class="bulb">
+        <i class="bi bi-lightbulb text-primary" style="font-size: 30px;"></i>
+        <p>hint:</p>
+        <p style="margin-left: 5px;">Copy the url above and provide product and brand name and embedd it to your page </p>
+      </div>
+
+      <div class="syntax">
+        <h1>Syntax</h1>
+        <p class="text-dark">
+
+            <span style="font-weight:bold"> < iframe</span><span class="text-danger"> src=</span>"https://100035.pythonanywhere.com?brand_name=<span class="text-primary">your brand</span>&product_name=<span class="text-primary">your product</span>" >< /<span style="font-weight:bold">iframe ></span
+          >
+        </p>
+      </div>
+    </div>
+
+    <script>
+      function codeAddress() {
+        x = getCookieValue('url')
+        b = x.replaceAll('"','')
+        var copyText = document.getElementById('mytext')
+        copyText.innerHTML = `https://100035.pythonanywhere.com${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
+        }
+      window.onload = codeAddress;
+
+      function copy_function(id){
+        x = getCookieValue('url')
+        b = x.replaceAll('"','')
+        var clip = document.getElementById("clip-icon");
+        var value = document.getElementById(id).innerHTML;
+        var input_temp = document.createElement("input");
+        input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
+        document.body.appendChild(input_temp);
+        input_temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(input_temp);
+
+        clip.className = "bi bi-check2";
+        clip.style.color = "blue";
+        clip.style.cursor = "default";
+      }
+      const getCookieValue = (name) =>
+        document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() ||
+        "";
+
+
+
+    </script>
+  </body>
+</html>

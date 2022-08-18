@@ -1,0 +1,333 @@
+{% load i18n %}
+{% load  static %}
+<html lang="en"><head>
+    <title>NPS Scale</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+  <style media="all" id="fa-main">
+  /*!
+   * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
+   * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+   */
+
+   #horizontal span{
+       font-size: 30px;
+       padding: 5px;
+       height: 70px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       width: 70px;
+       border-radius: 50%;
+       margin: 5px;
+       cursor: pointer;
+   }
+
+
+
+    #vertical span{
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+    }
+
+    #vertical {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        width: 100px;
+        align-items: center;
+    }
+
+    #labels-vert{
+        display: none;
+        justify-content: space-between;
+        flex-direction: column;
+        }
+
+<!--   #horizontal span{-->
+<!--       font-size: 30px;-->
+<!--       padding: 10px;-->
+<!--       border-radius: 50%;-->
+<!--       margin: 5px;-->
+<!--   }-->
+
+    #labels-vert{
+        /*display: none;*/
+        justify-content: space-between;
+        flex-direction: column;
+        }
+
+
+   #horizontal{
+       display: flex;
+       justify-content: space-between;
+   }
+
+</style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  </head>
+  <body class=".bg-secondary">
+      <div class="container">
+          <div class="row" style="margin-top: 3%;">
+              <div class="col-lg-1 col-md-2 d-sm-none"></div>
+              <div class="col-lg-10 clo-md-8 col-sm-12 bg-info" style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
+                  <form action="" method="POST">
+                      {% csrf_token %}
+                          <h2 align="center"><u>Customize your scale</u></h2>
+                          <div class="form-group col-md-12">
+                              <label for="head">Name of Scale</label>
+                              <input type="text" name="nameofscale" class="form-control" id="head" placeholder="Name of scale" required="">
+                          </div>
+                          <div class="form-group col-md-6">
+                              <label for="orientation">Orientation</label>
+                              <select id="orientation" class="form-control" name="orientation" required="">
+                                <option selected="">Choose...</option>
+                                <option value="horizontal">Horizontal</option>
+                                <option value="vertical">Vertical</option>
+                              </select>
+                          </div>
+                          <div class="form-group col-md-6">
+                              <label for="numberof">Number of rating</label>
+                              <!--<input type="number" name="numberof" class="form-control" id="numberof" min="0" max="10" placeholder="Number of Scale" required="">-->
+                              <input type="number" name="numberof" class="form-control" id="numberof" value=10 disabled>
+                          </div>
+                          <script>
+                      //         $('#orientation').change(function(){
+                      //       alert($(this).val());
+
+                      //   })
+
+                      </script>
+                          <div class="form-group col-md-4">
+                              <label for="scolor">Scale Color</label>
+                              <input type="color" name="scolor" class="form-control" id="scolor" placeholder="Background Color" required="">
+                          </div>
+                          <div class="form-group col-md-4">
+                              <label for="rcolor">Round Color</label>
+                              <input type="color" name="rcolor" class="form-control" id="rcolor" placeholder="Font Color" required="">
+                          </div>
+                          <div class="form-group col-md-4">
+                              <label for="fcolor">Font Color</label>
+                              <input type="color" name="fcolor" class="form-control" id="fcolor" placeholder="Scale Color" required="">
+                          </div>
+                          <div class="form-group col-md-6">
+                              <label for="format">Format</label>
+                              <select id="format" class="form-control" name="format" required="">
+                                <option selected="">Choose...</option>
+                                <option value="numbers">Numbers</option>
+                                <option value="emoji">Emojis</option>
+                                <option value="stars">Stars</option>
+                              </select>
+                          </div>
+                          <div class="form-group col-md-6">
+                              <label for="lefttext">Left</label>
+                              <input type="text" name="left" class="form-control" id="lefttext" placeholder="Left Text" required="">
+                          </div>
+                        <div class="form-group col-md-6">
+                              <label for="centertext">Center</label>
+                              <input type="text" name="center" class="form-control" id="centertext" placeholder="Center Text" required="">
+                          </div>
+                          <div class="form-group col-md-6">
+                              <label for="righttext">Right</label>
+                              <input type="text" name="right" class="form-control" id="righttext" placeholder="Right Text" required="">
+                          </div>
+                          <div class="form-group col-md-12">
+                              <label for="time">Time</label>
+                              <input type="text" name="time" class="form-control" id="time" placeholder="Time" required="">
+                          </div>
+                        <div class="form-group col-md-12 text-right p-15">
+
+                      <button type="submit" class="btn btn-primary">Save</button>
+                      <a onclick="preview();" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Preview</a>
+                        </div>
+                    </form>
+              </div>
+              <div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
+                   <!--<img src="https://100014.pythonanywhere.com/media/brandlogos/thumbnails/" width="90%" height="100%" style="height:150px" alt="your logo"><hr>-->
+                   <!--               	<div style="font-size:20px">Considering your experience with <b></b>, how likely would you be to recommend <b></b> to your friend or colleague<br></div><hr>-->
+                   <!--                   <div class="horizontal d-flex justify-content-center" id="red"></div>-->
+                   <!--                   <center><div class="d-flex justify-content-center" id="horizontal"></div></center>-->
+                   <!--                   <hr>-->
+                   <!--                   <br>-->
+              </div>
+                  <!-- Button trigger modal -->
+
+                      <!-- Modal -->
+
+                      <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h2 class="modal-title" id="exampleModalLongTitle" align="center"></h2>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                              </button>
+                            </div>
+                            <div class="modal-body" id="modal-body">
+                              <div class="horizontal d-flex justify-content-center" id="red"></div>
+                              <center><div id="horizontal"></div>
+                              </center>
+                              <br>
+                              <div class="pl-3" id="lab-hor" style="font-size:2em">
+                                 <div style="float: left" id="left"></div>
+                                  <div style="float: right" id="right"></div>
+                                  <div style="margin: 0 auto; width: 30%;" id="center"></div>
+                              </div>
+
+                              <!--<div class="pl-3" id="labels-vert" style="font-size:2em">-->
+                              <!--  <div></div>-->
+                              <!--  <div></div>-->
+                              <!--  <div></div>-->
+                              <!--</div>-->
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+              <script>
+                  var vert="vertical";
+                  var hori="horizontal";
+                  var name="number";
+                  var n=0;
+                 function preview(){
+                  var scale_bg = document.getElementById("horizontal")
+                  var orientation = document.getElementById("orientation")
+                  var vert = document.getElementById("vert-div")
+                  var sca_vert = document.getElementById("labels-vert")
+
+                  scale_bg.style.background = $("#scolor").val();
+                  scale_bg.style.padding = "20px 20px";
+
+                //   if (orientation ==="vertical" ){
+                //     document.getElementById("left-vert").innerHTML=$("#lefttext").val();
+                //     document.getElementById("right-vert").innerHTML=$("#righttext").val();
+                //     document.getElementById("center-vert").innerHTML=$("#centertext").val();
+                //     label_horizontal.style.display = "none";
+                //     vert.style.display = "flex";
+                //     scale_bg.style.flexDirection = "column";
+                //     labels.style.display = "none";
+                //     // scale_bg.style.width = "100px";
+                //     scale_bg.style.margin = "auto";
+                //     scale_cont.style.display = "flex";
+                //     sca_vert.style.display = "flex";
+                //     scale_cont.style.width = "300px";
+                //     scale_cont.style.margin = "auto";
+                // }
+
+                  var e = document.getElementById("orientation");
+                  var lab_hor= document.getElementById("lab-hor");
+                  var modal= document.getElementById("modal-body");
+                  var c= document.getElementById("center");
+                    function onChange() {
+                      var value = e.value;
+
+                      if (value ==="vertical" ){
+                        scale_bg.style.flexDirection = "column";
+                        scale_bg.style.width = "100px";
+                        scale_bg.style.margin = "auto";
+                        modal.style.display = "flex";
+                        modal.style.justifyContent = "center";
+                        lab_hor.style.display = "flex";
+                        lab_hor.style.flexDirection = "column";
+                        lab_hor.style.justifyContent = "space-between";
+                        c.style.width = "unset";
+
+                      }
+
+                    }
+                    e.onchange = onChange;
+                    onChange();
+
+
+
+
+                  document.getElementById("exampleModalLongTitle").innerHTML=$("#head").val();
+                  document.getElementById("left").innerHTML=$("#lefttext").val();
+                  document.getElementById("right").innerHTML=$("#righttext").val();
+                  document.getElementById("center").innerHTML=$("#centertext").val();
+                  // document.getElementById("ghost").style.display="block";
+                  $("#red").attr('class', $("#orientation").val());
+                  $('#horizontal').attr("id", $("#orientation").val());
+                  em=$("#orientation").val();
+                  $('#'+em).empty();
+                  n = $("#numberof").val();
+                  //alert('#'+rt+" "+$("#bgcolor").val());
+                  $('#red').css({"backgroundColor": $("#scolor").val()});
+                  var name = $('#format').val();
+                  ram(name,n);
+
+                 }
+                               for (let i = 1; i <= n; i++) {
+                    const para = document.createElement("p");
+                      para.innerHTML = i;
+                      para.id="demo"+i
+                      document.getElementById("horizontal").appendChild(para);
+                     document.getElementById("demo"+i).innerHTML = i;
+                     document.getElementById("demo"+i).style.backgroundColor = $("#fcolor").val();
+                     document.getElementById("demo"+i).style.color = $("#scolor").val();
+                  }
+                  function ram(star,num){
+                      for (let i = 1; i <= num; i++) {
+                      const para = document.createElement("span");
+                      para.id=i
+                      document.getElementById($("#orientation").val()).appendChild(para);
+                      if (star==="stars"){
+                           document.getElementById(i).innerHTML = '<i class="fa fa-star"></i>';
+                           document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                       }
+                       else if(star==="emoji"){
+                           if (i > n/2){
+                                document.getElementById(i).innerHTML = "\uD83D\uDE00";
+                            }
+                            else{
+                                document.getElementById(i).innerHTML = "&#128577;";
+                            }
+                       }
+                       else{
+                           document.getElementById(i).innerHTML = i;
+                           document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                       }
+
+
+                     document.getElementById(i).style.color = $("#fcolor").val();
+                  }
+                  }
+
+
+                  // looping from i = 1 to 5
+
+                  // for (let i = 1; i <= n; i++) {
+                  // 	const para = document.createElement("span");
+                  //     const para1 = document.createElement("p");
+                  //     para1.innerHTML=i;
+                  // para.innerHTML = i;
+                  // para.id="demo"+i
+                  // // Append to another element:
+                  // document.getElementById("vertical").appendChild(para);
+                  // document.getElementById("red").appendChild(para1);
+                  //    document.getElementById("demo"+i).innerHTML = i;
+                  //    document.getElementById("demo"+i).style.background = "rgb(242, 208, 181)"
+
+                  // }
+
+
+                  </script>
+
+          </div>
+      </div>
+
+
+  </body></html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nps role</title>
+  <style>
+    .landing-container{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-contents: center;
+    }
+
+    .landing-header{
+      color: #fff;
+      font-size: 44px;
+    }
+
+    #roles{
+      padding: 10px;
+      font-size: 18px;
+      border: none;
+      outline: none;
+    }
+  </style>
+</head>
+<body style="background-color: black">
+  <div class="landing-container">
+    <h1 class="landing-header">Select Role</h1>
+    <select id="roles" name="rolelist">
+      <option selected="">Choose...</option>
+      <option value="user">user</option>
+      <option value="Client_Admin">Client_Admin</option>
+      <option value="TeamMember">TeamMember</option>
+    </select>
+  </div>
+</body>
+<script>
+  var e = document.getElementById("roles");
+  function onChange() {
+    var value = e.value;
+    if(value == "user"){
+      window.location.replace('https://100035.pythonanywhere.com/nps-scale/default/')
+    }else if(value == "Client_Admin" || value == "TeamMember" ){
+      window.location.replace('https://100035.pythonanywhere.com/nps-admin/default/')
+    }else{
+      console.log(value);
+    }
+  }
+  e.onchange = onChange;
+  onChange();
+</script>
+</html>
