@@ -1,0 +1,17 @@
+const axios = require('axios')
+
+export const App = () =>{
+const Your_Request = () =>{
+const config= {
+method:'get',
+url:'YOUR URL',
+}
+axios(config).then((response)=>{
+console.log('response',response)
+}).catch((error)=>{
+console.log('error',error)})
+}
+return (<View></View>)
+}
+
+// wait for DRF
