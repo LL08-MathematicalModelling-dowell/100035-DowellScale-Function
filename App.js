@@ -4,18 +4,32 @@ import NotificationScreen from './screens/NotificationScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ReportScreen from './screens/ReportScreen';
 import ScaleScreen from './screens/ScaleScreen';
-
+// import ScaleStackScreen from './screens/ScaleScreen';
+import NPSScale from './screens/Scales/NPSscale';
+import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from '@react-navigation/native'; 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {Image} from 'react-native' ;
 
+const ScaleStack = createStackNavigator();
+function ScaleStackScreen({navigation}) {
+    return (
+      <ScaleStack.Navigator screenOptions={{
+        headerShown: false
+      }}>
+       <ScaleStack.Screen name="Scale Grid" component={ScaleScreen} />  
+       <ScaleStack.Screen name="NPS Scale" component={NPSScale} />           
+      </ScaleStack.Navigator>
+     );
+   }
+  
 
 const Tab = createBottomTabNavigator();
 
 
 // Home Screen
 
-export default function App() {
+export default function App({navigation}) {
   return (
     <NavigationContainer>
      <Tab.Navigator
@@ -38,7 +52,9 @@ export default function App() {
   
       
     }} 
+    initialRouteName="SelectScale"
      >
+      
         <Tab.Screen name="Profile" component={ProfileScreen}
          options={{
           tabBarShowLabel: false,  // Remove wording on tab
@@ -107,12 +123,10 @@ export default function App() {
             },
           }}
         />
+        {/* InitialRouteName */}
 
 
-{/* InitialRouteName */}
-
-
-        <Tab.Screen name="Select Scale" component={ScaleScreen} 
+        <Tab.Screen name="SelectScale" component={ScaleStackScreen} 
          options={{
           headerShown: false,
           tabBarShowLabel: false,  // Remove wording on tab
@@ -129,6 +143,8 @@ export default function App() {
             },
           }}
         />
+
+
         <Tab.Screen name='Close' component={CommentScreen} 
           options={{
             headerShown: false,

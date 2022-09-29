@@ -2,7 +2,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { useState } from 'react'; 
 import ScaleHeader from './ScaleHeader';
 
-function DropScale() {
+function DropScale({ navigation }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
@@ -21,6 +21,7 @@ function DropScale() {
       setValue={setValue}
       setItems={setItems}
       placeholder="Drop down (Scales)"
+      onPress={() => navigation.navigate('NPSScale')}
       containerStyle={{width: 340, marginLeft: 10, alignItems: 'center',}}
         style=
         {{

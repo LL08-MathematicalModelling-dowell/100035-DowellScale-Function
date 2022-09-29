@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, FlatList } from 'react-native';
 import { FlatGrid } from 'react-native-super-grid';
 import React, { useState } from 'react';
 
-export default function ScalesGridList() {
+export default function ScalesGridList({ navigation }) {
   const [items, setItems] = React.useState([
     { name: 'NPS Scale', code: '#1abc9c' },
     { name: 'Rank Scale', code: '#2ecc71' },
@@ -44,6 +44,8 @@ export default function ScalesGridList() {
     />
   );
 }
+
+
 
 const styles = StyleSheet.create({
   gridView: {
