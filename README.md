@@ -40,5 +40,5 @@ Run it on your simulator
 For any enquiries reach me on Discord  `@Duncan#1458` or open an issue with a description
 
 ---
-Happy hacking! :joy:
+Happy hacking! :muscle: :triumph: :computer:
 
