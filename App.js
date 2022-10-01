@@ -144,6 +144,23 @@ export default function App({navigation}) {
           }}
         />
 
+        <Tab.Screen name="NPSScale" component={NPSScale} 
+         options={{
+          headerShown: false,
+           // Remove wording on tab
+          tabBarVisible: false,
+          // tabBarIcon: ({size}) => {
+          //   return (
+          //     <Image
+          //       style={{ width: size, height: size }}
+          //       source={{
+          //         uri: 'https://www.linkpicture.com/q/scale.png',
+          //       }}
+          //     />
+          //     );
+          //   },
+          }}
+        />
 
         <Tab.Screen name='Close' component={CommentScreen} 
           options={{
