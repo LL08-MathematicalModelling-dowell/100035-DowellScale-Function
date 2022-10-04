@@ -13,6 +13,30 @@
 
     <title>VOC_STAPEL</title>
     <style>
+    /* width */
+        ::-webkit-scrollbar {
+          width: 2px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+          background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+
+        a{
+        text-decoration: none;
+        color: teal;
+        }
         #horizontal{
            display: flex;
            justify-content: space-between;
@@ -153,7 +177,7 @@ setrating = function(id) {
     <div class="row mt-4">
         <div class="col-sm-2 {{bglight}}" style="{% if user == 'admin' %} {{left}} {% endif %}">
             {% if user == "admin" %}
-            <div class="text-dark tabl" ><h2 align="center"><u>{{hist}}</u></h2></div>
+            <div class="text-dark tabl" ><h3 align="center"><u>{{hist}}</u></h3></div>
             <table>
             {% for stapel in stapelall %}
                 <tr>

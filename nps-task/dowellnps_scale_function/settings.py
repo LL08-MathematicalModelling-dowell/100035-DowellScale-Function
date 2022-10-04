@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-174^!vny@!oln&!^5%*dod#^fnbw92g9t_c&=y$g5h2-#dmyt='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -42,13 +42,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'nps.apps.NpsConfig',
     'stapel.apps.StapelConfig',
+    'npslite.apps.NpsliteConfig',
     'rest_framework.authtoken',
     'crispy_forms',
+    'likert',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 CORS_ALLOW_ALL_ORIGINS=True
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -86,24 +89,8 @@ WSGI_APPLICATION = 'dowellnps_scale_function.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'CLIENT': {
-#             "host":"mongodb+srv://Ambrose:ambrose@cluster0.tlpb9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-#             "name":"dowellnps_scale_function",
-#             "authMechanism":"SCRAM-SHA-1"
-#         }
-#     }
-# }
 #do not change database settings
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'nps-database',
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
