@@ -22,6 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('nps.urls')),
     path('stapel/', include('stapel.urls')),
+    path('nps-lite/', include('npslite.urls')),
+    path('likert/', include('likert.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

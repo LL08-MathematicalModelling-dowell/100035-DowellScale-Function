@@ -12,6 +12,7 @@ from .dowellconnection import dowellconnection
 from .login import get_user_profile
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.csrf import csrf_exempt
 
 class SystemSettings(viewsets.ModelViewSet):
     serializer_class = SystemSettingsSerializer
@@ -43,9 +44,10 @@ def dowell_scale_admin(request):
         # objcolor = system_settings.objects.create(orientation=orientation,numberrating=numberrating,scalecolor=scalecolor,roundcolor=roundcolor,fontcolor=fontcolor,fomat=fomat,time=time,template_name=template_name,name=name,text=text, left=left,right=right,center=center)
         # objcolor.save()
         try:
-            field_add={"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale"}
+            user  = request.COOKIES['user']
+            field_add={"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "user": user}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            print(x)
+            print(field_add)
             return redirect(f"https://100035.pythonanywhere.com/nps-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -77,6 +79,7 @@ def dowell_scale(request,tname):
     return render(request,'nps/scale.html',context)
 
 @xframe_options_exempt
+@csrf_exempt
 def dowell_scale1(request, tname1):
     context={}
 
@@ -125,7 +128,8 @@ def dowell_scale1(request, tname1):
         try:
             field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
             x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            return redirect(f"http://100014.pythonanywhere.com/main")
+            print(x)
+            return redirect(f"https://100014.pythonanywhere.com/main")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'nps/single_scale.html',context)
@@ -170,11 +174,11 @@ def login(request):
         if user["username"]:
             if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
                 response = redirect("nps:default_page_admin")
-                response.set_cookie('role', user['role'])
+                response.set_cookie('user', user['username'])
                 return response
             else:
                 response = redirect("nps:default_page")
-                response.set_cookie('role', user['role'])
+                response.set_cookie('user', user["username"])
                 return response
     except:
         return redirect("https://100014.pythonanywhere.com/")

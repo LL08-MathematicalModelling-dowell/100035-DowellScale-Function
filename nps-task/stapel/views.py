@@ -34,7 +34,8 @@ def dowell_scale_admin(request):
             raise Exception("Check scale limits and spacing_unit")
 
         try:
-            field_add={"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale"}
+            user  = request.COOKIES['user']
+            field_add={"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale", "user": user}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(x)
 
@@ -89,11 +90,10 @@ def dowell_scale1(request, tname1):
 
     if request.method == 'POST':
         score = request.POST['scoretag']
-
         try:
             field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            print(x)
+            # print(x)
             return redirect(f"https://100014.pythonanywhere.com/main")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -135,12 +135,15 @@ def login(request):
     if url == None:
         return redirect("https://100014.pythonanywhere.com/")
     user=get_user_profile(url)
-    if user["username"]:
-        if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-            response = redirect("stapel:default_page_admin")
-            # response.set_cookie('role', user['role'])
-            return response
-        else:
-            response = redirect("stapel:default_page")
-            # response.set_cookie('role', user['role'])
-            return response
+    try:
+        if user["username"]:
+            if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
+                response = redirect("stapel:default_page_admin")
+                response.set_cookie('user', user['username'])
+                return response
+            else:
+                response = redirect("stapel:default_page")
+                response.set_cookie('user', user["username"])
+                return response
+    except:
+        return redirect("https://100014.pythonanywhere.com/")

@@ -1,0 +1,271 @@
+{% load i18n %}
+{% load  static %}
+<html lang="en">
+<head>
+    <title>NPS LITE SCALE</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <style media="all" id="fa-main">
+  /*!
+   * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
+   * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+   */
+
+   .main-container_nps_lite{
+        display: flex;
+        flex-direction : column;
+        justify-content: center;
+        padding: 30px;
+        border-radius: 15px;
+        width: 400px;
+        margin-top: 5%;
+        border: 1px solid darkgreen;
+        position: relative;
+    }
+
+    .time_nps_lite{
+        color: blue;
+        font-style: italic;
+        font-weight: bold;
+        position:absolute;
+        top: 0;
+        right: 0;
+        margin:10px;
+        font-size: 14px
+
+    }
+
+    .title_nps_lite{
+     display: flex;
+     justify-content: center;
+     text-align: center;
+     padding-top: 10px;
+     color: gray;
+     font-weight: bold;
+    }
+
+    .container_nps_lite{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0px 0px 0px;
+    }
+
+    .container_nps_lite div{
+    background: #6df782;
+    color: green;
+    font-weight: bold;
+    padding: 5px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    margin: 5px;
+    }
+
+    .container_nps_lite div:hover{
+    background: #2edb4e;
+    }
+
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body class=".bg-secondary">
+<div class="container">
+    <div class="row" style="margin-top: 3%;">
+        <div class="col-lg-1 col-md-2 d-sm-none"></div>
+        <div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
+             style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <h2 align="center"><u>Customize your scale</u></h2>
+                <div class="form-group col-md-6">
+                    <label for="head">Name of Scale</label>
+                    <input type="text" name="nameofscale" onchange="myName()" class="form-control" id="head"
+                           placeholder="Name of scale" required="">
+                </div>
+
+                 <div class="form-group col-md-6">
+                    <label for="orientation">Orientation</label>
+                    <select id="orientation" class="form-control" name="orientation" required="">
+                        <option selected="">Choose...</option>
+                        <option value="horizontal">Horizontal</option>
+                        <option value="vertical">Vertical</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label for="head">Question of survey</label>
+                    <input type="text" name="questionofscale" onchange="myQuestion()" class="form-control" id="question"
+                           placeholder="Question to the survey" required="">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="scolor">Scale Color</label>
+                    <input type="color" onchange="myScolor()" name="scolor" class="form-control" id="scolor"
+                           placeholder="Background Color" required="">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="scolor">Font Color</label>
+                    <input type="color" onchange="myFcolor()" name="fcolor" class="form-control" id="fcolor"
+                           placeholder="Font Color" required="">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="lefttext">Left</label>
+                    <input type="text" onchange="myLtext()" name="left" class="form-control" id="lefttext"
+                           placeholder="Left Text" required="">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="lefttext">Center</label>
+                    <input type="text" onchange="myCtext()" name="center" class="form-control" id="centertext"
+                           placeholder="Center Text" required="">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="righttext">Right</label>
+                    <input type="text" onchange="myRtext()" name="right" class="form-control" id="righttext"
+                           placeholder="Right Text" required="">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="time">Time</label>
+                    <input type="text" onchange="myTime()" name="time" class="form-control" id="time" placeholder="Time"
+                           required="">
+                </div>
+                <div class="form-group col-md-12 text-right p-15">
+
+                    <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
+                    <a onclick="preview();" id="prevBtn" class="btn btn-primary" data-toggle="modal"
+                       data-target="#exampleModalCenter">Preview</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
+
+        </div>
+        <!-- Button trigger modal -->
+
+        <!-- Modal -->
+
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content" id="modalContent">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="exampleModalLongTitle" align="center"></h2>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="modal-body">
+                        <div class="horizontal d-flex justify-content-center" id="red"></div>
+                        <center>
+                            <div id="horizontal">
+                                <div class="main-container_nps_lite">
+                                    <!--<p class="time_nps_lite">10:30</p>-->
+                                    <p class="title_nps_lite">Do you wish to recommend this application to your
+                                        friend?</p>
+                                    <div class="container_nps_lite">
+                                        <div class="left_nps_lite"></div>
+                                        <div class="center_nps_lite"></div>
+                                        <div class="right_nps_lite"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </center>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="close-mod" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
+<script>
+                  var vert="vertical";
+                  var hori="horizontal";
+                  var name="number";
+                  var n=0;
+
+                  let head_name;
+                  let orient;
+                  let question;
+                  let scolor;
+                  let fcolor;
+                  let ctext;
+                  let ltext;
+                  let rtext;
+                  let time;
+
+                  function myName() {
+                      head_name = document.getElementById("head").value;
+                  }
+                  function myQuestion() {
+                      question = document.getElementById("question").value;
+                  }
+                  function myScolor() {
+                      scolor = document.getElementById("scolor").value;
+                  }
+                  function myFcolor() {
+                      fcolor = document.getElementById("fcolor").value;
+                  }
+                  function myLtext() {
+                      ltext = document.getElementById("lefttext").value;
+                  }
+                  function myCtext() {
+                      ctext = document.getElementById("centertext").value;
+                  }
+                  function myRtext() {
+                      rtext = document.getElementById("righttext").value;
+                  }
+                  function myTime() {
+                      time = document.getElementById("time").value;
+                  }
+
+                  var e = document.getElementById("orientation");
+                    function onChange() {
+                      orient = e.value
+                    }
+                    e.onchange = onChange;
+                    onChange();
+
+                 function preview(){
+                      if (head_name === "undefined" || orient === "Choose..." || scolor === "undefined" || ltext === "undefined" || ctext === "undefined" ||rtext === "undefined" || time === "undefined"|| question === "undefined" || fcolor === "undefined"){
+                        alert("Fields can't be empty")
+                        // return document.getElementById("close-mod").click()
+                        return document.getElementById("modalContent").style.display = "none"
+                      }
+                        console.log(orient, scolor, ctext, ltext,rtext,time, question, fcolor)
+                      if(orient === "vertical"){
+                        document.querySelector(".container_nps_lite").style.flexDirection = "column"
+                        document.querySelector(".container_nps_lite").style.justifyContent = "space-between"
+                      } else {
+                        document.querySelector(".container_nps_lite").style.flexDirection = "row"
+                      }
+
+                      document.querySelector(".left_nps_lite").innerHTML = `🙁 ${ltext}`
+                      document.querySelector(".center_nps_lite").innerHTML = `🙂 ${ctext}`
+                      document.querySelector(".right_nps_lite").innerHTML = `😃 ${rtext}`
+                      document.querySelector(".title_nps_lite").innerHTML = question
+
+
+                      document.querySelector(".left_nps_lite").style.background = scolor
+                      document.querySelector(".center_nps_lite").style.background = scolor
+                      document.querySelector(".right_nps_lite").style.background = scolor
+
+                      document.querySelector(".left_nps_lite").style.color = fcolor
+                      document.querySelector(".center_nps_lite").style.color = fcolor
+                      document.querySelector(".right_nps_lite").style.color = fcolor
+                 }
+
+
+</script>
