@@ -7,6 +7,7 @@ from nps.dowellconnection import dowellconnection
 from nps.login import get_user_profile
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
+from .eventID import get_event_id
 
 
 def npslite_home_admin(request):
@@ -44,9 +45,10 @@ def dowell_npslite_scale_settings(request):
         time = request.POST['time']
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
+        eventID=get_event_id()
         try:
             # user = request.COOKIES['user']
-            field_add={"question":question,"orientation":orientation,"scalecolor":scalecolor,"fontcolor":fontcolor,"time":time,"template_name":template_name,"name":name,"center":center, "left":left,"right":right, "scale-category": "npslite scale"}
+            field_add={"question":question,"orientation":orientation,"scalecolor":scalecolor,"fontcolor":fontcolor,"time":time,"template_name":template_name,"name":name,"center":center, "left":left,"right":right,"eventId":eventID, "scale-category": "npslite scale"}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(field_add)
             return redirect(f"https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/{template_name}")

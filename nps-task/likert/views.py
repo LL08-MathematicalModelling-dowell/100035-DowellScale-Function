@@ -8,6 +8,7 @@ from nps.dowellconnection import dowellconnection
 from nps.login import get_user_profile
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
+from .eventID import get_event_id
 
 def dowell_scale_admin(request):
     context={}
@@ -28,14 +29,14 @@ def dowell_scale_admin(request):
         request.POST.get('scale_choice 4', "None"),
         request.POST.get('scale_choice 5', "None")
         ]
-        print(labelscale)
-        print(labeltype)
+        eventID = get_event_id()
+        print(eventID)
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
 
 
         try:
-            field_add={"orientation":orientation,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"scale-category": "likert scale"}
+            field_add={"orientation":orientation,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale"}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             return redirect(f"https://100035.pythonanywhere.com/likert/likert-scale1/{template_name}")
         except:
