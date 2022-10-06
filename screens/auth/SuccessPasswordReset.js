@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Image, useWindowDimensions, Alert, ScrollView, Text } from 'react-native';
 import { useNavigation} from '@react-navigation/native';
 
-import Logo from '../../assets/images/dowellIcon.jpeg';
+import Logo from '../../assets/icon.png';
 import CustomInput from '../components/Custom/CustomInput';
 import CustomButton from '../components/Custom/CustomButton';
 import CustomTertiaryButton from '../components/Custom/CustomTertiaryButton';
