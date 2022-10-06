@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, ScrollView, Text, View, Image } from "react-native";
-import DetailHeader from "./components/Detail/DetailHeader";
+import DetailHeader from "../components/Detail/DetailHeader";
 
 export default function DetailScreen() {
   return (

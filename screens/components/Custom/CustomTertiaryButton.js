@@ -11,7 +11,7 @@ const CustomTertiaryButton = ({onPress, text}) => {
 
 const styles = StyleSheet.create({
     Text:{
-        color:"#0038FF",
+        color:"green",
         
         fontWeight:"bold",
 

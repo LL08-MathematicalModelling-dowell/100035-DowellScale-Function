@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import NotifList from './components/Notifications/NotifList';
-import NotifHeader from './components/Notifications/NotifHeader';
-import DropSearch from './components/Notifications/NotifDropdown';
+import NotifList from '../components/Notifications/NotifList';
+import NotifHeader from '../components/Notifications/NotifHeader';
+import DropSearch from '../components/Notifications/NotifDropdown';
 
 export default function App() {
   return (

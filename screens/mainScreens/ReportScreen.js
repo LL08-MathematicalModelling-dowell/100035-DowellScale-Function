@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image } from 'react-native';
 // import Line from './components/Line';
-import Drop from './components/DropDownScale';
-import ScalesGridList from './components/ScalesGridList';
-import ReportHeader from './components/Reports/ReportsHeader';
-import ReportTable from './components/Reports/ReportTable';
+import Drop from '../components/DropDownScale';
+import ScalesGridList from '../components/ScalesGridList';
+import ReportHeader from '../components/Reports/ReportsHeader';
+import ReportTable from '../components/Reports/ReportTable';
 
 export default function Scale() {
   return (

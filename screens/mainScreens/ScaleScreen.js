@@ -1,28 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Button } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, Image, Button } from "react-native";
 // import Line from './components/Line';
-import Drop from './components/DropDownScale';
-import ScalesGridList from './components/ScalesGridList';
-import ScaleHeader from './components/ScaleHeader';
+import Drop from "../components/DropDownScale";
+import ScalesGridList from "../components/ScalesGridList";
+import ScaleHeader from "../components/ScaleHeader";
 // import { createStackNavigator } from "@react-navigation/stack";
 
+//
 
- 
-// 
-
-export default function ScaleStackScreen({navigation}) {
+export default function ScaleScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      
       <ScaleHeader />
-      <Button
+      {/* <Button
               title="NPS Scale"
               onPress={() => navigation.navigate('Scale', { screen: 'NPSScale' })}
-            />  
+            />   */}
       {/* Drop down component */}
-      <Drop style={{ top: 80,}} />
+      <Drop style={{ top: 80 }} />
       <ScalesGridList />
-      
 
       <StatusBar style="auto" />
     </View>
@@ -36,9 +32,9 @@ const styles = StyleSheet.create({
     // backgroundColor: '#fff',
     // // alignItems: 'center',
     // justifyContent: 'space-evenly',
-    borderColor: 'green', 
+    borderColor: "green",
     borderWidth: 1,
-    borderStyle: 'solid',
+    borderStyle: "solid",
     borderRadius: 20,
     margin: 5,
     marginTop: 40,
@@ -46,12 +42,6 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
-
-
-
-
-
-
 
 // const ScaleStack = createStackNavigator();
 // const SearchStack = createStackNavigator();
@@ -83,7 +73,6 @@ const styles = StyleSheet.create({
 //   </ProfileStack.Navigator>
 // );
 
-
 // export const Scale = ({ navigation }) => (
 //   <ScreenContainer>
 //     <Text>Master List Screen</Text>
@@ -103,22 +92,18 @@ const styles = StyleSheet.create({
 //   </ScreenContainer>
 // );
 
-
-
 // const ScaleStackScreen = () => (
-  //   <ScaleStack.Navigator>
-  //     <ScaleStack.Screen name="Scale" component={Scale} />
-  //     <ScaleStack.Screen
-  //       name="NPSScale"
-  //       component={NPSScale}
-  //       options={({ route }) => ({
-  //         title: route.params.name
-  //       })}
-  //     />
-  //   </ScaleStack.Navigator>
-  // );
-  
-  // const NPSScaleStack = createStackNavigator();
-  // const LikertScaleStack = createStackNavigator();
-  
-  
+//   <ScaleStack.Navigator>
+//     <ScaleStack.Screen name="Scale" component={Scale} />
+//     <ScaleStack.Screen
+//       name="NPSScale"
+//       component={NPSScale}
+//       options={({ route }) => ({
+//         title: route.params.name
+//       })}
+//     />
+//   </ScaleStack.Navigator>
+// );
+
+// const NPSScaleStack = createStackNavigator();
+// const LikertScaleStack = createStackNavigator();

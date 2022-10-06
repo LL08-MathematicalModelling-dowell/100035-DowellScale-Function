@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, ScrollView, Text, View, Image, Button } from "react-native";
-import CommentHeader from "./components/Comment/CommentHeader"; 
+import CommentHeader from "../components/Comment/CommentHeader"; 
 
 
 export default function CommentScreen() {
