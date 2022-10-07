@@ -60,12 +60,13 @@ export default function NPSScale() {
             margin: 10,
             padding: 10,
             bottom: 0,
-            alignItems: "center",
+            alignSelf: "center",
+            justifyContent: "space-between",
           }}
           // Remove this to disable reaction icon and text
         />
-        <TextInput />
-        <Text
+        {/* <TextInput /> */}
+        {/* <Text
           style={{
             color: "red",
             width: "100%",
@@ -76,9 +77,8 @@ export default function NPSScale() {
             alignContent: "center",
             marginTop: 10,
             fontSize: 15,
-            marginBottom: 30,
           }}
-        ></Text>
+        ></Text> */}
         <NpsSettings />
         <Text
           style={{

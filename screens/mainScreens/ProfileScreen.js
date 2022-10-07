@@ -23,6 +23,7 @@ export default function Profile({ navigation }) {
           onPress={() => navigation.navigate("Signin")}
           style={{
             color: "green",
+            size: "70%",
           }}
         />
       </View>
@@ -35,7 +36,7 @@ export default function Profile({ navigation }) {
       >
         <Button
           title="Register a new account"
-          onPress={() => navigation.navigate("Signin")}
+          onPress={() => navigation.navigate("Signup")}
           style={{
             backgroundColor: "green",
           }}

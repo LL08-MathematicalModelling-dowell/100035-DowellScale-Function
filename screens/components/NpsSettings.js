@@ -76,6 +76,9 @@ const NPSscaleSettings = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <Text style={styles.header}>Settings Scale</Text>
+        <Text style={{ alignItems: "center" }}>
+          -----------------------------------------------------------------------
+        </Text>
         <View style={styles.inputFields}>
           <Text style={styles.inputLabels}>Name of Scale</Text>
           <TextInput
@@ -223,6 +226,11 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
     alignItems: "center",
     justifyContent: "center",
+    padding: 10,
+    margin: 5,
+    borderRadius: 10,
+    borderColor: "white",
+    borderWidth: 1,
   },
   header: {
     color: "#fff",
@@ -243,6 +251,7 @@ const styles = StyleSheet.create({
   },
   inputLabels: {
     fontWeight: "bold",
+    color: "#fff",
   },
   btns: {
     flexDirection: "row",
@@ -251,7 +260,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   saveBtn: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#fff",
     borderRadius: 20,
     elevation: 2,
     width: 130,
@@ -260,7 +269,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     margin: 5,
   },
-  btnsText: { fontWeight: "bold", color: "#fff" },
+  btnsText: { fontWeight: "bold", color: "#000" },
   centeredView: {
     flex: 1,
     justifyContent: "center",

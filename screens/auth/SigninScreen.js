@@ -25,6 +25,10 @@ export default function SigninScreen({ navigation }) {
     navigation.navigate("Signup");
   };
 
+  const onForgotbuttonpressed = () => {
+    navigation.navigate("ForgotPassword");
+  };
+
   return (
     <ToastProvider>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -49,7 +53,9 @@ export default function SigninScreen({ navigation }) {
           />
 
           <TouchableOpacity>
-            <Text style={styles.forgot_button}>Forgot Password?</Text>
+            <Text style={styles.forgot_button} onPress={onForgotbuttonpressed}>
+              Forgot Password?
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity>

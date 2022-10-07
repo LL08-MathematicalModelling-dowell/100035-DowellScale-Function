@@ -7,6 +7,9 @@ import { Image } from "react-native";
 // AUTH
 import SigninScreen from "./screens/auth/SigninScreen";
 import SignupScreen from "./screens/auth/SignupScreen";
+// import ForgotPasswordScreen from "./screens/auth/ForgotPassword";
+
+import api from "./res/api";
 
 // MAIN SCREENS
 import CommentScreen from "./screens/mainScreens/CommentScreen";
@@ -16,11 +19,63 @@ import ProfileScreen from "./screens/mainScreens/ProfileScreen";
 import ReportScreen from "./screens/mainScreens/ReportScreen";
 import ScaleScreen from "./screens/mainScreens/ScaleScreen";
 import NPSScale from "./screens/Scales/NPSscale";
-
+// NAVIGATION
 const AuthStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const ScaleStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
+
+// AXIOS API CALL -AUTHENTICATION
+
+// function getCurrentUser() {
+//   console.log("getCurrentUser");
+//   // return
+//   api
+//     .get("api/profile/")
+//     .then((res) => {
+//       console.log("current", res);
+//     })
+//     .then((response) => {
+//       // return json;
+
+//       AsyncStorage.setItem("client", JSON.stringify(response.data));
+//     })
+//     .catch(function (error) {
+//       console.log(
+//         "There has been a problem with your fetch operation: " + error.message
+//       );
+//       // ADD THIS THROW error
+//       throw error;
+//     });
+// }
+
+// async function checkUserSignedIn() {
+//   // let context = this;
+//   try {
+//     let value = await AsyncStorage.getItem("user_token");
+//     // console.log("user_token ",value);
+//     if (value !== null) {
+//       // do something
+//       setIsSigned(true);
+//       getCurrentUser();
+//     } else {
+//       // do something else
+//       setIsSigned(false);
+//     }
+//   } catch (error) {
+//     // Error retrieving data
+//     console.log("checkUserSignedIn error", error);
+//   }
+// }
+
+// useEffect(() => {
+//   checkUserSignedIn();
+// }, []);
+
+{
+  /* {isSignedIn ? (
+          <> */
+}
 
 const ScaleStackScreen = () => (
   <ScaleStack.Navigator>
@@ -46,6 +101,11 @@ const ProfileStackScreen = () => (
       component={SignupScreen}
       options={{ title: "DOWELL - SIGN UP" }}
     />
+    {/* <ProfileStack.Screen
+      name="ForgotPassword"
+      component={ForgotPassword}
+      options={{ title: "DOWELL - FORGOT PASSWORD" }}
+    /> */}
   </ProfileStack.Navigator>
 );
 
