@@ -16,7 +16,6 @@ def dowell_scale_admin(request):
     if request.method == 'POST':
         name = request.POST['nameofscale']
         orientation = request.POST['orientation']
-        scalecolor = request.POST['scolor']
         roundcolor = request.POST['rcolor']
         fontcolor = request.POST['fcolor']
         labelscale = request.POST['likert']
@@ -30,13 +29,11 @@ def dowell_scale_admin(request):
         request.POST.get('scale_choice 5', "None")
         ]
         eventID = get_event_id()
-        print(eventID)
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
-
-
         try:
-            field_add={"orientation":orientation,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale"}
+            field_add={"orientation":orientation,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale"}
+            
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             return redirect(f"https://100035.pythonanywhere.com/likert/likert-scale1/{template_name}")
         except:
@@ -88,7 +85,6 @@ def dowell_scale1(request, tname1):
     field_add={"template_name":tname1}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
-    print(data)
     x= data["data"]
     context["defaults"]=x
     for i in x:
@@ -136,6 +132,7 @@ def default_scale_admin(request):
     field_add = {"scale-category": "likert scale"}
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
+    print(data)
     context["likertall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
     return render(request, 'likert/default.html', context)

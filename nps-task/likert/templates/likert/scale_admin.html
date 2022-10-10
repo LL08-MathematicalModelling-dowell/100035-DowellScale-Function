@@ -16,14 +16,16 @@
    #horizontal h6{
        font-size: 30px;
        padding: 5px;
-       height: 70px;
+       height: 90px;
        display: flex;
+       flex-wrap:wrap;
        align-items: center;
        justify-content: center;
-       width: 70px;
+       width: 150px;
        border-radius: 50%;
        margin: 5px;
        cursor: pointer;
+       padding:5px;
    }
 
 
@@ -68,7 +70,7 @@
 
    #horizontal{
        display: flex;
-       justify-content: space-between;
+       justify-content: center;
    }
 
 </style>
@@ -90,7 +92,7 @@
                           </div>
                           <div class="form-group col-md-6">
                               <label for="orientation">Orientation</label>
-                              <select id="orientation" class="form-control" name="orientation" required="">
+                              <select id="orientation" class="form-control" name="orientation" required="True">
                                 <option selected="">Choose...</option>
                                 <option value="horizontal">Horizontal</option>
                                 <option value="vertical">Vertical</option>
@@ -104,10 +106,7 @@
                       //   })
 
                       </script>
-                          <div class="form-group col-md-6">
-                              <label for="scolor">Scale Color</label>
-                              <input type="color" name="scolor" class="form-control" id="scolor" placeholder="Background Color" required="">
-                          </div><br>
+                          
                           <div class="form-group col-md-6">
                             <label for="rcolor">Round Color</label>
                             <input type="color" name="rcolor" class="form-control" id="rcolor" placeholder="Font Color" required="">
@@ -209,7 +208,7 @@
                   var vert = document.getElementById("vert-div")
                   var sca_vert = document.getElementById("labels-vert")
 
-                  scale_bg.style.background = $("#scolor").val();
+                  scale_bg.style.background = "#FFFFFF";
                   scale_bg.style.padding = "20px 20px";
                   var lab_hor= document.getElementById("lab-hor");
                   var modal= document.getElementById("modal-body");
@@ -248,7 +247,7 @@
                   $('#'+em).empty();
                   n = Number(setScale())
                   var name = $('#likert').val();
-                  $('#red').css({"backgroundColor": $("#scolor").val()});
+                  $('#red').css({"backgroundColor": "#FFFFFF"});
 
 
                   ram(name, n, inputArray);
