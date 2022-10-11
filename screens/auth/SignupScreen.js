@@ -34,6 +34,7 @@ const SignupScreen = () => {
   const [password, setPassword] = useState("");
 
   const [repeatPassword, setRepeatpassword] = useState("");
+  console.log(email, password);
 
   const navigation = useNavigation();
 

@@ -6,12 +6,14 @@ import {
   ScrollView,
   Pressable,
   Modal,
+  FlatList,
 } from "react-native";
 import { Recommendation } from "react-native-recommendation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
-// import axios from "axios";
+import axios from "axios";
+import { useSelector } from "react-redux";
 
 let textList = [
   "FROM 9 -> 10",
@@ -29,9 +31,8 @@ let emojiList = [
 ];
 
 const NPSscaleSettings = () => {
-  const [text, onChangeText] = useState("");
   const [name, onChangeName] = useState("");
-  const [scolor, onChangeScolor] = useState("");
+  const [scolor, onChangeScolor] = useState("blue");
   const [rcolor, onChangeRcolor] = useState("");
   const [fcolor, onChangeFcolor] = useState("");
   const [left, onChangeLeft] = useState("");
@@ -58,162 +59,232 @@ const NPSscaleSettings = () => {
     scale_category: "nps scale",
   };
 
-  const handleSubmit = async () => {
-    const res = await axios.post(
-      " https://100090.pythonanywhere.com/scaleapi/scaleapi/",
-      settings
-    );
-    console.log(res.status === 200);
+  let timeNow = new Date().toLocaleString();
 
-    // if (res.status === 200) ? navigation required after scale is saved (NPSscale)
+  const eventID = {
+    platformcode: "FB",
+    citycode: "101",
+    daycode: "0",
+    dbcode: "pfm",
+    ip_address: "192.168.0.41",
+    login_id: "lav",
+    session_id: "new",
+    processcode: "1",
+    regional_time: timeNow,
+    dowell_time: timeNow,
+    location: "22446576",
+    objectcode: "1",
+    instancecode: "100051",
+    context: "afdafa ",
+    document_id: "3004",
+    rules: "some rules",
+    status: "work",
+    data_type: "learn",
+    purpose_of_usage: "add",
+    colour: "color value",
+    hashtags: "hash tag alue",
+    mentions: "mentions value",
+    emojis: "emojis",
+  };
+
+  const stateUser = useSelector((state) => state.user);
+
+  const handleSubmit = async () => {
+    console.log(stateUser);
+    try {
+      const eventId = await axios.post(
+        "https://100003.pythonanywhere.com/event_creation",
+        eventID
+      );
+      console.log(eventId.data);
+
+      const res = await axios.post(
+        " https://100090.pythonanywhere.com/scaleapi/scaleapi/",
+        { eventId: eventId.data, scale_settings: settings }
+      );
+      console.log(res.data);
+      onChangeCenter(""),
+        onChangeFcolor(""),
+        onChangeLeft(""),
+        onChangeName(""),
+        onChangeRcolor(""),
+        onChangeRight(""),
+        onChangeScolor(""),
+        onChangeTime(""),
+        onChangeText("");
+    } catch {
+      console.log("Error");
+    }
   };
 
   const handleModal = () => {
     setModalVisible(true);
   };
 
+  const numberRatings = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <Text style={styles.header}>Settings Scale</Text>
-        <Text style={{ alignItems: "center" }}>
-          -----------------------------------------------------------------------
-        </Text>
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Name of Scale</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeName}
-            value={name}
-          />
-        </View>
-        {/* Dropdown */}
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Orientaton</Text>
-          <Picker
-            style={styles.input}
-            selectedValue={Orientation}
-            onValueChange={(itemValue, itemIndex) => setOrientation(itemValue)}
-          >
-            <Picker.Item label="Horizontal" value="Horizontal" />
-            <Picker.Item label="Vertical" value="Vertical" />
-          </Picker>
-        </View>
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Scale Color</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeScolor}
-            value={scolor}
-          />
-        </View>
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Round Color</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeRcolor}
-            value={rcolor}
-          />
-        </View>
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Font Color</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeFcolor}
-            value={fcolor}
-          />
-        </View>
-        {/* Dropdown */}
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Format</Text>
-          <Picker
-            style={styles.input}
-            selectedValue={format}
-            onValueChange={(itemValue, itemIndex) => setFormat(itemValue)}
-          >
-            <Picker.Item label="Number" value="Number" />
-            <Picker.Item label="Image" value="Image" />
-            <Picker.Item label="Star" value="Star" />
-          </Picker>
-        </View>
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Left</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeLeft}
-            value={left}
-          />
-        </View>
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Center</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeCenter}
-            value={center}
-          />
-        </View>
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Right</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeRight}
-            value={right}
-          />
-        </View>
-        <View style={styles.inputFields}>
-          <Text style={styles.inputLabels}>Time</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeTime}
-            value={time}
-            placeholder="Time in sec"
-            keyboardType="numeric"
-          />
-        </View>
-        <View style={styles.btns}>
-          <Pressable style={styles.saveBtn} onPress={handleSubmit}>
-            <Text style={styles.btnsText}>Save</Text>
-          </Pressable>
+      {stateUser.currentUser !== "null" ? (
+        <ScrollView>
+          <Text style={styles.header}>Settings Scale</Text>
+          <Text style={{ alignItems: "center" }}>
+            -----------------------------------------------------------------------
+          </Text>
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Name of Scale</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeName}
+              value={name}
+            />
+          </View>
+          {/* Dropdown */}
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Orientaton</Text>
+            <Picker
+              style={styles.input}
+              selectedValue={Orientation}
+              onValueChange={(itemValue, itemIndex) =>
+                setOrientation(itemValue)
+              }
+            >
+              <Picker.Item label="Horizontal" value="Horizontal" />
+              <Picker.Item label="Vertical" value="Vertical" />
+            </Picker>
+          </View>
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Scale Color</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeScolor}
+              value={scolor}
+            />
+          </View>
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Round Color</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeRcolor}
+              value={rcolor}
+            />
+          </View>
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Font Color</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeFcolor}
+              value={fcolor}
+            />
+          </View>
+          {/* Dropdown */}
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Format</Text>
+            <Picker
+              style={styles.input}
+              selectedValue={format}
+              onValueChange={(itemValue, itemIndex) => setFormat(itemValue)}
+            >
+              <Picker.Item label="Number" value="Number" />
+              <Picker.Item label="Image" value="Image" />
+              <Picker.Item label="Star" value="Star" />
+            </Picker>
+          </View>
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Left</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeLeft}
+              value={left}
+            />
+          </View>
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Center</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeCenter}
+              value={center}
+            />
+          </View>
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Right</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeRight}
+              value={right}
+            />
+          </View>
+          <View style={styles.inputFields}>
+            <Text style={styles.inputLabels}>Time</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChangeTime}
+              value={time}
+              placeholder="Time in sec"
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={styles.btns}>
+            <Pressable style={styles.saveBtn} onPress={handleSubmit}>
+              <Text style={styles.btnsText}>Save</Text>
+            </Pressable>
 
-          <Pressable style={styles.saveBtn} onPress={handleModal}>
-            <Text style={styles.btnsText}>Preview</Text>
-          </Pressable>
-        </View>
-        <View style={styles.centeredView}>
-          <Modal
-            animationType="slide"
-            // transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-              setModalVisible(!modalVisible);
-            }}
-          >
-            <View style={styles.centeredView}>
-              <Recommendation
-                selectedColor={"#fff"}
-                unSelectedColor={"blue"}
-                selectedTextColor={"black"}
-                unSelectedTextColor={"black"}
-                selectedSize={30}
-                max={10}
-                reactionTextList={emojiList}
-                backgroundColor={"orange"}
-                selectedValue={(value) => console.log(value)}
+            <Pressable style={styles.saveBtn} onPress={handleModal}>
+              <Text style={styles.btnsText}>Preview</Text>
+            </Pressable>
+          </View>
+          <View style={styles.centeredView}>
+            <Modal
+              animationType="slide"
+              // transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <View style={styles.centeredView}>
+                {/* <Recommendation
+                  selectedColor={"#fff"}
+                  unSelectedColor={"blue"}
+                  selectedTextColor={"black"}
+                  unSelectedTextColor={"black"}
+                  selectedSize={30}
+                  max={10}
+                  reactionTextList={emojiList}
+                  backgroundColor={"orange"}
+                  selectedValue={(value) => console.log(value)}
 
-                // Remove this to disable reaction icon and text
-              />
-
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
-            </View>
-          </Modal>
+                  // Remove this to disable reaction icon and text
+                /> */}
+                <FlatList
+                  alwaysBounceVertical={false}
+                  data={numberRatings}
+                  horizontal
+                  renderItem={(itemData) => {
+                    return (
+                      <View style={styles.numRatingCont}>
+                        <Text style={styles.numRating}>{itemData.item}</Text>
+                      </View>
+                    );
+                  }}
+                  keyExtractor={(item) => item.id}
+                />
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text style={styles.textStyle}>Hide Modal</Text>
+                </Pressable>
+              </View>
+            </Modal>
+          </View>
+        </ScrollView>
+      ) : (
+        <View style={styles.errorMsg}>
+          <Text style={styles.errorMsgText}>Login To Create New Scale</Text>
         </View>
-      </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -311,5 +382,36 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: "center",
+  },
+  errorMsg: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorMsgText: {
+    color: "tomato",
+    fontSize: 25,
+    fontWeight: "bold",
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 25,
+  },
+  numRating: {
+    color: "tomato",
+    margin: 2,
+    fontWeight: "bold",
+    // fontSize: 20,
+    backgroundColor: "blue",
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+  },
+  numRatingCont: {
+    height: 50,
+    padding: 1.5,
+
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

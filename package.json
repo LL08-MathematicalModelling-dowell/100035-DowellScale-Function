@@ -18,6 +18,7 @@
     "@react-navigation/native": "^6.0.12",
     "@react-navigation/native-stack": "^6.8.0",
     "@react-navigation/stack": "^6.3.1",
+    "@reduxjs/toolkit": "^1.8.6",
     "@ui-kitten/components": "^5.1.2",
     "axios": "^1.1.0",
     "expo": "~46.0.9",
@@ -35,7 +36,9 @@
     "react-native-super-grid": "^4.6.1",
     "react-native-svg": "12.3.0",
     "react-native-toast-notifications": "^3.3.1",
-    "react-navigation-stack": "^2.10.4"
+    "react-navigation-stack": "^2.10.4",
+    "react-redux": "^8.0.4",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

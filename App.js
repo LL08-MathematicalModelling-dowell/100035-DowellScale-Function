@@ -25,6 +25,10 @@ const Tab = createBottomTabNavigator();
 const ScaleStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 
+// REDUX
+import { Provider } from "react-redux";
+import { store } from "./screens/redux/Store";
+
 // AXIOS API CALL -AUTHENTICATION
 
 // function getCurrentUser() {
@@ -68,24 +72,22 @@ const ProfileStack = createStackNavigator();
 //   }
 // }
 
-// useEffect(() => {
-//   checkUserSignedIn();
-// }, []);
-
 {
   /* {isSignedIn ? (
           <> */
 }
 
 const ScaleStackScreen = () => (
-  <ScaleStack.Navigator>
-    <ScaleStack.Screen
-      name="Scale"
-      component={ScaleScreen}
-      options={{ headerShown: false }}
-    />
-    <ScaleStack.Screen name="NPSScale" component={NPSScale} />
-  </ScaleStack.Navigator>
+  <Provider store={store}>
+    <ScaleStack.Navigator>
+      <ScaleStack.Screen
+        name="Scale"
+        component={ScaleScreen}
+        options={{ headerShown: false }}
+      />
+      <ScaleStack.Screen name="NPSScale" component={NPSScale} />
+    </ScaleStack.Navigator>
+  </Provider>
 );
 
 const ProfileStackScreen = () => (

@@ -18,6 +18,8 @@ import CustomInput from "../components/Custom/CustomInput";
 export default function SigninScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  console.log(email, password);
   const onLoginbuttonpressed = () => {
     navigation.navigate("ScaleScreen");
   };
