@@ -261,6 +261,7 @@ const NPSscaleSettings = () => {
                   alwaysBounceVertical={false}
                   data={numberRatings}
                   horizontal
+                  style={styles.scalePreview}
                   renderItem={(itemData) => {
                     return (
                       <View style={styles.numRatingCont}>
@@ -346,6 +347,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 22,
+    height: 100,
   },
   modalView: {
     margin: 20,
@@ -409,8 +411,11 @@ const styles = StyleSheet.create({
   numRatingCont: {
     height: 50,
     padding: 1.5,
-
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  scalePreview: {
     alignItems: "center",
     justifyContent: "center",
   },
