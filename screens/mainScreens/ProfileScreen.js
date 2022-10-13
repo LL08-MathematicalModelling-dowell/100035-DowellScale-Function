@@ -20,7 +20,7 @@ export default function Profile({ navigation }) {
       >
         <Button
           title="Proceed to Sign In"
-          onPress={() => navigation.navigate("Signin")}
+          // onPress={() => navigation.navigate("Signin")}
           style={{
             color: "green",
             size: "70%",
@@ -36,7 +36,7 @@ export default function Profile({ navigation }) {
       >
         <Button
           title="Register a new account"
-          onPress={() => navigation.navigate("Signup")}
+          // onPress={() => navigation.navigate("Signup")}
           style={{
             backgroundColor: "green",
           }}
