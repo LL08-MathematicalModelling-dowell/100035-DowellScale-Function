@@ -8,6 +8,7 @@ import {
   Button,
 } from "react-native";
 import { TextInput } from "react-native-paper";
+import WebView from "../components/WebView";
 import CommentHeader from "../components/Comment/CommentHeader";
 
 export default function CommentScreen() {
@@ -45,7 +46,14 @@ export default function CommentScreen() {
             ></TextInput>
           </View>
         </View>
-        <View
+        <View style={styles.textWrapper}>
+          <WebView
+            url={
+              "https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/defaultnplslite/?brand_name=your brand&product_name=your product"
+            }
+          />
+        </View>
+        {/* <View
           style={{
             marginTop: 40,
             flexDirection: "row",
@@ -74,7 +82,7 @@ export default function CommentScreen() {
               <Button title=" 😁 Yes" style={styles.buttonContainer} />
             </View>
           </Text>
-        </View>
+        </View> */}
 
         <StatusBar style="auto" />
         {/* </SafeAreaView> */}
@@ -96,16 +104,16 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   textWrapper: {
-    flexDirection: "column",
-    borderColor: "green",
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderRadius: 20,
+    // flexDirection: "column",
+    // borderColor: "green",
+    // borderWidth: 1,
+    // borderStyle: "solid",
+    // borderRadius: 20,
     marginTop: 20,
-    padding: 10,
-    margin: 20,
-    width: "90%",
-    justifyContent: "center",
+    // padding: 10,
+    // margin: 20,
+    // width: "90%",
+    // justifyContent: "center",
   },
   safeContainer: {
     marginTop: StatusBar.currentHeight || 0,

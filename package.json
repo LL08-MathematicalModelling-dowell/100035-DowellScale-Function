@@ -36,6 +36,7 @@
     "react-native-super-grid": "^4.6.1",
     "react-native-svg": "12.3.0",
     "react-native-toast-notifications": "^3.3.1",
+    "react-native-webview": "^11.23.1",
     "react-navigation-stack": "^2.10.4",
     "react-redux": "^8.0.4",
     "redux-persist": "^6.0.0"
