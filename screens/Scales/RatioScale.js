@@ -7,11 +7,12 @@ import {
 
 } from "react-native";
 
+import WebView from "react-native-webview";
 
 import React, { useState } from "react";
 
 
-export default function LikertScale() {
+export default function RatioScale() {
   return (
     <ScrollView style={styles.container}>
      <Text
@@ -28,7 +29,13 @@ export default function LikertScale() {
         >
           Scale Under Construction
         </Text>
-     
+        <View style={styles.textWrapper}>
+          <WebView
+            url={
+              "https://100035.pythonanywhere.com/nps-scale1/VOC_NPS7469?brand_name=your brand&product_name=your product"
+            }
+          />
+        </View>
         
       
     </ScrollView>

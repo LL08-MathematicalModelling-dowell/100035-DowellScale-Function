@@ -1,31 +1,33 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image, FlatList } from "react-native";
+import { StyleSheet, Text, View, Image, FlatList, Alert, TouchableOpacity } from "react-native";
 import { FlatGrid } from "react-native-super-grid";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
+
 export default function ScalesGridList() {
   const [items, setItems] = React.useState([
-    { name: "NPS Scale", code: "#1abc9c" },
-    { name: "Rank Scale", code: "#2ecc71" },
-    { name: "Ratio Scale", code: "#3498db" },
-    { name: "Likert Scale", code: "#9b59b6" },
-    { name: "Scale- Save 1", code: "#9b59b6" },
-    { name: "Scale- Save 2", code: "#9b59b6" },
-    { name: "ScaleTIS", code: "#9b59b6" },
-    { name: "Scale HOLE", code: "#9b59b6" },
-    { name: "ScaleIA", code: "#9b59b6" },
-    { name: "ScaleHT BLUE", code: "#9b59b6" },
-    { name: "ScaleOWER", code: "#9b59b6" },
-    { name: "Scale", code: "#9b59b6" },
-    { name: "ScaleIN", code: "#9b59b6" },
-    { name: "Scale", code: "#9b59b6" },
-    { name: "ScaleTE", code: "#95a5a6" },
-    { name: "Scale", code: "#9b59b6" },
-    { name: "ScaleN", code: "#d35400" },
-    { name: "ScaleANATE", code: "#c0392b" },
-    { name: "Scale", code: "#bdc3c7" },
-    { name: "ScaleOS", code: "#7f8c8d" },
+    // /Users/duncan/Downloads/Dowell-scales-beta-v2/assets/DOWELL_ICONS/Likert-scale (1).jpg
+    { name: "NPSScale", code: "#1", image: "https://www.linkpicture.com/q/nps-scale_1.png" } ,
+    { name: "RankScale", code: "#2", image: "https://www.linkpicture.com/q/nps-scale_1.png"},
+    { name: "RatioScale", code: "#3", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "LikertScale", code: "#4", image: "https://www.linkpicture.com/q/Likert-scale-1_1.jpg" },
+    { name: "NPSLite", code: "#5", image: "https://www.linkpicture.com/q/npsite-scale.jpg" },
+    { name: "RatioScale", code: "#6", image: "https://www.linkpicture.com/q/scale_1.png" },
+    { name: "StapelScale", code: "#7", image: "https://www.linkpicture.com/q/staple-scale_1.jpg" },
+    { name: "PercentScale", code: "#8", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "PercentSum", code: "#9", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "GuttmanScale", code: "#10", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "MokkenScale", code: "#11", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "Thurstone Scale", code: "#12", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "Ranking", code: "#13", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "Q Sort", code: "#14", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "ScaleTE", code: "15", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "Scale", code: "#16", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "ScaleN", code: "#17", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "ScaleANATE", code: "#18", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "Scale", code: "#19", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "ScaleOS", code: "#20", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
   ]);
   const navigation = useNavigation();
   return (
@@ -37,16 +39,22 @@ export default function ScalesGridList() {
       // fixed
       spacing={10}
       renderItem={({ item }) => (
-        <View style={[styles.itemContainer, { backgroundColor: item.code }]}>
-          <Text
+        <View style={[styles.itemContainer, {backgroundColor: "green", background: item.image}]}>
+          <TouchableOpacity style={{ flexWrap: "wrap" }}  >
+            <Text
             style={styles.itemName}
             onPress={() =>
-              navigation.navigate("NPSScale", { name: "NPS Scale" })
+              navigation.navigate(item.name, { name: item.name })
+              // Alert.alert("Scale under construction")
             }
-            key="{item}"
-          >
-            {item.name}
-          </Text>
+          > 
+            
+          {item.name} {'\n'}</Text>
+          <Image 
+          style={{width: 140, height: 60, justifyContent: "space-around", alignSelf: "center",  }}
+          source={{uri: item.image}} />
+         
+          </TouchableOpacity>
           {/* <Text style={styles.itemCode}>{item.code}</Text> */}
         </View>
       )}
@@ -54,23 +62,24 @@ export default function ScalesGridList() {
   );
 }
 
+
 const styles = StyleSheet.create({
   gridView: {
     marginTop: 10,
     flex: 1,
   },
   itemContainer: {
-    justifyContent: "flex-start",
+    // justifyContent: "center",
     borderRadius: 5,
     padding: 10,
-    height: 150,
+    // height: "auto",
   },
   itemName: {
     fontSize: 16,
     color: "#fff",
     fontWeight: "600",
-    justifyContent: "flex-start",
-    alignSelf: "flex-start",
+    justifyContent: "center",
+    alignSelf: "center",
   },
   itemCode: {
     fontWeight: "600",

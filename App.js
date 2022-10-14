@@ -18,7 +18,17 @@ import NotificationScreen from "./screens/mainScreens/NotificationScreen";
 import ProfileScreen from "./screens/mainScreens/ProfileScreen";
 import ReportScreen from "./screens/mainScreens/ReportScreen";
 import ScaleScreen from "./screens/mainScreens/ScaleScreen";
+
+// Nested
 import NPSScale from "./screens/Scales/NPSscale";
+import NPSLite from "./screens/Scales/NPSLite";
+import LikertScale from "./screens/Scales/LikertScale";
+import StapelScale from "./screens/Scales/StapelScale";
+import RatioScale from "./screens/Scales/RatioScale";
+import PercentScale from "./screens/Scales/PercentScale";
+import RankScale from "./screens/Scales/RankScale";
+
+
 // NAVIGATION
 const AuthStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -86,6 +96,13 @@ const ScaleStackScreen = () => (
         options={{ headerShown: false }}
       />
       <ScaleStack.Screen name="NPSScale" component={NPSScale} />
+      <ScaleStack.Screen name="NPSLite" component={NPSLite} />
+      <ScaleStack.Screen name="LikertScale" component={LikertScale} />
+      <ScaleStack.Screen name="StapelScale" component={StapelScale} />
+      <ScaleStack.Screen name="RatioScale" component={RatioScale} />
+      <ScaleStack.Screen name="PercentScale" component={PercentScale} />
+      <ScaleStack.Screen name="RankScale" component={RankScale} />
+
     </ScaleStack.Navigator>
   </Provider>
 );

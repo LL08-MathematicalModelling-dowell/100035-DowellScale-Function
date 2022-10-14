@@ -3,7 +3,7 @@ import { StyleSheet, ScrollView, Text, View, Image, Pressable, Alert } from "rea
 import DetailHeader from "../components/Detail/DetailHeader";
 
 const onInstallpressed = () => {
-  Alert.alert("Terms of service pressed");
+  Alert.alert("Check playstore for installation");
 };
 
 

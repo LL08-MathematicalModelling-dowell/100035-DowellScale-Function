@@ -1,13 +1,15 @@
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useState } from 'react'; 
+import ScaleHeader from './ScaleHeader';
 
-
-function DropSearch() {
+function ReportDropDown() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
-    {label: 'DATA', value: 'DATA'},
-    
+    {label: 'NPS', value: 'NPS'},
+    {label: 'Rank', value: 'Rank'},
+    {label: 'Ratio', value: 'Ratio'},
+    {label: 'Likert', value: 'Likert'},
   ]);
 
   return (
@@ -18,22 +20,21 @@ function DropSearch() {
       setOpen={setOpen}
       setValue={setValue}
       setItems={setItems}
-      placeholder="Search"
-      containerStyle={{width: 340, alignItems: 'center', justifyContent:'center', }}
+      placeholder="Drop down (Scales)"
+      onPress={() => navigation.navigate('NPSScale')}
+      containerStyle={{width: 340, marginLeft: 10, alignItems: 'center',}}
         style=
         {{
-            // backgroundColor: '#fafafa',
+            backgroundColor: '#fafafa',
             borderLeftColor: 'green',
-            borderColor: 'green',
-            borderLeftWidth: 5, 
+            borderLeftWidth: 5,
+            borderRadius: 5,
+            borderColor: 'transparent', 
             flexDirection: 'row',
             alignContent: 'center',
             width: 340,
-            justifyContent: 'center',
-            maxWidth: 380,
+            maxWidth: 400,
             margin: 10,
-            marginLeft: 40,
-            borderRadius: 5,
             // height: 30,
             color: 'green',
             
@@ -42,4 +43,4 @@ function DropSearch() {
   );
 }
 
-export default DropSearch;
+export default ReportDropDown;

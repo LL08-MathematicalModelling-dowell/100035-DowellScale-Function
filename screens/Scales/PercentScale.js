@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   ScrollView,
-  View,
 
 } from "react-native";
 
@@ -11,7 +10,7 @@ import {
 import React, { useState } from "react";
 
 
-export default function LikertScale() {
+export default function PercentScale() {
   return (
     <ScrollView style={styles.container}>
      <Text
