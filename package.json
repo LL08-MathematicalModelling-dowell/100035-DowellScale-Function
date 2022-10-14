@@ -27,6 +27,8 @@
     "react-native": "0.69.6",
     "react-native-dropdown-picker": "^5.4.2",
     "react-native-gesture-handler": "^2.7.0",
+    "react-native-get-location": "^2.2.1",
+    "react-native-network-info": "^5.2.1",
     "react-native-paper": "^4.12.4",
     "react-native-phone-number-input": "^2.1.0",
     "react-native-reanimated": "^2.10.0",

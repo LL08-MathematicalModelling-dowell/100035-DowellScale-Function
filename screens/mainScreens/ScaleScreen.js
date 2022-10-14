@@ -7,6 +7,28 @@ import ScaleHeader from "../components/ScaleHeader";
 import { useSelector } from "react-redux";
 import React, { useEffect } from "react";
 import axios from "axios";
+import GetLocation from "react-native-get-location";
+import { NetworkInfo } from "react-native-network-info";
+
+GetLocation.getCurrentPosition({
+  enableHighAccuracy: true,
+  timeout: 15000,
+})
+  .then((location) => {
+    console.log(location);
+  })
+  .catch((error) => {
+    const { code, message } = error;
+    console.warn(code, message);
+  });
+
+// Get Local IP
+NetworkInfo.getIPAddress().then((ipAddress) => {
+  console.log(ipAddress);
+});
+NetworkInfo.getIPV4Address().then((ipv4Address) => {
+  console.log(ipv4Address);
+});
 
 const date = new Date();
 let day = date.getDate();
@@ -31,7 +53,6 @@ export default function ScaleScreen({ navigation }) {
   const stateUser = useSelector((state) => state.user);
 
   useEffect(() => {
-    console.log("first");
     try {
       const handleIsUser = async () => {
         const res = await axios.post(
