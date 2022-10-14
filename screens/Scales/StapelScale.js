@@ -11,7 +11,7 @@ import {
 import React, { useState } from "react";
 
 
-export default function LikertScale() {
+export default function StapelScale() {
   return (
     <ScrollView style={styles.container}>
      <Text

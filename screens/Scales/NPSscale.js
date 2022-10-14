@@ -6,6 +6,7 @@ import {
   Image,
   Button,
   ScrollView,
+  SafeAreaView
 } from "react-native";
 import { Recommendation, Rating } from "react-native-recommendation";
 // import Line from './components/Line';
@@ -26,8 +27,8 @@ let textList = [
 
 export default function NPSScale() {
   return (
-    <ScrollView>
-      <View style={styles.container}>
+    <ScrollView style={styles.container}>
+     
         {/* <NPSScaleHeader />   */}
 
         <Recommendation
@@ -61,7 +62,7 @@ export default function NPSScale() {
             padding: 10,
             bottom: 0,
             alignSelf: "center",
-            justifyContent: "space-between",
+            // justifyContent: "space-between",
           }}
           // Remove this to disable reaction icon and text
         />
@@ -87,7 +88,7 @@ export default function NPSScale() {
             fontWeight: "bold",
             borderRadius: 20,
             padding: 10,
-            justifyContent: "center",
+            // justifyContent: "center",
             alignContent: "center",
             marginTop: 30,
             fontSize: 15,
@@ -96,7 +97,6 @@ export default function NPSScale() {
           Old versions
         </Text>
         <OldVersions />
-      </View>
     </ScrollView>
   );
 }

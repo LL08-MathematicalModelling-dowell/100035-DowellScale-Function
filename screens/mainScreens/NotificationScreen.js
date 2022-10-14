@@ -13,10 +13,11 @@ export default function App() {
         color: 'green',
         width: '100%', 
         fontWeight: 'bold',
-        borderRadius: 20, 
+        flexDirection: 'row',
         padding: 10,
         justifyContent: 'center',
         alignContent: 'center',
+        alignText: 'center',
         marginTop: 10,
         fontSize: 15,}} >
         Updates on the measured data

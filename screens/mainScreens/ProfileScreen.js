@@ -13,7 +13,7 @@ export default function Profile({ navigation }) {
         Notifications after full login/join us.{"\n"}
         Others after link based login {"\n"}
       </Text>
-      <View
+      {/* <View
         style={{
           marginBottom: 10,
         }}
@@ -48,7 +48,7 @@ export default function Profile({ navigation }) {
         }}
       >
         <Button title=" 😁 " />
-      </View>
+      </View> */}
     </View>
   );
 }

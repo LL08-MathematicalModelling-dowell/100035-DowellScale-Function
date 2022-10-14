@@ -1,6 +1,11 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, ScrollView, Text, View, Image } from "react-native";
+import { StyleSheet, ScrollView, Text, View, Image, Pressable, Alert } from "react-native";
 import DetailHeader from "../components/Detail/DetailHeader";
+
+const onInstallpressed = () => {
+  Alert.alert("Check playstore for installation");
+};
+
 
 export default function DetailScreen() {
   return (
@@ -52,14 +57,41 @@ export default function DetailScreen() {
             consent; the processing is necessary for a contract between you and
             us; the processing is required by applicable law; the processing is
             necessary to protect the vital interests of any individual; or where
-            we have a valid legitimate interest in the processing.n
+            we have a valid legitimate interest in the processing.
           </Text>
         </View>
         <View style={styles.textWrapper}>
-          <Text>
-            App details {'\n'}Installed version {'\n'} 8.00.00 {'\n'}Install Installation{'\n'} ID
-            1234567890
+          <View style={styles.appDetails}>
+            <Text>App details {'\n'}
+            <Image source={{ uri: 'https://www.nicepng.com/maxp/u2w7q8u2t4o0t4u2/',}}/>
+            </Text>
+            
+          <Text style={{color: "green"}}>
+          
+             {'\n'}Installed version: 8.00.00 {'\n'}Installation ID: 
+            1234567890 {'\n'} {'\n'}
+            <Pressable
+                  style={{backgroundColor: "#90EE90",
+                  borderColor: "green",
+                  borderWidth: 1,
+                  borderRadius: 20,
+                  elevation: 2,
+                  width: 100,
+                  padding: 5,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  margin: 5,}}
+                  onPress={onInstallpressed}
+                >
+                  <Text style={{color: "green",
+                                fontWeight: "bold",
+                                textAlign: "center",}}>
+       Install
+      </Text>
+                </Pressable>
           </Text>
+         
+          </View>
         </View>
 
         <StatusBar style="auto" />
@@ -92,6 +124,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: "center",
   },
+  appDetails: {
+    flexDirection: "row",
+    color: "green",
+  },
+
+
+
   safeContainer: {
     marginTop: StatusBar.currentHeight || 0,
     backgroundColor: "#fff",
@@ -103,8 +142,8 @@ const styles = StyleSheet.create({
     height: 40,
     marginTop: 10,
     marginLeft: 10,
-    marginBottom: 0,
-    display: "flex",
-    alignItems: "flex-start",
+   
+    // display: "flex",
+    // alignItems: "flex-start",
   },
 });

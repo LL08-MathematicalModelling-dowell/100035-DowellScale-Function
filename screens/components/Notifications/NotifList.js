@@ -85,10 +85,10 @@ const styles = StyleSheet.create({
   item: {
     backgroundColor: '#fff',
     padding: 10,
-    marginVertical: 8,
+    marginVertical: 2,
     marginHorizontal: 16,
     borderLeftColor: 'green',
-    borderLeftWidth: 2,
+    borderLeftWidth: 4,
   },
   title: {
     
