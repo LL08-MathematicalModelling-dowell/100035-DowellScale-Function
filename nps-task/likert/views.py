@@ -35,7 +35,8 @@ def dowell_scale_admin(request):
             field_add={"orientation":orientation,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale"}
             
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            return redirect(f"https://100035.pythonanywhere.com/likert/likert-scale1/{template_name}")
+            return redirect(f"http://127.0.0.1:8000/likert/likert-scale1/{template_name}")
+            """return redirect(f"https://100035.pythonanywhere.com/likert/likert-scale1/{template_name}")"""
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'likert/scale_admin.html', context)
@@ -50,7 +51,6 @@ def dowell_likert(request):
 @xframe_options_exempt
 def dowell_scale1(request, tname1):
     context={}
-
     brand_name = request.GET.get('brand_name', None)
     product_name = request.GET.get('product_name', None)
     ls = request.path
@@ -74,7 +74,7 @@ def dowell_scale1(request, tname1):
         response = redirect('likert:preview_page')
         response.set_cookie('url', f_path)
         return response
-
+     
     context["url"]="../scaleadmin"
     context["urltext"]="Create new scale"
     context["btn"]="btn btn-dark"
@@ -132,7 +132,6 @@ def default_scale_admin(request):
     field_add = {"scale-category": "likert scale"}
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
-    print(data)
     context["likertall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
     return render(request, 'likert/default.html', context)

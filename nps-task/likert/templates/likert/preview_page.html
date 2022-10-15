@@ -132,8 +132,10 @@
         x = getCookieValue('url')
         b = x.replaceAll('"','')
         var copyText = document.getElementById('mytext')
-        copyText.innerHTML = `https://100035.pythonanywhere.com${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
-        document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`
+        //copyText.innerHTML = `https://100035.pythonanywhere.com${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
+        copyText.innerHTML = `http://127.0.0.1:8000${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
+        document.getElementsByName('iFrameName')[0].src = `http://127.0.0.1:8000${b}?brand_name=your brand&product_name=your product`
+        //document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`
 
         }
       window.onload = codeAddress;
@@ -144,7 +146,8 @@
         var clip = document.getElementById("clip-icon");
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
-        input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
+        input_temp.value = `http://127.0.0.1:8000${b}?brand_name=your brand&product_name=your product`;
+         //input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");

@@ -21,18 +21,18 @@
        }
 
         #horizontal p{
-            font-size: 30px;
+            font-size: 18px;
+            font-weight:bold;
             padding: 5px;
-            height: 90px;
+            min-height: 50px;
             display: flex;
             flex-wrap:wrap;
             align-items: center;
             justify-content: center;
-            width: 150px;
-            border-radius: 50%;
+            width: 120px;
+            border-radius: 25px;
             margin: 5px;
             cursor: pointer;
-            padding:5px;
         }
 
         /*#labels{*/
@@ -57,10 +57,16 @@
           #horizontal p{
             font-size: 16px;
             padding: 5px;
-            height: 40px;
-            width: 40px;
-            border-radius: 50%;
-            margin: 0.5px;
+            min-height: 30px;
+            display: flex;
+            flex-wrap:wrap;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            border-radius: 12px;
+            margin: 5px;
+            cursor: pointer;
+            margin: 5px
             }
 
            #labels{
@@ -77,7 +83,7 @@
             padding: 5px;
             height: 40px;
             width: 40px;
-            margin: .5px'
+            margin: 5px;
             }
 
            #labels{
@@ -93,7 +99,7 @@
             padding: 5px;
             height: 30px;
             width: 30px;
-            margin: .5px'
+            margin: 5px;
             }
 
            #labels{
@@ -125,7 +131,7 @@ $(document).ready(function() {
                 this.style.backgroundColor = 'white';
                     }
             mbuttons[i].onmouseover = function(){
-                this.style.backgroundColor = '#6df782';
+                this.style.backgroundColor = '{{default.roundcolor|safe}}';
                 }
             mbuttons[i].onmouseout = function(){
                 if (this.style.backgroundColor === 'red'){
@@ -198,8 +204,7 @@ setrating = function(id) {
                 var labels = document.getElementById("labels")
                 scale_bg.style.background = '{{default.scalecolor|safe}}';
                 scale_bg.style.padding = "20px 20px";
-                console.log('{{default.fomat|safe}}')
-                star = '{{default.fomat|safe}}'
+                
 
                 if ('{{default.orientation|safe}}' ==="vertical" ){
                     scale_bg.style.flexDirection = "column";
@@ -269,7 +274,8 @@ setrating = function(id) {
                     para.classList.add("number");
                     document.getElementById("horizontal").appendChild(para);
 <!--                    document.getElementById(i).innerHTML = i;-->
-                    document.getElementById(i).style.background ='{{default.roundcolor|safe}}';
+                    //document.getElementById(i).style.background ='{{default.roundcolor|safe}}';
+                    document.getElementById(i).style.background ='#FFFFFF';
                     document.getElementById(i).style.color ="{{default.fontcolor|safe }}";
                 }
 
