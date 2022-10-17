@@ -42,11 +42,11 @@
   function onChange() {
     var value = e.value;
     if(value == "user"){
-        // window.location.replace('https://100035.pythonanywhere.com/likert/likert-scale/likert/')
-     window.location.replace('http://127.0.0.1:8000/likert/likert-scale/likert/')
+        window.location.replace('https://100035.pythonanywhere.com/likert/likert-scale/likert/')
+     //window.location.replace('http://127.0.0.1:8000/likert/likert-scale/likert/')
     }else if(value == "Client_Admin" || value == "TeamMember" ){
-         //window.location.replace('https://100035.pythonanywhere.com/likert/likert-admin/default/')
-       window.location.replace('http://127.0.0.1:8000/likert/likert-admin/default/')
+         window.location.replace('https://100035.pythonanywhere.com/likert/likert-admin/default/')
+       //window.location.replace('http://127.0.0.1:8000/likert/likert-admin/default/')
     }else{
       console.log(value);
     }
