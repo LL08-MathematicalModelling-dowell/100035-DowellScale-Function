@@ -175,6 +175,11 @@ setrating = function(id) {
 </script>
 </head>
 <body>
+<form method="POST" id="jsform">
+        {% csrf_token %}
+        <input type="hidden" name="scoretag" id="scoretag" >
+        <input type="hidden" name="likert" id="likert" value="likert" >
+</form>
 
 <div class="container ">
     <div class="row mt-4">

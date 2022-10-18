@@ -35,8 +35,8 @@ def dowell_scale_admin(request):
             field_add={"orientation":orientation,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale"}
             
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            return redirect(f"http://127.0.0.1:8000/likert/likert-scale1/{template_name}")
-            """return redirect(f"https://100035.pythonanywhere.com/likert/likert-scale1/{template_name}")"""
+            """return redirect(f"http://127.0.0.1:8000/likert/likert-scale1/{template_name}")"""
+            return redirect(f"https://100035.pythonanywhere.com/likert/likert-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'likert/scale_admin.html', context)
@@ -44,6 +44,8 @@ def dowell_scale_admin(request):
 def dowell_likert(request):
     if request.method =="POST":
         scale_selected = request.POST['likert']
+        scoretag=request.POST.get('scoretag', 'None')
+        #print(scoretag)
         context={"context":scale_selected}
         return render(request, 'likert/default.html', context=context)
     return render(request, 'likert/likert.html')
@@ -88,7 +90,6 @@ def dowell_scale1(request, tname1):
     x= data["data"]
     context["defaults"]=x
     for i in x:
-        #context["text"]=i['text'].split("+")
         context['labelscale']=i["labelscale"]
         context['labeltype']=i["labeltype"]
         for j in i["scales"]:
@@ -133,6 +134,10 @@ def default_scale_admin(request):
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
     context["likertall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
+    
+    if request.method == "POST":
+        scoretag = request.POST["scoretag"]
+        return redirect("https://100014.pythonanywhere.com/")
 
     return render(request, 'likert/default.html', context)
 
