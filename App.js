@@ -134,10 +134,15 @@ const ProfileStackScreen = () => (
 const NotificationsStackScreen = () => (
   <NotificationsStack.Navigator>
     <NotificationsStack.Screen
-      name="Notifications"
+      name="NotifMainScreen"
       component={NotificationScreen}
+      options={{
+        headerShown: false,
+        tabBarShowLabel: false, // Remove wording on tab
+        tabBarVisible: false,
+      }}
     />
-    <NotificationsStack.Screen
+    {/* <NotificationsStack.Screen
       name="NotificationsCard"
       component={NotificationsCard}
       options={{
@@ -145,7 +150,7 @@ const NotificationsStackScreen = () => (
         tabBarShowLabel: false, // Remove wording on tab
         tabBarVisible: false,
       }}
-    />
+    /> */}
     <NotificationsStack.Screen
       name="NotifScreen"
       component={NotifScreen}

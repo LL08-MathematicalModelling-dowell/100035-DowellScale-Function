@@ -1,11 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import NotifHeader from '../components/Notifications/NotifHeader';
 import NotificationsCard from '../components/Notifications/NotificationsCard';
 
 
 export default function App() {
   return (
     <View style={styles.container}>
+       < NotifHeader />
       <NotificationsCard />
      
       <StatusBar style="auto" />

@@ -11,7 +11,7 @@ function DropScale() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
-    { id: 1, label: "NPS", name: "NPSscale" },
+    { id: 1, label: "NPS", name: "NPSscale"},
     { id: 2, label: "Rank", name: "RankScale" },
     { id: 3, label: "Ratio", name: "RatioScale" },
     { id: 4, label: "Likert", name: "LikertScale" },
@@ -23,31 +23,24 @@ function DropScale() {
     { id: 10, label: "Mokken", name: "MokkenScale" },
     { id: 11, label: "Thurstone", name: "ThurstoneScale" },
     { id: 12, label: "Ranking", name: "RankingScale" },
-    { id: 13, label: "Q sort", name: "QSort" },
+    { id: 13, label: "Q sort", name: "QSortScale" },
   ]);
   const onListPressed = () => {
-    navigation.navigate(item.name, { name: item.name })
+    navigation.navigate(item.name, { screen: item.name })
   };
-  // NPS
-  // NPS Lite
-  // Stapel
-  // Likert
-  // Percent
-  // Percent Sum
-  // Guttmann
-  // Mokken
-  // Thurstone
-  // Ranking
-  // Q sort//
 
   return (
-    <View onPress={onListPressed}>
+    <View key={items.id}>
     <DropDownPicker
       open={open}
       value={value}
       items={items}
       setOpen={setOpen}
       setValue={setValue}
+      onSelectItem={(item) => {
+        console.log(item.name);
+      }}
+      key={items.id}
       // onPress={onListPressed}
       setItems={setItems}
       placeholder="Drop down (Scales)"

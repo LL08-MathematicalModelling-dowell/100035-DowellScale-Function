@@ -35,6 +35,7 @@ export default function ScalesGridList() {
       itemDimension={130}
       data={items}
       style={styles.gridView}
+      key={items.code}
       // staticDimension={300}
       // fixed
       spacing={10}
@@ -42,6 +43,7 @@ export default function ScalesGridList() {
         <View style={[styles.itemContainer, {backgroundColor: "green", background: item.image}]}>
           <TouchableOpacity style={{ flexWrap: "wrap" }}  >
             <Text
+            key={item.code}
             style={styles.itemName}
             onPress={() =>
               navigation.navigate(item.name, { name: item.name })
@@ -51,7 +53,7 @@ export default function ScalesGridList() {
             
           {item.name} {'\n'}</Text>
           <Image 
-          style={{width: 140, height: 60, justifyContent: "space-around", alignSelf: "center",  }}
+          style={{width: 150, height: 100, justifyContent: "center", alignSelf: "center",  }}
           source={{uri: item.image}} />
          
           </TouchableOpacity>
