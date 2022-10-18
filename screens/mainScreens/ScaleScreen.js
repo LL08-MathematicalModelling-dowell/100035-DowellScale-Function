@@ -5,30 +5,12 @@ import Drop from "../components/DropDownScale";
 import ScalesGridList from "../components/ScalesGridList";
 import ScaleHeader from "../components/ScaleHeader";
 import { useSelector } from "react-redux";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import GetLocation from "react-native-get-location";
-import { NetworkInfo } from "react-native-network-info";
+import publicIP from 'react-native-public-ip';
+import Geolocation from 'react-native-geolocation-service';
 
-GetLocation.getCurrentPosition({
-  enableHighAccuracy: true,
-  timeout: 15000,
-})
-  .then((location) => {
-    console.log(location);
-  })
-  .catch((error) => {
-    const { code, message } = error;
-    console.warn(code, message);
-  });
-
-// Get Local IP
-NetworkInfo.getIPAddress().then((ipAddress) => {
-  console.log(ipAddress);
-});
-NetworkInfo.getIPV4Address().then((ipv4Address) => {
-  console.log(ipv4Address);
-});
+ 
 
 const date = new Date();
 let day = date.getDate();
@@ -38,19 +20,87 @@ let year = date.getFullYear();
 // This arrangement can be altered based on how we want the date's format to appear.
 let currentDate = `${day}-${month}-${year}`;
 
-const qrID = {
-  Username: "exampleuser",
-  OS: "linux",
-  Device: "mobile",
-  Browser: "chrome",
-  Location: "Kochi",
-  Time: `${currentDate}`,
-  Connection: "wifi",
-  IP: "198.162.1.1",
-};
-
 export default function ScaleScreen({ navigation }) {
   const stateUser = useSelector((state) => state.user);
+  const [ipAd, setIpAd] = useState("");
+  // const [location, setLocation] = useState({});
+  const [location, setLocation] = useState(false);
+
+  // Function to get permission for location
+const requestLocationPermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: 'Geolocation Permission',
+        message: 'Can we access your location?',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+    console.log('granted', granted);
+    if (granted === 'granted') {
+      console.log('You can use Geolocation');
+      return true;
+    } else {
+      console.log('You cannot use Geolocation');
+      return false;
+    }
+  } catch (err) {
+    return false;
+  }
+};
+
+  const getLocation = () => {
+    const result = requestLocationPermission();
+    result.then(res => {
+      console.log('res is:', res);
+      if (res) {
+        Geolocation.getCurrentPosition(
+          position => {
+            console.log(position);
+            setLocation(position);
+          },
+          error => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+            setLocation(false);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      }
+    });
+    console.log(location);
+  };
+
+  useEffect(() => {
+    publicIP()
+    .then(ip => {
+      console.log(ip);
+      setIpAd(ip)
+      // '47.122.71.234'
+    })
+    .catch(error => {
+      console.log(error);
+      // 'Unable to get IP address.'
+    });
+    getLocation()
+
+  }, []);
+
+
+
+  const qrID = {
+    Username: "user",
+    OS: "linux",
+    Device: "mobile",
+    Browser: "chrome",
+    Location: `${location.latitude} ${location.longtitude}`,
+    Time: `${currentDate}`,
+    Connection: "wifi",
+    IP: {ipAd},
+  };
 
   useEffect(() => {
     try {
@@ -61,7 +111,7 @@ export default function ScaleScreen({ navigation }) {
         );
         console.log(res.data);
       };
-      stateUser.currentUser === "null"
+      stateUser.currentUser === null
         ? handleIsUser()
         : console.log("User available");
     } catch (err) {
@@ -76,7 +126,10 @@ export default function ScaleScreen({ navigation }) {
               onPress={() => navigation.navigate('Scale', { screen: 'NPSScale' })}
             />   */}
       {/* Drop down component */}
-      <Drop style={{ top: 80 }}  onPress={() => navigation.navigate('Scale', { screen: 'NPSScale' })} />
+      <Drop
+        style={{ top: 80 }}
+        onPress={() => navigation.navigate("Scale", { screen: "NPSScale" })}
+      />
       <ScalesGridList />
 
       <StatusBar style="auto" />
@@ -101,5 +154,3 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
-
-

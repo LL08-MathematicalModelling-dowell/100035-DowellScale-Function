@@ -21,6 +21,7 @@ import ScaleScreen from "./screens/mainScreens/ScaleScreen";
 
 // Nested
 import NPSScale from "./screens/Scales/NPSscale";
+import FrameMain from "./screens/Scales/FrameMain";
 import NPSLite from "./screens/Scales/NPSLite";
 import LikertScale from "./screens/Scales/LikertScale";
 import StapelScale from "./screens/Scales/StapelScale";
@@ -96,6 +97,7 @@ const ScaleStackScreen = () => (
         options={{ headerShown: false }}
       />
       <ScaleStack.Screen name="NPSScale" component={NPSScale} />
+      <ScaleStack.Screen name="FrameMain" component={FrameMain} options={{ title: 'Scale Preview' }} />
       <ScaleStack.Screen name="NPSLite" component={NPSLite} />
       <ScaleStack.Screen name="LikertScale" component={LikertScale} />
       <ScaleStack.Screen name="StapelScale" component={StapelScale} />

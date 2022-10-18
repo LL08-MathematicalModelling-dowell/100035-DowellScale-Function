@@ -15,6 +15,7 @@ import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
+
 let textList = [
   "FROM 9 -> 10",
   "FROM 6 -> 8",
@@ -96,13 +97,13 @@ const NPSscaleSettings = () => {
         "https://100003.pythonanywhere.com/event_creation",
         eventID
       );
-      console.log(eventId.data);
+      // console.log(eventId.data);
 
       const res = await axios.post(
         " https://100090.pythonanywhere.com/scaleapi/scaleapi/",
         { eventId: eventId.data, scale_settings: settings }
       );
-      console.log(res.data);
+      // console.log(res.data);
       onChangeCenter(""),
         onChangeFcolor(""),
         onChangeLeft(""),
@@ -125,7 +126,7 @@ const NPSscaleSettings = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {stateUser.currentUser !== "null" ? (
+      {stateUser.currentUser !== null ? (
         <ScrollView>
           <Text style={styles.header}>Settings Scale</Text>
           <Text style={{ alignItems: "center" }}>
@@ -257,7 +258,7 @@ const NPSscaleSettings = () => {
 
                   // Remove this to disable reaction icon and text
                 /> */}
-                <FlatList
+                {/* <FlatList
                   alwaysBounceVertical={false}
                   data={numberRatings}
                   horizontal
@@ -270,7 +271,8 @@ const NPSscaleSettings = () => {
                     );
                   }}
                   keyExtractor={(item) => item.id}
-                />
+                /> */}
+               
                 <Pressable
                   style={[styles.button, styles.buttonClose]}
                   onPress={() => setModalVisible(!modalVisible)}

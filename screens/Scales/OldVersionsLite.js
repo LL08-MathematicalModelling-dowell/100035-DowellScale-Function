@@ -66,7 +66,7 @@ const DATA = [
   },
 ];
 
-const OldVersions = () => {
+const OldVersionsLite = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const handleModal = () => {
@@ -88,7 +88,7 @@ const OldVersions = () => {
     <Item
       title={item.title}
       indexKey={item.id}
-      scaleUrl={item.url}
+      scaleUrl={item.url_npslite}
       backGround={item.bg}
       sc={item.selectColor}
     />
@@ -146,4 +146,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OldVersions;
+export default OldVersionsLite;

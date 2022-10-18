@@ -29,6 +29,7 @@ const DATA = [
     title: "defaultScale",
     url: "https://100035.pythonanywhere.com/nps-scale1/Test27102?brand_name=your brand&product_name=your product",
     bg: "blue",
+    url_stapel: "https://100035.pythonanywhere.com/stapel/stapel-scale1/Testing9285?brand_name=your brand&product_name=your product",
     url_npslite:"https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/kavin7824/?brand_name=your brand&product_name=your product",
     selectColor: "red",
   },
@@ -37,6 +38,7 @@ const DATA = [
     title: "scaleAmbrose21",
     url: "https://100035.pythonanywhere.com/nps-scale1/Test2865?brand_name=your brand&product_name=your product",
     bg: "#c0392b",
+    url_stapel: "https://100035.pythonanywhere.com/stapel/stapel-scale1/stapeltesting9256?brand_name=your brand&product_name=your product",
     url_npslite:"https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/testnpslite3341/?brand_name=your brand&product_name=your product",
     selectColor: "red",
   },
@@ -45,6 +47,7 @@ const DATA = [
     title: "scale893dun",
     url: "https://100035.pythonanywhere.com/nps-scale1/Scaletest809?brand_name=your brand&product_name=your product",
     bg: "#3498db",
+    url_stapel: "https://100035.pythonanywhere.com/stapel/stapel-scale1/Testing9729?brand_name=your brand&product_name=your product",
     url_npslite:"https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/couzy1857/?brand_name=your brand&product_name=your product",
     selectColor: "#1abc9c",
   },
@@ -53,6 +56,7 @@ const DATA = [
     title: "npsScalev4",
     url: "https://100035.pythonanywhere.com/nps-scale1/VOC_NPS7469?brand_name=your brand&product_name=your product",
     bg: "#9b59b6",
+    url_stapel: "https://100035.pythonanywhere.com/stapel/stapel-scale1/stapeltesting12818?brand_name=your brand&product_name=your product",
     url_npslite:"https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/Testing6708/?brand_name=your brand&product_name=your product",
     selectColor: "#2ecc71",
   },
@@ -62,11 +66,12 @@ const DATA = [
     url: "https://100035.pythonanywhere.com/nps-scale1/Testing1205?brand_name=your brand&product_name=your product",
     url_npslite:"https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/Ambro7931/?brand_name=your brand&product_name=your product",
     bg: "#2ecc71",
+    url_stapel: "https://100035.pythonanywhere.com/stapel/stapel-scale1/stapeltesting9256?brand_name=your brand&product_name=your product",
     selectColor: "#9b59b6",
   },
 ];
 
-const OldVersions = () => {
+const OldVersionsStapel = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const handleModal = () => {
@@ -88,7 +93,7 @@ const OldVersions = () => {
     <Item
       title={item.title}
       indexKey={item.id}
-      scaleUrl={item.url}
+      scaleUrl={item.url_stapel}
       backGround={item.bg}
       sc={item.selectColor}
     />
@@ -146,4 +151,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OldVersions;
+export default OldVersionsStapel;

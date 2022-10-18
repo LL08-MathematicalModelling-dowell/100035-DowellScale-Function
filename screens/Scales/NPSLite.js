@@ -9,7 +9,7 @@ import {
   SafeAreaView
 } from "react-native";
 import WebView from "../components/WebView";
-import OldVersions from "./OldVersions";
+import OldVersionsLite from "./OldVersionsLite";
 import React, { useState } from "react";
 
 
@@ -49,7 +49,7 @@ export default function NPSLiteScale() {
         >
           Old versions
         </Text>
-        <OldVersions />
+        <OldVersionsLite />
     </ScrollView>
   );
 }
