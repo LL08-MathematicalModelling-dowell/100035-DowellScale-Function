@@ -9,25 +9,25 @@ export default function ScalesGridList() {
   const [items, setItems] = React.useState([
     // /Users/duncan/Downloads/Dowell-scales-beta-v2/assets/DOWELL_ICONS/Likert-scale (1).jpg
     { name: "NPSScale", code: "#1", image: "https://www.linkpicture.com/q/nps-scale_1.png" } ,
-    { name: "RankScale", code: "#2", image: "https://www.linkpicture.com/q/nps-scale_1.png"},
-    { name: "RatioScale", code: "#3", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "RankScale", code: "#2", image: "https://www.linkpicture.com/q/image_unavailable.jpeg"},
+    { name: "RatioScale", code: "#3", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
     { name: "LikertScale", code: "#4", image: "https://www.linkpicture.com/q/Likert-scale-1_1.jpg" },
     { name: "NPSLite", code: "#5", image: "https://www.linkpicture.com/q/npsite-scale.jpg" },
     { name: "RatioScale", code: "#6", image: "https://www.linkpicture.com/q/scale_1.png" },
     { name: "StapelScale", code: "#7", image: "https://www.linkpicture.com/q/staple-scale_1.jpg" },
-    { name: "PercentScale", code: "#8", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "PercentSum", code: "#9", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "GuttmanScale", code: "#10", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "MokkenScale", code: "#11", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "Thurstone Scale", code: "#12", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "Ranking", code: "#13", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "Q Sort", code: "#14", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "ScaleTE", code: "15", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "Scale", code: "#16", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "ScaleN", code: "#17", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "ScaleANATE", code: "#18", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "Scale", code: "#19", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
-    { name: "ScaleOS", code: "#20", image: "https://www.linkpicture.com/q/nps-scale_1.png" },
+    { name: "PercentScale", code: "#8", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "PercentSum", code: "#9", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "GuttmanScale", code: "#10", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "MokkenScale", code: "#11", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "Thurstone Scale", code: "#12", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "Ranking", code: "#13", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "Q Sort", code: "#14", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "ScaleTE", code: "15", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "Scale", code: "#16", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "ScaleN", code: "#17", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "ScaleANATE", code: "#18", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "Scale", code: "#19", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
+    { name: "ScaleOS", code: "#20", image: "https://www.linkpicture.com/q/image_unavailable.jpeg" },
   ]);
   const navigation = useNavigation();
   return (
@@ -35,6 +35,7 @@ export default function ScalesGridList() {
       itemDimension={130}
       data={items}
       style={styles.gridView}
+      key={items.code}
       // staticDimension={300}
       // fixed
       spacing={10}
@@ -42,6 +43,7 @@ export default function ScalesGridList() {
         <View style={[styles.itemContainer, {backgroundColor: "green", background: item.image}]}>
           <TouchableOpacity style={{ flexWrap: "wrap" }}  >
             <Text
+            key={item.code}
             style={styles.itemName}
             onPress={() =>
               navigation.navigate(item.name, { name: item.name })
@@ -51,7 +53,7 @@ export default function ScalesGridList() {
             
           {item.name} {'\n'}</Text>
           <Image 
-          style={{width: 140, height: 60, justifyContent: "space-around", alignSelf: "center",  }}
+          style={{width: 150, height: 100, justifyContent: "center", alignSelf: "center",  }}
           source={{uri: item.image}} />
          
           </TouchableOpacity>

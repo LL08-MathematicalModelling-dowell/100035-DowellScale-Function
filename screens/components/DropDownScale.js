@@ -11,43 +11,36 @@ function DropScale() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
-    { id: 1, label: "NPS", value: "NPSscale" },
-    { id: 2, label: "Rank", value: "RankScale" },
-    { id: 3, label: "Ratio", value: "RatioScale" },
-    { id: 4, label: "Likert", value: "LikertScale" },
-    { id: 5, label: "NPS Lite", value: "NPSLite" },
-    { id: 6, label: "Stapel", value: "StapelScale" },
-    { id: 7, label: "Percent", value: "PercentScale" },
-    { id: 8, label: "Percent Sum", value: "PercentSum" },
-    { id: 9, label: "Guttmann", value: "GuttmanScale" },
-    { id: 10, label: "Mokken", value: "MokkenScale" },
-    { id: 11, label: "Thurstone", value: "ThurstoneScale" },
-    { id: 12, label: "Ranking", value: "RankingScale" },
-    { id: 13, label: "Q sort", value: "QSort" },
+    { id: 1, label: "NPS", name: "NPSscale"},
+    { id: 2, label: "Rank", name: "RankScale" },
+    { id: 3, label: "Ratio", name: "RatioScale" },
+    { id: 4, label: "Likert", name: "LikertScale" },
+    { id: 5, label: "NPS Lite", name: "NPSLite" },
+    { id: 6, label: "Stapel", name: "StapelScale" },
+    { id: 7, label: "Percent", name: "PercentScale" },
+    { id: 8, label: "Percent Sum", name: "PercentSum" },
+    { id: 9, label: "Guttmann", name: "GuttmanScale" },
+    { id: 10, label: "Mokken", name: "MokkenScale" },
+    { id: 11, label: "Thurstone", name: "ThurstoneScale" },
+    { id: 12, label: "Ranking", name: "RankingScale" },
+    { id: 13, label: "Q sort", name: "QSortScale" },
   ]);
   const onListPressed = () => {
-    navigation.navigate(item.value, { name: item.value })
+    navigation.navigate(item.name, { screen: item.name })
   };
-  // NPS
-  // NPS Lite
-  // Stapel
-  // Likert
-  // Percent
-  // Percent Sum
-  // Guttmann
-  // Mokken
-  // Thurstone
-  // Ranking
-  // Q sort//
 
   return (
-    <View onPress={onListPressed}>
+    <View key={items.id}>
     <DropDownPicker
       open={open}
       value={value}
       items={items}
       setOpen={setOpen}
       setValue={setValue}
+      onSelectItem={(item) => {
+        console.log(item.name);
+      }}
+      key={items.id}
       // onPress={onListPressed}
       setItems={setItems}
       placeholder="Drop down (Scales)"

@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Image, Button } from "react-native";
 // import Line from './components/Line';
-import Drop from "../components/DropDownScale";
+import DropScale from "../components/DropDownScale";
 import ScalesGridList from "../components/ScalesGridList";
 import ScaleHeader from "../components/ScaleHeader";
 import { useSelector } from "react-redux";
@@ -121,15 +121,8 @@ const requestLocationPermission = async () => {
   return (
     <View style={styles.container}>
       <ScaleHeader />
-      {/* <Button
-              title="NPS Scale"
-              onPress={() => navigation.navigate('Scale', { screen: 'NPSScale' })}
-            />   */}
       {/* Drop down component */}
-      <Drop
-        style={{ top: 80 }}
-        onPress={() => navigation.navigate("Scale", { screen: "NPSScale" })}
-      />
+      <DropScale style={{ top: 80 }}  onPress={() =>  navigation.navigate(item.name, { name: item.name })} />
       <ScalesGridList />
 
       <StatusBar style="auto" />

@@ -7,6 +7,7 @@ import {
   Pressable,
   Modal,
   FlatList,
+  Alert
 } from "react-native";
 import { Recommendation } from "react-native-recommendation";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -119,7 +120,8 @@ const NPSscaleSettings = () => {
   };
 
   const handleModal = () => {
-    setModalVisible(true);
+    // setModalVisible(true);
+    
   };
 
   const numberRatings = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -226,11 +228,11 @@ const NPSscaleSettings = () => {
             />
           </View>
           <View style={styles.btns}>
-            <Pressable style={styles.saveBtn} onPress={handleSubmit}>
+            <Pressable style={styles.saveBtn} onPress={() => Alert.alert("Only available after full Sign Up")}>
               <Text style={styles.btnsText}>Save</Text>
             </Pressable>
 
-            <Pressable style={styles.saveBtn} onPress={handleModal}>
+            <Pressable style={styles.saveBtn} onPress={() => Alert.alert("Only available after full Sign Up")}>
               <Text style={styles.btnsText}>Preview</Text>
             </Pressable>
           </View>
