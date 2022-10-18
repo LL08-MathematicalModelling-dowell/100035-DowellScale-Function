@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button } from "react-native";
+import { StyleSheet, Text, View, Button, Alert } from "react-native";
 import SigninScreen from "../auth/SigninScreen";
 import SignupScreen from "../auth/SignupScreen";
 
@@ -13,14 +13,15 @@ export default function Profile({ navigation }) {
         Notifications after full login/join us.{"\n"}
         Others after link based login {"\n"}
       </Text>
-      {/* <View
+      <View
         style={{
           marginBottom: 10,
         }}
       >
         <Button
           title="Proceed to Sign In"
-          // onPress={() => navigation.navigate("Signin")}
+          
+          onPress={() => Alert.alert("Full Sign Up available in version 2")}
           style={{
             color: "green",
             size: "70%",
@@ -37,6 +38,7 @@ export default function Profile({ navigation }) {
         <Button
           title="Register a new account"
           // onPress={() => navigation.navigate("Signup")}
+          onPress={() => Alert.alert("Full Sign Up available in version 2")}
           style={{
             backgroundColor: "green",
           }}
@@ -48,7 +50,7 @@ export default function Profile({ navigation }) {
         }}
       >
         <Button title=" 😁 " />
-      </View> */}
+      </View>
     </View>
   );
 }

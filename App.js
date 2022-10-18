@@ -27,6 +27,8 @@ import StapelScale from "./screens/Scales/StapelScale";
 import RatioScale from "./screens/Scales/RatioScale";
 import PercentScale from "./screens/Scales/PercentScale";
 import RankScale from "./screens/Scales/RankScale";
+import NotificationsCard from "./screens/components/Notifications/NotificationsCard";
+import NotifScreen from "./screens/components/Notifications/NotifScreen";
 
 
 // NAVIGATION
@@ -34,6 +36,7 @@ const AuthStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const ScaleStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
+const NotificationsStack = createStackNavigator();
 
 // REDUX
 import { Provider } from "react-redux";
@@ -128,6 +131,30 @@ const ProfileStackScreen = () => (
   </ProfileStack.Navigator>
 );
 
+const NotificationsStackScreen = () => (
+  <NotificationsStack.Navigator>
+    <NotificationsStack.Screen
+      name="Notifications"
+      component={NotificationScreen}
+    />
+    <NotificationsStack.Screen
+      name="NotificationsCard"
+      component={NotificationsCard}
+      options={{
+        headerShown: false,
+        tabBarShowLabel: false, // Remove wording on tab
+        tabBarVisible: false,
+      }}
+    />
+    <NotificationsStack.Screen
+      name="NotifScreen"
+      component={NotifScreen}
+      options={{ headerShown: false }}
+    />
+  </NotificationsStack.Navigator>
+);
+
+
 const AuthStackScreen = () => (
   <AuthStack.Navigator>
     <AuthStack.Screen
@@ -206,7 +233,7 @@ export default () => (
       />
       <Tab.Screen
         name="Notifications"
-        component={NotificationScreen}
+        component={NotificationsStackScreen}
         options={{
           headerShown: false,
           tabBarShowLabel: false, // Remove wording on tab

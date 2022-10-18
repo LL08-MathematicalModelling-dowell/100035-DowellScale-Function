@@ -1,29 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import NotifList from '../components/Notifications/NotifList';
-import NotifHeader from '../components/Notifications/NotifHeader';
-import DropSearch from '../components/Notifications/NotifDropdown';
+import NotificationsCard from '../components/Notifications/NotificationsCard';
+
 
 export default function App() {
   return (
     <View style={styles.container}>
-      < NotifHeader />
-      <Text style={{
-        backgroundColor: '#B6F5C9',
-        color: 'green',
-        width: '100%', 
-        fontWeight: 'bold',
-        flexDirection: 'row',
-        padding: 10,
-        justifyContent: 'center',
-        alignContent: 'center',
-        alignText: 'center',
-        marginTop: 10,
-        fontSize: 15,}} >
-        Updates on the measured data
-        </Text>
-      < NotifList />
-      < DropSearch />
+      <NotificationsCard />
+     
       <StatusBar style="auto" />
     </View>
   );
@@ -42,4 +26,3 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
-
