@@ -15,11 +15,11 @@
     <style>
         #horizontal{
            display: flex;
-           justify-content: space-between;
+           justify-content:center;
            padding: 10px;
        }
 
-        #horizontal h6{
+        #horizontal h5{
         font-size: 15px;
         font-weight: bold;
         padding:5px;
@@ -47,7 +47,7 @@
         }
 
         @media screen and (max-width: 600px) {
-          #horizontal h6{
+          #horizontal h5{
             font-size: 16px;
             padding: 5px;
             height: 40px;
@@ -65,7 +65,7 @@
             #horizontal{
             padding: 10px;
             }
-          #horizontal h6{
+          #horizontal h5{
             font-size: 18px;
             padding: 5px;
             height: 40px;
@@ -81,7 +81,7 @@
             #horizontal{
             padding: 10px;
             }
-          #horizontal h6{
+          #horizontal h5{
             font-size: 12px;
             padding: 5px;
             height: 30px;
@@ -101,7 +101,7 @@ $(document).ready(function() {
 
     // Get mbuttons list
     mbuttons = document.getElementsByClassName("number");
-    const inputArray =[...mbuttons].map(mbuttons => mbuttons.innerHTML);
+   
     console.log(mbuttons)
 
 
@@ -175,6 +175,11 @@ setrating = function(id) {
 </script>
 </head>
 <body>
+<form method="POST" id="jsform">
+        {% csrf_token %}
+        <input type="hidden" name="scoretag" id="scoretag" >
+        <input type="hidden" name="likert" id="likert" value="likert" >
+</form>
 
 <div class="container ">
     <div class="row mt-4">
@@ -269,7 +274,7 @@ setrating = function(id) {
 
 
                 for (let i = 0; i < n.length; i++) {
-                    const para = document.createElement("h6");
+                    const para = document.createElement("h5");
 
                     if (star==="stars"){
                        para.innerHTML = '<i class="fa fa-star"></i>';
@@ -288,7 +293,7 @@ setrating = function(id) {
                     para.id=i
                     para.classList.add("number");
                     document.getElementById("horizontal").appendChild(para);
-<!--                    document.getElementById(i).innerHTML = n[i];-->
+<!--                document.getElementById(i).innerHTML = n[i];-->
                     document.getElementById(i).style.background ='#ffffff';
                     document.getElementById(i).style.color ="#006400";
                 }

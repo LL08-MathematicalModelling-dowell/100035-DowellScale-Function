@@ -14,14 +14,16 @@
    */
 
    #horizontal h6{
-       font-size: 30px;
+       font-size: 18px;
+       font-weight:bold;
        padding: 5px;
-       height: 70px;
+       min-height: 50px;
        display: flex;
+       flex-wrap:wrap;
        align-items: center;
        justify-content: center;
-       width: 70px;
-       border-radius: 50%;
+       width: 120px;
+       border-radius: 25px;
        margin: 5px;
        cursor: pointer;
    }
@@ -29,21 +31,26 @@
 
 
     #vertical h6{
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
+        font-size: 18px;
+        font-weight:bold;
+        width: 120px;
+        min-height: 50px;
+        border-radius: 25px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 5px;
+        cursor: pointer;
     }
 
     #vertical {
+      font-size:2em;
         padding: 20px;
         display: flex;
         flex-direction: column;
         width: 100px;
         align-items: center;
+        justify-content: space-between;
     }
 
     #labels-vert{
@@ -68,7 +75,8 @@
 
    #horizontal{
        display: flex;
-       justify-content: space-between;
+       flex-wrap:wrap;
+       justify-content: center;
    }
 
 </style>
@@ -81,7 +89,7 @@
           <div class="row" style="margin-top: 3%;">
               <div class="col-lg-1 col-md-2 d-sm-none"></div>
               <div class="col-lg-10 clo-md-8 col-sm-12 bg-info" style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
-                  <form action="" method="POST">
+                  <form action="" method="POST" id ="myform" onsubmit="return false">
                       {% csrf_token %}
                           <h2 align="center"><u>Customize your scale</u></h2>
                           <div class="form-group col-md-6">
@@ -90,24 +98,12 @@
                           </div>
                           <div class="form-group col-md-6">
                               <label for="orientation">Orientation</label>
-                              <select id="orientation" class="form-control" name="orientation" required="">
+                              <select id="orientation" class="form-control" name="orientation" required="True">
                                 <option selected="">Choose...</option>
                                 <option value="horizontal">Horizontal</option>
                                 <option value="vertical">Vertical</option>
                               </select>
-                          </div>
-
-                          <script>
-                      //         $('#orientation').change(function(){
-                      //       alert($(this).val());
-
-                      //   })
-
-                      </script>
-                          <div class="form-group col-md-6">
-                              <label for="scolor">Scale Color</label>
-                              <input type="color" name="scolor" class="form-control" id="scolor" placeholder="Background Color" required="">
-                          </div><br>
+                            </div>                        
                           <div class="form-group col-md-6">
                             <label for="rcolor">Round Color</label>
                             <input type="color" name="rcolor" class="form-control" id="rcolor" placeholder="Font Color" required="">
@@ -146,7 +142,7 @@
 
                         <div class="form-group col-md-12 text-right p-15">
 
-                      <button type="submit" class="btn btn-primary">Save</button>
+                      <button type="submit" class="btn btn-primary" form="myform">Save</button>
                       <a onclick="preview();" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Preview</a>
                         </div>
                     </form>
@@ -159,10 +155,7 @@
                    <!--                   <hr>-->
                    <!--                   <br>-->
               </div>
-                  <!-- Button trigger modal -->
-
-                      <!-- Modal -->
-
+                  
                       <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                           <div class="modal-content">
@@ -174,13 +167,8 @@
                             </div>
                             <div class="modal-body" id="modal-body">
                               <div class="horizontal d-flex justify-content-center" id="red"></div>
-                              <center><div id="horizontal"></div>
-                              </center>
+                              <center><div id="horizontal"></div></center>
                               <br>
-                                <div class="pl-3" id="lab-hor" style="font-size:2em">
-                                 <div style="float: left" id="left"></div>
-                                  <div style="float: right" id="right"></div>
-                                  <div style="margin: 0 auto; width: 30%;" id="center"></div>
                               </div>
 
                               <!--<div class="pl-3" id="labels-vert" style="font-size:2em">-->
@@ -190,6 +178,7 @@
                               <!--</div>-->
                             </div>
                             <div class="modal-footer">
+                              <button type="submit" class="btn btn-secondary" onclick=Submit()>Save</button>
                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                               <!--<button type="button" class="btn btn-primary">Save changes</button>-->
                             </div>
@@ -201,59 +190,108 @@
   </body></html>
 
 <script>
+                  var vert="vertical";
+                  var hori="horizontal";
+                  function Submit(){
+                    document.getElementById("myform").submit();
+                  }
 
+                  let head_name;
+                  let orient;
+                  let rcolor;
+                  let fcolor;
+                  let time;
+                  let labels;
+                  function myName() {
+                      head_name = document.getElementById("head").value;
+                  }
+                  function myRcolor() {
+                      rcolor = document.getElementById("rcolor").value;
+                  }
+                  function myFcolor() {
+                      fcolor = document.getElementById("fcolor").value;
+                  }
+                  function myTime() {
+                      time = document.getElementById("time").value;
+                  }
+                  function myLabel() {
+                    labels = document.getElementById("likert").value;
+                }
+                function myScale() {
+                  likert_scale_selection = document.getElementById("likert_scale_selection").value;}
+                  var e = document.getElementById("orientation");
+                  function onChange() { orient = e.value};
+                  e.onchange = onChange;
+                  onChange();
+            function preview(){
+              
+              if (head_name === "undefined" || orient === "Choose..."|| rcolor === "undefined" || time === "undefined" ){
+                alert("Fields can't be empty")
+                return document.getElementById("modalContent").style.display = "none"}
 
-                 function preview(){
                   var scale_bg = document.getElementById("horizontal")
                   var orientation = document.getElementById("orientation")
                   var vert = document.getElementById("vert-div")
-                  var sca_vert = document.getElementById("labels-vert")
-
-                  scale_bg.style.background = $("#scolor").val();
-                  scale_bg.style.padding = "20px 20px";
+                  //scale_bg.style.background = "#FFFFFF";
+                  //scale_bg.style.padding = "20px 20px";
                   var lab_hor= document.getElementById("lab-hor");
                   var modal= document.getElementById("modal-body");
-                  var c= document.getElementById("center");
-
-
                   var e = document.getElementById("orientation");
-                    function onChange() {
-                      var value = e.value;
-                      if (value ==="vertical" ){
-                        scale_bg.style.flexDirection = "column";
-                        scale_bg.style.width = "100px";
-                        scale_bg.style.margin = "auto";
-                        modal.style.display = "flex";
-                        modal.style.justifyContent = "center";
-                        lab_hor.style.display = "flex";
-                        lab_hor.style.flexDirection = "column";
-                        lab_hor.style.justifyContent = "space-between";
-                        c.style.width = "unset";
-                      }
-                    }
-                    e.onchange = onChange;
-                    onChange();
+                  var value = e.value;
+                      
+                 // if (value ==="vertical" ){
+                 //       scale_bg.style.flexDirection = "column";
+                  //      scale_bg.style.width = "100px";
+                 //       scale_bg.style.margin = "auto";
+                  //      modal.style.display = "flex";
+                 //       modal.style.justifyContent = "center";
+                 //     }
+                 // else {
+                        //scale_bg.style.flexDirection = "row";
+                 //       modal.style.flexDirection = "column";
+                        //scale_bg.style.width = "unset";
+                  //    }
                   var named = document.getElementById("scale_input");
                   var tags = named.getElementsByTagName("input");
                   const inputArray =[...tags].map(tag => tag.value);
-                  const inputArray2 = [];
-                  for (var i = 0, n = tags.length; i < n; i = i + 1) {
-                    inputArray2.push(tags[i].value);
-                  }
+              
 
                   document.getElementById("exampleModalLongTitle").innerHTML=$("#head").val();
                   $("#red").attr('class', $("#orientation").val());
                   $('#horizontal').attr("id", $("#orientation").val());
                   em=$("#orientation").val();
                   $('#'+em).empty();
-                  n = Number(setScale())
+                  $('#red').css({"backgroundColor": "#FFFFFF"})
+                  
                   var name = $('#likert').val();
-                  $('#red').css({"backgroundColor": $("#scolor").val()});
+                  n = Number(setScale())
+                  var mbuttons =[];
+                  
+                  $(document).ready(function() {
+                  mbuttons = document.getElementsByClassName("input");
+                  if (mbuttons.length >= 0) {
+                      for (var i = 0; i < mbuttons.length; i++) {
+                          mbuttons[i].style.cursor = 'pointer'
+                          mbuttons[i].onclick = function(){
+                              this.style.backgroundColor = 'red';
+                              console.log(this.innerHTML)}
+                          mbuttons[i].ondblclick = function(){
+                              this.style.backgroundColor = 'white';
+                                  }
+                          mbuttons[i].onmouseover = function(){
+                              this.style.backgroundColor = $("#rcolor").val();
+                              }
+                          mbuttons[i].onmouseout = function(){
+                              if (this.style.backgroundColor === 'red'){
+                              this.style.backgroundColor = 'red';}
+                              else{
+                                  this.style.backgroundColor = 'white';
+                              } }
 
-
+            }}});      
                   ram(name, n, inputArray);
-
-                 }
+}
+                 
                  const image= document.getElementById('likert')
                  image.addEventListener('change', clearAll);
                  function clearAll(){
@@ -263,17 +301,17 @@
                     while (container.hasChildNodes()) {
                         container.removeChild(container.lastChild);
                     }
-
                   }
                  };
-                     function ram(star,num, input){
-                      //console.log(input)
-                      //console.log(num)
 
+                  function ram(star,num, input){
                         for (let i = 0; i < num; i++) {
                         const para = document.createElement("h6");
                         para.id=i
+                        para.classList.add("input");
                         document.getElementById($("#orientation").val()).appendChild(para);
+                        
+                        
                         if(star==="2" && num===2){
                           const emoji=["&#x1F603","&#128532"];
                           document.getElementById(i).innerHTML = emoji[i];
@@ -300,7 +338,8 @@
                         }
                          else{
                              document.getElementById(i).innerHTML = input[i];
-                             document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                             //document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                             document.getElementById(i).style.backgroundColor = "#FFFFFF";
                          }
 
 
@@ -378,7 +417,7 @@
                     var container = document.getElementById("scale_input");
                     // Remove every children it had before
                     while (container.hasChildNodes()) {
-                        container.removeChild(container.lastChild);
+                    container.removeChild(container.lastChild);
                     }
                     for (i=0;i<number;i++){
                         // Append a node with a random text
@@ -389,11 +428,12 @@
                         input.name = "scale_choice " + i;
                         input.class = "form-control"
                         input.id = "head1";
-                        //test=document.getElementById('head1').value
-                        //console.log(test)
+                        
+                        
 
                         container.appendChild(input);
                         // Append a line break
+                        
                         container.appendChild(document.createElement("br"));
 
                     }
