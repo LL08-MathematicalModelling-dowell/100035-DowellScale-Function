@@ -128,7 +128,7 @@ def dowell_scale1(request, tname1):
         try:
             field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
             x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            print(x)
+            # print(x)
             return redirect(f"https://100014.pythonanywhere.com/main")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -182,4 +182,7 @@ def login(request):
                 return response
     except:
         return redirect("https://100014.pythonanywhere.com/")
+
+
+
 

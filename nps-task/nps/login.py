@@ -7,3 +7,6 @@ def get_user_profile(key):
     data=req.post(url,data,headers)
     dic=data.text
     return json.loads(dic)
+
+
+
