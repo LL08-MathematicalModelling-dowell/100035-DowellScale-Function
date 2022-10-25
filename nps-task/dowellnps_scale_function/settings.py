@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'crispy_forms',
     'likert',
+    'route',
+    'percent',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

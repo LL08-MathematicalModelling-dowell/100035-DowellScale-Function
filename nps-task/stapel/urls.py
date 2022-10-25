@@ -7,6 +7,7 @@ app_name="stapel"
 urlpatterns = [
     path('', rolescreen,name='login_page'),
     path('stapel-admin/', login,name='stapellogin'),
+    path('api/stapel-admin/', dowell_scale_admin, name ="admin_request"),
     path('stapel-admin/settings/', dowell_scale_admin,name='admin_page'),
     path('stapel-scale1/<str:tname1>', dowell_scale1, name='afteradmin'),
     path('stapel-scale/embed/', brand_product_error, name='error_page'),

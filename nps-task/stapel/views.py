@@ -8,6 +8,9 @@ from nps.login import get_user_profile
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from .eventID import get_event_id
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
 def dowell_scale_admin(request):
     context={}
     if request.method == 'POST':
@@ -39,7 +42,6 @@ def dowell_scale_admin(request):
             field_add={"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale", "user": user, "eventId":eventID}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(x)
-
             return redirect(f"https://100035.pythonanywhere.com/stapel/stapel-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"

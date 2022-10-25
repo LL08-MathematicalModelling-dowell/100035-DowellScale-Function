@@ -20,10 +20,12 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('nps.urls')),
+    path('nps', include('nps.urls')),
     path('stapel/', include('stapel.urls')),
+    path('percent/', include('percent.urls')),
     path('nps-lite/', include('npslite.urls')),
     path('likert/', include('likert.urls')),
+    path('api/', include('route.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

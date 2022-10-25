@@ -1,10 +1,8 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Likert role</title>
+    <title>Percentage Scale role</title>
   <style>
     .landing-container{
       display: flex;
@@ -42,11 +40,11 @@
   function onChange() {
     var value = e.value;
     if(value == "user"){
-    window.location.replace('https://100035.pythonanywhere.com/likert/likert-scale/likert/')
-    // window.location.replace('http://127.0.0.1:8000/likert/likert-scale/likert/')
+<!--      window.location.replace('https://100035.pythonanywhere.com/percent-scale/default/')-->
+      window.location.replace('http://127.0.0.1:8000/percent/percent-scale/default/')
     }else if(value == "Client_Admin" || value == "TeamMember" ){
-         //window.location.replace('https://100035.pythonanywhere.com/likert/likert-admin/default/')
-       window.location.replace('http://127.0.0.1:8000/likert/likert-admin/default/')
+<!--      window.location.replace('https://100035.pythonanywhere.com/percent-admin/default/')-->
+      window.location.replace('http://127.0.0.1:8000/percent/percent-admin/default/')
     }else{
       console.log(value);
     }
