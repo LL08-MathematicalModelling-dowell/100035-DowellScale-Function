@@ -42,15 +42,16 @@
     appearance: none;
     width: 25px; /* Set a specific slider handle width */
     height: 25px; /* Slider handle height */
-    background: rgb(33, 30, 232); /* Green background */
+    background: rgb(255, 255, 255); /* Green background */
     cursor: pointer; /* Cursor on hover */
     border-radius: 50%;
+    border: 5px solid #000000;
   }
   
   .slider::-moz-range-thumb {
     width: 25px; /* Set a specific slider handle width */
     height: 25px; /* Slider handle height */
-    background: rgb(33, 30, 232); /* Green background */
+    background: rgb(33, 30, 232); 
     cursor: pointer; /* Cursor on hover */
     border-radius: 50%;
   }
@@ -111,7 +112,12 @@
        display: flex;
        justify-content: space-between;
    }
-
+   .Footer {
+    width: 100%;
+    margin: auto;
+    font-size: large;
+    font-weight: 800;
+  }
 </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -140,8 +146,7 @@
                           <div class="form-group col-md-6">
                               <label for="scolor">Slider Color</label>
                               <input type="color" name="scolor" class="form-control" id="scolor" placeholder="Slider Color" required="">
-                          </div><br>
-                          <br>
+                          </div>
                           <div class="form-group col-md-6">
                               <label for="time">Time</label>
                               <input type="text" name="time" class="form-control" id="time" placeholder="Time" required="False" value=120>
@@ -168,10 +173,9 @@
                               </button>
                             </div>
                             <div class="modal-body" id="modal-body">
-                            
                               <div class="slidecontainer"> <input type ="range" min='0' max='100' value='50' class='slider' id='myRange'> </div>
                               <br>
-                                <div class="pl-3" id="lab-hor" style="font-size:2em">
+                                <div class="Footer">
                                  <div style="float: left" id="left">0%</div>
                                   <div style="float: right" id="right">100%</div>
                                   <div align='center' id="demo"></div>
@@ -192,12 +196,15 @@
 
 <script>
 
-
+                 var slid = document.getElementsByClassName("slidecontainer");
                  function preview(){
+                  
+                  
+                  
+                  console.log(slid)
                   var slider = document.getElementById("myRange");
                   var output = document.getElementById("demo");
                   slider.style.background = $("#scolor").val();
-                  let v = $("#rcolor").val();
                   
                   output.innerHTML = (slider.value +"%"); // Display the default slider value
 
@@ -207,7 +214,6 @@
                   }
 
                   var scale_bg = document.getElementById("horizontal")
-                  var orientation = document.getElementById("orientation")
                   var vert = document.getElementById("vert-div")
                   var sca_vert = document.getElementById("labels-vert")
         
@@ -216,21 +222,21 @@
                   var lab_hor= document.getElementById("lab-hor");
                   var modal= document.getElementById("modal-body");
                   var c= document.getElementById("center");
+                  var footer=document.getElementsByClassName("Footer")
                   
                 
                   var e = document.getElementById("orientation");
                     function onChange() {
                       var value = e.value;
+                      console.log(slid)
                       if (value ==="vertical" ){
-                        scale_bg.style.flexDirection = "column";
-                        scale_bg.style.width = "100px";
-                        scale_bg.style.margin = "auto";
-                        modal.style.display = "flex";
-                        modal.style.justifyContent = "center";
-                        lab_hor.style.display = "flex";
-                        lab_hor.style.flexDirection = "column";
-                        lab_hor.style.justifyContent = "space-between";
-                        c.style.width = "unset";
+                        [].forEach.call(document.getElementsByClassName("slider"), function (slid) {
+                          slid.style.width = "100%";
+                          slid.style.transform = "rotate(270deg)";
+                          footer.style.transform="rotate(270deg)";
+                          modal.style.transform="rotate(270deg)"
+
+                        });
                       }
                     }
                     e.onchange = onChange;
@@ -249,5 +255,6 @@
                   
                   
                  }
+                 
                 
                   </script>

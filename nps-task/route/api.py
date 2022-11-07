@@ -44,6 +44,12 @@ def nps_api():
     response = requests.post(url, json=request_data,headers=headers)
     return response.text
 
+"""An example of the way to call the api with response
+Response ={"scale": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 
+"data": "{\"isSuccess\": true, \"inserted_id\": \"63582aa29764e73776ebaf36\"}", 
+"name": "couzy5009", 
+"link": "https://100035.pythonanywhere.com/nps-scale1/couzy5009"}"""
+
 def likert_api():
     url = "http://127.0.0.1:8000/api/likert-scale/"
     request_data={
