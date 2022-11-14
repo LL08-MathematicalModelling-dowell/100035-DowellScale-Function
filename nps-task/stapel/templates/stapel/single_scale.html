@@ -245,7 +245,11 @@ setrating = function(id) {
 
                 const countdownEl = document.getElementById("countdown");
 
-                setInterval(updateCountdown, 1000)
+                if (window.location.href === "https://100035.pythonanywhere.com/stapel/stapel-scale1/defaultstapelscale?brand_name=your%20brand&product_name=your%20product"){
+                    countdownEl.style.display = "none"
+                } else {
+                    setInterval(updateCountdown, 1000)
+                }
 
                 function updateCountdown(){
                     const minutes = Math.floor(time/60);

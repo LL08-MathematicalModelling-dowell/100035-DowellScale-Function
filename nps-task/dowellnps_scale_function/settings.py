@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'nps.apps.NpsConfig',
     'stapel.apps.StapelConfig',
     'npslite.apps.NpsliteConfig',
+    'percent.apps.PercentConfig',
     'rest_framework.authtoken',
     'crispy_forms',
     'likert',

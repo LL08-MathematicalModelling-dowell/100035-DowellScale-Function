@@ -1,4 +1,6 @@
-import random
+from django.shortcuts import render
+
+# Create your views here.import random
 import json
 import requests
 from django.contrib.auth.decorators import login_required
@@ -6,9 +8,10 @@ from django.shortcuts import render, redirect, HttpResponse
 #from .models import system_settings, response
 from nps.dowellconnection import dowellconnection
 from nps.login import get_user_profile
+from nps.eventID import get_event_id
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
-from .eventID import get_event_id
+import random
 
 def dowell_scale_admin(request):
     context={}
@@ -16,46 +19,27 @@ def dowell_scale_admin(request):
     if request.method == 'POST':
         name = request.POST['nameofscale']
         orientation = request.POST['orientation']
-        roundcolor = request.POST['rcolor']
-        fontcolor = request.POST['fcolor']
-        labelscale = request.POST['likert']
-        labeltype = request.POST['labeltype']
+        scalecolor = request.POST['scolor']
         time = request.POST['time']
-        scales=[request.POST.get('scale_choice 0', "None"),
-        request.POST.get('scale_choice 1', "None"),
-        request.POST.get('scale_choice 2', "None"),
-        request.POST.get('scale_choice 3', "None"),
-        request.POST.get('scale_choice 4', "None"),
-        request.POST.get('scale_choice 5', "None")
-        ]
-        eventID = get_event_id()
+
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
+        eventID = get_event_id()
+
         try:
             user  = request.COOKIES['user']
-            field_add={"orientation":orientation,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale","user": user,}
-
-            # field_add={"orientation":orientation,"roundcolor":"white","fontcolor":"rgb(0, 100, 0)","labelscale":labelscale,"time":time,"template_name":"defaultlikertscale","name":"LikertScale","scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale","user": user}
-
+            field_add={"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"name":name, "eventID":eventID , "scale-category": "percent scale", "user": user, }
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            """return redirect(f"http://127.0.0.1:8000/likert/likert-scale1/{template_name}")"""
-            return redirect(f"https://100035.pythonanywhere.com/likert/likert-scale1/{template_name}")
+            # return redirect(f"http://127.0.0.1:8000/percent-scale1/{template_name}")
+            return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
-    return render(request, 'likert/scale_admin.html', context)
-
-def dowell_likert(request):
-    if request.method =="POST":
-        scale_selected = request.POST['likert']
-        scoretag=request.POST.get('scoretag', 'None')
-        #print(scoretag)
-        context={"context":scale_selected}
-        return render(request, 'likert/default.html', context=context)
-    return render(request, 'likert/likert.html')
+    return render(request, 'percent/scale_admin.html', context)
 
 @xframe_options_exempt
 def dowell_scale1(request, tname1):
     context={}
+
     brand_name = request.GET.get('brand_name', None)
     product_name = request.GET.get('product_name', None)
     ls = request.path
@@ -76,7 +60,7 @@ def dowell_scale1(request, tname1):
         context["scale_name"] = tname1
     except:
         f_path = request.get_full_path()
-        response = redirect('likert:preview_page')
+        response = redirect('percent:preview_page')
         response.set_cookie('url', f_path)
         return response
 
@@ -90,16 +74,9 @@ def dowell_scale1(request, tname1):
     field_add={"template_name":tname1}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
+    print(data)
     x= data["data"]
     context["defaults"]=x
-    for i in x:
-        context['labelscale']=i["labelscale"]
-        context['labeltype']=i["labeltype"]
-        for j in i["scales"]:
-            if j == "None":
-                i["scales"].remove(j)
-
-        context['scale']=i['scales']
 
 
 
@@ -112,10 +89,10 @@ def dowell_scale1(request, tname1):
             return redirect(f"http://100014.pythonanywhere.com/main")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
-    return render(request,'likert/single_scale.html',context)
+    return render(request,'percent/single_scale.html',context)
 
 def brand_product_preview(request):
-    return render(request, 'likert/preview_page.html')
+    return render(request, 'percent/preview_page.html')
 
 def default_scale(request):
     context = {}
@@ -124,7 +101,7 @@ def default_scale(request):
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
     # context["likertall"] = system_settings.objects.all().order_by('-id')
-    return render(request, 'likert/default.html', context)
+    return render(request, 'percent/default.html', context)
 
 def default_scale_admin(request):
     context = {}
@@ -133,20 +110,16 @@ def default_scale_admin(request):
     context["hist"] = "Scale History"
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
-    field_add = {"scale-category": "likert scale"}
+    field_add = {"scale-category": "percent scale"}
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
-    context["likertall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
+    context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
-    if request.method == "POST":
-        scoretag = request.POST["scoretag"]
-        return redirect("https://100014.pythonanywhere.com/")
-
-    return render(request, 'likert/default.html', context)
+    return render(request, 'percent/default.html', context)
 
 
 def rolescreen(request):
-    return render(request, 'likert/landing_page.html')
+    return render(request, 'percent/landing_page.html')
 
 def login(request):
     url = request.GET.get('session_id', None)
@@ -156,11 +129,11 @@ def login(request):
     try:
         if user["username"]:
             if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-                response = redirect("likert:default_page_admin")
+                response = redirect("percent:default_page_admin")
                 response.set_cookie('user', user['username'])
                 return response
             else:
-                response = redirect("likert:default_page")
+                response = redirect("percent:percent")
                 response.set_cookie('user', user['username'])
                 return response
     except:

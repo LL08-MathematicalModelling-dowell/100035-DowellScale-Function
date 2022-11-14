@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from .dowellconnection import dowellconnection
 from .login import get_user_profile
+from .eventID import get_event_id
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
@@ -45,7 +46,8 @@ def dowell_scale_admin(request):
         # objcolor.save()
         try:
             user  = request.COOKIES['user']
-            field_add={"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "user": user}
+            eventID = get_event_id()
+            field_add={"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "user": user, "eventId":eventID}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(field_add)
             return redirect(f"https://100035.pythonanywhere.com/nps-scale1/{template_name}")
