@@ -37,6 +37,7 @@ def dowell_scale_admin(request):
         fomat = request.POST['format']
         left = request.POST["left"]
         right = request.POST["right"]
+        no_of_scales = request.POST["no_of_scales"]
         center = request.POST["center"]
         time = request.POST['time']
         text = f"{left}+{center}+{right}"
@@ -47,10 +48,14 @@ def dowell_scale_admin(request):
         try:
             user  = request.COOKIES['user']
             eventID = get_event_id()
-            field_add={"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "user": user, "eventId":eventID}
+            field_add = []
+            for i in range (int(no_of_scales)):
+                field_add.append({"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "user": user, "eventId":eventID, "scale_id": i+1})
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(field_add)
+            print("No of scales",len(field_add))
             return redirect(f"https://100035.pythonanywhere.com/nps-scale1/{template_name}")
+
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'nps/scale_admin.html', context)

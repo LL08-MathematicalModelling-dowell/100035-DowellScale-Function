@@ -135,7 +135,12 @@
                               <label for="righttext">Right</label>
                               <input type="text" onchange="myRtext()" name="right" class="form-control" id="righttext" placeholder="Right Text" required="">
                           </div>
-                          <div class="form-group col-md-12">
+                          <div class="form-group col-md-6">
+                              <label for="time">Number of Scales</label>
+                              <input type="number" onchange="myNumScales()" name="no_of_scales" class="form-control" id="no_of_scales" placeholder="Number of scales">
+                          </div>
+
+                          <div class="form-group col-md-6">
                               <label for="time">Time</label>
                               <input type="text" onchange="myTime()" name="time" class="form-control" id="time" placeholder="Time" required="">
                           </div>
@@ -177,12 +182,6 @@
                                   <div id="right"></div>
                                   <div id="center"></div>
                               </div>
-
-                              <!--<div class="pl-3" id="labels-vert" style="font-size:2em">-->
-                              <!--  <div></div>-->
-                              <!--  <div></div>-->
-                              <!--  <div></div>-->
-                              <!--</div>-->
                             </div>
                             <div class="modal-footer">
                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -207,6 +206,7 @@
                   let ctext;
                   let rtext;
                   let time;
+                  let no_of_scales;
 
                   function myName() {
                       head_name = document.getElementById("head").value;
@@ -214,6 +214,12 @@
                   function myScolor() {
                       scolor = document.getElementById("scolor").value;
                   }
+
+                  function myNumScales() {
+                      no_of_scales = document.getElementById("no_of_scales").value;
+                  }
+
+
                   function myRcolor() {
                       rcolor = document.getElementById("rcolor").value;
                   }
@@ -296,7 +302,7 @@
                   $("#red").attr('class', $("#orientation").val());
                 //   $('#horizontal').attr("id", $("#orientation").val());
                   em=$("#orientation").val();
-                  
+
                   $('#'+em).empty();
                   n = $("#numberof").val();
                   //alert('#'+rt+" "+$("#bgcolor").val());
