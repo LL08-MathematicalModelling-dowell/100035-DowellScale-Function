@@ -14,6 +14,47 @@
 
     <title>VOC_NPS</title>
     <style>
+    #snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: green;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  right: 10%;
+  top: 30px;
+  font-size: 17px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {top: 30px; opacity: 1;}
+  to {top: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {top: 30px; opacity: 1;}
+  to {top: 0; opacity: 0;}
+}
         #horizontal{
            display: flex;
            justify-content: space-between;
@@ -49,6 +90,13 @@
         float: right;
         padding: 10px 20px;
         font-size: 16px;
+        }
+
+        #count-scales{
+        color: black;
+        float: left;
+        padding: 10px 20px;
+        font-size: 12px;
         }
 
         @media screen and (max-width: 600px) {
@@ -107,6 +155,35 @@ $(document).ready(function() {
     // Get mbuttons list
     mbuttons = document.getElementsByClassName("number");
     console.log(mbuttons);
+    let response = []
+
+    function responseScales(id){
+        var score_tag = document.getElementById("scoretag")
+        var count_scales = document.getElementById("count-scales")
+        var x = document.getElementById("snackbar");
+        // score_tag.value = parseInt(this.id)
+        if (response.length === parseInt('{{default.no_of_scales|safe}}')){
+            return
+        }
+        if ( response.length < parseInt('{{default.no_of_scales|safe}}') ) {count_scales.innerHTML = response.length + 1}
+        response.push(id)
+
+        if (response.length === parseInt('{{default.no_of_scales|safe}}')){
+            score_tag.value = response
+            console.log(response)
+            x.innerHTML = `Response ${response.length} of ${parseInt('{{default.no_of_scales|safe}}')} submitted`
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+            return document.getElementById('jsform').submit();
+        }
+        else{
+            x.innerHTML = `Response ${response.length} of ${parseInt('{{default.no_of_scales|safe}}')} submitted`
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+
+
+        }
+    }
 
 
     if (mbuttons.length > 0) {
@@ -114,10 +191,10 @@ $(document).ready(function() {
             mbuttons[i].addEventListener("click", function() {
 
                console.log(this.id);
-               var score_tag = document.getElementById("scoretag")
-               score_tag.value = parseInt(this.id)
+
+               responseScales(this.id)
                console.log(this.id);
-               document.getElementById('jsform').submit();
+            //   document.getElementById('jsform').submit();
                setrating(this.id);
             //   para = document.getElementById("lg").innerHTML=this.id;
                document.getElementById("myText").value=this.id
@@ -146,13 +223,14 @@ setrating = function(id) {
     {% csrf_token %}
     <input type="hidden" name="scoretag" id="scoretag" >
 </form>
+<div id="snackbar"></div>
 <div class="container ">
     <div class="row mt-4">
         <div class="col-sm-2">
 
         </div>
         <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
-        <h1 align="center" class="text-danger"><b>{{default.name}}</b><span id="countdown"></span></h1><br>
+        <h1 align="center" class="text-danger"><span id="count-scales"></span><b>{{default.name}}</b><span id="countdown"></span></h1><br>
             <div id="scale-container">
                 <div id="horizontal" ></div>
                 <div class="pl-3" id="labels-vert" style="font-size:2em">

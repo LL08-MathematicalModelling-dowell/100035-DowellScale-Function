@@ -70,7 +70,12 @@
         font-size:25px;
         }
 
-
+        #serial{
+          color:black;
+          padding:10px 20px;
+          font-size:16px;
+          font-weight:bold;
+        }
 
         #countdown{
         color: black;
@@ -128,6 +133,7 @@
 
         </div>
         <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
+          <span id="serial" style="float:left">1</span>
         <h1 align="center" class="text-danger"><b>{{default.name}}</b><span id="countdown"></span></h1><br>
 
             <div id="scale-container">
@@ -154,38 +160,40 @@
                 var slider = document.getElementById("myRange");
                 var output = document.getElementById("demo");
                 slider.style.background ='{{default.scalecolor|safe}}';
-
-                console.log(slider.value)
                 output.innerHTML = (slider.value + "%"); // Display the default slider value
-
-
-                // Update the current slider value (each time you drag the slider handle)
+              // Update the current slider value (each time you drag the slider handle)
                 slider.oninput = function() {
                 output.innerHTML = this.value+"%";
                 }
 
-                let time = {{default.time|safe}};
-                console.log(time)
-
-                if (window.location.href === "https://100035.pythonanywhere.com/percent/percent-scale1/default_percent_scale6787?brand_name=your_brand&product_name=your_product"){
-                    countdownEl.style.display = "none"
-                } else {
-                    setInterval(updateCountdown, 1000)
+                let number_of_scales={{default.number_of_scales}};
+                scoretag = document.getElementById("scoretag");
+                let answer =[];
+                function updateScale(){
                 }
 
+                let time = {{default.time|safe}};
+                //console.log(time)
                 const countdownEl = document.getElementById("countdown");
-
+                const test =document.getElementById('test')
+                updateAnswer()
                 setInterval(updateCountdown, 1000)
-                scoretag = document.getElementById("scoretag");
-                $("#test").click(function(){
-
-                    $(this).text("submitted")
-                    scoretag.value=slider.value
-
-
-                    document.getElementById("jsform").submit();
+                serial = document.getElementById("serial")
+                //serial.innerHTML = parseInt(serial.innerHTML-1)
+                function updateAnswer(){
+                  $("#test").click(function(){
+                    serial.innerHTML = parseInt(serial.innerHTML)+1;
+                    ans = slider.value;
+                    answer.push(ans);
+                    console.log(answer)
+                    if (number_of_scales === answer.length){
+                    test.innerHTML = "Submitted"
+                    serial.innerHTML= ""
+                    test.style="pointer-events: none"
+                    scoretag.value=answer
+                    document.getElementById("jsform").submit();}
                   })
-
+              }
 
                 function updateCountdown(){
                     const minutes = Math.floor(time/60);

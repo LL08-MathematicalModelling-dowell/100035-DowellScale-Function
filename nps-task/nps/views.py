@@ -48,9 +48,7 @@ def dowell_scale_admin(request):
         try:
             user  = request.COOKIES['user']
             eventID = get_event_id()
-            field_add = []
-            for i in range (int(no_of_scales)):
-                field_add.append({"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "user": user, "eventId":eventID, "scale_id": i+1})
+            field_add = {"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "user": user, "eventId":eventID, "no_of_scales":no_of_scales}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(field_add)
             print("No of scales",len(field_add))
@@ -127,8 +125,13 @@ def dowell_scale1(request, tname1):
     data=json.loads(default)
     x= data["data"]
     context["defaults"]=x
+
+
     for i in x:
         context["text"]=i['text'].split("+")
+        number_of_scale=i['no_of_scales']
+
+    context["no_of_scales"]=number_of_scale
 
     if request.method == 'POST':
         score = request.POST['scoretag']

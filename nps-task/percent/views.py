@@ -1,6 +1,4 @@
-from django.shortcuts import render
-
-# Create your views here.import random
+import random
 import json
 import requests
 from django.contrib.auth.decorators import login_required
@@ -8,10 +6,9 @@ from django.shortcuts import render, redirect, HttpResponse
 #from .models import system_settings, response
 from nps.dowellconnection import dowellconnection
 from nps.login import get_user_profile
-from nps.eventID import get_event_id
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
-import random
+from nps.eventID import get_event_id
 
 def dowell_scale_admin(request):
     context={}
@@ -21,14 +18,13 @@ def dowell_scale_admin(request):
         orientation = request.POST['orientation']
         scalecolor = request.POST['scolor']
         time = request.POST['time']
-
+        number_of_scales=request.POST['numberofscale']
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
         eventID = get_event_id()
 
         try:
-            user  = request.COOKIES['user']
-            field_add={"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"name":name, "eventID":eventID , "scale-category": "percent scale", "user": user, }
+            field_add={"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "eventID":eventID }
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             # return redirect(f"http://127.0.0.1:8000/percent-scale1/{template_name}")
             return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
@@ -77,6 +73,10 @@ def dowell_scale1(request, tname1):
     print(data)
     x= data["data"]
     context["defaults"]=x
+    for i in x:
+        number_of_scale=i['number_of_scales']
+
+    context["number_of_scale"]=number_of_scale
 
 
 
@@ -110,10 +110,11 @@ def default_scale_admin(request):
     context["hist"] = "Scale History"
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
-    field_add = {"scale-category": "percent scale"}
+    field_add = {}
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
-    context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
+
+    context["percent"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
     return render(request, 'percent/default.html', context)
 
@@ -126,15 +127,14 @@ def login(request):
     if url == None:
         return redirect("https://100014.pythonanywhere.com/")
     user=get_user_profile(url)
-    try:
-        if user["username"]:
-            if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-                response = redirect("percent:default_page_admin")
-                response.set_cookie('user', user['username'])
-                return response
-            else:
-                response = redirect("percent:percent")
-                response.set_cookie('user', user['username'])
-                return response
-    except:
-        return redirect("https://100014.pythonanywhere.com/")
+    if user["username"]:
+        if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
+            response = redirect("percent:default_page_admin")
+            # response.set_cookie('role', user['role'])
+            return response
+        else:
+            response = redirect("percent:percent")
+            # response.set_cookie('role', user['role'])
+            return response
+
+
