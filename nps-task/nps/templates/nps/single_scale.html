@@ -158,10 +158,7 @@ $(document).ready(function() {
     let response = []
 
     function responseScales(id){
-        var score_tag = document.getElementById("scoretag")
-        var count_scales = document.getElementById("count-scales")
-        var x = document.getElementById("snackbar");
-        // score_tag.value = parseInt(this.id)
+
         if (response.length === parseInt('{{default.no_of_scales|safe}}')){
             return
         }
@@ -189,15 +186,18 @@ $(document).ready(function() {
     if (mbuttons.length > 0) {
         for (var i = 0; i < mbuttons.length; i++) {
             mbuttons[i].addEventListener("click", function() {
-
+                var score_tag = document.getElementById("scoretag")
+                var x = document.getElementById("snackbar");
+                score_tag.value = parseInt(this.id)
                console.log(this.id);
+               x.innerHTML = `Response Submitted Successfully`
 
-               responseScales(this.id)
-               console.log(this.id);
-            //   document.getElementById('jsform').submit();
+            //   responseScales(this.id)
+
+              document.getElementById('jsform').submit();
                setrating(this.id);
             //   para = document.getElementById("lg").innerHTML=this.id;
-               document.getElementById("myText").value=this.id
+            //   document.getElementById("myText").value=this.id
             });
         }
     }
@@ -230,7 +230,7 @@ setrating = function(id) {
 
         </div>
         <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
-        <h1 align="center" class="text-danger"><span id="count-scales"></span><b>{{default.name}}</b><span id="countdown"></span></h1><br>
+        <h1 align="center" class="text-danger"><b>{{default.name}}</b><span id="countdown"></span></h1><br>
             <div id="scale-container">
                 <div id="horizontal" ></div>
                 <div class="pl-3" id="labels-vert" style="font-size:2em">

@@ -14,6 +14,7 @@ from .eventID import get_event_id
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
+from django.urls import resolve
 
 class SystemSettings(viewsets.ModelViewSet):
     serializer_class = SystemSettingsSerializer
@@ -104,7 +105,7 @@ def dowell_scale1(request, tname1):
         # resp = response.objects.all()
         # return HttpResponse(resp)
         context["brand_name"] = names_values_dict['brand_name']
-        context["product_name"] = names_values_dict['product_name']
+        context["product_name"] = names_values_dict['product_name'].split('/')[0]
         context["scale_name"] = tname1
     except:
         f_path = request.get_full_path()
@@ -126,19 +127,40 @@ def dowell_scale1(request, tname1):
     x= data["data"]
     context["defaults"]=x
 
-
     for i in x:
         context["text"]=i['text'].split("+")
         number_of_scale=i['no_of_scales']
 
     context["no_of_scales"]=number_of_scale
 
+
+
     if request.method == 'POST':
+        url = request.build_absolute_uri()
+        current_url = url.split('/')[-1]
         score = request.POST['scoretag']
+        score = {'id': current_url, 'score':score}
+        print("Testing... 1", score)
         try:
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
-            x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            # print(x)
+            field_add={"scale_name":context["scale_name"]}
+            response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
+            data=json.loads(response)
+            x = data["data"]
+            if len(x) == 0:
+                field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
+                x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
+                print('Scale NEW added successfully', x)
+            else:
+                for i in x:
+                    b = i['score']['id']
+
+                    if b == current_url:
+                        print("Already exists")
+                        break
+                    else:
+                        field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
+                        x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
+                        print('Scale DISTINCT added successfully', x)
             return redirect(f"https://100014.pythonanywhere.com/main")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -162,7 +184,7 @@ def brand_product_error(request):
         context["no_of_scales"].append(i)
 
     name=url.replace("'","")
-    context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=<b>your_brand</b>&product_name=<b>your_product</b>"
+    context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
     print(context['template_url'])
     return render(request, 'nps/error_page.html', context)
 

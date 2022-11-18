@@ -104,15 +104,16 @@
     <div class="url-clipboard">
         <table style="width:100%;">
             <tr>
-                <th>Scale No</th>
-                <th>Link</th>
-                <th>Action</th>
+                <th style="text-align: flex-start; padding-left: 5px">Scale No</th>
+                <th style="text-align: flex-start; padding-left: 5px">Link</th>
+                <th style="text-align: flex-start; padding-left: 5px">Action</th>
               </tr>
             {% for i in no_of_scales %}
             <tr>
-                <th>{{ forloop.counter }}</th>
-                <td id="mytext"></td>
-                <td><i class='btn btn primary' onclick="copy_function('mytext', {{i|safe}})">copy</i></td>
+                <th style="text-align: center">{{ forloop.counter }}</th>
+                <th   style="text-align: flex-start; padding-left: 3px" id="mytext">{{template_url}}/{{ forloop.counter }}</th>
+                <td style="text-align: center; padding : 3px" class="p-5"><button type="button" onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
+
             </tr>
             {% endfor %}
         </table>
@@ -144,7 +145,7 @@
         x = getCookieValue('url')
         b = x.replaceAll('"','')
         var copyText = document.getElementById('mytext')
-        copyText.innerHTML = `https://100035.pythonanywhere.com${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
+        // copyText.innerHTML = `https://100035.pythonanywhere.com${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
         document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
         }
       window.onload = codeAddress;
