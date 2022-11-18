@@ -31,6 +31,10 @@
         margin: 20px auto;
         background-color: #f0f2f5;
       }
+      table, th, td {
+          border:1px solid black;
+
+        }
 
       input {
         border: none;
@@ -96,10 +100,22 @@
     </style>
   </head>
   <body style="background-color: black;">
+
     <div class="url-clipboard">
-      <p id="mytext"></p>
-      <!-- <button id="TextToCopy" ><img src="button_image.png"></button> -->
-      <i class="bi bi-clipboard" id="clip-icon" onclick="copy_function('mytext')"></i>
+        <table style="width:100%;">
+            <tr>
+                <th>Scale No</th>
+                <th>Link</th>
+                <th>Action</th>
+              </tr>
+            {% for i in no_of_scales %}
+            <tr>
+                <th>{{ forloop.counter }}</th>
+                <td id="mytext"></td>
+                <td><i class='btn btn primary' onclick="copy_function('mytext', {{i|safe}})">copy</i></td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 
     <div class="hint">
@@ -133,13 +149,14 @@
         }
       window.onload = codeAddress;
 
-      function copy_function(id){
+      function copy_function(id, i){
+
         x = getCookieValue('url')
         b = x.replaceAll('"','')
         var clip = document.getElementById("clip-icon");
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
-        input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
+        input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product/${i}`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");
@@ -152,9 +169,6 @@
       const getCookieValue = (name) =>
         document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() ||
         "";
-
-
-
     </script>
   </body>
 </html>

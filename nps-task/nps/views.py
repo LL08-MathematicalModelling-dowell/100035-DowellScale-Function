@@ -145,7 +145,26 @@ def dowell_scale1(request, tname1):
     return render(request,'nps/single_scale.html',context)
 
 def brand_product_error(request):
-    return render(request, 'nps/error_page.html')
+    context = {}
+    url = request.COOKIES['url']
+    template_name = url.split("/")[2]
+    field_add={"template_name":template_name}
+    default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
+    data=json.loads(default)
+    x= data["data"]
+    context["defaults"]=x
+    for i in x:
+        number_of_scale=i['no_of_scales']
+
+    context["no_scales"]=int(number_of_scale)
+    context["no_of_scales"]=[]
+    for i in range(int(number_of_scale)):
+        context["no_of_scales"].append(i)
+
+    name=url.replace("'","")
+    context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=<b>your_brand</b>&product_name=<b>your_product</b>"
+    print(context['template_url'])
+    return render(request, 'nps/error_page.html', context)
 
 def default_scale(request):
     context = {}
