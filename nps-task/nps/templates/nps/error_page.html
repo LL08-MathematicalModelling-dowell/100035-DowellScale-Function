@@ -21,6 +21,47 @@
     />
     <title>Embedd link</title>
     <style>
+    #snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: green;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  right: 10%;
+  top: 30px;
+  font-size: 17px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {top: 30px; opacity: 1;}
+  to {top: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {top: 30px; opacity: 1;}
+  to {top: 0; opacity: 0;}
+}
       .url-clipboard {
         padding: 10px;
         border: 1px solid #ccc;
@@ -100,6 +141,7 @@
     </style>
   </head>
   <body style="background-color: black;">
+      <div id="snackbar"></div>
 
     <div class="url-clipboard">
         <table style="width:100%;">
@@ -141,6 +183,12 @@
     </div>
 
     <script>
+    function myFunction(id) {
+      var x = document.getElementById("snackbar");
+      x.innerHTML = `Coppied scale no ${id}`
+      x.className = "show";
+      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+    }
       function codeAddress() {
         x = getCookieValue('url')
         b = x.replaceAll('"','')
@@ -151,7 +199,7 @@
       window.onload = codeAddress;
 
       function copy_function(id, i){
-
+        myFunction(i)
         x = getCookieValue('url')
         b = x.replaceAll('"','')
         var clip = document.getElementById("clip-icon");

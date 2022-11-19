@@ -190,10 +190,10 @@ $(document).ready(function() {
                 var x = document.getElementById("snackbar");
                 score_tag.value = parseInt(this.id)
                console.log(this.id);
-               x.innerHTML = `Response Submitted Successfully`
-
+               x.innerHTML = `Response ${this.id} Submitted Successfully`
+               x.className = "show";
+               setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
             //   responseScales(this.id)
-
               document.getElementById('jsform').submit();
                setrating(this.id);
             //   para = document.getElementById("lg").innerHTML=this.id;
