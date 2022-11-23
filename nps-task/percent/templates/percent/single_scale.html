@@ -14,6 +14,47 @@
 
     <title>VOC_Percent</title>
     <style>
+      #snackbar {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: green;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        right: 10%;
+        top: 30px;
+        font-size: 17px;
+      }
+      
+      #snackbar.show {
+        visibility: visible;
+        -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      }
+      
+      @-webkit-keyframes fadein {
+        from {top: 0; opacity: 0;}
+        to {top: 30px; opacity: 1;}
+      }
+      
+      @keyframes fadein {
+        from {top: 0; opacity: 0;}
+        to {top: 30px; opacity: 1;}
+      }
+      
+      @-webkit-keyframes fadeout {
+        from {top: 30px; opacity: 1;}
+        to {top: 0; opacity: 0;}
+      }
+      
+      @keyframes fadeout {
+        from {top: 30px; opacity: 1;}
+        to {top: 0; opacity: 0;}
+      }
         .slidecontainer {
             width: 100%; /* Width of the outside container */
           }
@@ -133,7 +174,7 @@
 
         </div>
         <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
-          <span id="serial" style="float:left">1</span>
+        
         <h1 align="center" class="text-danger"><b>{{default.name}}</b><span id="countdown"></span></h1><br>
 
             <div id="scale-container">
@@ -166,12 +207,9 @@
                 output.innerHTML = this.value+"%";
                 }
 
-                let number_of_scales={{default.number_of_scales}};
+                //let number_of_scales={{default.number_of_scales}};
                 scoretag = document.getElementById("scoretag");
-                let answer =[];
-                function updateScale(){
-                }
-
+          
                 let time = {{default.time|safe}};
                 //console.log(time)
                 const countdownEl = document.getElementById("countdown");
@@ -182,16 +220,11 @@
                 //serial.innerHTML = parseInt(serial.innerHTML-1)
                 function updateAnswer(){
                   $("#test").click(function(){
-                    serial.innerHTML = parseInt(serial.innerHTML)+1;
                     ans = slider.value;
-                    answer.push(ans);
-                    console.log(answer)
-                    if (number_of_scales === answer.length){
                     test.innerHTML = "Submitted"
-                    serial.innerHTML= ""
                     test.style="pointer-events: none"
-                    scoretag.value=answer
-                    document.getElementById("jsform").submit();}
+                    scoretag.value=ans
+                    document.getElementById("jsform").submit();
                   })
               }
 

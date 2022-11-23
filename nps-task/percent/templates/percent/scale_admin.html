@@ -13,6 +13,47 @@
    * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
    * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
    */
+   #snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: green;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    right: 10%;
+    top: 30px;
+    font-size: 17px;
+  }
+  
+  #snackbar.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  }
+  
+  @-webkit-keyframes fadein {
+    from {top: 0; opacity: 0;}
+    to {top: 30px; opacity: 1;}
+  }
+  
+  @keyframes fadein {
+    from {top: 0; opacity: 0;}
+    to {top: 30px; opacity: 1;}
+  }
+  
+  @-webkit-keyframes fadeout {
+    from {top: 30px; opacity: 1;}
+    to {top: 0; opacity: 0;}
+  }
+  
+  @keyframes fadeout {
+    from {top: 30px; opacity: 1;}
+    to {top: 0; opacity: 0;}
+  }
    .slidecontainer {
     width: 100%; /* Width of the outside container */
   }
@@ -124,6 +165,7 @@
 
   </head>
   <body class=".bg-secondary">
+    <div id="snackbar"></div>
       <div class="container">
           <div class="row" style="margin-top: 3%;">
               <div class="col-lg-1 col-md-2 d-sm-none"></div>
@@ -235,7 +277,7 @@
                       console.log(slid)
                       if (value ==="vertical" ){
                         [].forEach.call(document.getElementsByClassName("slider"), function (slid) {
-                          slid.style.width = "100%";
+                          slid.style.width = "50%";
                           slid.style.transform = "rotate(270deg)";
                           footer.style.transform="rotate(270deg)";
                           modal.style.transform="rotate(270deg)"
