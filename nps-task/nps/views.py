@@ -136,9 +136,11 @@ def dowell_scale1(request, tname1):
 
 
     if request.method == 'POST':
+        score = ""
         url = request.build_absolute_uri()
         current_url = url.split('/')[-1]
         score = request.POST['scoretag']
+
         score = {'id': current_url, 'score':score}
         print("Testing... 1", score)
         try:
@@ -150,13 +152,15 @@ def dowell_scale1(request, tname1):
                 b = i['score']['id']
                 if b == current_url:
                     print("Already exists")
-                    return redirect(f"https://100014.pythonanywhere.com/main")
+                    context["score"] = "show"
+                    # return redirect(f"https://100014.pythonanywhere.com/main")
             print('length....>>>>>', len(x))
             field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
             x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
             print('Scale NEW added successfully', x)
+            context["score"] = "show"
 
-            return redirect(f"https://100014.pythonanywhere.com/main")
+            # return redirect(f"https://100014.pythonanywhere.com/main")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'nps/single_scale.html',context)
