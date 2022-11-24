@@ -158,9 +158,80 @@
             font-size: large;
             font-weight: 800;
           }
+          #count-scales{
+            color: black;
+            float: left;
+            padding: 10px 20px;
+            font-size: 12px;
+            }
+    
+            .card-header {
+              color: #88B04B;
+              font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+              font-weight: 900;
+              font-size: 40px;
+              margin-bottom: 10px;
+            }
+            .card-paragraph {
+              color: #404F5E;
+              font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+              font-size:20px;
+              margin: 0;
+            }
+    
+            .card{
+                background: white;
+                padding: 60px;
+                border-radius: 4px;
+                box-shadow: 0 2px 3px #C8D0D8;
+                margin: 0 auto;
+                 width:600px;
+                display: none;
+            }
+    
+            .checkmark {
+                color: #9ABC66;
+                font-size: 100px;
+                line-height: 200px;
+                margin-left:-15px;
+              }
     </style>
 <script>
+  $(document).ready(function() {
+    const serial=window.location.href.substr(-1)
+    let se = document.getElementById("serial")
+    num ={{default.number_of_scales}}
+    
+    se.innerHTML=serial +"/" + num
+   //console.log(se.innerHTML)
+  
+    let response = []
 
+  function responseScales(id){
+
+      if (response.length === parseInt('{{default.number_of_scales|safe}}')){
+          return
+      }
+      if ( response.length < parseInt('{{default.number_of_scales|safe}}') ) {count_scales.innerHTML = response.length + 1}
+      response.push(id)
+
+      if (response.length === parseInt('{{default.number_of_scales|safe}}')){
+          score_tag.value = response
+          console.log(response)
+          x.innerHTML = `Response ${response.length} of ${parseInt('{{default.number_of_scales|safe}}')} submitted`
+          x.className = "show";
+          setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+          return document.getElementById('jsform').submit();
+      }
+      else{
+          x.innerHTML = `Response ${response.length} of ${parseInt('{{default.number_of_scales|safe}}')} submitted`
+          x.className = "show";
+          setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+
+
+      }
+  }})
+  serial=window.location.href.substr(-1)
 </script>
 </head>
 <body>
@@ -174,7 +245,7 @@
 
         </div>
         <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
-        
+        <span id="serial" style="float:left"></span>
         <h1 align="center" class="text-danger"><b>{{default.name}}</b><span id="countdown"></span></h1><br>
 
             <div id="scale-container">
@@ -214,6 +285,10 @@
                 //console.log(time)
                 const countdownEl = document.getElementById("countdown");
                 const test =document.getElementById('test')
+                //localStorage.setItem("score", "null"); 
+                //const res = localStorage.getItem("score");  
+                //if (res==="null"){console.log("yes")}
+                localStorage.clear()
                 updateAnswer()
                 setInterval(updateCountdown, 1000)
                 serial = document.getElementById("serial")
@@ -225,6 +300,8 @@
                     test.style="pointer-events: none"
                     scoretag.value=ans
                     document.getElementById("jsform").submit();
+                    localStorage.setItem("score", ans);
+                    console.log(res)
                   })
               }
 
@@ -242,7 +319,7 @@
 
 
                 function redirectMain(){
-                    window.location.replace("http://100014.pythonanywhere.com/main")
+                    //window.location.replace("http://100014.pythonanywhere.com/main")
                 }
                 </script>
     <div class="col-sm-2"></div>

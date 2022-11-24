@@ -26,7 +26,6 @@ def dowell_scale_admin(request):
         try:
             field_add={"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "eventID":eventID }
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            print(x)
             return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
             #return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
         except:
@@ -81,9 +80,11 @@ def dowell_scale1(request, tname1):
 
 
     if request.method == 'POST':
+        score=""
         url = request.build_absolute_uri()
         current_url = url.split('/')[-1]
         score = request.POST['scoretag']
+        
         score = {'id': current_url, 'score':score}
         print("Testing... 1", score)
         try:
@@ -95,13 +96,15 @@ def dowell_scale1(request, tname1):
                 b = i['score']['id']
                 if b == current_url:
                     print("Already exists")
-                    return redirect(f"https://100014.pythonanywhere.com/main")
+                    context["score"]="show"
+                    #return redirect(f"https://100014.pythonanywhere.com/main")
             print('length....>>>>>', len(x))
             field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
             x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
             print('Scale NEW added successfully', x)
+            context["score"] = "show"
 
-            return redirect(f"https://100014.pythonanywhere.com/main")
+            #return redirect(f"https://100014.pythonanywhere.com/main")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'percent/single_scale.html',context)
@@ -111,8 +114,6 @@ def brand_product_preview(request):
     url = request.COOKIES['url']
     template_name = url.split("/")[2]
     field_add={"template_name":template_name}
-    print(template_name)
-    print(field_add)
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
     print(data)
@@ -120,9 +121,9 @@ def brand_product_preview(request):
     context["defaults"]=x
     print(x)
     #for i in x:
-    #number_of_scale=i['number_of_scales']
+    #    number_of_scale=i['number_of_scales']
     number_of_scale = 4    
-    print(number_of_scale)
+    #print(no_of_scale)
 
     context["no_scales"]=int(number_of_scale)
     context["no_of_scales"]=[]
@@ -154,7 +155,7 @@ def default_scale_admin(request):
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
 
-    context["percent"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
+    context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
     return render(request, 'percent/default.html', context)
 
