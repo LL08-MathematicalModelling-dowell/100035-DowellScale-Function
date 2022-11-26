@@ -10,6 +10,15 @@
         padding: 0;
     }
 
+    .success-msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 3px 3px 3px 3px;
+      color: #270;
+      background-color: #DFF2BF;
+      display: none;
+    }
+
     .main-container_nps_lite{
         display: flex;
         flex-direction : column;
@@ -71,7 +80,11 @@
 </form>
 
 <body style="display:flex; justify-content: center;">
-    <div class="main-container_nps_lite">
+    <div class="success-msg" id="success-msg">
+      <i class="fa fa-check"></i>
+      Thanks for your response! 😃
+    </div>
+    <div class="main-container_nps_lite" id="main-container_nps_lite">
         <p class="time_nps_lite" id="countdown"></p>
         <p class="title_nps_lite"></p>
         <div class="container_nps_lite">
@@ -82,6 +95,18 @@
     </div>
 {% for default in defaults %}
 <script>
+    function checkStatus(){
+        console.log('{{score|safe}}')
+         if ('{{score|safe}}' === 'show'){
+            var success_msg = document.getElementById("success-msg")
+            var main_cont = document.getElementById("main-container_nps_lite")
+            success_msg.style.display = 'flex'
+            main_cont.style.display = 'none'
+        }
+    }
+    console.log('{{score|safe}}')
+
+                checkStatus()
     if('{{default.orientation|safe}}' === "vertical"){
         document.querySelector(".container_nps_lite").style.flexDirection = "column"
         document.querySelector(".container_nps_lite").style.justifyContent = "space-between"
@@ -103,8 +128,13 @@
 
     function submitCategory(category){
         var score_tag = document.getElementById("scoretag")
+        var success_msg = document.getElementById("success-msg")
+        var main_cont = document.getElementById("main-container_nps_lite")
+        success_msg.style.display = 'flex'
+        main_cont.style.display = 'none'
         score_tag.value = category
         document.getElementById('jsform').submit();
+
         // if (score_tag.value !== ""){
         //     window.location.replace("http://100014.pythonanywhere.com/main")
         // }
