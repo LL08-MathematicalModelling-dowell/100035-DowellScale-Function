@@ -21,6 +21,31 @@
     />
     <title>Preview page</title>
     <style>
+      #snackbar.show {
+        visibility: visible;
+        -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      }
+      
+      @-webkit-keyframes fadein {
+        from {top: 0; opacity: 0;}
+        to {top: 30px; opacity: 1;}
+      }
+      
+      @keyframes fadein {
+        from {top: 0; opacity: 0;}
+        to {top: 30px; opacity: 1;}
+      }
+      
+      @-webkit-keyframes fadeout {
+        from {top: 30px; opacity: 1;}
+        to {top: 0; opacity: 0;}
+      }
+      
+      @keyframes fadeout {
+        from {top: 30px; opacity: 1;}
+        to {top: 0; opacity: 0;}
+      }
       .url-clipboard {
         padding: 10px;
         border: 1px solid #ccc;
@@ -30,6 +55,10 @@
         justify-content: space-between;
         margin: 20px auto;
         background-color: #f0f2f5;
+      }
+      table, th, td {
+        border:1px solid black;
+
       }
 
       input {
@@ -97,9 +126,23 @@
     </style>
   </head>
   <body style="background-color: black;">
+    <div id="snackbar"></div>
     <div class="url-clipboard">
-      <p id="mytext"></p>
-      <i class="bi bi-clipboard" id="clip-icon" onclick="copy_function('mytext')"></i>
+      <table style="width:100%;">
+        <tr>
+            <th style="text-align: flex-start; padding-left: 5px">Scale No</th>
+            <th style="text-align: flex-start; padding-left: 5px">Link</th>
+            <th style="text-align: flex-start; padding-left: 5px">Action</th>
+          </tr>
+        {% for i in no_of_scales %}
+        <tr>
+            <th style="text-align: center">{{ forloop.counter }}</th>
+            <th style="text-align: flex-start; padding-left: 3px" id="mytext">{{template_url}}/{{ forloop.counter }}</th>
+            <td style="text-align: center; padding : 3px" class="p-5"><button type="button" onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
+
+        </tr>
+        {% endfor %}
+    </table>
     </div>
 
     <div class="hint">
@@ -125,31 +168,40 @@
 
 
         <script>
+          function myFunction(id) {
+            var x = document.getElementById("snackbar");
+            x.innerHTML = `Copied scale no ${id}`
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+          }
       function codeAddress() {
         x = getCookieValue('url')
         b = x.replaceAll('"','')
+        
         var copyText = document.getElementById('mytext')
-        copyText.innerHTML = `http://127.0.0.1:8000${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
-        document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`
-
+        //copyText.innerHTML = `http://127.0.0.1:8000${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
+        //document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`
+        document.getElementsByName('iFrameName')[0].src = `http://127.0.0.1:8000${b}?brand_name=your brand&product_name=your product`
         }
       window.onload = codeAddress;
 
-      function copy_function(id){
+      function copy_function(id, i){
+        myFunction(i)
         x = getCookieValue('url')
         b = x.replaceAll('"','')
         var clip = document.getElementById("clip-icon");
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
-        input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`;
+        //input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`;
+        input_temp.value = `http://127.0.0.1:8000${b}?brand_name=your_brand&product_name=your_product`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");
         document.body.removeChild(input_temp);
 
-        clip.className = "bi bi-check2";
-        clip.style.color = "blue";
-        clip.style.cursor = "default";
+        //clip.className = "bi bi-check2";
+        //clip.style.color = "blue";
+        //clip.style.cursor = "default";
       }
       const getCookieValue = (name) =>
         document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() ||

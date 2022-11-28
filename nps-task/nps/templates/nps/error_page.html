@@ -192,6 +192,7 @@
       function codeAddress() {
         x = getCookieValue('url')
         b = x.replaceAll('"','')
+        console.log(b)
         var copyText = document.getElementById('mytext')
         // copyText.innerHTML = `https://100035.pythonanywhere.com${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
         document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
