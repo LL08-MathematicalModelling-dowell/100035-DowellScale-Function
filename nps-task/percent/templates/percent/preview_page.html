@@ -21,6 +21,22 @@
     />
     <title>Preview page</title>
     <style>
+      #snackbar {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: green;
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        right: 10%;
+        top: 30px;
+        font-size: 17px;
+      }
+
       #snackbar.show {
         visibility: visible;
         -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
@@ -138,7 +154,7 @@
         <tr>
             <th style="text-align: center">{{ forloop.counter }}</th>
             <th style="text-align: flex-start; padding-left: 3px" id="mytext">{{template_url}}/{{ forloop.counter }}</th>
-            <td style="text-align: center; padding : 3px" class="p-5"><button type="button" onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
+            <td style="text-align: center; padding : 3px" class="p-5"><button type="button" id = "test"  onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
 
         </tr>
         {% endfor %}
@@ -170,18 +186,18 @@
         <script>
           function myFunction(id) {
             var x = document.getElementById("snackbar");
-            x.innerHTML = `Copied scale no ${id}`
+            x.innerHTML = `Copied scale ${id}`
             x.className = "show";
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
           }
       function codeAddress() {
         x = getCookieValue('url')
         b = x.replaceAll('"','')
-        
+        console.log(b)
         var copyText = document.getElementById('mytext')
         //copyText.innerHTML = `http://127.0.0.1:8000${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
         //document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`
-        document.getElementsByName('iFrameName')[0].src = `http://127.0.0.1:8000${b}?brand_name=your brand&product_name=your product`
+        document.getElementsByName('iFrameName')[0].src = `http://127.0.0.1:8000${b}?brand_name=your brand&product_name=your product`;
         }
       window.onload = codeAddress;
 
@@ -193,15 +209,13 @@
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
         //input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`;
-        input_temp.value = `http://127.0.0.1:8000${b}?brand_name=your_brand&product_name=your_product`;
+        input_temp.value = `http://127.0.0.1:8000${b}?brand_name=your_brand&product_name=your_product/${i}`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");
         document.body.removeChild(input_temp);
+        document.getElementById('test').onclick = null;
 
-        //clip.className = "bi bi-check2";
-        //clip.style.color = "blue";
-        //clip.style.cursor = "default";
       }
       const getCookieValue = (name) =>
         document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() ||

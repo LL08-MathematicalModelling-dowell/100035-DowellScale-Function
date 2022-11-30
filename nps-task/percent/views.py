@@ -21,7 +21,8 @@ def dowell_scale_admin(request):
         number_of_scales=request.POST['numberofscale']
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
-        eventID = get_event_id()
+        #eventID = get_event_id()
+        eventID="tests"
 
         try:
             field_add={"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "eventID":eventID }
@@ -40,6 +41,7 @@ def dowell_scale1(request, tname1):
     product_name = request.GET.get('product_name', None)
     ls = request.path
     url = request.build_absolute_uri()
+    print(url)
     try:
         x,s = url.split('?')
         names_values_dict = dict(x.split('=') for x in s.split('&'))
@@ -54,6 +56,7 @@ def dowell_scale1(request, tname1):
         context["brand_name"] = names_values_dict['brand_name']
         context["product_name"] = names_values_dict['product_name']
         context["scale_name"] = tname1
+        
     except:
         f_path = request.get_full_path()
         response = redirect('percent:preview_page')
@@ -69,14 +72,27 @@ def dowell_scale1(request, tname1):
     field_add={"template_name":tname1}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
-    print(data)
+   #print(data)
     x= data["data"]
     context["defaults"]=x
     for i in x:
         number_of_scale=i['number_of_scales']
 
     context["no_of_scales"]=number_of_scale
-
+    num = url.split('/')
+    url_id = num[-1]    
+    field_add={"scale_name":context["scale_name"]}
+    response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
+    data=json.loads(response)
+    datas=data["data"]
+    print(datas)
+    context["recorded_score"]=101
+    if len(datas) > 0:
+        for i in datas:
+            if url_id == i["score"]["id"]:
+                recorded_score=(i["score"]["score"])
+                print(recorded_score)
+                context["recorded_score"]=recorded_score
 
 
     if request.method == 'POST':
@@ -86,7 +102,7 @@ def dowell_scale1(request, tname1):
         score = request.POST['scoretag']
         
         score = {'id': current_url, 'score':score}
-        print("Testing... 1", score)
+        #print("Testing... 1", score)
         try:
             field_add={"scale_name":context["scale_name"]}
             response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
@@ -95,16 +111,16 @@ def dowell_scale1(request, tname1):
             for i in x:
                 b = i['score']['id']
                 if b == current_url:
-                    print("Already exists")
+                    #print("Already exists")
                     context["score"]="show"
                     #return redirect(f"https://100014.pythonanywhere.com/main")
-            print('length....>>>>>', len(x))
+            #print('length....>>>>>', len(x))
             field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
             x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            print('Scale NEW added successfully', x)
+            #print('Scale NEW added successfully', x)
             context["score"] = "show"
 
-            #return redirect(f"https://100014.pythonanywhere.com/main")
+            return redirect(f"{url}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'percent/single_scale.html',context)
@@ -116,14 +132,13 @@ def brand_product_preview(request):
     field_add={"template_name":template_name}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
-    print(data)
+    #print(data)
     x= data["data"]
     context["defaults"]=x
-    print(x)
+    #print(x)
     #for i in x:
-    #    number_of_scale=i['number_of_scales']
+    #number_of_scale=i['number_of_scales']
     number_of_scale = 4    
-    #print(no_of_scale)
 
     context["no_scales"]=int(number_of_scale)
     context["no_of_scales"]=[]
