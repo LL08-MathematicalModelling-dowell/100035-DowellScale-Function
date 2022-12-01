@@ -21,14 +21,15 @@ def dowell_scale_admin(request):
         number_of_scales=request.POST['numberofscale']
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
-        #eventID = get_event_id()
-        eventID="tests"
-
+        eventID = get_event_id()
+        user = "test"
         try:
-            field_add={"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "eventID":eventID }
+            #user = request.COOKIES['user']
+            
+            field_add={"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "user": user,  "eventID":eventID }
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
-            #return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
+            #return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
+            return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'percent/scale_admin.html', context)
@@ -41,7 +42,7 @@ def dowell_scale1(request, tname1):
     product_name = request.GET.get('product_name', None)
     ls = request.path
     url = request.build_absolute_uri()
-    print(url)
+    #print(url)
     try:
         x,s = url.split('?')
         names_values_dict = dict(x.split('=') for x in s.split('&'))
@@ -85,7 +86,7 @@ def dowell_scale1(request, tname1):
     response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
     data=json.loads(response)
     datas=data["data"]
-    print(datas)
+    #print(datas)
     context["recorded_score"]=101
     if len(datas) > 0:
         for i in datas:
@@ -128,17 +129,14 @@ def dowell_scale1(request, tname1):
 def brand_product_preview(request):
     context = {}
     url = request.COOKIES['url']
-    template_name = url.split("/")[2]
+    template_name = url.split("/")[-1]
     field_add={"template_name":template_name}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
-    #print(data)
     x= data["data"]
     context["defaults"]=x
-    #print(x)
-    #for i in x:
-    #number_of_scale=i['number_of_scales']
-    number_of_scale = 4    
+    for i in x:
+        number_of_scale=i['number_of_scales']  
 
     context["no_scales"]=int(number_of_scale)
     context["no_of_scales"]=[]
@@ -146,8 +144,8 @@ def brand_product_preview(request):
         context["no_of_scales"].append(i)
 
     name=url.replace("'","")
-    #context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
-    context['template_url']= f"https://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
+    context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
+    #context['template_url']= f"http://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
     print(context['template_url'])
     return render(request, 'percent/preview_page.html', context)
 
@@ -183,14 +181,17 @@ def login(request):
     if url == None:
         return redirect("https://100014.pythonanywhere.com/")
     user=get_user_profile(url)
-    if user["username"]:
-        if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-            response = redirect("percent:default_page_admin")
-            # response.set_cookie('role', user['role'])
-            return response
-        else:
-            response = redirect("percent:percent")
-            # response.set_cookie('role', user['role'])
-            return response
+    try:
+        if user["username"]:
+            if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
+                response = redirect("percent:default_page_admin")
+                response.set_cookie('user', user['username'])
+                return response
+            else:
+                response = redirect("percent:percent")
+                # response.set_cookie('role', user['role'])
+                return response
+    except:
+        return redirect('https://100014.pythonanywhere.com/')
 
 
