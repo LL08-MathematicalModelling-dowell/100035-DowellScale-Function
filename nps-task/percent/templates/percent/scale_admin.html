@@ -245,9 +245,6 @@
                  var slid = document.getElementsByClassName("slidecontainer");
                  function preview(){
 
-
-
-                  console.log(slid)
                   var slider = document.getElementById("myRange");
                   var output = document.getElementById("demo");
                   slider.style.background = $("#scolor").val();
@@ -277,10 +274,8 @@
                       console.log(slid)
                       if (value ==="vertical" ){
                         [].forEach.call(document.getElementsByClassName("slider"), function (slid) {
-                          slid.style.width = "50%";
-                          slid.style.transform = "rotate(270deg)";
-                          footer.style.transform="rotate(270deg)";
-                          modal.style.transform="rotate(270deg)"
+                          slid.style = "-webkit-appearance: slider-vertical; width: 100%; min-height: 150px; max-height: 100%; height: 100%;"; 
+                          slider.style.background = $("#scolor").val();
 
                         });
                       }

@@ -22,14 +22,15 @@ def dowell_scale_admin(request):
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
         eventID = get_event_id()
-        user = "test"
+       # user = "test"
+        scale_type="percent"
         try:
             #user = request.COOKIES['user']
-            
-            field_add={"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "user": user,  "eventID":eventID }
+            user = "test"
+            field_add={"scale_type":scale_type,"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "user": user,  "eventID":eventID }
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            #return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
-            return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
+            return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
+            #return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'percent/scale_admin.html', context)
@@ -92,7 +93,6 @@ def dowell_scale1(request, tname1):
         for i in datas:
             if url_id == i["score"]["id"]:
                 recorded_score=(i["score"]["score"])
-                print(recorded_score)
                 context["recorded_score"]=recorded_score
 
 
@@ -101,11 +101,11 @@ def dowell_scale1(request, tname1):
         url = request.build_absolute_uri()
         current_url = url.split('/')[-1]
         score = request.POST['scoretag']
-        
+        eventID = get_event_id()
         score = {'id': current_url, 'score':score}
         #print("Testing... 1", score)
         try:
-            field_add={"scale_name":context["scale_name"]}
+            field_add={"scale_name":context["scale_name"], "scale_type":"percent"}
             response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
             data=json.loads(response)
             x = data["data"]
@@ -114,11 +114,10 @@ def dowell_scale1(request, tname1):
                 if b == current_url:
                     #print("Already exists")
                     context["score"]="show"
-                    #return redirect(f"https://100014.pythonanywhere.com/main")
-            #print('length....>>>>>', len(x))
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
+                    #return redirect(f"https://100014.pythonanywhere.com/main")  
+            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"eventID":eventID}
             x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            #print('Scale NEW added successfully', x)
+
             context["score"] = "show"
 
             return redirect(f"{url}")
@@ -144,9 +143,8 @@ def brand_product_preview(request):
         context["no_of_scales"].append(i)
 
     name=url.replace("'","")
-    context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
-    #context['template_url']= f"http://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
-    print(context['template_url'])
+    #context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
+    context['template_url']= f"http://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
     return render(request, 'percent/preview_page.html', context)
 
 def default_scale(request):
@@ -188,8 +186,8 @@ def login(request):
                 response.set_cookie('user', user['username'])
                 return response
             else:
-                response = redirect("percent:percent")
-                # response.set_cookie('role', user['role'])
+                response = redirect("percent:default_page") 
+                response.set_cookie('user', user["username"])              
                 return response
     except:
         return redirect('https://100014.pythonanywhere.com/')

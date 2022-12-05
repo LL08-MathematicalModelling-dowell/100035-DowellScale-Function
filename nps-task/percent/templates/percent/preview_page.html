@@ -143,29 +143,13 @@
   </head>
   <body style="background-color: black;">
     <div id="snackbar"></div>
-    <div class="url-clipboard">
-      <table style="width:100%;">
-        <tr>
-            <th style="text-align: flex-start; padding-left: 5px">Scale No</th>
-            <th style="text-align: flex-start; padding-left: 5px">Link</th>
-            <th style="text-align: flex-start; padding-left: 5px">Action</th>
-          </tr>
-        {% for i in no_of_scales %}
-        <tr>
-            <th style="text-align: center">{{ forloop.counter }}</th>
-            <th style="text-align: flex-start; padding-left: 3px" id="mytext">{{template_url}}/{{ forloop.counter }}</th>
-            <td style="text-align: center; padding : 3px" class="p-5"><button type="button" id = "test"  onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
-
-        </tr>
-        {% endfor %}
-    </table>
-    </div>
+    
 
     <div class="hint">
       <div class="bulb">
         <i class="bi bi-lightbulb text-primary" style="font-size: 30px;"></i>
         <p>hint:</p>
-        <p style="margin-left: 5px;">Copy the url above and provide product and brand name and embedd it to your page </p>
+        <p style="margin-left: 5px;">Copy the url below and provide product and brand name and embedd it to your page </p>
       </div>
 
       <div class="syntax">
@@ -176,11 +160,26 @@
         </p>
         <div><center><iframe name="iFrameName" title="ScalePreview" style="border:2px solid blue;"></iframe></center></div>
       </div>
-      <div >
-
+    </div>
+      <div class="url-clipboard">
+        <table style="width:100%;">
+          <tr>
+              <th style="text-align: flex-start; padding-left: 5px">Scale No</th>
+              <th style="text-align: flex-start; padding-left: 5px">Link</th>
+              <th style="text-align: flex-start; padding-left: 5px">Action</th>
+            </tr>
+          {% for i in no_of_scales %}
+          <tr>
+              <th style="text-align: center">{{ forloop.counter }}</th>
+              <th style="text-align: flex-start; padding-left: 3px" id="mytext">{{template_url}}/{{ forloop.counter }}</th>
+              <td style="text-align: center; padding : 3px" class="p-5"><button type="button" id = "test"  onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
+  
+          </tr>
+          {% endfor %}
+      </table>
       </div>
 
-    </div>
+    
 
 
         <script>
