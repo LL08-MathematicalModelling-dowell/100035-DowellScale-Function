@@ -92,6 +92,13 @@
         font-size: 16px;
         }
 
+        #serial{
+        color: black;
+        float: left;
+        padding: 10px 20px;
+        font-size: 12px;
+        }
+
         #count-scales{
         color: black;
         float: left;
@@ -183,7 +190,7 @@
 
 $(document).ready(function() {
     console.log(window.location.href)
-    
+
 
     // Get mbuttons list
     mbuttons = document.getElementsByClassName("number");
@@ -220,6 +227,8 @@ $(document).ready(function() {
         for (var i = 0; i < mbuttons.length; i++) {
             mbuttons[i].addEventListener("click", function() {
                 var score_tag = document.getElementById("scoretag")
+                var response_saved = document.getElementById("response-saved")
+                response_saved.innerHTML = this.id
                 var scale_container = document.getElementById("scale-container-main")
                 var card_response = document.getElementById("card-response")
                 var x = document.getElementById("snackbar");
@@ -272,10 +281,10 @@ setrating = function(id) {
             <i class="checkmark">✓</i>
           </div>
             <h1 class="card-header text-center">Success</h1>
-            <p class="card-paragraph text-center">We received your response;<br/> Thanks!</p>
+            <p class="card-paragraph text-center">We received your response; <span id="response-saved">({{response_saved}})</span><br/> Thanks!</p>
           </div>
         <div class="col-sm-8 bg-light" id="scale-container-main" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
-        <h1 align="center" class="text-danger"><b>{{default.name}}</b><span id="countdown"></span></h1><br>
+        <h1 align="center" class="text-danger"><span id="serial">{{cur_url}}/{{no_of_scales}}</span><b>{{default.name}}</b><span id="countdown"></span></h1><br>
             <div id="scale-container">
                 <div id="horizontal" ></div>
                 <div class="pl-3" id="labels-vert" style="font-size:2em">
@@ -313,11 +322,23 @@ setrating = function(id) {
                      if ('{{score|safe}}' === 'show'){
                          var scale_container = document.getElementById("scale-container-main")
                         var card_response = document.getElementById("card-response")
+                        var response_saved = document.getElementById("response-saved")
+
                         scale_container.style.display = "none"
                         card_response.style.display = "inline-block"
                     }
                 }
                 console.log('{{score|safe}}')
+
+                function Checklist(){
+                    const serial=window.location.href;
+            		let split_serial = serial.split('/');
+            		let series= split_serial[split_serial.length -1];
+        			if (series.length > 3){
+        				document.getElementById("serial").innerHTML = ""
+        			}
+        		}
+        		Checklist()
 
                 checkStatus()
 
@@ -362,7 +383,7 @@ setrating = function(id) {
 
                 const countdownEl = document.getElementById("countdown");
 
-                if (window.location.href === "https://100035.pythonanywhere.com/nps-scale1/defaultnpsscale?brand_name=your%20brand&product_name=your%20product"){
+                if (window.location.href === "https://100035.pythonanywhere.com/nps-scale1/defaultnpsscale?brand_name=your%20brand&product_name=your%20product" || '{{score|safe}}' === 'show'){
                     countdownEl.style.display = "none"
                 } else {
                     setInterval(updateCountdown, 1000)
