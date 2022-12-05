@@ -8,6 +8,8 @@ from nps.login import get_user_profile
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from .eventID import get_event_id
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 def npslite_home_admin(request):
@@ -56,8 +58,8 @@ def dowell_npslite_scale_settings(request):
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'lite/settings_page.html', context)
 
-
 @xframe_options_exempt
+@csrf_exempt
 def dowell_npslite_scale(request, tname):
     context={}
     brand_name = request.GET.get('brand_name', None)
@@ -101,10 +103,12 @@ def dowell_npslite_scale(request, tname):
 
     if request.method == 'POST':
         category = request.POST['scoretag']
+        print("Nps Lite Category Choice--->",category)
         try:
             field_add={"category":category,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            print(x)
+            print("Nps Lite Scale Response---->",x)
+            context["score"] = "show"
             # return redirect(f"https://100014.pythonanywhere.com/main")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
