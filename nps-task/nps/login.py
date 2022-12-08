@@ -8,5 +8,5 @@ def get_user_profile(key):
     dic=data.text
     return json.loads(dic)
 
-
+print(get_user_profile)
 

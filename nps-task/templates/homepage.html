@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+    />
+    <style>
+      .header {
+        font-size: 24px;
+        font-weight: bold;
+        flex-direction: column;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: green;
+      }
+      a:link,
+      a:visited {
+        background-color: #05890b;
+        color: white;
+        padding: 14px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        border-radius: 25px;
+      }
+
+      a:hover,
+      a:active {
+        background-color: blue;
+      }
+      .landing-header {
+        color: #05890b;
+        font-size: 20px;
+      }
+      .scales{
+        font-size:20px;
+        justify-content:center;
+        display:flex;
+        flex-direction:column;
+
+      }
+    </style></head
+  >{% load static %}
+  <body style="background-color: white">
+    <div class="header">
+      <p>
+        <img
+          width="150"
+          height="150"
+          src="/static/images/dowell_logo.png"
+          class="attachment-thumbnail size-thumbnail"
+          alt=""
+          loading="lazy"
+          srcset="
+            /static/images/dowell_logo.png 150w,
+            /static/images/dowell_logo.png  48w,
+            /static/images/dowell_logo.png 300w
+          "
+          sizes="(max-width: 150px) 100vw, 150px"
+          alt="Home"
+        />
+     
+      </p>
+      <h1>Dowell Scales</h1>
+      <br />
+      <div class = "scales">
+      <a href="http://127.0.0.1:8000/likert">Likert Scale</a><br />
+      <a href="http://127.0.0.1:8000/percent">Percent Scale</a><br />
+      <a href="http://127.0.0.1:8000/">NPS Scale</a><br />
+      <a href="http://127.0.0.1:8000/stapel">Stapel scale</a>
+    </div>
+    <script src="" async defer></script>
+  </body>
+</html>
