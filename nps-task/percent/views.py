@@ -29,8 +29,8 @@ def dowell_scale_admin(request):
             user = "test"
             field_add={"scale_type":scale_type,"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "user": user,  "eventID":eventID }
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
-            #return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
+            #return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
+            return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'percent/scale_admin.html', context)
@@ -143,8 +143,8 @@ def brand_product_preview(request):
         context["no_of_scales"].append(i)
 
     name=url.replace("'","")
-    #context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
-    context['template_url']= f"http://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
+    context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
+    #context['template_url']= f"http://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
     return render(request, 'percent/preview_page.html', context)
 
 def default_scale(request):

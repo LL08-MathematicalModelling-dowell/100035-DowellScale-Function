@@ -25,10 +25,12 @@ def logins (request):
         try:
             if responses["role"]=="Client_Admin":
                 request.session["role"]="Client_Admin"
-                return redirect("http://127.0.0.1:8000/home/")
+                #return redirect("http://127.0.0.1:8000/home/")
+                return redirect("https://100035.pythonanywhere.com/home/")
             elif responses["role"]=="user":
                 request.session["role"]="user"
-                return redirect("http://127.0.0.1:8000/home/")
+                return redirect("https://100035.pythonanywhere.com/home/")
+               # return redirect("http://127.0.0.1:8000/home/")
         except:
             return redirect("https://100014.pythonanywhere.com/")
     return render(request, "login_page.html")
