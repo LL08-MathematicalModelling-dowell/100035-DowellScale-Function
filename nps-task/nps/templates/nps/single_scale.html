@@ -12,8 +12,116 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>VOC_NPS</title>
+    <title>NPS scale view</title>
     <style>
+    /* width */
+        ::-webkit-scrollbar {
+          width: 2px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+          background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+    #time-out-response {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /*margin: auto;*/
+    width: 600px;
+    height: 180px;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: calc(4em + 10vw);
+    text-align: center;
+    color: #fff;
+    background-image: linear-gradient(-225deg, #cf2778, #7c64d5, #4cc3ff);
+    overflow: hidden;
+    display : none;
+    }
+
+    h4 {
+        font-size: .6em;
+        font-weight: 700;
+        text-shadow: 0 0 0.1em rgba(0, 0, 0, 0.5);
+    }
+
+    h4 span::after {
+        content: '🕛';
+        font-size: 0.9em;
+        animation: clock 5s linear infinite;
+    }
+
+    h5 {
+        font-size: 0.15em;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-top: 1em;
+        text-shadow: 0 0 0.2em rgba(0, 0, 0, 0.5);
+    }
+
+    .apple-os h4 span {
+        margin: 0 0.1em;
+    }
+
+    .apple-os h5 {
+        margin-top: 0.4em;
+    }
+
+    @keyframes clock {
+        8.333% {
+            content: '🕐';
+        }
+
+        16.666% {
+            content: '🕑';
+        }
+
+        25% {
+            content: '🕒';
+        }
+
+        33.333% {
+            content: '🕓';
+        }
+
+        41.666% {
+            content: '🕔';
+        }
+
+        50% {
+            content: '🕕';
+        }
+
+        58.333% {
+            content: '🕖';
+        }
+
+        66.666% {
+            content: '🕗';
+        }
+
+        75% {
+            content: '🕘';
+        }
+
+        83.333% {
+            content: '🕙';
+        }
+
+        91.666% {
+            content: '🕚';
+        }
+    }
     #snackbar {
   visibility: hidden;
   min-width: 250px;
@@ -126,7 +234,7 @@
             border-radius: 4px;
             box-shadow: 0 2px 3px #C8D0D8;
             margin: 0 auto;
-             width:600px;
+            width:600px;
             display: none;
         }
 
@@ -276,6 +384,11 @@ setrating = function(id) {
         <div class="col-sm-2">
 
         </div>
+        <div id="time-out-response">
+          <h4 aria-label="408 Error">O<span></span>PS</h4>
+          <h5>Session Expired! Can't Submit Response.</h5>
+        </div>
+
          <div class="card" id="card-response">
           <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;text-align: center;">
             <i class="checkmark">✓</i>
@@ -374,7 +487,6 @@ setrating = function(id) {
                     para.id=i
                     para.classList.add("number");
                     document.getElementById("horizontal").appendChild(para);
-<!--                    document.getElementById(i).innerHTML = i;-->
                     document.getElementById(i).style.background ='{{default.roundcolor|safe}}';
                     document.getElementById(i).style.color ="{{default.fontcolor|safe }}";
                 }
@@ -403,7 +515,9 @@ setrating = function(id) {
 
 
                 function redirectMain(){
-                    window.location.replace("https://100014.pythonanywhere.com/main")
+                    document.getElementById("time-out-response").style.display = "flex"
+                    document.getElementById("scale-container-main").style.display = "none"
+                    // window.location.replace("https://100014.pythonanywhere.com/main")
                 }
                 </script>
     <div class="col-sm-2"></div>

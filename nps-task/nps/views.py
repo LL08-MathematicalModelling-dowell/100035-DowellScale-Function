@@ -91,6 +91,7 @@ def dowell_scale(request,tname):
 def dowell_scale1(request, tname1):
     context={}
 
+    # Get url parameters
     brand_name = request.GET.get('brand_name', None)
     product_name = request.GET.get('product_name', None)
     ls = request.path
