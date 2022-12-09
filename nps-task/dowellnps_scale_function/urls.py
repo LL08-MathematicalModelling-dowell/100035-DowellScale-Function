@@ -27,9 +27,8 @@ urlpatterns = [
     path('percent/', include('percent.urls')),
     path('nps-lite/', include('npslite.urls')),
     path('likert/', include('likert.urls')),
-    path('', include('scalefetch.urls')),
-    path('login/', views.logins, name='login'),
-    path('home/', views.homepage, name='home'),
+    path('', include('login.urls')),
+    
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
