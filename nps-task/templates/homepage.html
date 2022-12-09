@@ -45,9 +45,10 @@
       }
       .scales{
         font-size:20px;
-        justify-content:center;
+        justify-content:space-around;
         display:flex;
         flex-direction:column;
+        margin:
 
       }
     </style></head
@@ -56,16 +57,16 @@
     <div class="header">
       <p>
         <img
-          width="150"
-          height="150"
-          src="/static/images/dowell_logo.png"
+          width="200"
+          height="200"
+          src="/static/images/dowell-logo.png"
           class="attachment-thumbnail size-thumbnail"
           alt=""
           loading="lazy"
           srcset="
-            /static/images/dowell_logo.png 150w,
-            /static/images/dowell_logo.png  48w,
-            /static/images/dowell_logo.png 300w
+            /static/images/dowell-logo.png 150w,
+            /static/images/dowell-logo.png  48w,
+            /static/images/dowell-logo.png 300w
           "
           sizes="(max-width: 150px) 100vw, 150px"
           alt="Home"
@@ -73,13 +74,37 @@
      
       </p>
       <h1>Dowell Scales</h1>
-      <br />
+     
+      <br/>
       <div class = "scales">
-      <a href="http://127.0.0.1:8000/likert">Likert Scale</a><br />
-      <a href="http://127.0.0.1:8000/percent">Percent Scale</a><br />
-      <a href="http://127.0.0.1:8000/">NPS Scale</a><br />
-      <a href="http://127.0.0.1:8000/stapel">Stapel scale</a>
+       
+      <a href="http://127.0.0.1:8000/likert" id="likert">Likert Scale</a><br />
+      <a href="http://127.0.0.1:8000/percent" id="percent">Percent Scale</a><br />
+      <a href="http://127.0.0.1:8000/" id="nps">NPS Scale</a><br />
+      <a href="http://127.0.0.1:8000/stapel" id="stapel">Stapel scale</a>
     </div>
-    <script src="" async defer></script>
+    <script >
+      var test = "{{role}}";
+      console.log(test);
+      var percent = document.getElementById("percent");
+      var likert = document.getElementById("likert");
+      var stapel = document.getElementById("stapel");
+      var nps = document.getElementById("nps");
+      
+      if (test==="Client_Admin"){
+        percent.href = "http://127.0.0.1:8000/percent/percent-admin/default"
+        likert.href = "http://127.0.0.1:8000/likert/likert-admin/default"
+        nps.href = "http://127.0.0.1:8000/nps-admin/default"
+        stapel.href = "http://127.0.0.1:8000/stapel/stapel-admin/default"
+      }
+      else if(test==="user"){
+        percent.href = "http://127.0.0.1:8000/percent/percent-scale/default"
+        likert.href = "http://127.0.0.1:8000/likert/likert-scale/default"
+        nps.href = "http://127.0.0.1:8000/nps-scale/default"
+        stapel.href = "http://127.0.0.1:8000/stapel/stapel-scale/default"
+
+      }
+
+    </script>
   </body>
 </html>
