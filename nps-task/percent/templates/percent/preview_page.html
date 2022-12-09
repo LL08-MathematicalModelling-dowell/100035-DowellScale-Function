@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+      integrity="sha512-5PV92qsds/16vyYIJo3T/As4m2d8b6oWYfoqV+vtizRB6KhF1F9kYzWzQmsO6T3z3QG2Xdhrx7FQ+5R1LiQdUA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <title>Preview page</title>
+    <style>
+      #snackbar.show {
+        visibility: visible;
+        -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      }
+      
+      @-webkit-keyframes fadein {
+        from {top: 0; opacity: 0;}
+        to {top: 30px; opacity: 1;}
+      }
+      
+      @keyframes fadein {
+        from {top: 0; opacity: 0;}
+        to {top: 30px; opacity: 1;}
+      }
+      
+      @-webkit-keyframes fadeout {
+        from {top: 30px; opacity: 1;}
+        to {top: 0; opacity: 0;}
+      }
+      
+      @keyframes fadeout {
+        from {top: 30px; opacity: 1;}
+        to {top: 0; opacity: 0;}
+      }
+      .url-clipboard {
+        padding: 10px;
+        border: 1px solid #ccc;
+        max-width: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 20px auto;
+        background-color: #f0f2f5;
+      }
+      table, th, td {
+        border:1px solid black;
+
+      }
+
+      input {
+        border: none;
+        outline: none;
+        width: 95%;
+        display: flex;
+        flex-wrap: wrap;
+        background-color: transparent;
+      }
+
+      i:hover {
+        color: lightblue;
+      }
+
+      i {
+        cursor: pointer;
+        font-size: 2rem;
+      }
+
+      .hint {
+        width: 900px;
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+        justify-content: center;
+        align-items: flex-start;
+      }
+      .syntax{
+        background-color: #ccc;
+        padding: 10px 20px;
+        color: rgb(18, 18, 18);
+        border-radius: 10px;
+        margin-bottom: 15px;
+      }
+
+      .hint{
+        background-color: rgb(220, 217, 217);
+        padding:10px 50px;
+        color: #fff;
+        border-radius: 10px;
+      }
+      .bulb{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .bulb:first-child{
+        margin-left: 10px;
+        color: rgb(62, 57, 28);
+        font-size: 1.3em;
+      }
+      .iframe{
+        width: 900px;
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+        justify-content: center;
+        align-items: flex-start;
+
+      }
+
+    </style>
+  </head>
+  <body style="background-color: black;">
+    <div id="snackbar"></div>
+    <div class="url-clipboard">
+      <table style="width:100%;">
+        <tr>
+            <th style="text-align: flex-start; padding-left: 5px">Scale No</th>
+            <th style="text-align: flex-start; padding-left: 5px">Link</th>
+            <th style="text-align: flex-start; padding-left: 5px">Action</th>
+          </tr>
+        {% for i in no_of_scales %}
+        <tr>
+            <th style="text-align: center">{{ forloop.counter }}</th>
+            <th style="text-align: flex-start; padding-left: 3px" id="mytext">{{template_url}}/{{ forloop.counter }}</th>
+            <td style="text-align: center; padding : 3px" class="p-5"><button type="button" onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
+
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+
+    <div class="hint">
+      <div class="bulb">
+        <i class="bi bi-lightbulb text-primary" style="font-size: 30px;"></i>
+        <p>hint:</p>
+        <p style="margin-left: 5px;">Copy the url above and provide product and brand name and embedd it to your page </p>
+      </div>
+
+      <div class="syntax">
+        <h1>Syntax</h1>
+        <p class="text-dark">
+            <span style="font-weight:bold"> < iframe</span><span class="text-danger"> src=</span>"https://100035.pythonanywhere.com?brand_name=<span class="text-primary">your_brand</span>&product_name=<span class="text-primary">your_product</span>" >< /<span style="font-weight:bold">iframe ></span
+          >
+        </p>
+        <div><center><iframe name="iFrameName" title="ScalePreview" style="border:2px solid blue;"></iframe></center></div>
+      </div>
+      <div >
+
+      </div>
+
+    </div>
+
+
+        <script>
+          function myFunction(id) {
+            var x = document.getElementById("snackbar");
+            x.innerHTML = `Copied scale no ${id}`
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+          }
+      function codeAddress() {
+        x = getCookieValue('url')
+        b = x.replaceAll('"','')
+        
+        var copyText = document.getElementById('mytext')
+        //copyText.innerHTML = `http://127.0.0.1:8000${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
+        //document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`
+        document.getElementsByName('iFrameName')[0].src = `http://127.0.0.1:8000${b}?brand_name=your brand&product_name=your product`
+        }
+      window.onload = codeAddress;
+
+      function copy_function(id, i){
+        myFunction(i)
+        x = getCookieValue('url')
+        b = x.replaceAll('"','')
+        var clip = document.getElementById("clip-icon");
+        var value = document.getElementById(id).innerHTML;
+        var input_temp = document.createElement("input");
+        //input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`;
+        input_temp.value = `http://127.0.0.1:8000${b}?brand_name=your_brand&product_name=your_product`;
+        document.body.appendChild(input_temp);
+        input_temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(input_temp);
+
+        //clip.className = "bi bi-check2";
+        //clip.style.color = "blue";
+        //clip.style.cursor = "default";
+      }
+      const getCookieValue = (name) =>
+        document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() ||
+        "";
+    </script>
+  </body>
+</html>

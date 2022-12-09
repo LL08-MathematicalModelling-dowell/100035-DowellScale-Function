@@ -12,7 +12,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>VOC_STAPEL</title>
+    <title>STAPEL SCALE</title>
     <style>
         /* width */
         ::-webkit-scrollbar {
@@ -32,6 +32,136 @@
         /* Handle on hover */
         ::-webkit-scrollbar-thumb:hover {
           background: #555;
+        }
+        #time-out-response {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /*margin: auto;*/
+            width: 600px;
+            height: 180px;
+            font-family: 'Open Sans', Arial, sans-serif;
+            font-size: calc(4em + 10vw);
+            text-align: center;
+            color: #fff;
+            background-image: linear-gradient(-225deg, #cf2778, #7c64d5, #4cc3ff);
+            overflow: hidden;
+            display : none;
+            }
+
+            h4 {
+                font-size: .6em;
+                font-weight: 700;
+                text-shadow: 0 0 0.1em rgba(0, 0, 0, 0.5);
+            }
+
+            h4 span::after {
+                content: '🕛';
+                font-size: 0.9em;
+                animation: clock 5s linear infinite;
+            }
+
+            h5 {
+                font-size: 0.15em;
+                font-weight: 700;
+                line-height: 1.2;
+                margin-top: 1em;
+                text-shadow: 0 0 0.2em rgba(0, 0, 0, 0.5);
+            }
+
+            .apple-os h4 span {
+                margin: 0 0.1em;
+            }
+
+            .apple-os h5 {
+                margin-top: 0.4em;
+            }
+
+            @keyframes clock {
+                8.333% {
+                    content: '🕐';
+                }
+
+                16.666% {
+                    content: '🕑';
+                }
+
+                25% {
+                    content: '🕒';
+                }
+
+                33.333% {
+                    content: '🕓';
+                }
+
+                41.666% {
+                    content: '🕔';
+                }
+
+                50% {
+                    content: '🕕';
+                }
+
+                58.333% {
+                    content: '🕖';
+                }
+
+                66.666% {
+                    content: '🕗';
+                }
+
+                75% {
+                    content: '🕘';
+                }
+
+                83.333% {
+                    content: '🕙';
+                }
+
+                91.666% {
+                    content: '🕚';
+                }
+            }
+            #snackbar {
+          visibility: hidden;
+          min-width: 250px;
+          margin-left: -125px;
+          background-color: green;
+          color: #fff;
+          text-align: center;
+          border-radius: 2px;
+          padding: 16px;
+          position: fixed;
+          z-index: 1;
+          right: 10%;
+          top: 30px;
+          font-size: 17px;
+        }
+
+        #snackbar.show {
+          visibility: visible;
+          -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+          animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @-webkit-keyframes fadein {
+          from {top: 0; opacity: 0;}
+          to {top: 30px; opacity: 1;}
+        }
+
+        @keyframes fadein {
+          from {top: 0; opacity: 0;}
+          to {top: 30px; opacity: 1;}
+        }
+
+        @-webkit-keyframes fadeout {
+          from {top: 30px; opacity: 1;}
+          to {top: 0; opacity: 0;}
+        }
+
+        @keyframes fadeout {
+          from {top: 30px; opacity: 1;}
+          to {top: 0; opacity: 0;}
         }
         #horizontal{
            display: flex;
@@ -69,6 +199,52 @@
         padding: 10px 20px;
         font-size: 16px;
         }
+
+        #serial{
+        color: black;
+        float: left;
+        padding: 10px 20px;
+        font-size: 12px;
+        }
+
+        #count-scales{
+        color: black;
+        float: left;
+        padding: 10px 20px;
+        font-size: 12px;
+        }
+
+        .card-header {
+          color: #88B04B;
+          font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+          font-weight: 900;
+          font-size: 40px;
+          margin-bottom: 10px;
+        }
+        .card-paragraph {
+          color: #404F5E;
+          font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+          font-size:20px;
+          margin: 0;
+        }
+
+        .card{
+            background: white;
+            padding: 60px;
+            border-radius: 4px;
+            box-shadow: 0 2px 3px #C8D0D8;
+            margin: 0 auto;
+            width:600px;
+            display: none;
+        }
+
+        .checkmark {
+            color: #9ABC66;
+            font-size: 100px;
+            line-height: 200px;
+            margin-left:-15px;
+          }
+
 
         @media screen and (max-width: 600px) {
           #horizontal p{
@@ -130,16 +306,28 @@ $(document).ready(function() {
 
     if (mbuttons.length > 0) {
         for (var i = 0; i < mbuttons.length; i++) {
-            mbuttons[i].addEventListener("click", function() {
 
-               console.log(this.id);
-               var score_tag = document.getElementById("scoretag")
-               score_tag.value = parseInt(this.id)
-               console.log(this.id);
-               document.getElementById('jsform').submit();
-               setrating(this.id);
-            //   para = document.getElementById("lg").innerHTML=this.id;
-               document.getElementById("myText").value=this.id
+            mbuttons[i].addEventListener("click", function() {
+                console.log('This is my response',document.getElementsByClassName("number")[this.id].innerHTML)
+                var score_tag = document.getElementById("scoretag")
+                var response_saved = document.getElementById("response-saved")
+                response_saved.innerHTML = document.getElementsByClassName("number")[this.id].innerHTML
+                var scale_container = document.getElementById("scale-container-main")
+                var card_response = document.getElementById("card-response")
+                var x = document.getElementById("snackbar");
+                score_tag.value = document.getElementsByClassName("number")[this.id].innerHTML
+                // console.log(this.id);
+                x.innerHTML = `Response ${document.getElementsByClassName("number")[this.id].innerHTML} Submitted Successfully`
+                x.className = "show";
+                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+                scale_container.style.display = "none"
+
+                //   responseScales(this.id)
+                document.getElementById('jsform').submit();
+                card_response.style.display = "inline-block"
+                setrating(this.id);
+                //   para = document.getElementById("lg").innerHTML=this.id;
+                //   document.getElementById("myText").value=this.id
             });
         }
     }
@@ -165,13 +353,26 @@ setrating = function(id) {
     {% csrf_token %}
     <input type="hidden" name="scoretag" id="scoretag" >
 </form>
+<div id="snackbar"></div>
 <div class="container ">
     <div class="row mt-4">
         <div class="col-sm-2">
 
         </div>
-        <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
-        <h1 align="center" class="text-danger"><b>{{default.name}}</b><span id="countdown"></span></h1><br>
+        <div id="time-out-response">
+          <h4 aria-label="408 Error">O<span></span>PS</h4>
+          <h5>Session Expired! Can't Submit Response.</h5>
+        </div>
+
+         <div class="card" id="card-response">
+          <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;text-align: center;">
+            <i class="checkmark">✓</i>
+          </div>
+            <h1 class="card-header text-center">Success</h1>
+            <p class="card-paragraph text-center">We received your response; <span id="response-saved">({{response_saved}})</span><br/> Thanks!</p>
+          </div>
+        <div class="col-sm-8 bg-light" id="scale-container-main" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
+        <h1 align="center" class="text-danger"><span id="serial">{{cur_url}}/{{no_of_scales}}</span><b>{{default.name}}</b><span id="countdown"></span></h1><br>
             <div id="scale-container">
                 <div id="horizontal" ></div>
                 <div class="pl-3" id="labels-vert" style="font-size:2em">
@@ -181,7 +382,7 @@ setrating = function(id) {
                 </div>
             </div>
 <!--        <div id="horizontal" ></div>-->
-            <div class="pl-3" id="labels">
+            <div class="pl-3" id="labels" style="font-size:1em">
                    <div style="float: left; font-size: bold">{{text.0}}</div>
                     <!--<div style="float: right">{{text.2}}</div>-->
                     <div style="float: right">{{text.1}}</div>
@@ -204,6 +405,31 @@ setrating = function(id) {
                 console.log('{{default.fomat|safe}}')
                 star = '{{default.fomat|safe}}'
 
+                function checkStatus(){
+                    console.log('{{score|safe}}')
+                     if ('{{score|safe}}' === 'show'){
+                         var scale_container = document.getElementById("scale-container-main")
+                        var card_response = document.getElementById("card-response")
+                        var response_saved = document.getElementById("response-saved")
+
+                        scale_container.style.display = "none"
+                        card_response.style.display = "inline-block"
+                    }
+                }
+                console.log('{{score|safe}}')
+
+                function Checklist(){
+                    const serial=window.location.href;
+            		let split_serial = serial.split('/');
+            		let series= split_serial[split_serial.length -1];
+        			if (series.length > 3){
+        				document.getElementById("serial").innerHTML = ""
+        			}
+        		}
+        		Checklist()
+
+                checkStatus()
+
                 if ('{{default.orientation|safe}}' ==="vertical" ){
                     scale_bg.style.flexDirection = "column";
                     labels.style.display = "none";
@@ -217,7 +443,7 @@ setrating = function(id) {
 
                 var ans = {{scale|safe}};
 
-                 for (let i = 0; i < ans.length; i++) {
+                for (let i = 0; i < ans.length; i++) {
                     const para = document.createElement("p");
 
                     if (star==="stars"){
@@ -245,7 +471,11 @@ setrating = function(id) {
 
                 const countdownEl = document.getElementById("countdown");
 
-                setInterval(updateCountdown, 1000)
+                if (window.location.href === "https://100035.pythonanywhere.com/stapel/stapel-scale1/defaultstapelscale?brand_name=your%20brand&product_name=your%20product" || '{{score|safe}}' === 'show'){
+                    countdownEl.style.display = "none"
+                } else {
+                    setInterval(updateCountdown, 1000)
+                }
 
                 function updateCountdown(){
                     const minutes = Math.floor(time/60);
@@ -261,7 +491,8 @@ setrating = function(id) {
 
 
                 function redirectMain(){
-                    window.location.replace("http://100014.pythonanywhere.com/main")
+                    document.getElementById("time-out-response").style.display = "flex"
+                    document.getElementById("scale-container-main").style.display = "none"
                 }
                 </script>
     <div class="col-sm-2"></div>

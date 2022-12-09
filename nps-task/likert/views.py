@@ -32,8 +32,11 @@ def dowell_scale_admin(request):
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
         try:
-            field_add={"orientation":orientation,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale"}
-            
+            user  = request.COOKIES['user']
+            field_add={"orientation":orientation,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale","user": user,}
+
+            # field_add={"orientation":orientation,"roundcolor":"white","fontcolor":"rgb(0, 100, 0)","labelscale":labelscale,"time":time,"template_name":"defaultlikertscale","name":"LikertScale","scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale","user": user}
+
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             """return redirect(f"http://127.0.0.1:8000/likert/likert-scale1/{template_name}")"""
             return redirect(f"https://100035.pythonanywhere.com/likert/likert-scale1/{template_name}")
@@ -76,7 +79,7 @@ def dowell_scale1(request, tname1):
         response = redirect('likert:preview_page')
         response.set_cookie('url', f_path)
         return response
-     
+
     context["url"]="../scaleadmin"
     context["urltext"]="Create new scale"
     context["btn"]="btn btn-dark"
@@ -134,7 +137,7 @@ def default_scale_admin(request):
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
     context["likertall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
-    
+
     if request.method == "POST":
         scoretag = request.POST["scoretag"]
         return redirect("https://100014.pythonanywhere.com/")
@@ -150,12 +153,15 @@ def login(request):
     if url == None:
         return redirect("https://100014.pythonanywhere.com/")
     user=get_user_profile(url)
-    if user["username"]:
-        if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-            response = redirect("likert:default_page_admin")
-            response.set_cookie('role', user['username'])
-            return response
-        else:
-            response = redirect("likert:default_page")
-            response.set_cookie('role', user['username'])
-            return response
+    try:
+        if user["username"]:
+            if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
+                response = redirect("likert:default_page_admin")
+                response.set_cookie('user', user['username'])
+                return response
+            else:
+                response = redirect("likert:default_page")
+                response.set_cookie('user', user['username'])
+                return response
+    except:
+        return redirect("https://100014.pythonanywhere.com/")

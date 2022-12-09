@@ -157,7 +157,7 @@
     {% endif %}
 </head>
 <body style="display:flex; justify-content: center;flex-direction: column; align-items: center">
-    {% if user == "user" %}
+    {% if user == "admin" %}
     <div class="url-clipboard">
       <p id="mytext"></p>
       <!-- <button id="TextToCopy" ><img src="button_image.png"></button> -->
@@ -173,7 +173,6 @@
         <a href="https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/{{scale.template_name}}/">{{scale.template_name}}</a>
         {% endfor %}
     </div>
-
     {% endif %}
     <div class="main-container_nps_lite">
         <!--<p class="time_nps_lite">10:30</p>-->

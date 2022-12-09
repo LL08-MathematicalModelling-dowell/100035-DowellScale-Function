@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('nps.urls')),
     path('stapel/', include('stapel.urls')),
+    path('percent/', include('percent.urls')),
     path('nps-lite/', include('npslite.urls')),
     path('likert/', include('likert.urls')),
     path('', include('scalefetch.urls')),

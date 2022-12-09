@@ -196,7 +196,7 @@ setrating = function(id) {
                 var vert="vertical";
                 var hori="horizontal";
                 var name="number";
-                
+
 
                 var scale_bg = document.getElementById("horizontal")
                 var sca_vert = document.getElementById("labels-vert")
@@ -204,7 +204,7 @@ setrating = function(id) {
                 var labels = document.getElementById("labels")
                 scale_bg.style.background = '{{default.scalecolor|safe}}';
                 scale_bg.style.padding = "20px 20px";
-                
+
 
                 if ('{{default.orientation|safe}}' ==="vertical" ){
                     scale_bg.style.flexDirection = "column";
@@ -283,7 +283,11 @@ setrating = function(id) {
 
                 const countdownEl = document.getElementById("countdown");
 
-                setInterval(updateCountdown, 1000)
+                if (window.location.href === "https://100035.pythonanywhere.com/likert/likert-scale1/Likert-default6544?brand_name=your%20brand&product_name=your%20product"){
+                    countdownEl.style.display = "none"
+                } else {
+                    setInterval(updateCountdown, 1000)
+                }
 
                 function updateCountdown(){
                     const minutes = Math.floor(time/60);

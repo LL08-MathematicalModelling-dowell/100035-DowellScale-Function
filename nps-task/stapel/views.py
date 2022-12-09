@@ -7,7 +7,10 @@ from nps.dowellconnection import dowellconnection
 from nps.login import get_user_profile
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.csrf import csrf_exempt
 from .eventID import get_event_id
+
+
 def dowell_scale_admin(request):
     context={}
     if request.method == 'POST':
@@ -20,6 +23,7 @@ def dowell_scale_admin(request):
         fomat = "numbers"
         left = request.POST["left"]
         right = request.POST["right"]
+        no_of_scales = request.POST["no_of_scales"]
         time = request.POST['time']
         spacing_unit = int(request.POST['spacing_unit'])
         text = f"{left}+{right}"
@@ -36,7 +40,7 @@ def dowell_scale_admin(request):
         try:
             user  = request.COOKIES['user']
             eventID = get_event_id()
-            field_add={"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale", "user": user, "eventId":eventID}
+            field_add={"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale", "user": user, "eventId":eventID, "no_of_scales":no_of_scales}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(x)
 
@@ -46,6 +50,7 @@ def dowell_scale_admin(request):
     return render(request, 'stapel/scale_admin.html', context)
 
 @xframe_options_exempt
+@csrf_exempt
 def dowell_scale1(request, tname1):
     context={}
 
@@ -65,7 +70,7 @@ def dowell_scale1(request, tname1):
         # resp = response.objects.all()
         # return HttpResponse(resp)
         context["brand_name"] = names_values_dict['brand_name']
-        context["product_name"] = names_values_dict['product_name']
+        context["product_name"] = names_values_dict['product_name'].split('/')[0]
         context["scale_name"] = tname1
     except:
         f_path = request.get_full_path()
@@ -88,20 +93,85 @@ def dowell_scale1(request, tname1):
     for i in x:
         context["text"]=i['text'].split("+")
         context["scale"]=i['scale']
+        number_of_scale=i['no_of_scales']
+
+    context["no_of_scales"]=number_of_scale
+    url = request.build_absolute_uri()
+    current_url = url.split('/')[-1]
+    context['cur_url'] = current_url
+
+    field_add={"scale_name":context["scale_name"]}
+    response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
+    data=json.loads(response)
+    y = data["data"]
+    total_score = 0
+    for i in y:
+        if len(i['score']['id']) > 3:
+            continue
+        b = i['score']['score']
+        total_score += int(b)
+
+    for i in y:
+        b = i['score']['id']
+        if b == current_url:
+            context['response_saved'] = i['score']['score']
+            context['score'] = "show"
+            print("Already Exists")
+
+    print("This are the scores of this scale",y)
+
+    print("Total scores of this scale",total_score)
 
     if request.method == 'POST':
         score = request.POST['scoretag']
+        score = {'id': current_url, 'score':score}
+        print("This is the score selected---->", score)
         try:
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
-            x = dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            # print(x)
-            return redirect(f"https://100014.pythonanywhere.com/main")
+            user  = request.COOKIES['user']
+            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"response_by": user}
+            z = dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
+            print('Scale NEW added successfully', z)
+            context['score'] = "show"
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'stapel/single_scale.html',context)
 
 def brand_product_error(request):
-    return render(request, 'stapel/error_page.html')
+    context = {}
+    url = request.COOKIES['url']
+    template_name = url.split("/")[3]
+    field_add={"template_name":template_name}
+    default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
+    data=json.loads(default)
+    x= data["data"]
+    context["defaults"]=x
+    for i in x:
+        number_of_scale=i['no_of_scales']
+
+    context["no_scales"]=int(number_of_scale)
+    context["no_of_scales"]=[]
+    for i in range(int(number_of_scale)):
+        context["no_of_scales"].append(i)
+
+    print('This is my templane name--->', context["no_of_scales"])
+
+    context['existing_scales'] = []
+    field_add={"scale_name":template_name}
+    response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
+    data=json.loads(response)
+    x = data["data"]
+    for i in x:
+        b = i['score']['id']
+        print(b)
+        context['existing_scales'].append(b)
+
+
+
+    print("This are the existing scales", context['existing_scales'])
+    name=url.replace("'","")
+    context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
+    print(context['template_url'])
+    return render(request, 'stapel/error_page.html', context)
 
 def default_scale(request):
     context = {}
