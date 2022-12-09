@@ -11,26 +11,28 @@ def logins (request):
     if request.method == "POST":
         redirect("home/")
     return render(request, "login_page.html")
-"""@csrf_exempt
+@csrf_exempt
 def logins(request):
     url = request.GET.get('session_id', None)
     if url == None:
-        return redirect("http://127.0.0.1:8000/login/")
+        return redirect("https://100014.pythonanywhere.com/")
     user=get_user_profile(url)
     # return HttpResponse(user)
     try:
         if user["username"]:
             if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-                response = redirect("/home/")
+                response = redirect("127.0.0.1:8000/home/")
                 response.set_cookie('user', user['username'])
                 return response
             else:
-                response = redirect("/home/")
+                response = redirect("127.0.0.1:8000/home/")
                 response.set_cookie('user', user["username"])
                 return response
     except:
-        return redirect("http://127.0.0.1:8000/login")"""
-    
+        return redirect("https://100014.pythonanywhere.com/")
 
 def homepage(request):
+    user  = request.COOKIES['user']
+    print(user)
+    
     return render(request, "homepage.html")
