@@ -15,6 +15,7 @@ import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import resolve
+from django.http.response import JsonResponse
 
 class SystemSettings(viewsets.ModelViewSet):
     serializer_class = SystemSettingsSerializer
@@ -48,8 +49,9 @@ def dowell_scale_admin(request):
         # objcolor.save()
         try:
             user  = request.COOKIES['user']
+            username = user
             eventID = get_event_id()
-            field_add = {"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "user": user, "eventId":eventID, "no_of_scales":no_of_scales}
+            field_add = {"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "created_by": user, "eventId":eventID, "no_of_scales":no_of_scales}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(field_add)
             print("No of scales",len(field_add))
@@ -120,7 +122,6 @@ def dowell_scale1(request, tname1):
     context["bglight"]="bg-light"
     context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)"
     context["npsall"]=system_settings.objects.all().order_by('-id')
-    # field_add={"template_name":"AmbroseTest2966",}
     field_add={"template_name":tname1,}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
@@ -132,31 +133,41 @@ def dowell_scale1(request, tname1):
         number_of_scale=i['no_of_scales']
 
     context["no_of_scales"]=number_of_scale
+    url = request.build_absolute_uri()
+    current_url = url.split('/')[-1]
+    context['cur_url'] = current_url
 
+    field_add={"scale_name":context["scale_name"]}
+    response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
+    data=json.loads(response)
+    y = data["data"]
+    total_score = 0
+    for i in y:
+        if len(i['score']['id']) > 3:
+            continue
+        b = i['score']['score']
+        total_score += int(b)
 
+    for i in y:
+        b = i['score']['id']
+        if b == current_url:
+            context['response_saved'] = i['score']['score']
+            context['score'] = "show"
+            print("Already Exists")
 
+    print("This are the scores of this scale",y)
+
+    print("Total scores of this scale",total_score)
     if request.method == 'POST':
-        url = request.build_absolute_uri()
-        current_url = url.split('/')[-1]
         score = request.POST['scoretag']
         score = {'id': current_url, 'score':score}
-        print("Testing... 1", score)
+        # print("Testing...",y)
         try:
-            field_add={"scale_name":context["scale_name"]}
-            response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
-            data=json.loads(response)
-            x = data["data"]
-            for i in x:
-                b = i['score']['id']
-                if b == current_url:
-                    print("Already exists")
-                    return redirect(f"https://100014.pythonanywhere.com/main")
-            print('length....>>>>>', len(x))
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"]}
-            x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            print('Scale NEW added successfully', x)
-
-            return redirect(f"https://100014.pythonanywhere.com/main")
+            user  = request.COOKIES['user']
+            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"response_by": user}
+            z=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
+            print('Scale NEW added successfully', z)
+            context['score'] = "show"
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'nps/single_scale.html',context)
@@ -178,6 +189,19 @@ def brand_product_error(request):
     for i in range(int(number_of_scale)):
         context["no_of_scales"].append(i)
 
+    context['existing_scales'] = []
+    field_add={"scale_name":template_name}
+    response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
+    data=json.loads(response)
+    x = data["data"]
+    for i in x:
+        b = i['score']['id']
+        print(b)
+        context['existing_scales'].append(b)
+
+
+
+    print("This are the existing scales", context['existing_scales'])
     name=url.replace("'","")
     context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
     print(context['template_url'])

@@ -153,8 +153,8 @@
             {% for i in no_of_scales %}
             <tr>
                 <th style="text-align: center">{{ forloop.counter }}</th>
-                <th   style="text-align: flex-start; padding-left: 3px" id="mytext">{{template_url}}/{{ forloop.counter }}</th>
-                <td style="text-align: center; padding : 3px" class="p-5"><button type="button" onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
+                <th style="text-align: flex-start; padding-left: 3px" id="mytext">{{template_url}}/{{ forloop.counter }}</th>
+                <td style="text-align: center; padding : 3px" class="p-5"><button type="button" id="btn{{ forloop.counter }}" onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
 
             </tr>
             {% endfor %}
@@ -172,10 +172,10 @@
         <h1>Syntax</h1>
         <p class="text-dark">
 
-            <span style="font-weight:bold"> < iframe</span><span class="text-danger"> src=</span>"https://100035.pythonanywhere.com?brand_name=<span class="text-primary">your brand</span>&product_name=<span class="text-primary">your product</span>" >< /<span style="font-weight:bold">iframe ></span
+            <span style="font-weight:bold"> < iframe</span><span class="text-danger"> src=</span>"https://100035.pythonanywhere.com?brand_name=<span class="text-primary">your_brand</span>&product_name=<span class="text-primary">your_product</span>" >< /<span style="font-weight:bold">iframe ></span
           >
         </p>
-        <div><center><iframe name="iFrameName" title="ScalePreview" style="border:2px solid blue;"></iframe></center></div>
+        <div><center><iframe name="iFrameName" height="185" width="500" title="ScalePreview" style="border:2px solid blue;"></iframe></center></div>
 
       </div>
 
@@ -183,6 +183,18 @@
     </div>
 
     <script>
+    function checkExistenceOfScale(){
+        var elements = document.querySelectorAll('button')
+        for( var i = 0; i < elements.length; i++ ) {
+            let b = {{existing_scales|safe}}.find(item=> item == elements[i].innerHTML.split(" ")[1])
+            if(b == elements[i].innerHTML.split(" ")[1]){
+                elements[i].disabled=true
+            }
+        }
+    }
+
+    checkExistenceOfScale()
+
     function myFunction(id) {
       var x = document.getElementById("snackbar");
       x.innerHTML = `Copied scale no ${id}`
@@ -195,7 +207,7 @@
         console.log(b)
         var copyText = document.getElementById('mytext')
         // copyText.innerHTML = `https://100035.pythonanywhere.com${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
-        document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
+        document.getElementsByName('iFrameName')[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`;
         }
       window.onload = codeAddress;
 
@@ -204,6 +216,7 @@
         x = getCookieValue('url')
         b = x.replaceAll('"','')
         var clip = document.getElementById("clip-icon");
+        var btn = document.getElementById(`btn${i}`);
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
         input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product/${i}`;
@@ -211,10 +224,7 @@
         input_temp.select();
         document.execCommand("copy");
         document.body.removeChild(input_temp);
-
-        clip.className = "bi bi-check2";
-        clip.style.color = "blue";
-        clip.style.cursor = "default";
+        btn.disabled = true
       }
       const getCookieValue = (name) =>
         document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() ||
