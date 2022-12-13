@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import SystemSettings,Response,dowell_scale_admin,dowell_scale,dowell_scale1, default_scale, default_scale_admin,login,brand_product_error,rolescreen
+from .views import SystemSettings,Response,dowell_scale_admin,dowell_scale,dowell_scale1, default_scale, default_scale_admin,login,brand_product_error
 
 
 app_name="nps"
@@ -10,7 +10,7 @@ router.register('nps-response', viewset=Response)
 urlpatterns = [
     # path('', include(router.urls)),
     path('api/', include(router.urls)),
-    path('', rolescreen,name='login_page'),
+    # path('', rolescreen,name='login_page'),
     path('nps-admin/', login,name='npslogin'),
     path('nps-admin/settings/', dowell_scale_admin,name='admin_page'),
     path('nps-scale/<str:tname>', dowell_scale, name='detail_page'),

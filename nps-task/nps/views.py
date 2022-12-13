@@ -232,13 +232,13 @@ def default_scale_admin(request):
     return render(request, 'nps/default.html', context)
 
 
-def rolescreen(request):
-    return render(request, 'nps/landing_page.html')
+# def rolescreen(request):
+#     return render(request, 'nps/landing_page.html')
 
 def login(request):
     url = request.GET.get('session_id', None)
     if url == None:
-        return redirect("https://100014.pythonanywhere.com/")
+        return redirect("https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com")
     user=get_user_profile(url)
     # return HttpResponse(user)
     try:

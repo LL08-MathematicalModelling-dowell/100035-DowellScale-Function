@@ -1,11 +1,11 @@
 from django.urls import path, include
 
-from .views import dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,login,brand_product_error,rolescreen
+from .views import dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,login,brand_product_error
 
 app_name="stapel"
 
 urlpatterns = [
-    path('', rolescreen,name='login_page'),
+    # path('', rolescreen,name='login_page'),
     path('stapel-admin/', login,name='stapellogin'),
     path('stapel-admin/settings/', dowell_scale_admin,name='admin_page'),
     path('stapel-scale1/<str:tname1>', dowell_scale1, name='afteradmin'),

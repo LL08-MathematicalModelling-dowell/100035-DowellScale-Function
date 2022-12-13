@@ -198,8 +198,8 @@ def default_scale_admin(request):
         print("No scales found")
     return render(request, 'stapel/default.html', context)
 
-def rolescreen(request):
-    return render(request, 'stapel/landing_page.html')
+# def rolescreen(request):
+#     return render(request, 'stapel/landing_page.html')
 
 def login(request):
     url = request.GET.get('session_id', None)
