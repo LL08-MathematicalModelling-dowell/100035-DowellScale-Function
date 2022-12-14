@@ -188,14 +188,12 @@
           >&product_name=<span class="text-primary">your_product</span>" ><
           /<span style="font-weight: bold">iframe ></span>
         </p>
-        <div>
-          <center>
-            <iframe
-              name="iFrameName"
-              title="ScalePreview"
-              style="border: 2px solid blue"
-            ></iframe>
-          </center>
+        <div style="text-align: center">
+          <iframe
+            name="iFrameName"
+            title="ScalePreview"
+            style="border: 2px solid blue"
+          ></iframe>
         </div>
       </div>
     </div>
@@ -268,8 +266,8 @@
         var clip = document.getElementById("clip-icon");
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
-        //input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product`;
-        input_temp.value = `http://127.0.0.1:8000${b}?brand_name=your_brand&product_name=your_product/${i}`;
+        input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product${i}`;
+        //input_temp.value = `http://127.0.0.1:8000${b}?brand_name=your_brand&product_name=your_product/${i}`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");

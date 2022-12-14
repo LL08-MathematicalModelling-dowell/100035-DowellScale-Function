@@ -6,7 +6,7 @@ import json
 
 
 # Create your views here
-@csrf_exempt
+"""@csrf_exempt
 def logins (request):
     if request.method == "POST":
         name = request.POST.get("username")
@@ -34,7 +34,28 @@ def logins (request):
         except:
             return redirect("https://100014.pythonanywhere.com/")
     return render(request, "login_page.html")
-
+"""
+def logins(request):
+    url = request.GET.get('session_id', None)
+    print(url)
+    uri =request.path
+    print(uri)
+    if url == None:
+        return redirect("https://100014.pythonanywhere.com/")
+    user="test"
+    # return HttpResponse(user)
+    try:
+        if user["username"]:
+            if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
+                response = redirect("nps:default_page_admin")
+                response.set_cookie('user', user['username'])
+                return response
+            else:
+                response = redirect("nps:default_page")
+                response.set_cookie('user', user["username"])
+                return response
+    except:
+        return redirect("https://100014.pythonanywhere.com/")
 
 def homepage(request):
     context={}

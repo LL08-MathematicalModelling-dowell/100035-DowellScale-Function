@@ -9,7 +9,6 @@ def get_user_profile(key):
     return json.loads(dic)
 
 #print(get_user_profile)
-import requests
 
 def Dowell_Login(username,password,location,device,os,browser,time,ip,type_of_conn):
     url="http://100014.pythonanywhere.com/api/login/"
@@ -25,7 +24,7 @@ def Dowell_Login(username,password,location,device,os,browser,time,ip,type_of_co
         'ip':ip,
         'type_of_conn':type_of_conn
     }
-    with requests.Session() as s:
+    with req.Session() as s:
         p = s.post(url, data=payload)
         #print(p.text)
         if "Username" in p.text:
@@ -35,3 +34,10 @@ def Dowell_Login(username,password,location,device,os,browser,time,ip,type_of_co
             return user.text
         
 #print(Dowell_Login("couzy","Cour@geous98","location","device","os","browser","time","ip","type_of_conn"))
+def test_new_login():
+    url="https://100014.pythonanywhere.com/api/userinfo/"
+    payload={"session_id":"ppiq9ojeea2iryp4bvxb9f0i25xk57aj"}
+    request = req.post(url=url,data=payload)
+    return request.text
+
+print(test_new_login())
