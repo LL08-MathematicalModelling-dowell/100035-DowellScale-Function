@@ -27,10 +27,10 @@ urlpatterns = [
     path('percent/', include('percent.urls')),
     path('nps-lite/', include('npslite.urls')),
     path('likert/', include('likert.urls')),
-    path('', include('login.urls')),
-    
+    # path('', include('scalefetch.urls')),
+    path('home/', include('login.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns +=staticfiles_urlpatterns()
+# urlpatterns +=staticfiles_urlpatterns()

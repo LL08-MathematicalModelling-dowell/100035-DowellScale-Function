@@ -145,8 +145,8 @@ def default_scale_admin(request):
     return render(request, 'likert/default.html', context)
 
 
-def rolescreen(request):
-    return render(request, 'likert/landing_page.html')
+# def rolescreen(request):
+#     return render(request, 'likert/landing_page.html')
 
 def login(request):
     url = request.GET.get('session_id', None)

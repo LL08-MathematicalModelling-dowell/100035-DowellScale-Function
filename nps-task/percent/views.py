@@ -12,7 +12,7 @@ from nps.eventID import get_event_id
 
 def dowell_scale_admin(request):
     context={}
-    
+
     if request.method == 'POST':
         name = request.POST['nameofscale']
         orientation = request.POST['orientation']
@@ -58,7 +58,7 @@ def dowell_scale1(request, tname1):
         context["brand_name"] = names_values_dict['brand_name']
         context["product_name"] = names_values_dict['product_name']
         context["scale_name"] = tname1
-        
+
     except:
         f_path = request.get_full_path()
         response = redirect('percent:preview_page')
@@ -82,7 +82,7 @@ def dowell_scale1(request, tname1):
 
     context["no_of_scales"]=number_of_scale
     num = url.split('/')
-    url_id = num[-1]    
+    url_id = num[-1]
     field_add={"scale_name":context["scale_name"]}
     response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
     data=json.loads(response)
@@ -114,7 +114,7 @@ def dowell_scale1(request, tname1):
                 if b == current_url:
                     #print("Already exists")
                     context["score"]="show"
-                    #return redirect(f"https://100014.pythonanywhere.com/main")  
+                    #return redirect(f"https://100014.pythonanywhere.com/main")
             field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"eventID":eventID}
             x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
 
@@ -135,7 +135,7 @@ def brand_product_preview(request):
     x= data["data"]
     context["defaults"]=x
     for i in x:
-        number_of_scale=i['number_of_scales']  
+        number_of_scale=i['number_of_scales']
 
     context["no_scales"]=int(number_of_scale)
     context["no_of_scales"]=[]
@@ -186,10 +186,9 @@ def login(request):
                 response.set_cookie('user', user['username'])
                 return response
             else:
-                response = redirect("percent:default_page") 
-                response.set_cookie('user', user["username"])              
+                response = redirect("percent:default_page")
+                response.set_cookie('user', user["username"])
                 return response
     except:
         return redirect('https://100014.pythonanywhere.com/')
-
 

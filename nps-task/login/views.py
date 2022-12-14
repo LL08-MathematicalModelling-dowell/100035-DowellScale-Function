@@ -1,66 +1,32 @@
-from django.shortcuts import render
-from django.shortcuts import render, redirect
-from nps.login import  Dowell_Login
+from django.shortcuts import render, HttpResponse, redirect
+from nps.main_login import  Dowell_Login
+from nps.login import get_user_profile
 from django.views.decorators.csrf import csrf_exempt
 import json
+import requests
 
-
-# Create your views here
-"""@csrf_exempt
-def logins (request):
-    if request.method == "POST":
-        name = request.POST.get("username")
-        password=request.POST.get("password")
-        loc=request.POST["loc"]
-        device=request.POST["dev"]
-        osver=request.POST["os"]
-        brow=request.POST["brow"]
-        ltime=request.POST["time"]
-        ipuser=request.POST["ip"]
-        mobconn=request.POST["conn"]
-        response= Dowell_Login(name,password,loc,device,osver,brow,ltime,ipuser,mobconn)
-        responses=(json.loads(response))
-        print(responses)
-        
-        try:
-            if responses["role"]=="Client_Admin":
-                request.session["role"]="Client_Admin"
-                #return redirect("http://127.0.0.1:8000/home/")
-                return redirect("https://100035.pythonanywhere.com/home/")
-            elif responses["role"]=="user":
-                request.session["role"]="user"
-                return redirect("https://100035.pythonanywhere.com/home/")
-               # return redirect("http://127.0.0.1:8000/home/")
-        except:
-            return redirect("https://100014.pythonanywhere.com/")
-    return render(request, "login_page.html")
-"""
-def logins(request):
-    url = request.GET.get('session_id', None)
-    print(url)
-    uri =request.path
-    print(uri)
-    if url == None:
-        return redirect("https://100014.pythonanywhere.com/")
-    user="test"
-    # return HttpResponse(user)
-    try:
-        if user["username"]:
-            if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-                response = redirect("nps:default_page_admin")
-                response.set_cookie('user', user['username'])
-                return response
-            else:
-                response = redirect("nps:default_page")
-                response.set_cookie('user', user["username"])
-                return response
-    except:
-        return redirect("https://100014.pythonanywhere.com/")
-
+def redirect_to_login():
+    return redirect(
+        "https://100014.pythonanywhere.com/?redirect_url=http://100035.pythonanywhere.com/home/"
+    )
 def homepage(request):
     context={}
-    role = request.session.get('role')
-    context["role"]=role
-    
-    return render(request, "homepage.html", context=context)
+    session_id = request.GET.get("session_id", None)
+    code=request.GET.get('id',None)
+    if session_id:
+        try:
+            url="https://100014.pythonanywhere.com/api/userinfo/"
+            response=requests.post(url,data={"session_id":session_id})
+            profile_detais= json.loads(response.text)
+            request.session["userinfo"]=profile_detais["userinfo"]
+            request.session["user_name"]=profile_detais["userinfo"]["username"]
+            request.session["portfolio_info"]=profile_detais["portfolio_info"]
+            request.session["role"]=profile_detais["portfolio_info"]["role"]
+            context['user_role'] = request.session.get('role')
+            print("+++++++++++", request.session.get('role'))
+            return render(request, "login/homepage.html", context=context)
+        except:
+            return redirect_to_login()
+    else:
+      return redirect_to_login()
 # Create your views here.
