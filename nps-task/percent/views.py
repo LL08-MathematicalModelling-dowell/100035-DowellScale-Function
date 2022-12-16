@@ -30,8 +30,8 @@ def dowell_scale_admin(request):
                 #user = request.COOKIES['user']
                 field_add={"scale_type":scale_type,"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "user": user,  "eventID":eventID }
                 x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-                return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
-                #return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
+                #return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
+                return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
             except:
                 context["Error"] = "Error Occurred while save the custom pl contact admin"
         return render(request, 'percent/scale_admin.html', context)
