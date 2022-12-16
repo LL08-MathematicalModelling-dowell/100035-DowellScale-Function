@@ -39,5 +39,3 @@ def test_new_login():
     payload={"session_id":"ppiq9ojeea2iryp4bvxb9f0i25xk57aj"}
     request = req.post(url=url,data=payload)
     return request.text
-
-print(test_new_login())

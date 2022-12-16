@@ -12,6 +12,47 @@
    * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
    * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
    */
+   #snackbar {
+                visibility: hidden;
+                min-width: 250px;
+                margin-left: -125px;
+                background-color: green;
+                color: #fff;
+                text-align: center;
+                border-radius: 2px;
+                padding: 16px;
+                position: fixed;
+                z-index: 1;
+                right: 10%;
+                top: 30px;
+                font-size: 17px;
+              }
+
+              #snackbar.show {
+                visibility: visible;
+                -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+              }
+
+              @-webkit-keyframes fadein {
+                from {top: 0; opacity: 0;}
+                to {top: 30px; opacity: 1;}
+              }
+
+              @keyframes fadein {
+                from {top: 0; opacity: 0;}
+                to {top: 30px; opacity: 1;}
+              }
+
+              @-webkit-keyframes fadeout {
+                from {top: 30px; opacity: 1;}
+                to {top: 0; opacity: 0;}
+              }
+
+              @keyframes fadeout {
+                from {top: 30px; opacity: 1;}
+                to {top: 0; opacity: 0;}
+              }
 
    #horizontal h6{
        font-size: 18px;
@@ -85,17 +126,30 @@
 
   </head>
   <body class=".bg-secondary">
+    <div id="snackbar"></div>
       <div class="container">
           <div class="row" style="margin-top: 3%;">
               <div class="col-lg-1 col-md-2 d-sm-none"></div>
               <div class="col-lg-10 clo-md-8 col-sm-12 bg-info" style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
-                  <form action="" method="POST" id ="myform" onsubmit="return false">
+                  <form action="" method="POST" id ="myform">
                       {% csrf_token %}
                           <h2 align="center"><u>Customize your scale</u></h2>
                           <div class="form-group col-md-6">
                               <label for="head">Name of Scale</label>
                               <input type="text" name="nameofscale" class="form-control" id="head" placeholder="Name of scale" required="">
                           </div>
+                          <div class="form-group col-md-6">
+                            <label for="head">Number of Scales</label>
+                            <input
+                                type="text"
+                                name="numberofscale"
+                                class="form-control"
+                                id="head"
+                                placeholder="Number of scale"
+                                required="True"
+                                value="1"
+                            />
+                        </div>
                           <div class="form-group col-md-6">
                               <label for="orientation">Orientation</label>
                               <select id="orientation" class="form-control" name="orientation" required="True">
@@ -178,7 +232,7 @@
                               <!--</div>-->
                             </div>
                             <div class="modal-footer">
-                              <button type="submit" class="btn btn-secondary" onclick=Submit()>Save</button>
+
                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                               <!--<button type="button" class="btn btn-primary">Save changes</button>-->
                             </div>
@@ -192,10 +246,7 @@
 <script>
                   var vert="vertical";
                   var hori="horizontal";
-                  function Submit(){
-                    document.getElementById("myform").submit();
-                  }
-
+                  
                   let head_name;
                   let orient;
                   let rcolor;

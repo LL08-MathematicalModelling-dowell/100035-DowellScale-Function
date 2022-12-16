@@ -12,33 +12,33 @@ from nps.eventID import get_event_id
 
 def dowell_scale_admin(request):
     context={}
-
-    if request.method == 'POST':
-        name = request.POST['nameofscale']
-        orientation = request.POST['orientation']
-        scalecolor = request.POST['scolor']
-        time = request.POST['time']
-        number_of_scales=request.POST['numberofscale']
-        rand_num = random.randrange(1, 10000)
-        template_name = f"{name.replace(' ', '')}{rand_num}"
-        eventID = get_event_id()
-       # user = "test"
-        scale_type="percent"
-        try:
-            #user = request.COOKIES['user']
-            user = "test"
-            field_add={"scale_type":scale_type,"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "user": user,  "eventID":eventID }
-            x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            #return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
-            return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
-        except:
-            context["Error"] = "Error Occurred while save the custom pl contact admin"
-    return render(request, 'percent/scale_admin.html', context)
+    if request.session.get("userinfo"):
+        username= request.session["user_name"]
+        if request.method == 'POST':
+            name = request.POST['nameofscale']
+            orientation = request.POST['orientation']
+            scalecolor = request.POST['scolor']
+            time = request.POST['time']
+            number_of_scales=request.POST['numberofscale']
+            rand_num = random.randrange(1, 10000)
+            template_name = f"{name.replace(' ', '')}{rand_num}"
+            eventID = get_event_id()
+            user = username
+            scale_type="percent"
+            print(user)
+            try:
+                #user = request.COOKIES['user']
+                field_add={"scale_type":scale_type,"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "user": user,  "eventID":eventID }
+                x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
+                return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
+                #return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
+            except:
+                context["Error"] = "Error Occurred while save the custom pl contact admin"
+        return render(request, 'percent/scale_admin.html', context)
 
 @xframe_options_exempt
 def dowell_scale1(request, tname1):
     context={}
-
     brand_name = request.GET.get('brand_name', None)
     product_name = request.GET.get('product_name', None)
     ls = request.path
@@ -58,7 +58,6 @@ def dowell_scale1(request, tname1):
         context["brand_name"] = names_values_dict['brand_name']
         context["product_name"] = names_values_dict['product_name']
         context["scale_name"] = tname1
-
     except:
         f_path = request.get_full_path()
         response = redirect('percent:preview_page')
@@ -156,19 +155,23 @@ def default_scale(request):
     return render(request, 'percent/default.html', context)
 
 def default_scale_admin(request):
-    context = {}
-    context['user'] = 'admin'
-    context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:300px;overflow-y: scroll;"
-    context["hist"] = "Scale History"
-    context["btn"] = "btn btn-dark"
-    context["urltext"] = "Create new scale"
-    field_add = {}
-    all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
-    data = json.loads(all_scales)
+    if request.session.get("userinfo"):
+        username= request.session["user_name"]
+        #role = request.session["role"]
+        context = {}
+        context['user'] = 'admin'
+        context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:300px;overflow-y: scroll;"
+        context["hist"] = "Scale History"
+        context["btn"] = "btn btn-dark"
+        context["urltext"] = "Create new scale"
+        context["username"]=username
+        field_add = {}
+        all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
+        data = json.loads(all_scales)
 
-    context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
+        context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
-    return render(request, 'percent/default.html', context)
+        return render(request, 'percent/default.html', context)
 
 
 def rolescreen(request):
