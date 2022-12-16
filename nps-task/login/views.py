@@ -6,8 +6,8 @@ import json
 import requests
 
 def redirect_to_login():
-    #return redirect("https://100014.pythonanywhere.com/?redirect_url=http://100035.pythonanywhere.com/home/")
-    return redirect("https://100014.pythonanywhere.com/?redirect_url=http://127.0.0.1:8000/home/")
+    return redirect("https://100014.pythonanywhere.com/?redirect_url=http://100035.pythonanywhere.com/home/")
+    #return redirect("https://100014.pythonanywhere.com/?redirect_url=http://127.0.0.1:8000/home/")
 def homepage(request):
     context={}
     session_id = request.GET.get("session_id", None)
