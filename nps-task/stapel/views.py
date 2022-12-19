@@ -12,6 +12,10 @@ from .eventID import get_event_id
 
 
 def dowell_scale_admin(request):
+    user = request.session.get('user_name')
+    if user == None:
+        return redirect("https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/stapel/stapel-admin/settings/")
+    # print("+++++++++++++", request.session.get('user_name'))
     context={}
     if request.method == 'POST':
         name = request.POST['nameofscale']
@@ -38,12 +42,10 @@ def dowell_scale_admin(request):
             raise Exception("Check scale limits and spacing_unit")
 
         try:
-            user  = request.COOKIES['user']
             eventID = get_event_id()
-            field_add={"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale", "user": user, "eventId":eventID, "no_of_scales":no_of_scales}
+            field_add={"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale", "eventId":eventID, "no_of_scales":no_of_scales, "created_by": user}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(x)
-
             return redirect(f"https://100035.pythonanywhere.com/stapel/stapel-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -52,8 +54,11 @@ def dowell_scale_admin(request):
 @xframe_options_exempt
 @csrf_exempt
 def dowell_scale1(request, tname1):
+    user = request.session.get('user_name')
+    if user == None:
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/stapel/stapel-admin/default/")
+    # print("+++++++++++++", request.session.get('user_name'))
     context={}
-
     brand_name = request.GET.get('brand_name', None)
     product_name = request.GET.get('product_name', None)
     ls = request.path
@@ -124,11 +129,11 @@ def dowell_scale1(request, tname1):
 
     if request.method == 'POST':
         score = request.POST['scoretag']
+        eventID = get_event_id()
         score = {'id': current_url, 'score':score}
         print("This is the score selected---->", score)
         try:
-            user  = request.COOKIES['user']
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"response_by": user}
+            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"eventID":eventID,"response_by": user}
             z = dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
             print('Scale NEW added successfully', z)
             context['score'] = "show"
@@ -183,6 +188,13 @@ def default_scale(request):
     return render(request, 'stapel/default.html', context)
 
 def default_scale_admin(request):
+    role = request.session.get('role')
+    if role == None:
+        return redirect("https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/stapel/stapel-admin/default/")
+
+    # if role != owner:
+    #     return redirect("https://100035.pythonanywhere.com/nps-scale/default/")
+
     context = {}
     context['user'] = 'admin'
     context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:300px;overflow-y: scroll;"
@@ -197,24 +209,3 @@ def default_scale_admin(request):
     except:
         print("No scales found")
     return render(request, 'stapel/default.html', context)
-
-# def rolescreen(request):
-#     return render(request, 'stapel/landing_page.html')
-
-def login(request):
-    url = request.GET.get('session_id', None)
-    if url == None:
-        return redirect("https://100014.pythonanywhere.com/")
-    user=get_user_profile(url)
-    try:
-        if user["username"]:
-            if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-                response = redirect("stapel:default_page_admin")
-                response.set_cookie('user', user['username'])
-                return response
-            else:
-                response = redirect("stapel:default_page")
-                response.set_cookie('user', user["username"])
-                return response
-    except:
-        return redirect("https://100014.pythonanywhere.com/")

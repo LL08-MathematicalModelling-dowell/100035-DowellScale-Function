@@ -1,12 +1,10 @@
 from django.urls import path
 
-from .views import dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,login,brand_product_preview, dowell_likert
+from .views import dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_preview, dowell_likert
 
 app_name="likert"
 
 urlpatterns = [
-    # path('', rolescreen,name='login_page'),
-    path('likert-admin/', login,name='likertlogin'),
     path('likert-scale/likert/',dowell_likert, name="likert_page"),
     path('likert-admin/settings/', dowell_scale_admin,name='admin_page'),
     path('likert-scale1/<str:tname1>', dowell_scale1, name='afteradmin'),

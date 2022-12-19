@@ -23,10 +23,19 @@ def homepage(request):
             request.session["portfolio_info"]=profile_detais["portfolio_info"]
             request.session["role"]=profile_detais["portfolio_info"]["role"]
             context['user_role'] = request.session.get('role')
-            print("+++++++++++", request.session.get('role'))
+            # print("+++++++++++", request.session.get('role'))
             return render(request, "login/homepage.html", context=context)
         except:
             return redirect_to_login()
+    elif id == '100093':
+        url="https://100093.pythonanywhere.com/api/userinfo/"
+        response=requests.post(url,data={"session_id":session_id})
+        profile_detais= json.loads(response.text)
+        request.session["userinfo"]=profile_detais["userinfo"]
+        request.session["user_name"]=profile_detais["userinfo"]["username"]
+        request.session["portfolio_info"]=profile_detais["portfolio_info"]
+        request.session["role"]=profile_detais["portfolio_info"]["role"]
+        # return redirect("/page")
     else:
       return redirect_to_login()
 # Create your views here.

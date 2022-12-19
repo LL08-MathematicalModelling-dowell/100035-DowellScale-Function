@@ -1,12 +1,13 @@
-import requests as req
+import requests
 import json
-def get_user_profile(key):
-    data={'key':key}
-    headers={"Content-Type": "application/json"}
-    url="https://100014.pythonanywhere.com/api/userinfo"
-    data=req.post(url,data,headers)
-    dic=data.text
-    return json.loads(dic)
+def get_user_profile(request, key):
+    # code=request.GET.get('id',None)
+    if key:
+        url="https://100014.pythonanywhere.com/api/userinfo/"
+        response=requests.post(url,data={"session_id":key})
+        profile_detais= json.loads(response.text)
+        user_role = request.session.get('role')
+        return profile_detais
 
 
 

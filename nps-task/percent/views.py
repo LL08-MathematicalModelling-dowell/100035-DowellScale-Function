@@ -11,6 +11,10 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from nps.eventID import get_event_id
 
 def dowell_scale_admin(request):
+    user = request.session.get('user_name')
+    if user == None:
+        return redirect("https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/percent/percent-admin/settings/")
+    # print("+++++++++++++", request.session.get('user_name'))
     context={}
 
     if request.method == 'POST':
@@ -25,9 +29,7 @@ def dowell_scale_admin(request):
        # user = "test"
         scale_type="percent"
         try:
-            #user = request.COOKIES['user']
-            user = "test"
-            field_add={"scale_type":scale_type,"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "user": user,  "eventID":eventID }
+            field_add={"scale_type":scale_type,"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "scale-category": "percent scale","eventID":eventID, "created_by": user }
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             #return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
             return redirect(f"https://100035.pythonanywhere.com/percent/percent-scale1/{template_name}")
@@ -37,6 +39,10 @@ def dowell_scale_admin(request):
 
 @xframe_options_exempt
 def dowell_scale1(request, tname1):
+    user = request.session.get('user_name')
+    if user == None:
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/percent/percent-admin/default/")
+    # print("+++++++++++++", request.session.get('user_name'))
     context={}
 
     brand_name = request.GET.get('brand_name', None)
@@ -115,7 +121,7 @@ def dowell_scale1(request, tname1):
                     #print("Already exists")
                     context["score"]="show"
                     #return redirect(f"https://100014.pythonanywhere.com/main")
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"eventID":eventID}
+            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"eventID":eventID, "response_by": user}
             x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
 
             context["score"] = "show"
@@ -156,39 +162,22 @@ def default_scale(request):
     return render(request, 'percent/default.html', context)
 
 def default_scale_admin(request):
+    user = request.session.get('user_name')
+    if user == None:
+        return redirect("https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/percent/percent-admin/default/")
+    # print("++++++++++ USER DETAILS", user)
     context = {}
     context['user'] = 'admin'
     context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:300px;overflow-y: scroll;"
     context["hist"] = "Scale History"
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
-    field_add = {}
+    field_add = {"scale-category": "percent scale"}
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
-
     context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
     return render(request, 'percent/default.html', context)
 
 
-def rolescreen(request):
-    return render(request, 'percent/landing_page.html')
-
-def login(request):
-    url = request.GET.get('session_id', None)
-    if url == None:
-        return redirect("https://100014.pythonanywhere.com/")
-    user=get_user_profile(url)
-    try:
-        if user["username"]:
-            if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-                response = redirect("percent:default_page_admin")
-                response.set_cookie('user', user['username'])
-                return response
-            else:
-                response = redirect("percent:default_page")
-                response.set_cookie('user', user["username"])
-                return response
-    except:
-        return redirect('https://100014.pythonanywhere.com/')
 
