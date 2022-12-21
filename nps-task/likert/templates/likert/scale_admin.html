@@ -283,7 +283,7 @@
                   var scale_bg = document.getElementById("horizontal")
                   var orientation = document.getElementById("orientation")
                   var vert = document.getElementById("vert-div")
-                  //scale_bg.style.background = "#FFFFFF";
+                  //scale_bg.style.background = $("#rcolor").val();
                   //scale_bg.style.padding = "20px 20px";
                   var lab_hor= document.getElementById("lab-hor");
                   var modal= document.getElementById("modal-body");
@@ -320,9 +320,11 @@
                   
                   $(document).ready(function() {
                   mbuttons = document.getElementsByClassName("input");
+                 // mbuttons.style.backgroundColor= $("#rcolor").val();
                   if (mbuttons.length >= 0) {
                       for (var i = 0; i < mbuttons.length; i++) {
                           mbuttons[i].style.cursor = 'pointer'
+                          mbuttons[i].style.backgroundColor=$("#rcolor").val();
                           mbuttons[i].onclick = function(){
                               this.style.backgroundColor = 'red';
                               console.log(this.innerHTML)}
@@ -330,13 +332,14 @@
                               this.style.backgroundColor = 'white';
                                   }
                           mbuttons[i].onmouseover = function(){
-                              this.style.backgroundColor = $("#rcolor").val();
+                              //this.style.backgroundColor = $("#rcolor").val();
+                              this.style.backgroundColor = "green";
                               }
                           mbuttons[i].onmouseout = function(){
                               if (this.style.backgroundColor === 'red'){
                               this.style.backgroundColor = 'red';}
                               else{
-                                  this.style.backgroundColor = 'white';
+                                  this.style.backgroundColor = $("#rcolor").val();
                               } }
 
             }}});      

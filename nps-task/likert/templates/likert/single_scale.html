@@ -272,6 +272,7 @@
                 if (mbuttons.length >= 0) {
                     for (var i = 0; i < mbuttons.length; i++) {
                         mbuttons[i].style.cursor = "pointer";
+                        mbuttons[i].style.backgroundColor="{{default.roundcolor|safe}}";
                         mbuttons[i].onclick = function () {
                             this.style.backgroundColor = "red";
                             console.log(this.innerHTML);
@@ -285,13 +286,13 @@
                         };
                         mbuttons[i].onmouseover = function () {
                             this.style.backgroundColor =
-                                "{{default.roundcolor|safe}}";
+                                "green";
                         };
                         mbuttons[i].onmouseout = function () {
                             if (this.style.backgroundColor === "red") {
                                 this.style.backgroundColor = "red";
                             } else {
-                                this.style.backgroundColor = "white";
+                                this.style.backgroundColor = "{{default.roundcolor|safe}}";
                             }
                         };
 
