@@ -78,13 +78,14 @@
       <br/>
       <div class = "scales">
 
-      <a href="https://100035.pythonanywhere.com/likert" id="likert">Likert Scale</a><br />
-      <a href="https://100035.pythonanywhere.com/percent" id="percent">Percent Scale</a><br />
-      <a href="https://100035.pythonanywhere.com/" id="nps">NPS Scale</a><br />
-      <a href="https://100035.pythonanywhere.com/stapel" id="stapel">Stapel scale</a>
+      <a  id="likert">Likert Scale</a><br />
+      <a  id="percent">Percent Scale</a><br />
+      <a  id="nps">NPS Scale</a><br />
+      <a  id="stapel">Stapel scale</a>
     </div>
     <script >
       var test = "{{user_role|safe}}";
+      console.log(test)
       console.log(test);
       var percent = document.getElementById("percent");
       var likert = document.getElementById("likert");

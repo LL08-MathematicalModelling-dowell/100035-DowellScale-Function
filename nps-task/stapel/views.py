@@ -15,7 +15,7 @@ def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
         return redirect("https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/stapel/stapel-admin/settings/")
-    # print("+++++++++++++", request.session.get('user_name'))
+    # # print("+++++++++++++", request.session.get('user_name'))
     context={}
     if request.method == 'POST':
         name = request.POST['nameofscale']
@@ -43,9 +43,15 @@ def dowell_scale_admin(request):
 
         try:
             eventID = get_event_id()
-            field_add={"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale", "eventId":eventID, "no_of_scales":no_of_scales, "created_by": user}
+            field_add={"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale", "event_id":eventID, "no_of_scales":no_of_scales}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(x)
+
+            # User details
+            user_json = json.loads(x)
+            details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
+            user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
+
             return redirect(f"https://100035.pythonanywhere.com/stapel/stapel-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -57,7 +63,7 @@ def dowell_scale1(request, tname1):
     user = request.session.get('user_name')
     if user == None:
         return redirect(f"https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/stapel/stapel-admin/default/")
-    # print("+++++++++++++", request.session.get('user_name'))
+    # # print("+++++++++++++", request.session.get('user_name'))
     context={}
     brand_name = request.GET.get('brand_name', None)
     product_name = request.GET.get('product_name', None)
@@ -133,9 +139,14 @@ def dowell_scale1(request, tname1):
         score = {'id': current_url, 'score':score}
         print("This is the score selected---->", score)
         try:
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"eventID":eventID,"response_by": user}
+            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"event_id":eventID}
             z = dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
             print('Scale NEW added successfully', z)
+
+            # User details
+            user_json = json.loads(z)
+            details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
+            user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
             context['score'] = "show"
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"

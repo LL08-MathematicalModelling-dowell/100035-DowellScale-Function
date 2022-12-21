@@ -31,7 +31,9 @@ def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
         return redirect("https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/nps-admin/settings/")
-    # print("+++++++++++++", request.session.get('user_name'))
+
+    print("+++++++++=>",user)
+
     context={}
     if request.method == 'POST':
         name = request.POST['nameofscale']
@@ -53,10 +55,12 @@ def dowell_scale_admin(request):
         # objcolor.save()
         try:
             eventID = get_event_id()
-            field_add = {"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "eventId":eventID, "no_of_scales":no_of_scales, "created_by": user}
+            field_add = {"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "event_id":eventID, "no_of_scales":no_of_scales}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            print(field_add)
-            print("No of scales",len(field_add))
+            # User details
+            user_json = json.loads(x)
+            details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
+            user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
             return redirect(f"https://100035.pythonanywhere.com/nps-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -69,7 +73,7 @@ def dowell_scale1(request, tname1):
     user = request.session.get('user_name')
     if user == None:
         return redirect(f"https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/nps-admin/default/")
-    # print("+++++++++++++", request.session.get('user_name'))
+
     context={}
 
     # Get url parameters
@@ -146,9 +150,14 @@ def dowell_scale1(request, tname1):
         score = {'id': current_url, 'score':score}
         # print("Testing...",y)
         try:
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"eventID":eventID, "response_by": user}
+            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"event_id":eventID}
             z=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-            print('Scale NEW added successfully', z)
+            # print('Scale NEW added successfully', z)
+
+            # User details
+            user_json = json.loads(z)
+            details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
+            user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
             context['score'] = "show"
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -215,7 +224,4 @@ def default_scale_admin(request):
     context["npsall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
     # context["npsall"] = system_settings.objects.all().order_by('-id')
     return render(request, 'nps/default.html', context)
-
-
-
 
