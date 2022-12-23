@@ -1,19 +1,6 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title></title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
-    />
+{% extends "index.html" %}
+{% block title %}Scales{% endblock %}
+{% block content %}
     <style>
       .header {
         font-size: 24px;
@@ -24,8 +11,8 @@
         align-items: center;
         color: green;
       }
-      a:link,
-      a:visited {
+      .scales a:link,
+      .scales a:visited {
         background-color: #05890b;
         color: white;
         padding: 14px 20px;
@@ -33,10 +20,12 @@
         text-decoration: none;
         display: inline-block;
         border-radius: 25px;
+        margin-top: 20px;
+        width: 180px;
       }
 
-      a:hover,
-      a:active {
+      .scales a:hover,
+      .scales a:active {
         background-color: blue;
       }
       .landing-header {
@@ -45,15 +34,14 @@
       }
       .scales{
         font-size:20px;
-        justify-content:space-around;
+        justify-content:space-between;
         display:flex;
-        flex-direction:column;
-        margin:
-
+        flex-wrap: wrap;
+        width: 450px;
+<!--        flex-direction:column;-->
       }
     </style></head
   >{% load static %}
-  <body style="background-color: white">
     <div class="header">
       <p>
         <img
@@ -77,11 +65,10 @@
 
       <br/>
       <div class = "scales">
-
-      <a  id="likert">Likert Scale</a><br />
-      <a  id="percent">Percent Scale</a><br />
-      <a  id="nps">NPS Scale</a><br />
-      <a  id="stapel">Stapel scale</a>
+	      <a  id="likert">Likert Scale</a>
+	      <a  id="percent">Percent Scale</a>
+	      <a  id="nps">NPS Scale</a><br />
+	      <a  id="stapel">Stapel scale</a>
     </div>
     <script >
       var test = "{{user_role|safe}}";
@@ -93,19 +80,17 @@
       var nps = document.getElementById("nps");
 
       if (test==="owner"){
-        percent.href = "https://100035.pythonanywhere.com/percent/percent-admin/default"
-        likert.href = "https://100035.pythonanywhere.com/likert/likert-admin/default"
-        nps.href = "https://100035.pythonanywhere.com/nps-admin/default"
-        stapel.href = "https://100035.pythonanywhere.com/stapel/stapel-admin/default"
+        percent.href = "{{public_url|safe}}/percent/percent-admin/default"
+        likert.href = "{{public_url|safe}}/likert/likert-admin/default"
+        nps.href = "{{public_url|safe}}/nps-admin/default"
+        stapel.href = "{{public_url|safe}}/stapel/stapel-admin/default"
       }
       else{
-        percent.href = "https://100035.pythonanywhere.com/percent/percent-scale/default"
-        likert.href = "https://100035.pythonanywhere.com/likert/likert-scale/default"
-        nps.href = "https://100035.pythonanywhere.com/nps-scale/default"
-        stapel.href = "https://100035.pythonanywhere.com/stapel/stapel-scale/default"
-
+        percent.href = "{{public_url|safe}}/percent/percent-scale/default"
+        likert.href = "{{public_url|safe}}/likert/likert-scale/default"
+        nps.href = "{{public_url|safe}}/nps-scale/default"
+        stapel.href = "{{public_url|safe}}/stapel/stapel-scale/default"
       }
-
     </script>
-  </body>
-</html>
+    </div>
+{% endblock %}

@@ -1,15 +1,10 @@
 from django.urls import path, include
-from rest_framework import routers
-from .views import SystemSettings,Response,dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error
+from .views import dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error
 
 
 app_name="nps"
-router = routers.DefaultRouter()
-router.register('nps-setting', viewset=SystemSettings)
-router.register('nps-response', viewset=Response)
 urlpatterns = [
     # path('', include(router.urls)),
-    path('api/', include(router.urls)),
     path('nps-admin/settings/', dowell_scale_admin,name='admin_page'),
     path('nps-scale1/<str:tname1>', dowell_scale1, name='afteradmin'),
     path('nps-scale/embed/', brand_product_error, name='error_page'),

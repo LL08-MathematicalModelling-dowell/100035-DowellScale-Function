@@ -4,13 +4,15 @@ from nps.login import get_user_profile
 from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
+from dowellnps_scale_function.settings import public_url
 
 def redirect_to_login():
     return redirect(
-        "https://100014.pythonanywhere.com/?redirect_url=http://100035.pythonanywhere.com/home/"
+        f"https://100014.pythonanywhere.com/?redirect_url={public_url}/home/"
     )
 def homepage(request):
     context={}
+    context["public_url"] = public_url
     session_id = request.GET.get("session_id", None)
     code=request.GET.get('id',None)
     if session_id:
@@ -30,3 +32,10 @@ def homepage(request):
             return redirect_to_login()
     else:
       return redirect_to_login()
+
+def logout(request):
+    del request.session["userinfo"]
+    del request.session["user_name"]
+    # del request.session["portfolio_info"]
+    # del request.session["role"]
+    return redirect("https://100014.pythonanywhere.com/sign-out")

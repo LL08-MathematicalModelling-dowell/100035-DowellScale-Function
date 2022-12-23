@@ -9,14 +9,16 @@ import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from .eventID import get_event_id
+from dowellnps_scale_function.settings import public_url
 
 
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
-        return redirect("https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/stapel/stapel-admin/settings/")
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/stapel/stapel-admin/settings/")
     # # print("+++++++++++++", request.session.get('user_name'))
     context={}
+    context["public_url"] = public_url
     if request.method == 'POST':
         name = request.POST['nameofscale']
         orientation = request.POST['orientation']
@@ -52,7 +54,7 @@ def dowell_scale_admin(request):
             details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
             user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
 
-            return redirect(f"https://100035.pythonanywhere.com/stapel/stapel-scale1/{template_name}")
+            return redirect(f"{public_url}/stapel/stapel-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'stapel/scale_admin.html', context)
@@ -62,9 +64,10 @@ def dowell_scale_admin(request):
 def dowell_scale1(request, tname1):
     user = request.session.get('user_name')
     if user == None:
-        return redirect(f"https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/stapel/stapel-admin/default/")
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/stapel/stapel-admin/default/")
     # # print("+++++++++++++", request.session.get('user_name'))
     context={}
+    context["public_url"] = public_url
     brand_name = request.GET.get('brand_name', None)
     product_name = request.GET.get('product_name', None)
     ls = request.path
@@ -154,6 +157,7 @@ def dowell_scale1(request, tname1):
 
 def brand_product_error(request):
     context = {}
+    context["public_url"] = public_url
     url = request.COOKIES['url']
     template_name = url.split("/")[3]
     field_add={"template_name":template_name}
@@ -185,12 +189,13 @@ def brand_product_error(request):
 
     print("This are the existing scales", context['existing_scales'])
     name=url.replace("'","")
-    context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
+    context['template_url']= f"{public_url}{name}?brand_name=your_brand&product_name=your_product"
     print(context['template_url'])
     return render(request, 'stapel/error_page.html', context)
 
 def default_scale(request):
     context = {}
+    context["public_url"] = public_url
     context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);"
     context["hist"] = "Scale History"
     context["btn"] = "btn btn-dark"
@@ -199,14 +204,15 @@ def default_scale(request):
     return render(request, 'stapel/default.html', context)
 
 def default_scale_admin(request):
-    role = request.session.get('role')
-    if role == None:
-        return redirect("https://100014.pythonanywhere.com/?redirect_url=https://100035.pythonanywhere.com/stapel/stapel-admin/default/")
-
+    user = request.session.get('user_name')
+    if user == None:
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-admin/default/")
+    # print("++++++++++ USER DETAILS", user)
     # if role != owner:
     #     return redirect("https://100035.pythonanywhere.com/nps-scale/default/")
 
     context = {}
+    context["public_url"] = public_url
     context['user'] = 'admin'
     context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:300px;overflow-y: scroll;"
     context["hist"] = "Scale History"

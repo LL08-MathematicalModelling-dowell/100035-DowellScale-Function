@@ -17,7 +17,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>VOC_Likert</title>
+        <title>Likert Scale</title>
         <style>
             #snackbar {
                 visibility: hidden;
@@ -464,7 +464,7 @@
 
                                     const countdownEl = document.getElementById("countdown");
 
-                                    if (window.location.href === "https://100035.pythonanywhere.com/likert/likert-scale1/Likert-default6544?brand_name=your%20brand&product_name=your%20product"){
+                                    if (window.location.href === "{{public_url|safe}}/likert/likert-scale1/Likert-default6544?brand_name=your%20brand&product_name=your%20product"){
                                         countdownEl.style.display = "none"
                                     } else {
                                         setInterval(updateCountdown, 1000)

@@ -1,25 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link
-            rel="stylesheet"
-            href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-        />
-        <link
-            rel="stylesheet"
-            href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
-        />
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
-            integrity="sha512-5PV92qsds/16vyYIJo3T/As4m2d8b6oWYfoqV+vtizRB6KhF1F9kYzWzQmsO6T3z3QG2Xdhrx7FQ+5R1LiQdUA=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-        />
-        <title>Preview page</title>
+{% extends "index.html" %}
+{% block title %}Likert preview page{% endblock %}
+{% block content %}
         <style>
             #snackbar {
                 visibility: hidden;
@@ -162,9 +143,11 @@
                 justify-content: center;
                 align-items: flex-start;
             }
+            body{
+            background-color: black;
+            }
         </style>
-    </head>
-    <body style="background-color: black">
+
         <div id="snackbar"></div>
 
         <div class="hint">
@@ -185,7 +168,7 @@
                 <p class="text-dark">
                     <span style="font-weight: bold"> < iframe</span
                     ><span class="text-danger"> src=</span
-                    >"https://100035.pythonanywhere.com?brand_name=<span
+                    >"{{public_url|safe}}?brand_name=<span
                         class="text-primary"
                         >your brand</span
                     >&product_name=<span class="text-primary">your product</span
@@ -222,7 +205,7 @@
                     >
                         {{template_url}}/{{ forloop.counter }}
                     </th>
-                    <td style="text-align: center; padding: 3px" class="p-5">
+                    <td style="text-align: center; padding: 3px; width: 100px" >
                         <button
                             type="button"
                             id="btn{{ forloop.counter }}"
@@ -250,12 +233,10 @@
                 x = getCookieValue("url");
                 b = x.replaceAll('"', "");
                 var copyText = document.getElementById("mytext");
-                copyText.innerHTML = `https://100035.pythonanywhere.com${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`;
-                //copyText.innerHTML = `http://127.0.0.1:8000${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`
-                //document.getElementsByName('iFrameName')[0].src = `http://127.0.0.1:8000${b}?brand_name=your brand&product_name=your product`
+                copyText.innerHTML = `{{public_url|safe}}${b}?brand_name=<b>your brand</b>&product_name=<b>your product</b>`;
                 document.getElementsByName(
                     "iFrameName"
-                )[0].src = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
+                )[0].src = `{{public_url|safe}}${b}?brand_name=your brand&product_name=your product`;
             }
             window.onload = codeAddress;
 
@@ -267,8 +248,7 @@
                 var clip = document.getElementById("clip-icon");
                 var value = document.getElementById(id).innerHTML;
                 var input_temp = document.createElement("input");
-                input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your_brand&product_name=your_product/${i}`;
-                //input_temp.value = `http://127.0.0.1:8000${b}?brand_name=your_brand&product_name=your_product/${i}`;
+                input_temp.value = `{{public_url|safe}}${b}?brand_name=your_brand&product_name=your_product/${i}`;
                 document.body.appendChild(input_temp);
                 input_temp.select();
                 document.execCommand("copy");
@@ -281,5 +261,4 @@
                     .match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")
                     ?.pop() || "";
         </script>
-    </body>
-</html>
+{% endblock %}

@@ -1,0 +1,49 @@
+<style>
+	.navimg{
+	height: 40px;
+	width: 40px;
+	padding-right: 5px;
+	}
+	*{
+        margin: 0;
+        padding: 0;
+    }
+
+    body::before{
+    display: block;
+    content: " ";
+    height: 60px;
+    }
+
+    body{
+    font-family: 'Playfair Display';
+    }
+
+    @media(max-width: 760px){
+    .logo-title{
+    font-size: 15px;
+    }
+    }
+
+    @media(max-width: 360px){
+    .navimg{
+	height: 30px;
+	width: 30px;
+	padding-right: 3px;
+	}
+    .logo-title{
+    display: none;
+    }
+    }
+</style>
+
+<nav class="topnav navbar navbar-expand-lg navbar-light bg-success fixed-top">
+	{% load static %}
+	<div class="container d-flex">
+		<a class="navbar-brand" href="{% url 'login:home' %}"><img class="navimg"
+                                                                   src="{% static 'images/dowell-logo.png' %}"
+        /><strong
+                class="logo-title">SCALES</strong></a>
+		<a href="{% url 'login:logout_btn' %}" class="navbar-brand btn btn-warning">LOGOUT</a>
+	</div>
+</nav>

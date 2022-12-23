@@ -40,10 +40,9 @@
   function onChange() {
     var value = e.value;
     if(value == "user"){
-      window.location.replace('https://100035.pythonanywhere.com/nps-scale/default/')
+      window.location.replace('{{public_url|safe}}/nps-scale/default/')
     }else if(value == "Client_Admin" || value == "TeamMember" ){
-      window.location.replace('https://100035.pythonanywhere.com/nps-admin/default/')
-    //   window.location.replace('http://127.0.0.1:8000/nps-admin/default/')
+      window.location.replace('{{public_url|safe}}/nps-admin/default/')
     }else{
       console.log(value);
     }

@@ -40,9 +40,9 @@
   function onChange() {
     var value = e.value;
     if(value == "user"){
-    window.location.replace('https://100035.pythonanywhere.com/stapel/stapel-scale/default/')
+    window.location.replace('{{public_url|safe}}/stapel/stapel-scale/default/')
     }else if(value == "Client_Admin" || value == "TeamMember" ){
-    window.location.replace('https://100035.pythonanywhere.com/stapel/stapel-admin/default/')
+    window.location.replace('{{public_url|safe}}/stapel/stapel-admin/default/')
     }else{
       console.log(value);
     }
