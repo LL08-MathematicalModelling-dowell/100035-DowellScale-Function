@@ -494,7 +494,7 @@ setrating = function(id) {
 
                 const countdownEl = document.getElementById("countdown");
 
-                if (window.location.href === "{{public_url|safe}}/nps-scale1/defaultnpsscale?brand_name=your%20brand&product_name=your%20product" || '{{score|safe}}' === 'show'){
+                if (window.location.href === "{{public_url|safe}}/nps-scale1/defaultnpsscale?brand_name=your%20brand&product_name=your%20product" || '{{score|safe}}' === 'show' || time === 0 ){
                     countdownEl.style.display = "none"
                 } else {
                     setInterval(updateCountdown, 1000)
@@ -520,7 +520,6 @@ setrating = function(id) {
                 }
                 </script>
     <div class="col-sm-2"></div>
-
 </div>
 </div>
 </body>

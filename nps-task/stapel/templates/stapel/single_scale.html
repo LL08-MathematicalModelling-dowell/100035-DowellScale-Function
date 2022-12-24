@@ -2,7 +2,6 @@
 {% load  static %}
 <html lang="en">
 <head>
-{% for default in defaults %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -323,6 +322,7 @@ $(document).ready(function() {
                 scale_container.style.display = "none"
 
                 //   responseScales(this.id)
+<!--                console.log(document.getElementById('time'))-->
                 document.getElementById('jsform').submit();
                 card_response.style.display = "inline-block"
                 setrating(this.id);
@@ -372,7 +372,7 @@ setrating = function(id) {
             <p class="card-paragraph text-center">We received your response; <span id="response-saved">({{response_saved}})</span><br/> Thanks!</p>
           </div>
         <div class="col-sm-8 bg-light" id="scale-container-main" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
-        <h1 align="center" class="text-danger"><span id="serial">{{cur_url}}/{{no_of_scales}}</span><b>{{default.name}}</b><span id="countdown"></span></h1><br>
+        <h1 align="center" class="text-danger"><span id="serial">{{cur_url}}/{{no_of_scales}}</span><b>{{defaults.name}}</b><span id="countdown"></span></h1><br>
             <div id="scale-container">
                 <div id="horizontal" ></div>
                 <div class="pl-3" id="labels-vert" style="font-size:2em">
@@ -400,10 +400,10 @@ setrating = function(id) {
                 var sca_vert = document.getElementById("labels-vert")
                 var scale_cont = document.getElementById("scale-container")
                 var labels = document.getElementById("labels")
-                scale_bg.style.background = '{{default.scalecolor|safe}}';
+                scale_bg.style.background = '{{defaults.scalecolor|safe}}';
                 scale_bg.style.padding = "20px 20px";
-                console.log('{{default.fomat|safe}}')
-                star = '{{default.fomat|safe}}'
+                console.log('{{defaults.fomat|safe}}')
+                star = '{{defaults.fomat|safe}}'
 
                 function checkStatus(){
                     console.log('{{score|safe}}')
@@ -430,7 +430,7 @@ setrating = function(id) {
 
                 checkStatus()
 
-                if ('{{default.orientation|safe}}' ==="vertical" ){
+                if ('{{defaults.orientation|safe}}' ==="vertical" ){
                     scale_bg.style.flexDirection = "column";
                     labels.style.display = "none";
                     scale_bg.style.width = "100px";
@@ -443,7 +443,10 @@ setrating = function(id) {
 
                 var ans = {{scale|safe}};
 
+
+
                 for (let i = 0; i < ans.length; i++) {
+                    console.log(ans[i])
                     const para = document.createElement("p");
 
                     if (star==="stars"){
@@ -463,15 +466,16 @@ setrating = function(id) {
                     para.id=i
                     para.classList.add("number");
                     document.getElementById("horizontal").appendChild(para);
-                    document.getElementById(i).style.background ='{{default.roundcolor|safe}}';
-                    document.getElementById(i).style.color ="{{default.fontcolor|safe }}";
+                    document.getElementById(i).style.background ='{{defaults.roundcolor|safe}}';
+                    document.getElementById(i).style.color ="{{defaults.fontcolor|safe }}";
                 }
 
-                let time = {{default.time|safe}};
+                let time = {{defaults.time|safe}};
+                console.log("====", time)
 
                 const countdownEl = document.getElementById("countdown");
 
-                if (window.location.href === "{{public_url|safe}}/stapel/stapel-scale1/defaultstapelscale?brand_name=your%20brand&product_name=your%20product" || '{{score|safe}}' === 'show'){
+                if (window.location.href === "{{public_url|safe}}/stapel/stapel-scale1/defaultstapelscale?brand_name=your%20brand&product_name=your%20product" || '{{score|safe}}' === 'show'|| time === 0 || time === " "){
                     countdownEl.style.display = "none"
                 } else {
                     setInterval(updateCountdown, 1000)
@@ -496,7 +500,6 @@ setrating = function(id) {
                 }
                 </script>
     <div class="col-sm-2"></div>
-    {% endfor %}
 </div>
 </div>
 </body>

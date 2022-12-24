@@ -103,6 +103,7 @@ def dowell_scale1(request, tname1):
     # print("+++++++++++++ Scale ID",context["scale_id"])
     x= data['data'][0]['settings']
     context["defaults"]=x
+    print("+++++++++++++", x['time'])
     context["text"]=x['text'].split("+")
     number_of_scale=x['no_of_scales']
     context["no_of_scales"]=number_of_scale
@@ -157,7 +158,7 @@ def dowell_scale1(request, tname1):
             try:
                 field_add={"event_id":eventID,"scale_data":{"scale_id":context["scale_id"],"scale_type":"nps scale"}, "brand_data":{"brand_name":context["brand_name"],"product_name":context["product_name"]},"score":[score]}
                 z=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-                print("++++++++++", z)
+                print("Scale NEW added successfully", z)
 
                 # User details
                 user_json = json.loads(z)

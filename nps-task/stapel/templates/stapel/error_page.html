@@ -1,7 +1,26 @@
 {% extends "index.html" %}
 {% block title %}Embed Stapel link{% endblock %}
 {% block content %}
-    <style>
+<style>
+		/* width */
+        ::-webkit-scrollbar {
+          width: 2px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+          background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
         #snackbar {
           visibility: hidden;
           min-width: 250px;
@@ -14,7 +33,7 @@
           position: fixed;
           z-index: 1;
           right: 10%;
-          top: 30px;
+          top: 80px;
           font-size: 17px;
         }
 
@@ -26,32 +45,32 @@
 
         @-webkit-keyframes fadein {
           from {top: 0; opacity: 0;}
-          to {top: 30px; opacity: 1;}
+          to {top: 80px; opacity: 1;}
         }
 
         @keyframes fadein {
           from {top: 0; opacity: 0;}
-          to {top: 30px; opacity: 1;}
+          to {top: 80px; opacity: 1;}
         }
 
         @-webkit-keyframes fadeout {
-          from {top: 30px; opacity: 1;}
+          from {top: 80px; opacity: 1;}
           to {top: 0; opacity: 0;}
         }
 
         @keyframes fadeout {
-          from {top: 30px; opacity: 1;}
+          from {top: 80px; opacity: 1;}
           to {top: 0; opacity: 0;}
         }
       .url-clipboard {
         padding: 10px;
-        border: 1px solid #ccc;
         max-width: 600px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: space-between;
         margin: 20px auto;
-        background-color: #f0f2f5;
+<!--        background-color: #f0f2f5;-->
       }
       table, th, td {
           border:1px solid black;
@@ -119,55 +138,63 @@
         align-items: flex-start;
       }
 
-      body{
-      background-color: black;
-      }
+</style>
+<div id="snackbar"></div>
 
-    </style>
-    <div id="snackbar"></div>
+<div class="url-clipboard">
+	<div>
+		<iframe height="195" name="iFrameName" style="border:2px solid green;" title="ScalePreview"
+		        width="500"></iframe>
+	</div>
+	<div style="height:300px;overflow-y: scroll;">
+		<table style="width:100%;">
+			<tr>
+				<th style="text-align: flex-start; padding-left: 5px">Scale No</th>
+				<th style="text-align: flex-start; padding-left: 5px">Link</th>
+				<th style="text-align: flex-start; padding-left: 5px">Action</th>
+			</tr>
+			{% for i in no_of_scales %}
+			<tr>
+				<th style="text-align: center">{{ forloop.counter }}</th>
+				<th id="mytext" style="text-align: flex-start; padding-left: 3px">{{template_url}}/{{ forloop.counter }}</th>
+				<td style="text-align: center; padding : 3px; width: 100px">
+					<button class="btn btn-warning"
+					        id="btn{{ forloop.counter }}" onclick="copy_function('mytext',{{ forloop.counter|safe }} )" type="button">Copy {{ forloop.counter }}
+					</button>
+				</td>
 
-    <div class="url-clipboard">
-        <table style="width:100%;">
-            <tr>
-                <th style="text-align: flex-start; padding-left: 5px">Scale No</th>
-                <th style="text-align: flex-start; padding-left: 5px">Link</th>
-                <th style="text-align: flex-start; padding-left: 5px">Action</th>
-            </tr>
-            {% for i in no_of_scales %}
-            <tr>
-                <th style="text-align: center">{{ forloop.counter }}</th>
-                <th style="text-align: flex-start; padding-left: 3px" id="mytext">{{template_url}}/{{ forloop.counter }}</th>
-                <td style="text-align: center; padding : 3px; width: 100px" ><button type="button"
-                                                                             id="btn{{ forloop.counter }}" onclick="copy_function('mytext',{{ forloop.counter|safe }} )" class="btn btn-warning">Copy {{ forloop.counter }}</button></td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
 
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
+	<!--<div class="hint">-->
+	<!--	<div class="bulb">-->
+	<!--		<i class="bi bi-lightbulb text-primary" style="font-size: 30px;"></i>-->
+	<!--		<p>hint:</p>-->
+	<!--		<p style="margin-left: 5px;">Copy the url above and provide product and brand name and embedd it to your page </p>-->
+	<!--	</div>-->
 
-    <div class="hint">
-      <div class="bulb">
-        <i class="bi bi-lightbulb text-primary" style="font-size: 30px;"></i>
-        <p>hint:</p>
-        <p style="margin-left: 5px;">Copy the url above and provide product and brand name and embedd it to your page </p>
-      </div>
+	<!--	<div class="syntax">-->
+	<!--		<h1>Syntax</h1>-->
+	<!--		<p class="text-dark">-->
+	<!--			<span style="font-weight:bold"> < iframe</span><span class="text-danger"> src=</span>"{{public_url}}?brand_name=<span class="text-primary">your brand</span>&product_name=<span class="text-primary">your product</span>" >< /<span style="font-weight:bold">iframe ></span-->
+	<!--		>-->
+	<!--		</p>-->
+	<!--		<div>-->
+	<!--			<center>-->
+	<!--				<iframe height="185" name="iFrameName" style="border:2px solid blue;" title="ScalePreview" width="500"></iframe>-->
+	<!--			</center>-->
+	<!--		</div>-->
+	<!--	</div>-->
+	<!--	<div>-->
 
-      <div class="syntax">
-        <h1>Syntax</h1>
-        <p class="text-dark">
-            <span style="font-weight:bold"> < iframe</span><span class="text-danger"> src=</span>"{{public_url}}?brand_name=<span class="text-primary">your brand</span>&product_name=<span class="text-primary">your product</span>" >< /<span style="font-weight:bold">iframe ></span
-          >
-        </p>
-        <div><center><iframe name="iFrameName" height="185" width="500" title="ScalePreview" style="border:2px solid blue;"></iframe></center></div>
-      </div>
-      <div >
+	<!--	</div>-->
 
-      </div>
-
-    </div>
+	<!--</div>-->
 
 
-        <script>
+	<script>
         function checkExistenceOfScale(){
             var elements = document.querySelectorAll('button')
             for( var i = 0; i < elements.length; i++ ) {
@@ -180,7 +207,7 @@
 
         checkExistenceOfScale()
 
-        function myFunction(id) {
+      function myFunction(id) {
           var x = document.getElementById("snackbar");
           x.innerHTML = `Coppied scale no ${id}`
           x.className = "show";
@@ -198,6 +225,7 @@
       window.onload = codeAddress;
 
       function copy_function(id, i){
+        myFunction(i)
         x = getCookieValue('url')
         b = x.replaceAll('"','')
         var clip = document.getElementById("clip-icon");
@@ -218,5 +246,8 @@
       const getCookieValue = (name) =>
         document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() ||
         "";
-    </script>
-  {% endblock %}
+
+
+	</script>
+</div>
+	{% endblock %}

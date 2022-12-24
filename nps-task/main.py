@@ -46,7 +46,7 @@ def update_template(template_id, data):
     return response.text
 
 
-field_add = {"_id":"63a4a0b62fa34b2a7cb25ebe"}
+field_add = {"scale_data.scale_id":"63a777a7755ae14e588fafe2"}
 response_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE","fetch", field_add, "nil")
 
 # field_add={"settings.template_name":"TestSetting9027"}
@@ -57,7 +57,7 @@ response_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "
 
 # details = {}
 # user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","fetch",details,"nil")
-
+print(response_details)
 # z = b["data"][-1]['score']
 # for i in z:
 #     x = i['instance_id'].split("/")[0]
@@ -65,9 +65,9 @@ response_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "
 
 
 # 63a2072408a1b053ce80b71e
-id = "63a4a0b62fa34b2a7cb25ebe"
-data = {'score':{"id":10,"score":10}}
-x = update_template(id, data)
-
-print(response_details)
-b = json.loads(response_details)
+# id = "63a4a0b62fa34b2a7cb25ebe"
+# data = {'score':{"id":10,"score":10}}
+# x = update_template(id, data)
+#
+# print(response_details)
+# b = json.loads(response_details)

@@ -206,7 +206,7 @@ setrating = function(id) {
             <table>
             {% for stapel in stapelall %}
                 <tr>
-                    <td><a href="{{public_url}}/stapel/stapel-scale1/{{stapel.template_name}}">{{stapel.template_name}}</a></td>
+                    <td><a href="{{public_url}}/stapel/stapel-scale1/{{stapel.settings.template_name}}">{{stapel.settings.template_name}}</a></td>
                 </tr>
             {% endfor %}
             {% endif %}

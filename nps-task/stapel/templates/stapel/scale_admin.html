@@ -13,6 +13,66 @@
    * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
    * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
    */
+
+   .switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
     #snackbar {
       visibility: hidden;
       min-width: 250px;
@@ -119,6 +179,10 @@
        justify-content: space-between;
    }
 
+   #timeInput{
+   display: none;
+   }
+
 
 
 
@@ -208,14 +272,25 @@
                     <input class="form-control" id="no_of_scales" min="1" name="no_of_scales"
                            onchange="myNumScales()" placeholder="Number of scales" type="number">
                 </div>
-                <div class="form-group col-md-12">
-                    <label for="time">Time</label>
-                    <input class="form-control" id="time" name="time" onchange="myTime()" placeholder="Time" required=""
+
+	            <div class="form-group col-md-3 "
+				     style="display: flex; align-items: center; justify-content: center; margin-top: 25px">
+					<label class="switch">
+						<input id="checkbox" type="checkbox">
+						<span class="slider round"></span>
+					</label>
+					<span style="font-weight: bold">Toggle to set Time</span>
+				</div>
+
+                <div class="form-group col-md-6" id="timeInput">
+                    <label for="time">Time (sec)</label>
+                    <input class="form-control" id="time" value="0" name="time" onchange="myTime()"
+                           placeholder="Time"
                            type="text">
                 </div>
                 <div class="form-group col-md-12 text-right p-15">
 
-                    <button class="btn btn-primary" id="saveBtn" onclick="myFunction();" type="submit">Save</button>
+                    <button class="btn btn-primary" id="saveBtn" onclick="myFunctionSave();" type="submit">Save</button>
                     <a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"
                        onclick="preview();">Preview</a>
                 </div>
@@ -279,10 +354,19 @@
                   let fcolor;
                   let ltext;
                   let rtext;
-                  let time;
+                  let time = 0;
                   let no_of_scales;
 
-                   function myFunction() {
+                  let checkbox = document.getElementById("checkbox");
+			      checkbox.addEventListener( "change", () => {
+			         if ( checkbox.checked ) {
+			            document.getElementById("timeInput").style.display = "block";
+			         } else {
+			            document.getElementById("timeInput").style.display = "none";
+			         }
+			      });
+
+                   function myFunctionSave() {
                       var x = document.getElementById("snackbar");
                       x.className = "show";
                       setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
@@ -444,8 +528,4 @@
                      document.getElementById(i).style.color = $("#fcolor").val();
                   }
                   }
-
-
-
-
 </script>
