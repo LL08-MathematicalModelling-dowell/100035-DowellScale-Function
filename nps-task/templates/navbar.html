@@ -5,10 +5,10 @@
 	padding-right: 5px;
 	}
 
-    .container a{
+    .logo-title, .logout{
         color : black;
     }
-    .container a:hover{
+    .logout:hover, .logo-title:hover{
         color : #fff;
     }
 </style>
@@ -18,8 +18,7 @@
 	<div class="container d-flex">
 		<a class="nav-item nav-link" href="{% url 'login:home' %}"><img class="navimg"
                                                                    src="{% static 'images/dowell-logo.png' %}"
-        /><strong
-                class="logo-title">HOME</strong></a>
-		<a href="{% url 'login:logout_btn' %}" class="nav-item nav-link btn btn-warning">LOGOUT</a>
+        /><strong class="logo-title">HOME</strong></a>
+		<a href="{% url 'login:logout_btn' %}" class="nav-item nav-link btn btn-warning logout">LOGOUT</a>
 	</div>
 </nav>
