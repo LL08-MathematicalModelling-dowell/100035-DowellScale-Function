@@ -40,10 +40,34 @@
         width: 450px;
 <!--        flex-direction:column;-->
       }
-    </style></head
-  >{% load static %}
+
+      @media(max-width: 480px){
+      .header {
+      width:100%;
+      }
+	  .scales{
+	    width:100%;
+        font-size:16px;
+        display:flex;
+        justify-content:space-evenly;
+      }
+	}
+
+	@media(max-width: 380px){
+      .header {
+      width:100%;
+      }
+	  .scales{
+	    width:100%;
+        font-size:16px;
+        display:flex;
+<!--        flex-direction:column;-->
+        justify-content:center;
+      }
+	}
+    </style>
+{% load static %}
     <div class="header">
-      <p>
         <img
           width="200"
           height="200"
@@ -59,15 +83,13 @@
           sizes="(max-width: 150px) 100vw, 150px"
           alt="Home"
         />
-
-      </p>
       <h1>Dowell Scales</h1>
 
       <br/>
       <div class = "scales">
 	      <a  id="likert">Likert Scale</a>
 	      <a  id="percent">Percent Scale</a>
-	      <a  id="nps">NPS Scale</a><br />
+	      <a  id="nps">NPS Scale</a>
 	      <a  id="stapel">Stapel scale</a>
     </div>
     <script >

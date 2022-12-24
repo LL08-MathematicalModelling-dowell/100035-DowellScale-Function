@@ -25,7 +25,7 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
       return "check your connectivity"
 
 
-field_add = {"_id": "63a4a0b62fa34b2a7cb25ebe"},{"$mod": {"Ambro": "Ambro"}}
+field_add = {"63a4a0b62fa34b2a7cb25ebe", {"Ambro": "Ambro"}}
 response_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE","update", field_add, "nil")
 # response_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE","fetch", field_add, "nil")
 

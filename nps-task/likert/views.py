@@ -181,7 +181,8 @@ def brand_product_preview(request):
         context["no_of_scales"].append(i)
 
     name=url.replace("'","")
-    context['template_url']= f"{{public_url}}{name}?brand_name=your_brand&product_name=your_product"
+    context['template_url']= f"{public_url}{name}?brand_name=your_brand&product_name=your_product"
+    print(context['template_url'])
     #context['template_url']= f"http://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
     return render(request, 'likert/preview_page.html', context)
 
