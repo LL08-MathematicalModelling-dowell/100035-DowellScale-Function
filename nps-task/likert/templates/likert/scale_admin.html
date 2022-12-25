@@ -157,7 +157,7 @@
                                 <option value="horizontal">Horizontal</option>
                                 <option value="vertical">Vertical</option>
                               </select>
-                            </div>                        
+                            </div>
                           <div class="form-group col-md-6">
                             <label for="rcolor">Round Color</label>
                             <input type="color" name="rcolor" class="form-control" id="rcolor" placeholder="Font Color" required="">
@@ -209,7 +209,7 @@
                    <!--                   <hr>-->
                    <!--                   <br>-->
               </div>
-                  
+
                       <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                           <div class="modal-content">
@@ -246,7 +246,7 @@
 <script>
                   var vert="vertical";
                   var hori="horizontal";
-                  
+
                   let head_name;
                   let orient;
                   let rcolor;
@@ -275,7 +275,7 @@
                   e.onchange = onChange;
                   onChange();
             function preview(){
-              
+
               if (head_name === "undefined" || orient === "Choose..."|| rcolor === "undefined" || time === "undefined" ){
                 alert("Fields can't be empty")
                 return document.getElementById("modalContent").style.display = "none"}
@@ -289,7 +289,7 @@
                   var modal= document.getElementById("modal-body");
                   var e = document.getElementById("orientation");
                   var value = e.value;
-                      
+
                  // if (value ==="vertical" ){
                  //       scale_bg.style.flexDirection = "column";
                   //      scale_bg.style.width = "100px";
@@ -305,7 +305,7 @@
                   var named = document.getElementById("scale_input");
                   var tags = named.getElementsByTagName("input");
                   const inputArray =[...tags].map(tag => tag.value);
-              
+
 
                   document.getElementById("exampleModalLongTitle").innerHTML=$("#head").val();
                   $("#red").attr('class', $("#orientation").val());
@@ -313,11 +313,11 @@
                   em=$("#orientation").val();
                   $('#'+em).empty();
                   $('#red').css({"backgroundColor": "#FFFFFF"})
-                  
+
                   var name = $('#likert').val();
                   n = Number(setScale())
                   var mbuttons =[];
-                  
+
                   $(document).ready(function() {
                   mbuttons = document.getElementsByClassName("input");
                  // mbuttons.style.backgroundColor= $("#rcolor").val();
@@ -342,10 +342,10 @@
                                   this.style.backgroundColor = $("#rcolor").val();
                               } }
 
-            }}});      
+            }}});
                   ram(name, n, inputArray);
 }
-                 
+
                  const image= document.getElementById('likert')
                  image.addEventListener('change', clearAll);
                  function clearAll(){
@@ -364,8 +364,8 @@
                         para.id=i
                         para.classList.add("input");
                         document.getElementById($("#orientation").val()).appendChild(para);
-                        
-                        
+
+
                         if(star==="2" && num===2){
                           const emoji=["&#x1F603","&#128532"];
                           document.getElementById(i).innerHTML = emoji[i];
@@ -482,12 +482,12 @@
                         input.name = "scale_choice " + i;
                         input.class = "form-control"
                         input.id = "head1";
-                        
-                        
+
+
 
                         container.appendChild(input);
                         // Append a line break
-                        
+
                         container.appendChild(document.createElement("br"));
 
                     }

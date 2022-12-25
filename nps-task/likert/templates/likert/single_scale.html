@@ -17,7 +17,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>VOC_Likert</title>
+        <title>Likert Scale</title>
         <style>
             #snackbar {
                 visibility: hidden;
@@ -272,7 +272,6 @@
                 if (mbuttons.length >= 0) {
                     for (var i = 0; i < mbuttons.length; i++) {
                         mbuttons[i].style.cursor = "pointer";
-                        mbuttons[i].style.backgroundColor="{{default.roundcolor|safe}}";
                         mbuttons[i].onclick = function () {
                             this.style.backgroundColor = "red";
                             console.log(this.innerHTML);
@@ -286,13 +285,13 @@
                         };
                         mbuttons[i].onmouseover = function () {
                             this.style.backgroundColor =
-                                "green";
+                                "{{default.roundcolor|safe}}";
                         };
                         mbuttons[i].onmouseout = function () {
                             if (this.style.backgroundColor === "red") {
                                 this.style.backgroundColor = "red";
                             } else {
-                                this.style.backgroundColor = "{{default.roundcolor|safe}}";
+                                this.style.backgroundColor = "white";
                             }
                         };
 
@@ -465,7 +464,7 @@
 
                                     const countdownEl = document.getElementById("countdown");
 
-                                    if (window.location.href === "https://100035.pythonanywhere.com/likert/likert-scale1/Likert-default6544?brand_name=your%20brand&product_name=your%20product"){
+                                    if (window.location.href === "{{public_url|safe}}/likert/likert-scale1/Likert-default6544?brand_name=your%20brand&product_name=your%20product"){
                                         countdownEl.style.display = "none"
                                     } else {
                                         setInterval(updateCountdown, 1000)

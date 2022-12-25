@@ -15,7 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -25,6 +25,11 @@ SECRET_KEY = 'django-insecure-174^!vny@!oln&!^5%*dod#^fnbw92g9t_c&=y$g5h2-#dmyt=
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+if DEBUG == True:
+    public_url = "http://127.0.0.1:8000"
+else:
+    public_url = "100035.pythonanywhere.com"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -39,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #"corsheaders",
-    'rest_framework',
     'nps.apps.NpsConfig',
     'stapel.apps.StapelConfig',
     'npslite.apps.NpsliteConfig',
@@ -73,7 +77,11 @@ ROOT_URLCONF = 'dowellnps_scale_function.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+<<<<<<< HEAD
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
+=======
+        'DIRS': [TEMPLATE_DIR],
+>>>>>>> d68e028bdb472ea731aead7031234e6b0712f02c
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

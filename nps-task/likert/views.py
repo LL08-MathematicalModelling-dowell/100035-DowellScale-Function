@@ -9,9 +9,15 @@ from nps.login import get_user_profile
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from .eventID import get_event_id
+from dowellnps_scale_function.settings import public_url
 
 def dowell_scale_admin(request):
+    user = request.session.get('user_name')
+    if user == None:
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/likert/likert-admin/settings/")
+    # # print("+++++++++++++", request.session.get('user_name'))
     context={}
+    context["public_url"] = public_url
     scales = {}
     if request.session.get("userinfo"):
         username= request.session["user_name"]
@@ -37,12 +43,16 @@ def dowell_scale_admin(request):
             eventID = get_event_id()
             rand_num = random.randrange(1, 10000)
             template_name = f"{name.replace(' ', '')}{rand_num}"
-            user  = username
             try:
-                field_add={"orientation":orientation,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"number_of_scales":number_of_scales,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"eventId":eventID,"scale-category": "likert scale","user": user,}
+                field_add={"orientation":orientation,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"number_of_scales":number_of_scales,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"event_id":eventID,"scale-category": "likert scale"}
                 x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-                #return redirect(f"http://127.0.0.1:8000/likert/likert-scale1/{template_name}")
-                return redirect(f"https://100035.pythonanywhere.com/likert/likert-scale1/{template_name}")
+
+
+                # User details
+                user_json = json.loads(x)
+                details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
+                user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
+                return redirect(f"{public_url}/likert/likert-scale1/{template_name}")
             except:
                 context["Error"] = "Error Occurred while save the custom pl contact admin"
         return render(request, 'likert/scale_admin.html', context)
@@ -53,12 +63,18 @@ def dowell_likert(request):
         scoretag=request.POST.get('scoretag', 'None')
         #print(scoretag)
         context={"context":scale_selected}
+        context["public_url"] = public_url
         return render(request, 'likert/default.html', context=context)
     return render(request, 'likert/likert.html')
 
 @xframe_options_exempt
 def dowell_scale1(request, tname1):
+    user = request.session.get('user_name')
+    if user == None:
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={{public_url}}/likert/likert-admin/default/")
+    # # print("+++++++++++++", request.session.get('user_name'))
     context={}
+    context["public_url"] = public_url
     brand_name = request.GET.get('brand_name', None)
     product_name = request.GET.get('product_name', None)
     ls = request.path
@@ -112,9 +128,9 @@ def dowell_scale1(request, tname1):
         for i in datas:
             if url_id == i["score"]["id"]:
                 recorded_score=(i["score"]["score"])
-        
+
                 context["recorded_score"]=recorded_score
-                
+
 
 
 
@@ -134,8 +150,13 @@ def dowell_scale1(request, tname1):
                 b = i['score']['id']
                 if b == current_url:
                     context["score"]="show"
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"eventID":eventID}
+            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"event_id":eventID}
             x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
+
+            # User details
+            user_json = json.loads(x)
+            details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
+            user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
             context["score"] = "show"
             return redirect(f"{url}")
         except:
@@ -144,6 +165,7 @@ def dowell_scale1(request, tname1):
 
 def brand_product_preview(request):
     context = {}
+    context["public_url"] = public_url
     url = request.COOKIES['url']
     template_name = url.split("/")[-1]
     field_add={"template_name":template_name}
@@ -159,12 +181,14 @@ def brand_product_preview(request):
         context["no_of_scales"].append(i)
 
     name=url.replace("'","")
-    context['template_url']= f"https://100035.pythonanywhere.com{name}?brand_name=your_brand&product_name=your_product"
+    context['template_url']= f"{public_url}{name}?brand_name=your_brand&product_name=your_product"
+    print(context['template_url'])
     #context['template_url']= f"http://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
     return render(request, 'likert/preview_page.html', context)
 
 def default_scale(request):
     context = {}
+    context["public_url"] = public_url
     context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);"
     context["hist"] = "Scale History"
     context["btn"] = "btn btn-dark"
@@ -173,9 +197,14 @@ def default_scale(request):
     return render(request, 'likert/default.html', context)
 
 def default_scale_admin(request):
+    user = request.session.get('user_name')
+    if user == None:
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/likert/likert-admin/default/")
+    # # print("++++++++++ USER DETAILS", user)
     if request.session.get("userinfo"):
         username= request.session["user_name"]
         context = {}
+        context["public_url"] = public_url
         context['user'] = 'admin'
         context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:300px;overflow-y: scroll;"
         context["hist"] = "Scale History"
@@ -188,25 +217,3 @@ def default_scale_admin(request):
         context["likertall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
         return render(request, 'likert/default.html', context)
-
-
-# def rolescreen(request):
-#     return render(request, 'likert/landing_page.html')
-
-def login(request):
-    url = request.GET.get('session_id', None)
-    if url == None:
-        return redirect("https://100014.pythonanywhere.com/")
-    user=get_user_profile(url)
-    try:
-        if user["username"]:
-            if user["role"]=='Client_Admin' or user["role"]=='TeamMember':
-                response = redirect("likert:default_page_admin")
-                response.set_cookie('user', user['username'])
-                return response
-            else:
-                response = redirect("likert:default_page")
-                response.set_cookie('user', user['username'])
-                return response
-    except:
-        return redirect("https://100014.pythonanywhere.com/")

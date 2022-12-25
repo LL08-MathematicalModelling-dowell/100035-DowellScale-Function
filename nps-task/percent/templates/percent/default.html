@@ -1,24 +1,6 @@
-{% load i18n %}
-{% load  static %}
-<html lang="en">
-<head>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
-      integrity="sha512-5PV92qsds/16vyYIJo3T/As4m2d8b6oWYfoqV+vtizRB6KhF1F9kYzWzQmsO6T3z3QG2Xdhrx7FQ+5R1LiQdUA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>VOC_Percent</title>
+{% extends "index.html" %}
+{% block title %}Percent Scale{% endblock %}
+{% block content %}
     <style>
         .slidecontainer {
             width: 100%; /* Width of the outside container */
@@ -190,7 +172,7 @@ $(document).ready(function() {
 
 function postScore(score){
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", 'https://100035.pythonanywhere.com/percent-response/', true);
+    xhr.open("POST", '{{public_url|safe}}/percent-response/', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({
         score: parseInt(score),
@@ -206,8 +188,6 @@ function postScore(score){
 
 
 </script>
-</head>
-<body style="display:flex; justify-content: center;flex-direction: column; align-items: center">
     {% if user == "admin" %}
     <div class="url-clipboard">
       <p id="mytext"></p>
@@ -225,7 +205,7 @@ function postScore(score){
             {% for percent in percentall %}
                 <tr>
         <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{nps.template_name}}">{{nps.template_name}}</a></td>-->
-                    <td><a href="https://100035.pythonanywhere.com/percent/percent-scale1/{{percent.template_name}}">{{percent.template_name}}</a></td>
+                    <td><a href="{{public_url}}/percent/percent-scale1/{{percent.template_name}}">{{percent.template_name}}</a></td>
                 </tr>
             {% endfor %}
             {% endif %}
@@ -272,7 +252,7 @@ function postScore(score){
     var clip = document.getElementById("clip-icon");
     var value = document.getElementById(id).innerHTML;
     var input_temp = document.createElement("input");
-    input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
+    input_temp.value = `{{public_url|safe}}${b}?brand_name=your brand&product_name=your product`;
     document.body.appendChild(input_temp);
     input_temp.select();
     document.execCommand("copy");
@@ -310,7 +290,7 @@ function postScore(score){
         copyText.style.color = "#ccc";
         copyText.style.fontSize = "14px";
         copyText.style.fontWeight = "400";
-        copyText.innerHTML = `https://100035.pythonanywhere.com/percent/percent-scale1/default_percent_scale6787?brand_name=your_brand&product_name=your_product`
+        copyText.innerHTML = `{{public_url|safe}}/percent/percent-scale1/default_percent_scale6787?brand_name=your_brand&product_name=your_product`
         }
       window.onload = codeAddress;
 
@@ -319,7 +299,7 @@ function postScore(score){
         var clip = document.getElementById("clip-icon");
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
-        input_temp.value = `https://100035.pythonanywhere.com/percent/percent-scale1/default_percent_scale6787?brand_name=your_brand&product_name=your_product`;
+        input_temp.value = `{{public_url|safe}}/percent/percent-scale1/default_percent_scale6787?brand_name=your_brand&product_name=your_product`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");
@@ -330,5 +310,5 @@ function postScore(score){
         clip.style.cursor = "default";
       }
 </script>
-</body>
-</html>
+</div>
+{% endblock %}
