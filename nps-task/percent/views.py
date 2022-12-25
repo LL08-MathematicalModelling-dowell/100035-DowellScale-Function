@@ -191,7 +191,7 @@ def default_scale_admin(request):
     data = json.loads(all_scales)
     context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
-        return render(request, 'percent/default.html', context)
+    return render(request, 'percent/default.html', context)
 
 
 

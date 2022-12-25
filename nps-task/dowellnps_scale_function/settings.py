@@ -77,11 +77,7 @@ ROOT_URLCONF = 'dowellnps_scale_function.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-<<<<<<< HEAD
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-=======
         'DIRS': [TEMPLATE_DIR],
->>>>>>> d68e028bdb472ea731aead7031234e6b0712f02c
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
