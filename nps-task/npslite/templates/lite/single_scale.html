@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>NPS LITE SCALE</title>
-    <style>
-    *{
-        margin: 0;
-        padding: 0;
-    }
+	<meta charset="UTF-8">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<title>NPS LITE SCALE</title>
+	<style>
+<!--    *{-->
+<!--        margin: 0;-->
+<!--        padding: 0;-->
+<!--    }-->
+
+    #serial{
+        color: black;
+        float: left;
+        font-size: 12px;
+        }
 
     .success-msg {
       margin: 10px 0;
@@ -23,7 +29,7 @@
         display: flex;
         flex-direction : column;
         justify-content: center;
-        padding: 30px;
+        padding: 15px 30px;
         border-radius: 15px;
         width: 400px;
         margin-top: 5%;
@@ -72,28 +78,34 @@
     .container_nps_lite div:hover{
     background: #2edb4e;
     }
-    </style>
+
+
+
+	</style>
 </head>
-<form method="POST" id="jsform">
-    {% csrf_token %}
-    <input type="hidden" name="scoretag" id="scoretag" >
+<form id="jsform" method="POST">
+	{% csrf_token %}
+	<input id="scoretag" name="scoretag" type="hidden">
 </form>
 
 <body style="display:flex; justify-content: center;">
-    <div class="success-msg" id="success-msg">
-      <i class="fa fa-check"></i>
-      Thanks for your response! 😃
-    </div>
-    <div class="main-container_nps_lite" id="main-container_nps_lite">
-        <p class="time_nps_lite" id="countdown"></p>
-        <p class="title_nps_lite"></p>
-        <div class="container_nps_lite">
-            <div onclick="submitCategory('distractor')" class="left_nps_lite"></div>
-            <div onclick="submitCategory('promoter')" class="center_nps_lite"></div>
-            <div onclick="submitCategory('passive')" class="right_nps_lite"></div>
-        </div>
-    </div>
-{% for default in defaults %}
+<div class="success-msg" id="success-msg">
+	<i class="fa fa-check"></i>
+	Thanks for your response! 😃
+</div>
+<div class="main-container_nps_lite" id="main-container_nps_lite">
+	<div>
+		<p id="serial">{{cur_url}}/{{no_of_scales}}</p>
+		<p class="time_nps_lite" id="countdown"></p>
+		<p class="title_nps_lite"></p>
+	</div>
+
+	<div class="container_nps_lite">
+		<div class="left_nps_lite" onclick="submitCategory('distractor')"></div>
+		<div class="center_nps_lite" onclick="submitCategory('promoter')"></div>
+		<div class="right_nps_lite" onclick="submitCategory('passive')"></div>
+	</div>
+</div>
 <script>
     function checkStatus(){
         console.log('{{score|safe}}')
@@ -104,27 +116,36 @@
             main_cont.style.display = 'none'
         }
     }
+    function Checklist(){
+                    const serial=window.location.href;
+            		let split_serial = serial.split('/');
+            		let series= split_serial[split_serial.length -1];
+        			if (series.length > 3){
+        				document.getElementById("serial").innerHTML = ""
+        			}
+        		}
+        		Checklist()
     console.log('{{score|safe}}')
 
-                checkStatus()
-    if('{{default.orientation|safe}}' === "vertical"){
+	checkStatus()
+    if('{{defaults.orientation|safe}}' === "vertical"){
         document.querySelector(".container_nps_lite").style.flexDirection = "column"
         document.querySelector(".container_nps_lite").style.justifyContent = "space-between"
     }
 
-    document.querySelector(".left_nps_lite").innerHTML = `🙁 {{default.left|safe}}`
-    document.querySelector(".center_nps_lite").innerHTML = `🙂 {{default.center|safe}}`
-    document.querySelector(".right_nps_lite").innerHTML = `😃 {{default.right|safe}}`
-    document.querySelector(".title_nps_lite").innerHTML = "{{default.question|safe}}"
+    document.querySelector(".left_nps_lite").innerHTML = `🙁 {{defaults.left|safe}}`
+    document.querySelector(".center_nps_lite").innerHTML = `🙂 {{defaults.center|safe}}`
+    document.querySelector(".right_nps_lite").innerHTML = `😃 {{defaults.right|safe}}`
+    document.querySelector(".title_nps_lite").innerHTML = "{{defaults.question|safe}}"
 
 
-    document.querySelector(".left_nps_lite").style.background = "{{default.scalecolor|safe}}"
-    document.querySelector(".center_nps_lite").style.background = "{{default.scalecolor|safe}}"
-    document.querySelector(".right_nps_lite").style.background = "{{default.scalecolor|safe}}"
+    document.querySelector(".left_nps_lite").style.background = "{{defaults.scalecolor|safe}}"
+    document.querySelector(".center_nps_lite").style.background = "{{defaults.scalecolor|safe}}"
+    document.querySelector(".right_nps_lite").style.background = "{{defaults.scalecolor|safe}}"
 
-    document.querySelector(".left_nps_lite").style.color = "{{default.fontcolor|safe}}"
-    document.querySelector(".center_nps_lite").style.color = "{{default.fontcolor|safe}}"
-    document.querySelector(".right_nps_lite").style.color = "{{default.fontcolor|safe}}"
+    document.querySelector(".left_nps_lite").style.color = "{{defaults.fontcolor|safe}}"
+    document.querySelector(".center_nps_lite").style.color = "{{defaults.fontcolor|safe}}"
+    document.querySelector(".right_nps_lite").style.color = "{{defaults.fontcolor|safe}}"
 
     function submitCategory(category){
         var score_tag = document.getElementById("scoretag")
@@ -139,9 +160,10 @@
         //     window.location.replace("http://100014.pythonanywhere.com/main")
         // }
     }
+
 </script>
 <script>
-    let time = {{default.time|safe}};
+    let time = {{defaults.time|safe}};
     const countdownEl = document.getElementById("countdown");
 
 
@@ -167,7 +189,7 @@
     function redirectMain(){
         window.location.replace("http://100014.pythonanywhere.com/main")
     }
+
 </script>
 </body>
-{% endfor %}
 </html>

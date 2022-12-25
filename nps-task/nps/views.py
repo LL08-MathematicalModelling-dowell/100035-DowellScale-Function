@@ -107,7 +107,6 @@ def dowell_scale1(request, tname1):
     context["text"]=x['text'].split("+")
     number_of_scale=x['no_of_scales']
     context["no_of_scales"]=number_of_scale
-    url = request.build_absolute_uri()
     current_url = url.split('/')[-1]
     context['cur_url'] = current_url
 
@@ -122,7 +121,6 @@ def dowell_scale1(request, tname1):
         scale_data = data["data"][0]["scale_data"]
         score_data = data["data"]
         # score_data = data["data"][0]['score']
-
         print("This is my scale_data", scale_data, score_data)
 
         total_score = 0

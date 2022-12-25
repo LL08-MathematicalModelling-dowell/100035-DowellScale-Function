@@ -1,10 +1,8 @@
 from django.urls import path
-from .views import npslite_home, dowell_npslite_scale, dowell_npslite_scale_settings, rolescreen, login,npslite_home_admin,brand_product_error
+from .views import npslite_home, dowell_npslite_scale, dowell_npslite_scale_settings, npslite_home_admin,brand_product_error
 
 app_name = 'nps_lite'
 urlpatterns = [
-    path('', rolescreen,name='login_page'),
-    path('nps-lite-admin/', login,name='stapellogin'),
     path('nps-lite-default/', npslite_home, name='default_page'),
     path('nps-lite-default-admin/', npslite_home_admin, name='admin_default_page'),
     path('nps-lite-admin/settings/', dowell_npslite_scale_settings,name='settings_page'),
