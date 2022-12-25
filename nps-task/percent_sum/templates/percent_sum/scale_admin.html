@@ -196,6 +196,7 @@
                                 id="head"
                                 placeholder="Name of scale"
                                 required="True"
+                                value="couzy"
                             />
                         </div>
                         <div class="form-group col-md-6">
@@ -243,7 +244,7 @@
                                 id="time"
                                 placeholder="Time"
                                 required="False"
-                                value="0"
+                                value="120"
                             />
                         </div>
 
@@ -256,8 +257,8 @@
                                 class="btn btn-primary"
                                 data-toggle="modal"
                                 data-target="#exampleModalCenter"
-                                >Preview
-                            </a>
+                                >Preview</a
+                            >
                         </div>
                     </form>
                 </div>
@@ -357,15 +358,14 @@
             var value = e.value;
             console.log(slid);
             if (value === "vertical") {
-                slid.orient = "vertical";
-
-                //[].forEach.call(
-                //    document.getElementsByClassName("slider"),
-                //    function (slid) {
-                //        slid.style =
-                //            "-webkit-appearance: slider-vertical; width: 100%; min-height: 150px; max-height: 100%; height: 100%;";
-                //        slider.style.background = $("#scolor").val();
-                //}
+                [].forEach.call(
+                    document.getElementsByClassName("slider"),
+                    function (slid) {
+                        slid.style =
+                            "-webkit-appearance: slider-vertical; width: 100%; min-height: 150px; max-height: 100%; height: 100%;";
+                        slider.style.background = $("#scolor").val();
+                    }
+                );
             }
         }
         e.onchange = onChange;
@@ -375,9 +375,9 @@
             $("#head").val();
         document.getElementById("left").innerHTML = 0;
         document.getElementById("right").innerHTML = 100;
-        //$("#red").attr("class", $("#orientation").val());
-        //  $("#horizontal").attr("id", $("#orientation").val());
-        //  em = $("#orientation").val();
-        // $("#" + em).empty();
+        $("#red").attr("class", $("#orientation").val());
+        $("#horizontal").attr("id", $("#orientation").val());
+        em = $("#orientation").val();
+        $("#" + em).empty();
     }
 </script>
