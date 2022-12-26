@@ -1,16 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
-      integrity="sha512-5PV92qsds/16vyYIJo3T/As4m2d8b6oWYfoqV+vtizRB6KhF1F9kYzWzQmsO6T3z3QG2Xdhrx7FQ+5R1LiQdUA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <title>NPS LITE SCALE</title>
+{% extends "index.html" %}
+{% block title %}NPS LITE SCALE{% endblock %}
+{% block content %}
     <style>
     *{
         margin: 0;
@@ -74,12 +64,12 @@
     .previous-scales_nps_lite{
         display: flex;
         flex-direction: column;
-        width: 150px;
+        width: 180px;
         padding : 15px;
         justify-content: flex-start;
         border: 1px solid darkgreen;
         overflow-y:scroll;
-        height: 200px;
+<!--        height: 200px;-->
     }
 
     .previous-scales_nps_lite a{
@@ -155,8 +145,7 @@
     }
     </style>
     {% endif %}
-</head>
-<body style="display:flex; justify-content: center;flex-direction: column; align-items: center">
+
     {% if user == "admin" %}
     <div class="url-clipboard">
       <p id="mytext"></p>
@@ -170,7 +159,7 @@
     <div class="previous-scales_nps_lite">
         <h3>Scale history</h3>
         {% for scale in npslite_all %}
-        <a href="https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/{{scale.template_name}}/">{{scale.template_name}}</a>
+        <a href="{{public_url}}/nps-lite/nps-lite-scale/{{scale.settings.template_name}}/">{{scale.settings.template_name}}</a>
         {% endfor %}
     </div>
     {% endif %}
@@ -197,7 +186,7 @@
         copyText.style.color = "#ccc";
         copyText.style.fontSize = "18px";
         copyText.style.fontWeight = "400";
-        copyText.innerHTML = `https://100035.pythonanywhere.com/nps-lite-scale/defaultnplslite/?brand_name=<b>your-brand</b>&product_name=<b>your-product</b>`
+        copyText.innerHTML = `{{public_url|safe}}/nps-lite-scale/defaultnplslite/?brand_name=<b>your-brand</b>&product_name=<b>your-product</b>`
         }
       window.onload = codeAddress;
 
@@ -205,7 +194,7 @@
         var clip = document.getElementById("clip-icon");
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
-        input_temp.value = `https://100035.pythonanywhere.com/nps-lite/nps-lite-scale/defaultnplslite/?brand_name=your brand&product_name=your product`;
+        input_temp.value = `{{public_url|safe}}/nps-lite/nps-lite-scale/defaultnplslite/?brand_name=your brand&product_name=your product`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");
@@ -216,5 +205,4 @@
         clip.style.cursor = "default";
       }
 </script>
-</body>
-</html>
+{% endblock %}

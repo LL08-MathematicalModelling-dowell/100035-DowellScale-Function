@@ -88,8 +88,9 @@ content %}
     <div class="scales">
         <a id="likert">Likert Scale</a>
         <a id="percent">Percent Scale</a>
-        <a id="nps">NPS Scale</a>
+        <a id="nps">Nps Scale</a>
         <a id="stapel">Stapel scale</a>
+        <a id="nps-lite">Nps Lite scale</a>
     </div>
     <script>
         var test = "{{user_role|safe}}";
@@ -99,17 +100,21 @@ content %}
         var likert = document.getElementById("likert");
         var stapel = document.getElementById("stapel");
         var nps = document.getElementById("nps");
+        var npsLite = document.getElementById("nps-lite");
 
         if (test === "owner") {
             percent.href = "{{public_url|safe}}/percent/percent-admin/default";
             likert.href = "{{public_url|safe}}/likert/likert-admin/default";
             nps.href = "{{public_url|safe}}/nps-admin/default";
             stapel.href = "{{public_url|safe}}/stapel/stapel-admin/default";
+            npsLite.href =
+                "{{public_url|safe}}/nps-lite/nps-lite-default-admin/";
         } else {
             percent.href = "{{public_url|safe}}/percent/percent-scale/default";
             likert.href = "{{public_url|safe}}/likert/likert-scale/default";
             nps.href = "{{public_url|safe}}/nps-scale/default";
             stapel.href = "{{public_url|safe}}/stapel/stapel-scale/default";
+            npsLite.href = "{{public_url|safe}}/nps-lite/nps-lite-default/";
         }
     </script>
 </div>

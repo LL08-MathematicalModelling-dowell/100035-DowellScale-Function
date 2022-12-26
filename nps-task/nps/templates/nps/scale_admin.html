@@ -177,9 +177,6 @@ input:checked + .slider:before {
    display: none;
    }
 
-
-
-
 	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -276,7 +273,7 @@ input:checked + .slider:before {
 				<div class="form-group col-md-3" id="timeInput">
 					<label for="time">Time (sec)</label>
 					<input class="form-control" id="time" value="0" name="time" onchange="myTime()" placeholder="Time"
-					       type="text">
+					       type="number">
 				</div>
 				<div class="form-group col-md-12 text-right p-15">
 
@@ -512,8 +509,6 @@ input:checked + .slider:before {
                             }else {
                                 console.log("Tall Boy")
                             }
-
-
                      document.getElementById(i).style.color = $("#fcolor").val();
                   }
                   }
@@ -522,7 +517,5 @@ input:checked + .slider:before {
 
 	</div>
 </div>
-
-
 </body>
 </html>

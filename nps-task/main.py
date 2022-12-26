@@ -25,18 +25,27 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
       return "check your connectivity"
 
 
+CONNECTION_LIST = [
+                "dowellscale",
+                "bangalore",
+                "dowellscale",
+                "scale_reports",
+                "scale_reports",
+                "1094",
+                "ABCDE",
+            ],
 # Update Dowell Connection
 def update_template(template_id, data):
     url = ""
     payload = json.dumps(
         {
-            # **TEMPLATE_CONNECTION_DICT,
+            **CONNECTION_LIST,
             "command":"update",
             "field":{
                 "_id":template_id,
             },
             "update_field":{
-                "content":data,
+                "score":data,
             },
             "platform":"bangalore"
         }
@@ -46,10 +55,10 @@ def update_template(template_id, data):
     return response.text
 
 
-field_add = {"scale_data.scale_id":"63a777a7755ae14e588fafe2"}
-response_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE","fetch", field_add, "nil")
+field_add = {"scale_data.scale_id":"63a77ba4755ae14e588fb042"}
+# response_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE","fetch", field_add, "nil")
 
-# field_add={"settings.template_name":"TestSetting9027"}
+# field_add={"settings.template_name":"Final3698"}
 # scale_details = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
 # b = json.loads(scale_details)
 # print(b['data'][0]['settings'])
@@ -57,7 +66,7 @@ response_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "
 
 # details = {}
 # user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","fetch",details,"nil")
-print(response_details)
+# print(b)
 # z = b["data"][-1]['score']
 # for i in z:
 #     x = i['instance_id'].split("/")[0]
@@ -65,9 +74,10 @@ print(response_details)
 
 
 # 63a2072408a1b053ce80b71e
-# id = "63a4a0b62fa34b2a7cb25ebe"
-# data = {'score':{"id":10,"score":10}}
-# x = update_template(id, data)
+id = "63a77ba4755ae14e588fb042"
+data = {"score":10}
+x = update_template(id, data)
+print(x)
 #
 # print(response_details)
 # b = json.loads(response_details)
