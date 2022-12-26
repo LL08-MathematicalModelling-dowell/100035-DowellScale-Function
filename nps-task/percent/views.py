@@ -16,7 +16,6 @@ def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
         return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/percent/percent-admin/settings/")
-    # # print("+++++++++++++", request.session.get('user_name'))
     context={}
     context["public_url"] = public_url
 
@@ -29,7 +28,6 @@ def dowell_scale_admin(request):
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
         eventID = get_event_id()
-       # user = "test"
         scale_type="percent"
         try:
             field_add={"scale_type":scale_type,"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "scale-category": "percent scale","event_id":eventID }
