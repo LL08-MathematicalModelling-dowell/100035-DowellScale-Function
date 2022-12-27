@@ -205,7 +205,7 @@ function postScore(score){
             {% for percent in percentall %}
                 <tr>
         <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{nps.template_name}}">{{nps.template_name}}</a></td>-->
-                    <td><a href="{{public_url}}/percent/percent-scale1/{{percent.template_name}}">{{percent.template_name}}</a></td>
+                    <td><a href="{{public_url}}/percent/percent-scale1/{{percent.settings.template_name}}">{{percent.settings.template_name}}</a></td>
                 </tr>
             {% endfor %}
             {% endif %}

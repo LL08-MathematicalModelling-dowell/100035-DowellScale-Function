@@ -150,7 +150,7 @@ def dowell_scale1(request, tname1):
         score = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'score':score}
         if existing_scale == False:
             try:
-                field_add={"event_id":eventID,"scale_data":{"scale_id":context["scale_id"],"scale_type":"nps scale"}, "brand_data":{"brand_name":context["brand_name"],"product_name":context["product_name"]},"score":[score]}
+                field_add={"event_id":eventID,"scale_data":{"scale_id":context["scale_id"],"scale_type":"likert scale"}, "brand_data":{"brand_name":context["brand_name"],"product_name":context["product_name"]},"score":[score]}
                 x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
 
                 # User details
@@ -171,6 +171,7 @@ def brand_product_preview(request):
     field_add={"settings.template_name":template_name}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
+    print(data)
     x= data['data'][0]['settings']
     context["defaults"]=x
     number_of_scale=x['number_of_scales']

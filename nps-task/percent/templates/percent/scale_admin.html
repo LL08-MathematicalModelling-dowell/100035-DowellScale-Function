@@ -67,6 +67,7 @@
                 width: 100%; /* Width of the outside container */
               }
 
+
               /* The slider itself */
               .slider {
                 -webkit-appearance: none;  /* Override default CSS styles */
@@ -105,6 +106,7 @@
                 cursor: pointer; /* Cursor on hover */
                 border-radius: 50%;
               }
+
                #horizontal h6{
                    font-size: 30px;
                    padding: 5px;
@@ -159,8 +161,8 @@
 
 
                #horizontal{
-                   display: flex;
-                   justify-content: space-between;
+                display: flex;
+                justify-content: space-between;
                }
                .Footer {
                 width: 100%;
@@ -168,6 +170,22 @@
                 font-size: large;
                 font-weight: 800;
               }
+              #checkbox {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 30px;
+            }
+
+
+            #checkbox input {
+                opacity: 0;
+                width: 10px;
+                height: 0;
+            }
+            #timeInput{
+                display: none;
+            }
         </style>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -186,7 +204,9 @@
                 >
                     <form action="" method="POST">
                         {% csrf_token %}
-                        <h2 align="center"><u>Customize your scale</u></h2>
+                        <h2 style="text-align: center">
+                            <u>Customize your scale</u>
+                        </h2>
                         <div class="form-group col-md-6">
                             <label for="head">Name of Scale</label>
                             <input
@@ -204,7 +224,7 @@
                                 type="text"
                                 name="numberofscale"
                                 class="form-control"
-                                id="head"
+                                id="no_of_scales"
                                 placeholder="Number of scale"
                                 required="True"
                                 value="1"
@@ -234,16 +254,32 @@
                                 required=""
                             />
                         </div>
-                        <div class="form-group col-md-6">
-                            <label for="time">Time</label>
+                        <div
+                            class="form-group col-md-3"
+                            style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                margin-top: 25px;
+                            "
+                        >
+                            <label for="checkbox">
+                                <input id="checkbox" type="checkbox" />
+                            </label>
+                            <span style="font-weight: bold">
+                                Click to set Time</span
+                            >
+                        </div>
+                        <div class="form-group col-md-3" id="timeInput">
+                            <label for="time">Time (sec)</label>
                             <input
-                                type="text"
-                                name="time"
                                 class="form-control"
                                 id="time"
-                                placeholder="Time"
-                                required="False"
                                 value="0"
+                                name="time"
+                                onchange="myTime()"
+                                placeholder="Time"
+                                type="number"
                             />
                         </div>
 
@@ -330,6 +366,17 @@
 </html>
 
 <script>
+    function myTime() {
+        time = document.getElementById("time").value;
+    }
+    let checkbox = document.getElementById("checkbox");
+    checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+            document.getElementById("timeInput").style.display = "block";
+        } else {
+            document.getElementById("timeInput").style.display = "none";
+        }
+    });
     var slid = document.getElementsByClassName("slidecontainer");
     function preview() {
         var slider = document.getElementById("myRange");
