@@ -199,17 +199,17 @@ input:checked + .slider:before {
         <div class="col-lg-1 col-md-2 d-sm-none"></div>
         <div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
              style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
-            <form action="" method="POST">
+            <form id="scale_settings" action="" method="POST" onsubmit="event.preventDefault(); myFunctionSave();">
                 {% csrf_token %}
                 <h2 align="center"><u>Customize your scale</u></h2>
                 <div class="form-group col-md-6">
                     <label for="head">Name of Scale</label>
                     <input class="form-control" id="head" name="nameofscale" onchange="myName()" placeholder="Name of scale"
-                           required="" type="text">
+                           required type="text">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="orientation">Orientation</label>
-                    <select class="form-control" id="orientation" name="orientation" required="">
+                    <select class="form-control" id="orientation" name="orientation" required>
                         <option selected="">Choose...</option>
                         <option value="horizontal">Horizontal</option>
                         <option value="vertical">Vertical</option>
@@ -218,37 +218,37 @@ input:checked + .slider:before {
                 <div class="form-group col-md-4">
                     <label for="scale_upper_limit">Scale upper limit <span
                             id="upper-warn">Max number 10, min 1</span></label>
-                    <!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required="">-->
+                    <!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required>-->
                     <input class="form-control" id="scale_upper_limit" max="10" min="1" name="scale_upper_limit"
                            onchange="myFunction()" type="number">
                 </div>
 
                 <div class="form-group col-md-4">
                     <label for="scale_lower_limit">Scale lower limit</label>
-                    <!--<input type="number" name="numberof" class="form-control" id="numberof" min="0" max="10" placeholder="Number of Scale" required="">-->
+                    <!--<input type="number" name="numberof" class="form-control" id="numberof" min="0" max="10" placeholder="Number of Scale" required>-->
                     <input class="form-control" disabled id="scale_lower_limit" name="scale_lower_limit" type="number">
                 </div>
 
                 <div class="form-group col-md-4">
                     <label for="spacing_unit">Spacing Unit <span id="spacing-warn">Max number 5, min 1</span></label>
-                    <!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required="">-->
+                    <!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required>-->
                     <input class="form-control" id="spacing_unit" max="5" min="0" name="spacing_unit" onkeyup="mySpacing()"
                            type="number">
                 </div>
                 <div class="form-group col-md-4">
                     <label for="scolor">Scale Color</label>
                     <input class="form-control" id="scolor" name="scolor" onchange="myScolor()" placeholder="Background Color"
-                           required="" type="color">
+                           required type="color">
                 </div>
                 <div class="form-group col-md-4">
                     <label for="rcolor">Round Color</label>
                     <input class="form-control" id="rcolor" name="rcolor" onchange="myRcolor()" placeholder="Font Color"
-                           required="" type="color">
+                           required type="color">
                 </div>
                 <div class="form-group col-md-4">
                     <label for="fcolor">Font Color</label>
                     <input class="form-control" id="fcolor" name="fcolor" onchange="myFcolor()" placeholder="Scale Color"
-                           required="" type="color">
+                           required type="color">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="format">Format</label>
@@ -259,18 +259,18 @@ input:checked + .slider:before {
                 <div class="form-group col-md-6">
                     <label for="lefttext">Left</label>
                     <input class="form-control" id="lefttext" name="left" onchange="myLtext()" placeholder="Left Text"
-                           required="" type="text">
+                           required type="text">
                 </div>
 
                 <div class="form-group col-md-6">
                     <label for="righttext">Right</label>
                     <input class="form-control" id="righttext" name="right" onchange="myRtext()" placeholder="Right Text"
-                           required="" type="text">
+                           required type="text">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="time">Number of Scales</label>
                     <input class="form-control" id="no_of_scales" min="1" name="no_of_scales"
-                           onchange="myNumScales()" placeholder="Number of scales" type="number">
+                           onchange="myNumScales()" placeholder="Number of scales" type="number" required>
                 </div>
 
 	            <div class="form-group col-md-3 "
@@ -284,13 +284,13 @@ input:checked + .slider:before {
 
                 <div class="form-group col-md-6" id="timeInput">
                     <label for="time">Time (sec)</label>
-                    <input class="form-control" id="time" value="0" name="time" onchange="myTime()"
+                    <input class="form-control" id="time" name="time" onchange="myTime()"
                            placeholder="Time"
                            type="text">
                 </div>
                 <div class="form-group col-md-12 text-right p-15">
 
-                    <button class="btn btn-primary" id="saveBtn" onclick="myFunctionSave();" type="submit">Save</button>
+                    <button class="btn btn-primary" id="saveBtn">Save</button>
                     <a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"
                        onclick="preview();">Preview</a>
                 </div>
@@ -354,8 +354,19 @@ input:checked + .slider:before {
                   let fcolor;
                   let ltext;
                   let rtext;
-                  let time = 0;
+                  let time;
                   let no_of_scales;
+
+                  function myFunctionSave() {
+					if (ltext === rtext){
+						alert("Labels should be unique")
+						return
+					}
+	                var x = document.getElementById("snackbar");
+	                x.className = "show";
+	                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+	                return document.getElementById('scale_settings').submit();
+                    }
 
                   let checkbox = document.getElementById("checkbox");
 			      checkbox.addEventListener( "change", () => {
@@ -366,11 +377,6 @@ input:checked + .slider:before {
 			         }
 			      });
 
-                   function myFunctionSave() {
-                      var x = document.getElementById("snackbar");
-                      x.className = "show";
-                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-                    }
 
                   var validateUpper = document.getElementById("scale_upper_limit").addEventListener('keyup', (e)=> {
                     var upper_warn = document.getElementById("upper-warn")

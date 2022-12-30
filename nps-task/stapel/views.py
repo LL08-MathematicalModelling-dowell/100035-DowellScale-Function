@@ -44,6 +44,8 @@ def dowell_scale_admin(request):
         if scale_upper_limit > 10 or scale_upper_limit < 0 or spacing_unit > 5 or spacing_unit < 1:
             raise Exception("Check scale limits and spacing_unit")
 
+        if time == "":
+            time = 0
         try:
             eventID = get_event_id()
             field_add={"event_id":eventID,"settings":{"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale","no_of_scales":no_of_scales}}

@@ -177,6 +177,7 @@ input:checked + .slider:before {
    display: none;
    }
 
+
 	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -189,10 +190,10 @@ input:checked + .slider:before {
 		<div class="col-lg-1 col-md-2 d-sm-none"></div>
 		<div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
 		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
-			<form action="" method="POST">
+			<form id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunction();">
 				{% csrf_token %}
 				<h2 align="center"><u>Customize your scale</u></h2>
-				<div class="form-group col-md-12">
+				<div class="form-group col-md-6">
 					<label for="head">Name of Scale</label>
 					<input class="form-control" id="head" name="nameofscale" onchange="myName()"
 					       placeholder="Name of scale"
@@ -206,11 +207,11 @@ input:checked + .slider:before {
 						<option value="vertical">Vertical</option>
 					</select>
 				</div>
-				<div class="form-group col-md-6">
-					<label for="numberof">Number of rating</label>
-					<!--<input type="number" name="numberof" class="form-control" id="numberof" min="0" max="10" placeholder="Number of Scale" required>-->
-					<input class="form-control" disabled id="numberof" name="numberof" type="number" value=10>
-				</div>
+				<!--				<div class="form-group col-md-6">-->
+				<!--					<label for="numberof">Number of rating</label>-->
+				<!--					&lt;!&ndash;<input type="number" name="numberof" class="form-control" id="numberof" min="0" max="10" placeholder="Number of Scale" required>&ndash;&gt;-->
+				<!--					<input class="form-control" disabled id="numberof" name="numberof" type="number" value=10>-->
+				<!--				</div>-->
 
 				<div class="form-group col-md-4">
 					<label for="scolor">Scale Color</label>
@@ -257,7 +258,7 @@ input:checked + .slider:before {
 				</div>
 				<div class="form-group col-md-3">
 					<label for="time">Number of Scales</label>
-					<input class="form-control" id="no_of_scales" min="1" name="no_of_scales"
+					<input class="form-control" id="no_of_scales" min="1" max="100" name="no_of_scales"
 					       onchange="myNumScales()" placeholder="Number of scales" type="number">
 				</div>
 
@@ -272,12 +273,10 @@ input:checked + .slider:before {
 
 				<div class="form-group col-md-3" id="timeInput">
 					<label for="time">Time (sec)</label>
-					<input class="form-control" id="time" value="0" name="time" onchange="myTime()" placeholder="Time"
-					       type="number">
+					<input class="form-control" id="time" name="time" onchange="myTime()" placeholder="Time" type="number">
 				</div>
 				<div class="form-group col-md-12 text-right p-15">
-
-					<button class="btn btn-primary" id="saveBtn" onclick="myFunction();" type="submit">Save</button>
+					<button class="btn btn-primary" id="saveBtn">Save</button>
 					<a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"
 					   onclick="preview();">Preview</a>
 				</div>
@@ -323,8 +322,7 @@ input:checked + .slider:before {
 					</div>
 				</div>
 			</div>
-		</div>
-		<script>
+			<script>
                   var vert="vertical";
                   var hori="horizontal";
                   var name="number";
@@ -339,7 +337,7 @@ input:checked + .slider:before {
                   let ltext;
                   let ctext;
                   let rtext;
-                  let time = 0;
+                  let time;
                   let no_of_scales;
 
 
@@ -354,9 +352,14 @@ input:checked + .slider:before {
 
 
                   function myFunction() {
-                      var x = document.getElementById("snackbar");
-                      x.className = "show";
-                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+					if (ltext === ctext || ctext === rtext || ltext === rtext){
+						alert("Labels should be unique")
+						return
+					}
+	                var x = document.getElementById("snackbar");
+	                x.className = "show";
+	                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+	                return document.getElementById('scale_settings').submit();
                     }
 
                   function myName() {
@@ -513,7 +516,9 @@ input:checked + .slider:before {
                   }
                   }
 
+
 		</script>
+		</div>
 
 	</div>
 </div>

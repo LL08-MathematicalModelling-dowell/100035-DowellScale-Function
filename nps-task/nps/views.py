@@ -36,6 +36,9 @@ def dowell_scale_admin(request):
         text = f"{left}+{center}+{right}"
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
+        if time == "":
+            time = 0
+        print("This is my time", time)
         # objcolor = system_settings.objects.create(orientation=orientation,numberrating=numberrating,scalecolor=scalecolor,roundcolor=roundcolor,fontcolor=fontcolor,fomat=fomat,time=time,template_name=template_name,name=name,text=text, left=left,right=right,center=center)
         # objcolor.save()
         try:
