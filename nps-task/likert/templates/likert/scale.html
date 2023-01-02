@@ -1,18 +1,6 @@
-{% load i18n %}
-{% load  static %}
-<html lang="en">
-<head>
-{% for default in defaults %}
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>VOC_LIKERT</title>
+{% extends "index.html" %}
+{% block title %}Likert Scale{% endblock %}
+{% block content %}
     <style>
         #horizontal{
            display: flex;
@@ -125,7 +113,7 @@ $(document).ready(function() {
 
 function postScore(score){
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", 'https://100035.pythonanywhere.com/likert-response/', true);
+    xhr.open("POST", '{{public_url|safe}}/likert-response/', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({
         score: parseInt(score),
@@ -150,9 +138,6 @@ setrating = function(id) {
     }
 }
 </script>
-</head>
-<body>
-
 
 <div class="container ">
     <div class="row mt-4">
@@ -162,8 +147,7 @@ setrating = function(id) {
             {% if user == "admin" %}
             {% for likert in likertall %}
                 <tr>
-        <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{stapel.template_name}}">{{stapel.template_name}}</a></td>-->
-                    <td><a href="https://100035.pythonanywhere.com/likert/likert-scale/{{likert.template_name}}">{{likert.template_name}}</a></td>
+                    <td><a href="{{public_url}}/likert/likert-scale/{{likert.template_name}}">{{likert.template_name}}</a></td>
                 </tr>
             {% endfor %}
             {% endif %}
@@ -260,4 +244,4 @@ setrating = function(id) {
     {% endfor %}
 </div>
 </div>
-</body>
+{% endblock %}

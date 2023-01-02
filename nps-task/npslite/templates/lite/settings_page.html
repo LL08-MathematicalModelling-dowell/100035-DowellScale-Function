@@ -2,17 +2,117 @@
 {% load  static %}
 <html lang="en">
 <head>
-    <title>NPS LITE SCALE</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<title>NPS LITE SCALE</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
 
-    <style media="all" id="fa-main">
+	<style id="fa-main" media="all">
   /*!
    * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
    * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
    */
+   .switch {
+	  position: relative;
+	  display: inline-block;
+	  width: 60px;
+	  height: 34px;
+	}
+
+	.switch input {
+	  opacity: 0;
+	  width: 0;
+	  height: 0;
+	}
+
+	.slider {
+	  position: absolute;
+	  cursor: pointer;
+	  top: 0;
+	  left: 0;
+	  right: 0;
+	  bottom: 0;
+	  background-color: #ccc;
+	  -webkit-transition: .4s;
+	  transition: .4s;
+	}
+
+	.slider:before {
+	  position: absolute;
+	  content: "";
+	  height: 26px;
+	  width: 26px;
+	  left: 4px;
+	  bottom: 4px;
+	  background-color: white;
+	  -webkit-transition: .4s;
+	  transition: .4s;
+	}
+
+	input:checked + .slider {
+	  background-color: #2196F3;
+	}
+
+	input:focus + .slider {
+	  box-shadow: 0 0 1px #2196F3;
+	}
+
+	input:checked + .slider:before {
+	  -webkit-transform: translateX(26px);
+	  -ms-transform: translateX(26px);
+	  transform: translateX(26px);
+	}
+
+	/* Rounded sliders */
+	.slider.round {
+	  border-radius: 34px;
+	}
+
+	.slider.round:before {
+	  border-radius: 50%;
+	}
+	   #snackbar {
+	  visibility: hidden;
+	  min-width: 250px;
+	  margin-left: -125px;
+	  background-color: green;
+	  color: #fff;
+	  text-align: center;
+	  border-radius: 2px;
+	  padding: 16px;
+	  position: fixed;
+	  z-index: 1;
+	  right: 10%;
+	  top: 30px;
+	  font-size: 17px;
+	}
+
+	#snackbar.show {
+	  visibility: visible;
+	  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	}
+
+	@-webkit-keyframes fadein {
+	  from {top: 0; opacity: 0;}
+	  to {top: 30px; opacity: 1;}
+	}
+
+	@keyframes fadein {
+	  from {top: 0; opacity: 0;}
+	  to {top: 30px; opacity: 1;}
+	}
+
+	@-webkit-keyframes fadeout {
+	  from {top: 30px; opacity: 1;}
+	  to {top: 0; opacity: 0;}
+	}
+
+	@keyframes fadeout {
+	  from {top: 30px; opacity: 1;}
+	  to {top: 0; opacity: 0;}
+	}
 
    .main-container_nps_lite{
         display: flex;
@@ -67,124 +167,145 @@
     background: #2edb4e;
     }
 
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+      #timeInput{
+	   display: none;
+	   }
+
+
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 </head>
 <body class=".bg-secondary">
+<div id="snackbar"></div>
 <div class="container">
-    <div class="row" style="margin-top: 3%;">
-        <div class="col-lg-1 col-md-2 d-sm-none"></div>
-        <div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
-             style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
-            <form action="" method="POST">
-                {% csrf_token %}
-                <h2 align="center"><u>Customize your scale</u></h2>
-                <div class="form-group col-md-6">
-                    <label for="head">Name of Scale</label>
-                    <input type="text" name="nameofscale" onchange="myName()" class="form-control" id="head"
-                           placeholder="Name of scale" required="">
-                </div>
+	<div class="row" style="margin-top: 3%;">
+		<div class="col-lg-1 col-md-2 d-sm-none"></div>
+		<div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
+		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
+			<form id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunction();">
+				{% csrf_token %}
+				<h2 align="center"><u>Customize your scale</u></h2>
+				<div class="form-group col-md-6">
+					<label for="head">Name of Scale</label>
+					<input class="form-control" id="head" name="nameofscale" onchange="myName()" placeholder="Name of scale"
+					       required type="text">
+				</div>
 
-                 <div class="form-group col-md-6">
-                    <label for="orientation">Orientation</label>
-                    <select id="orientation" class="form-control" name="orientation" required="">
-                        <option selected="">Choose...</option>
-                        <option value="horizontal">Horizontal</option>
-                        <option value="vertical">Vertical</option>
-                    </select>
-                </div>
+				<div class="form-group col-md-6">
+					<label for="orientation">Orientation</label>
+					<select class="form-control" id="orientation" name="orientation" required>
+						<option selected="">Choose...</option>
+						<option value="horizontal">Horizontal</option>
+						<option value="vertical">Vertical</option>
+					</select>
+				</div>
 
-                <div class="form-group col-md-12">
-                    <label for="head">Question of survey</label>
-                    <input type="text" name="questionofscale" onchange="myQuestion()" class="form-control" id="question"
-                           placeholder="Question to the survey" required="">
-                </div>
+				<div class="form-group col-md-6">
+					<label for="head">Question of survey</label>
+					<input class="form-control" id="question" name="questionofscale" onchange="myQuestion()" placeholder="Question to the survey"
+					       required type="text">
+				</div>
 
-                <div class="form-group col-md-6">
-                    <label for="scolor">Scale Color</label>
-                    <input type="color" onchange="myScolor()" name="scolor" class="form-control" id="scolor"
-                           placeholder="Background Color" required="">
-                </div>
+				<div class="form-group col-md-6">
+					<label for="time">Number of Scales</label>
+					<input class="form-control" id="no_of_scales" min="1" max="100" name="no_of_scales"
+					       onchange="myNumScales()" placeholder="Number of scales" type="number">
+				</div>
 
-                <div class="form-group col-md-6">
-                    <label for="scolor">Font Color</label>
-                    <input type="color" onchange="myFcolor()" name="fcolor" class="form-control" id="fcolor"
-                           placeholder="Font Color" required="">
-                </div>
+				<div class="form-group col-md-6">
+					<label for="scolor">Scale Color</label>
+					<input class="form-control" id="scolor" name="scolor" onchange="myScolor()" placeholder="Background Color"
+					       required type="color">
+				</div>
 
-                <div class="form-group col-md-6">
-                    <label for="lefttext">Left</label>
-                    <input type="text" onchange="myLtext()" name="left" class="form-control" id="lefttext"
-                           placeholder="Left Text" required="">
-                </div>
+				<div class="form-group col-md-6">
+					<label for="scolor">Font Color</label>
+					<input class="form-control" id="fcolor" name="fcolor" onchange="myFcolor()" placeholder="Font Color"
+					       required type="color">
+				</div>
 
-                <div class="form-group col-md-6">
-                    <label for="lefttext">Center</label>
-                    <input type="text" onchange="myCtext()" name="center" class="form-control" id="centertext"
-                           placeholder="Center Text" required="">
-                </div>
+				<div class="form-group col-md-6">
+					<label for="lefttext">Left</label>
+					<input class="form-control" id="lefttext" name="left" onchange="myLtext()" placeholder="Left Text"
+					       required type="text">
+				</div>
 
-                <div class="form-group col-md-6">
-                    <label for="righttext">Right</label>
-                    <input type="text" onchange="myRtext()" name="right" class="form-control" id="righttext"
-                           placeholder="Right Text" required="">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="time">Time</label>
-                    <input type="text" onchange="myTime()" name="time" class="form-control" id="time" placeholder="Time"
-                           required="">
-                </div>
-                <div class="form-group col-md-12 text-right p-15">
+				<div class="form-group col-md-6">
+					<label for="lefttext">Center</label>
+					<input class="form-control" id="centertext" name="center" onchange="myCtext()" placeholder="Center Text"
+					       required type="text">
+				</div>
 
-                    <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
-                    <a onclick="preview();" id="prevBtn" class="btn btn-primary" data-toggle="modal"
-                       data-target="#exampleModalCenter">Preview</a>
-                </div>
-            </form>
-        </div>
-        <div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
+				<div class="form-group col-md-6">
+					<label for="righttext">Right</label>
+					<input class="form-control" id="righttext" name="right" onchange="myRtext()" placeholder="Right Text"
+					       required type="text">
+				</div>
+				<div class="form-group col-md-3 "
+				     style="display: flex; align-items: center; justify-content: center; margin-top: 25px">
+					<label class="switch">
+						<input id="checkbox" type="checkbox">
+						<span class="slider round"></span>
+					</label>
+					<span style="font-weight: bold">Toggle to set Time</span>
+				</div>
 
-        </div>
-        <!-- Button trigger modal -->
+				<div class="form-group col-md-3" id="timeInput">
+					<label for="time">Time (sec)</label>
+					<input class="form-control" id="time" name="time" onchange="myTime()" placeholder="Time" type="number"
+>
+				</div>
+				<div class="form-group col-md-12 text-right p-15">
 
-        <!-- Modal -->
+					<button class="btn btn-primary" id="saveBtn" >Save</button>
+					<a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"
+					   onclick="preview();">Preview</a>
+				</div>
+			</form>
+		</div>
+		<div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
 
-        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content" id="modalContent">
-                    <div class="modal-header">
-                        <h2 class="modal-title" id="exampleModalLongTitle" align="center"></h2>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body" id="modal-body">
-                        <div class="horizontal d-flex justify-content-center" id="red"></div>
-                        <center>
-                            <div id="horizontal">
-                                <div class="main-container_nps_lite">
-                                    <!--<p class="time_nps_lite">10:30</p>-->
-                                    <p class="title_nps_lite">Do you wish to recommend this application to your
-                                        friend?</p>
-                                    <div class="container_nps_lite">
-                                        <div class="left_nps_lite"></div>
-                                        <div class="center_nps_lite"></div>
-                                        <div class="right_nps_lite"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </center>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="close-mod" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+		</div>
+		<!-- Button trigger modal -->
+
+		<!-- Modal -->
+
+		<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter"
+		     role="dialog" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+				<div class="modal-content" id="modalContent">
+					<div class="modal-header">
+						<h2 align="center" class="modal-title" id="exampleModalLongTitle"></h2>
+						<button aria-label="Close" class="close" data-dismiss="modal" type="button">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+					<div class="modal-body" id="modal-body">
+						<div class="horizontal d-flex justify-content-center" id="red"></div>
+						<center>
+							<div id="horizontal">
+								<div class="main-container_nps_lite">
+									<!--<p class="time_nps_lite">10:30</p>-->
+									<p class="title_nps_lite">Do you wish to recommend this application to your
+										friend?</p>
+									<div class="container_nps_lite">
+										<div class="left_nps_lite"></div>
+										<div class="center_nps_lite"></div>
+										<div class="right_nps_lite"></div>
+									</div>
+								</div>
+							</div>
+						</center>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-secondary" data-dismiss="modal" id="close-mod" type="button">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>
@@ -205,6 +326,33 @@
                   let ltext;
                   let rtext;
                   let time;
+                  let no_of_scales;
+
+                  function myFunction() {
+					if (ltext === ctext || ctext === rtext || ltext === rtext){
+						alert("Labels should be unique")
+						return
+					}
+	                var x = document.getElementById("snackbar");
+	                x.className = "show";
+	                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+	                return document.getElementById('scale_settings').submit();
+                    }
+
+                  let checkbox = document.getElementById("checkbox");
+			      checkbox.addEventListener( "change", () => {
+			         if ( checkbox.checked ) {
+			            document.getElementById("timeInput").style.display = "block";
+			         } else {
+			            document.getElementById("timeInput").style.display = "none";
+			         }
+			      });
+
+			      function myNumScales() {
+                      no_of_scales = document.getElementById("no_of_scales").value;
+                      var x = document.getElementById("snackbar");
+                      x.innerHTML = `Successfully created ${no_of_scales} scales`;
+                  }
 
                   function myName() {
                       head_name = document.getElementById("head").value;
@@ -266,6 +414,7 @@
                       document.querySelector(".center_nps_lite").style.color = fcolor
                       document.querySelector(".right_nps_lite").style.color = fcolor
                  }
+
 
 
 </script>
