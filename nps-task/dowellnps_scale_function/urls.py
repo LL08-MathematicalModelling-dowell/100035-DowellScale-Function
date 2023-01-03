@@ -27,6 +27,7 @@ urlpatterns = [
     path('likert/', include('likert.urls')),
     # path('', include('scalefetch.urls')),
     path('home/', include('login.urls')),
+    path('client/', include('client.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
