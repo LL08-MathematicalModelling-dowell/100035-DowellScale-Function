@@ -44,6 +44,8 @@ def dowell_scale_admin(request):
             eventID = get_event_id()
             rand_num = random.randrange(1, 10000)
             template_name = f"{name.replace(' ', '')}{rand_num}"
+            if time == "":
+                time = 0
             try:
                 field_add={"event_id":eventID,"settings":{"orientation":orientation,"roundcolor":roundcolor,"fontcolor":fontcolor,"labelscale":labelscale,"number_of_scales":number_of_scales,"time":time,"template_name":template_name,"name":name,"scales":scales,"labeltype":labeltype,"scale-category": "likert scale"}}
                 x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")

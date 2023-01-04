@@ -58,7 +58,7 @@ def update_template(template_id, data):
 field_add = {"scale_data.scale_id":"63a77ba4755ae14e588fb042"}
 # response_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE","fetch", field_add, "nil")
 
-# field_add={"settings.template_name":"Final3698"}
+# field_add={"settings._id":"63aca9dd42800d93168fa194""}
 # scale_details = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
 # b = json.loads(scale_details)
 # print(b['data'][0]['settings'])

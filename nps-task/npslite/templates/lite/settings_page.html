@@ -168,8 +168,8 @@
     }
 
       #timeInput{
-   display: none;
-   }
+	   display: none;
+	   }
 
 
 	</style>
@@ -184,7 +184,7 @@
 		<div class="col-lg-1 col-md-2 d-sm-none"></div>
 		<div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
 		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
-			<form action="" method="POST">
+			<form id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunction();">
 				{% csrf_token %}
 				<h2 align="center"><u>Customize your scale</u></h2>
 				<div class="form-group col-md-6">
@@ -210,7 +210,7 @@
 
 				<div class="form-group col-md-6">
 					<label for="time">Number of Scales</label>
-					<input class="form-control" id="no_of_scales" min="1" name="no_of_scales"
+					<input class="form-control" id="no_of_scales" min="1" max="100" name="no_of_scales"
 					       onchange="myNumScales()" placeholder="Number of scales" type="number">
 				</div>
 
@@ -255,11 +255,11 @@
 				<div class="form-group col-md-3" id="timeInput">
 					<label for="time">Time (sec)</label>
 					<input class="form-control" id="time" name="time" onchange="myTime()" placeholder="Time" type="number"
-					       value="0">
+>
 				</div>
 				<div class="form-group col-md-12 text-right p-15">
 
-					<button class="btn btn-primary" id="saveBtn" type="submit">Save</button>
+					<button class="btn btn-primary" id="saveBtn" >Save</button>
 					<a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"
 					   onclick="preview();">Preview</a>
 				</div>
@@ -327,6 +327,17 @@
                   let rtext;
                   let time;
                   let no_of_scales;
+
+                  function myFunction() {
+					if (ltext === ctext || ctext === rtext || ltext === rtext){
+						alert("Labels should be unique")
+						return
+					}
+	                var x = document.getElementById("snackbar");
+	                x.className = "show";
+	                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+	                return document.getElementById('scale_settings').submit();
+                    }
 
                   let checkbox = document.getElementById("checkbox");
 			      checkbox.addEventListener( "change", () => {

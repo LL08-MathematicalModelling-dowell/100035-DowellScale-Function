@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'likert',
     'login',
     'percent_sum',
+    'client.apps.ClientConfig'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

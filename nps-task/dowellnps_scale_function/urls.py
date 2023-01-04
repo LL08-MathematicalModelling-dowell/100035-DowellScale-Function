@@ -29,6 +29,7 @@ urlpatterns = [
     path('likert/', include('likert.urls')),
     path('percent-sum/', include('percent_sum.urls')),
     path('home/', include('login.urls')),
+    path('client/', include('client.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

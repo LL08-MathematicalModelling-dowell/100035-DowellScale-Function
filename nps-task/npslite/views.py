@@ -89,6 +89,8 @@ def dowell_npslite_scale_settings(request):
         no_of_scales = request.POST["no_of_scales"]
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
+        if time == "":
+            time = 0
         try:
             eventID=get_event_id()
             field_add={"eventId":eventID,"settings":{"question":question,"orientation":orientation,"scalecolor":scalecolor,"fontcolor":fontcolor,"time":time,"template_name":template_name,"name":name,"center":center, "left":left,"right":right, "scale-category": "npslite scale", "no_of_scales":no_of_scales}}
