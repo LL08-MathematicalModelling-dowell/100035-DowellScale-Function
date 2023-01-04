@@ -27,7 +27,7 @@ urlpatterns = [
     path('percent/', include('percent.urls')),
     path('nps-lite/', include('npslite.urls')),
     path('likert/', include('likert.urls')),
-    path('percent_sum', include('percent_sum.urls')),
+    path('percent-sum/', include('percent_sum.urls')),
     path('home/', include('login.urls')),
 ]
 

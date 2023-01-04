@@ -20,7 +20,41 @@
 
     <title>VOC_Percent_Sum</title>
     <style>
-        .slidecontainer {
+      .column {
+    float: left;
+    width: 20%;
+    height: 100%;
+    overflow: auto;
+  }
+  .column1 {
+    float: left;
+    width: 60%;
+    height: 100%;
+    
+  }
+  .column2 {
+    float: right;
+    width: 20%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  .column {
+    background-color:#F8F9FA;
+  }
+  .column1 {
+    background-color: #F8F9FA;
+  }
+  .column2 {
+    background-color: #F8F9FA;
+  }
+      .slidecontainer {
             width: 100%; /* Width of the outside container */
           }
 
@@ -29,13 +63,14 @@
             -webkit-appearance: none;  /* Override default CSS styles */
             appearance: none;
             width: 100%; /* Full-width */
-            height: 15px;
-            border-radius: 5px;
-            background: #d3d3d3; /* Grey background */
+            height: 10px;
+            border-radius: 50px;
+            background: #386CD6; /* blue background */
             outline: none; /* Remove outline */
             opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
             -webkit-transition: .2s; /* 0.2 seconds transition on hover */
             transition: opacity .2s;
+            float:left;
           }
 
           /* Mouse-over effects */
@@ -47,8 +82,8 @@
           .slider::-webkit-slider-thumb {
             -webkit-appearance: none; /* Override default look */
             appearance: none;
-            width: 25px; /* Set a specific slider handle width */
-            height: 25px; /* Slider handle height */
+            width: 22px; /* Set a specific slider handle width */
+            height: 22px; /* Slider handle height */
             background: rgb(255, 255, 255);
             cursor: pointer; /* Cursor on hover */
             border-radius: 50%;
@@ -56,8 +91,8 @@
           }
 
           .slider::-moz-range-thumb {
-            width: 25px; /* Set a specific slider handle width */
-            height: 25px; /* Slider handle height */
+            width: 22px; /* Set a specific slider handle width */
+            height: 22px; /* Slider handle height */
             background: #04AA6D; /* Green background */
             cursor: pointer; /* Cursor on hover */
             border-radius: 50%;
@@ -158,22 +193,30 @@
           margin: 0 auto;
 
         }
+        #products{
+          font-weight:bold;
+          display:flex;
+          flex-direction:left;
+        }
 
 
     </style>
 <script>
 
 $(document).ready(function() {
+    var ratings= [];
     var slider = document.getElementById("myRange");
     var output = document.getElementById("demo");
-    var rating = document.getElementById('submit');
-    $("#test").click(function(){
-      console.log("hi")
-      $(this).text("submitted")
-      postScore(slider.value)
+    var rating = document.getElementById('rate');
+    $("#rates").click(function(){
+      $(this).text("Rated")
+      ratings.push(slider.value)
+      console.log(ratings)
+       
+
     })
 
-
+       
 
 
     output.innerHTML = slider.value + "%"; // Display the default slider value
@@ -190,7 +233,7 @@ $(document).ready(function() {
 
 function postScore(score){
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", 'https://100035.pythonanywhere.com/percent-response/', true);
+    xhr.open("POST", 'https://100035.pythonanywhere.com/percent-sum-response/', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({
         score: parseInt(score),
@@ -216,41 +259,68 @@ function postScore(score){
     </div>
     {% endif %}
 
-<div class="container ">
+<div class="container " style="backgroundColor":"#ACD4EE">
     <div class="row mt-4">
         <div class="col-sm-2 {{bglight}}" style="{% if user == 'admin' %} {{left}} {% endif %}">
             {% if user == "admin" %}
             <div class="text-dark"><h2 align="center"><u>{{hist}}</u></h2></div>
             <table>
-            {% for percent in percentall %}
+            {% for percentsum in percentsumall %}
                 <tr>
         <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{nps.template_name}}">{{nps.template_name}}</a></td>-->
-                    <td><a href="https://100035.pythonanywhere.com/percent/percent-scale1/{{percent.template_name}}">{{percent.template_name}}</a></td>
+                    <td><a href="https://100035.pythonanywhere.com/percent-sum/percent-sum-scale1/{{percent.template_name}}">{{percent.template_name}}</a></td>
                 </tr>
             {% endfor %}
             {% endif %}
             </table>
         </div>
-        <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
-        <h1 align="center" class="text-danger"><b>Percent Scale</b></h1>
-            <div id="scale-container"><br>
+        <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);backgroundColor:#ACD4EE">
+        <h1 align="center" class="text-danger"><b>Percent-Sum Scale</b></h1>
+        <br>
+          <div class="row">
+              <div class="column">
+                 <p id="products">Product 1</p>
+              </div>
+              <div class="column1">
+                <div id="scale-container">
                 <div class="slidecontainer"> <input type ="range" min='0' max='100' value='50' class='slider' id='myRange'> </input></div>
-            </div><br>
-                <div class="Footer">
-                  <div style="float: left" id="left">0%</div>
-                   <div style="float: right" id="right">100%</div>
-                   <div align='center' id="demo"></div><br><br>
-                  <div class="rate" align="center">
+              </div>
+               </div>
+              <div class="column2">
+                 <div class="Footer" style="float: right; width:25%">
+                  <div style="float: right" id="demo"></div></div>
+              </div>
+              </div>
+              <div class="rate" align="center">
+                        <button class="btn btn-primary" id="rates">Rate</button>
+                    </div><br>
+                    
+              <div class="row">
+              <div class="column">
+                 <p id="products">Product 2</p>
+              </div>
+              <div class="column1">
+                <div id="scale-container">
+                <div class="slidecontainer"> <input type ="range" min='0' max='100' value='50' class='slider' id='myRange2'> </input></div>
+              </div>
+               </div>
+                
+              <div class="column2">
+                 <div class="Footer" style="float: right; width:25%">
+                  <div style="float: right" id="demo"></div></div>
+              </div>
+              </div>
+              <div class="rate" align="center">
+                        <button class="btn btn-primary" id="rate-1">Rate</button>
+                    </div>
+            </div>
+            </div>
+            
 
-                  <button class ="btn btn-primary" id="test">Rate</button>
-                  </div>
-
-                </div>
-
+            </div>
             {% if user == "admin" %}
-
-        <div class="pb-4">
-            <a style="float:right" href="{% url 'percent:admin_page' %}" class="{{btn}}">{{urltext}}</a>
+            <div class="pb-4">
+            <a style="float:right" href="{% url 'percent_sum:admin_page' %}" class="{{btn}}">{{urltext}}</a>
            </div>
         {% endif %}
         <br>
@@ -283,12 +353,12 @@ function postScore(score){
     clip.style.cursor = "default";
   }
 
-    let time = 600;
+    //let time = 600;
     const countdownEl = document.getElementById("countdown");
     score = document.getElementsByClassName("number");
 <!--  -->
 
-    setInterval(updateCountdown, 1000)
+    //setInterval(updateCountdown, 1000)
 
     function updateCountdown(){
         const minutes = Math.floor(time/60);
