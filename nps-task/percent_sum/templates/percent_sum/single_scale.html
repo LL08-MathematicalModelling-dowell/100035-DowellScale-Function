@@ -16,7 +16,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>Percent Scale</title>
+        <title>Percent-sum Scale</title>
         <style>
             /* width */
             ::-webkit-scrollbar {
@@ -480,45 +480,54 @@
                         <b>{{defaults.name}}</b><span id="countdown"></span>
                     </h1>
                     <br />
+                    <div id ="ProdValues">
+                        <h3 align="center" class="head-0">Products</h3>
 
                     <div id="scale-container">
-                        <div class="slidecontainer">
+                        <div class="slidecontainer" id="slidContainer">
                             <input
                                 type="range"
                                 min="0"
                                 max="100"
-                                value="50"
+                                value="0"
                                 class="slider"
-                                id="myRange"
+                                id="myRange-1"
                             />
                         </div>
 
-                        <div
-                            class="pl-3"
-                            id="labels-vert"
-                            style="font-size: 2em"
-                        ></div>
                     </div>
-                    <!--        <div id="horizontal" ></div>-->
+                    
                     <div class="Footer" id="labels">
-                        <div style="float: left">0%</div>
-                        <div id="demo" align="center">Nil</div>
-                        <div style="float: right">100%</div>
+                        <div id ="left-1"style="float: left">0%</div>
+                        <div id="demo-0" align="center">Nil</div>
+                        <div id ="right-1" style="float: right">100%</div>
                     </div>
+                </div>
                     <br />
                     <div class="rate" align="center">
                         <button class="btn btn-primary" id="test">Rate</button>
                     </div>
                 </div>
                 <script>
-                    	var slider = document.getElementById("myRange");
-                    	var output = document.getElementById("demo");
-                    	slider.style.background ='{{default.scalecolor|safe}}';
+                    	var slider = document.getElementById("myRange-1");
+                    	var output = document.getElementById("demo-0");
+                    	//slider.style.background ='{{defaults.scalecolor|safe}}';
                     	output.innerHTML = (slider.value + "%"); // Display the default slider value
                     // Update the current slider value (each time you drag the slider handle)
                     	slider.oninput = function() {
                     	output.innerHTML = this.value+"%";
                     	}
+                        var k = "None"
+                        let product_names={{defaults.productnames|safe}}
+                        product_names = product_names.filter(function(item){
+                                        return item !== k
+                                    })
+
+                        console.log(product_names)
+                        const choice = Number("{{defaults.ProductCount}}");
+                        var responses=[]
+                        const summ = 100;
+                        var Arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
                     	scoretag = document.getElementById("scoretag");
                                              function checkStatus(){
@@ -528,6 +537,1389 @@
                                                  card_response.style.display = "inline-block"
                                              }
                                              //console.log('{{score|safe}}')
+setScale()
+                        function setScale() {
+                        const choice = Number("{{defaults.ProductCount}}");
+
+                        if (choice > 1 && choice < 11) {
+                            //addFields(num = choice);
+                            addProd(num = choice);}}
+
+                        [].forEach.call(document.getElementsByClassName("slider"), function (slid) {
+        slid.style.background = "{{defaults.scalecolor|safe}}";});
+
+        if (choice === 2) {
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+
+        };
+
+        document.getElementById("but-0").onclick = function () {
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+            responses.push(this.value)
+            console.log(responses)
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[1] != 100 - Arr[0]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+          }
+
+        };
+
+      }
+      else if (choice === 3) {
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+          document.getElementById("right-2").innerHTML = 100 - this.value - Arr[0];
+          document.getElementById("myRange-2").max = 100 - this.value - Arr[0];
+
+        };
+
+        document.getElementById("myRange-2").oninput = function () {
+          document.getElementById("demo-2").innerHTML = this.value;
+          Arr[2] = this.value;
+        };
+
+        document.getElementById("but-0").onclick = function () {
+
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+            responses.push(this.value)
+            console.log(responses)
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+            document.getElementById("but-2").disabled = false;
+            document.getElementById("myRange-2").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-2").onclick = function () {
+
+          if (Arr[2] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[2] != 100 - Arr[0] - Arr[1]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-2").className = "btn btn-success";
+            document.getElementById("but-2").innerHTML = "Submitted";
+            document.getElementById("myRange-2").disabled = "true";
+          }
+
+        };
+
+      }
+
+      else if (choice === 4) {
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+          document.getElementById("right-2").innerHTML = 100 - this.value - Arr[0];
+          document.getElementById("myRange-2").max = 100 - this.value - Arr[0];
+
+        };
+
+        document.getElementById("myRange-2").oninput = function () {
+          document.getElementById("demo-2").innerHTML = this.value;
+          Arr[2] = this.value;
+          document.getElementById("right-3").innerHTML = 100 - this.value - Arr[0] - Arr[1];
+          document.getElementById("myRange-3").max = 100 - this.value - Arr[0] - Arr[1];
+        };
+
+        document.getElementById("myRange-3").oninput = function () {
+          document.getElementById("demo-3").innerHTML = this.value;
+          Arr[3] = this.value;
+        };
+
+        document.getElementById("but-0").onclick = function () {
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+            responses.push(document.getElementById("myRange-0").value)
+            console.log(responses)
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+            document.getElementById("but-2").disabled = false;
+            document.getElementById("myRange-2").disabled = false;
+            responses.push(document.getElementById("myRange-1").value)
+            console.log(responses)
+          }
+
+        };
+
+        document.getElementById("but-2").onclick = function () {
+
+          if (Arr[2] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-2").className = "btn btn-success";
+            document.getElementById("but-2").innerHTML = "Submitted";
+            document.getElementById("myRange-2").disabled = "true";
+            document.getElementById("but-3").disabled = false;
+            document.getElementById("myRange-3").disabled = false;
+            responses.push(document.getElementById("myRange-2").value)
+            console.log(responses)
+          }
+
+        };
+
+
+        document.getElementById("but-3").onclick = function () {
+
+          if (Arr[3] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[3] != 100 - Arr[0] - Arr[1] - Arr[2]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-3").className = "btn btn-success";
+            document.getElementById("but-3").innerHTML = "Submitted";
+            document.getElementById("myRange-3").disabled = "true";
+            responses.push(document.getElementById("myRange-3").value)
+            console.log(responses)
+          }
+
+        };
+
+      }
+      else if (choice === 5) {
+
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+          document.getElementById("right-2").innerHTML = 100 - this.value - Arr[0];
+          document.getElementById("myRange-2").max = 100 - this.value - Arr[0];
+
+        };
+
+        document.getElementById("myRange-2").oninput = function () {
+          document.getElementById("demo-2").innerHTML = this.value;
+          Arr[2] = this.value;
+          document.getElementById("right-3").innerHTML = 100 - this.value - Arr[0] - Arr[1];
+          document.getElementById("myRange-3").max = 100 - this.value - Arr[0] - Arr[1];
+        };
+
+        document.getElementById("myRange-3").oninput = function () {
+          document.getElementById("demo-3").innerHTML = this.value;
+          Arr[3] = this.value;
+          document.getElementById("right-4").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+          document.getElementById("myRange-4").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+        };
+
+        document.getElementById("myRange-4").oninput = function () {
+          document.getElementById("demo-4").innerHTML = this.value;
+          Arr[4] = this.value;
+        };
+
+        document.getElementById("but-0").onclick = function () {
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+            document.getElementById("but-2").disabled = false;
+            document.getElementById("myRange-2").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-2").onclick = function () {
+
+          if (Arr[2] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-2").className = "btn btn-success";
+            document.getElementById("but-2").innerHTML = "Submitted";
+            document.getElementById("myRange-2").disabled = "true";
+            document.getElementById("but-3").disabled = false;
+            document.getElementById("myRange-3").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-3").onclick = function () {
+
+          if (Arr[3] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-3").className = "btn btn-success";
+            document.getElementById("but-3").innerHTML = "Submitted";
+            document.getElementById("myRange-3").disabled = "true";
+            document.getElementById("but-4").disabled = false;
+            document.getElementById("myRange-4").disabled = false;
+          }
+
+        };
+
+
+        document.getElementById("but-4").onclick = function () {
+
+          if (Arr[4] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[4] != 100 - Arr[0] - Arr[1] - Arr[2] - Arr[3]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-3").className = "btn btn-success";
+            document.getElementById("but-3").innerHTML = "Submitted";
+            document.getElementById("myRange-3").disabled = "true";
+          }
+
+        };
+
+
+      }
+
+      else if (choice === 6) {
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+          document.getElementById("right-2").innerHTML = 100 - this.value - Arr[0];
+          document.getElementById("myRange-2").max = 100 - this.value - Arr[0];
+
+        };
+
+        document.getElementById("myRange-2").oninput = function () {
+          document.getElementById("demo-2").innerHTML = this.value;
+          Arr[2] = this.value;
+          document.getElementById("right-3").innerHTML = 100 - this.value - Arr[0] - Arr[1];
+          document.getElementById("myRange-3").max = 100 - this.value - Arr[0] - Arr[1];
+        };
+
+        document.getElementById("myRange-3").oninput = function () {
+          document.getElementById("demo-3").innerHTML = this.value;
+          Arr[3] = this.value;
+          document.getElementById("right-4").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+          document.getElementById("myRange-4").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+        };
+
+        document.getElementById("myRange-4").oninput = function () {
+          document.getElementById("demo-4").innerHTML = this.value;
+          Arr[4] = this.value;
+          document.getElementById("right-5").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+          document.getElementById("myRange-5").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+        };
+
+        document.getElementById("myRange-5").oninput = function () {
+          document.getElementById("demo-5").innerHTML = this.value;
+          Arr[5] = this.value;
+        };
+
+        document.getElementById("but-0").onclick = function () {
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+            document.getElementById("but-2").disabled = false;
+            document.getElementById("myRange-2").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-2").onclick = function () {
+
+          if (Arr[2] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-2").className = "btn btn-success";
+            document.getElementById("but-2").innerHTML = "Submitted";
+            document.getElementById("myRange-2").disabled = "true";
+            document.getElementById("but-3").disabled = false;
+            document.getElementById("myRange-3").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-3").onclick = function () {
+
+          if (Arr[3] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-3").className = "btn btn-success";
+            document.getElementById("but-3").innerHTML = "Submitted";
+            document.getElementById("myRange-3").disabled = "true";
+            document.getElementById("but-4").disabled = false;
+            document.getElementById("myRange-4").disabled = false;
+          }
+
+        };
+
+
+        document.getElementById("but-4").onclick = function () {
+
+          if (Arr[4] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-4").className = "btn btn-success";
+            document.getElementById("but-4").innerHTML = "Submitted";
+            document.getElementById("myRange-4").disabled = "true";
+            document.getElementById("but-5").disabled = false;
+            document.getElementById("myRange-5").disabled = false;
+          }
+
+        };
+
+
+        document.getElementById("but-5").onclick = function () {
+
+          if (Arr[5] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[5] != 100 - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-5").className = "btn btn-success";
+            document.getElementById("but-5").innerHTML = "Submitted";
+            document.getElementById("myRange-5").disabled = "true";
+          }
+
+        };
+
+      }
+
+      else if (choice === 7) {
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+          document.getElementById("right-2").innerHTML = 100 - this.value - Arr[0];
+          document.getElementById("myRange-2").max = 100 - this.value - Arr[0];
+
+        };
+
+        document.getElementById("myRange-2").oninput = function () {
+          document.getElementById("demo-2").innerHTML = this.value;
+          Arr[2] = this.value;
+          document.getElementById("right-3").innerHTML = 100 - this.value - Arr[0] - Arr[1];
+          document.getElementById("myRange-3").max = 100 - this.value - Arr[0] - Arr[1];
+        };
+
+        document.getElementById("myRange-3").oninput = function () {
+          document.getElementById("demo-3").innerHTML = this.value;
+          Arr[3] = this.value;
+          document.getElementById("right-4").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+          document.getElementById("myRange-4").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+        };
+
+        document.getElementById("myRange-4").oninput = function () {
+          document.getElementById("demo-4").innerHTML = this.value;
+          Arr[4] = this.value;
+          document.getElementById("right-5").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+          document.getElementById("myRange-5").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+        };
+
+        document.getElementById("myRange-5").oninput = function () {
+          document.getElementById("demo-5").innerHTML = this.value;
+          Arr[5] = this.value;
+          document.getElementById("right-6").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4];
+          document.getElementById("myRange-6").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4];
+        };
+
+        document.getElementById("myRange-6").oninput = function () {
+          document.getElementById("demo-6").innerHTML = this.value;
+          Arr[6] = this.value;
+        };
+
+        document.getElementById("but-0").onclick = function () {
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+            document.getElementById("but-2").disabled = false;
+            document.getElementById("myRange-2").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-2").onclick = function () {
+
+          if (Arr[2] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-2").className = "btn btn-success";
+            document.getElementById("but-2").innerHTML = "Submitted";
+            document.getElementById("myRange-2").disabled = "true";
+            document.getElementById("but-3").disabled = false;
+            document.getElementById("myRange-3").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-3").onclick = function () {
+
+          if (Arr[3] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-3").className = "btn btn-success";
+            document.getElementById("but-3").innerHTML = "Submitted";
+            document.getElementById("myRange-3").disabled = "true";
+            document.getElementById("but-4").disabled = false;
+            document.getElementById("myRange-4").disabled = false;
+          }
+
+        };
+
+
+        document.getElementById("but-4").onclick = function () {
+
+          if (Arr[4] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-4").className = "btn btn-success";
+            document.getElementById("but-4").innerHTML = "Submitted";
+            document.getElementById("myRange-4").disabled = "true";
+            document.getElementById("but-5").disabled = false;
+            document.getElementById("myRange-5").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-5").onclick = function () {
+
+          if (Arr[5] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-5").className = "btn btn-success";
+            document.getElementById("but-5").innerHTML = "Submitted";
+            document.getElementById("myRange-5").disabled = "true";
+            document.getElementById("but-6").disabled = false;
+            document.getElementById("myRange-6").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-6").onclick = function () {
+
+          if (Arr[6] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[6] != 100 - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-6").className = "btn btn-success";
+            document.getElementById("but-6").innerHTML = "Submitted";
+            document.getElementById("myRange-6").disabled = "true";
+          }
+        };
+
+      }
+
+      else if (choice=== 8) {
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+          document.getElementById("right-2").innerHTML = 100 - this.value - Arr[0];
+          document.getElementById("myRange-2").max = 100 - this.value - Arr[0];
+
+        };
+
+        document.getElementById("myRange-2").oninput = function () {
+          document.getElementById("demo-2").innerHTML = this.value;
+          Arr[2] = this.value;
+          document.getElementById("right-3").innerHTML = 100 - this.value - Arr[0] - Arr[1];
+          document.getElementById("myRange-3").max = 100 - this.value - Arr[0] - Arr[1];
+        };
+
+        document.getElementById("myRange-3").oninput = function () {
+          document.getElementById("demo-3").innerHTML = this.value;
+          Arr[3] = this.value;
+          document.getElementById("right-4").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+          document.getElementById("myRange-4").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+        };
+
+        document.getElementById("myRange-4").oninput = function () {
+          document.getElementById("demo-4").innerHTML = this.value;
+          Arr[4] = this.value;
+          document.getElementById("right-5").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+          document.getElementById("myRange-5").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+        };
+
+        document.getElementById("myRange-5").oninput = function () {
+          document.getElementById("demo-5").innerHTML = this.value;
+          Arr[5] = this.value;
+          document.getElementById("right-6").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4];
+          document.getElementById("myRange-6").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4];
+        };
+
+
+        document.getElementById("myRange-6").oninput = function () {
+          document.getElementById("demo-6").innerHTML = this.value;
+          Arr[6] = this.value;
+          document.getElementById("right-7").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5];
+          document.getElementById("myRange-7").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5];
+        };
+
+        document.getElementById("myRange-7").oninput = function () {
+          document.getElementById("demo-7").innerHTML = this.value;
+          Arr[7] = this.value;
+        };
+
+        document.getElementById("but-0").onclick = function () {
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+            document.getElementById("but-2").disabled = false;
+            document.getElementById("myRange-2").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-2").onclick = function () {
+
+          if (Arr[2] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-2").className = "btn btn-success";
+            document.getElementById("but-2").innerHTML = "Submitted";
+            document.getElementById("myRange-2").disabled = "true";
+            document.getElementById("but-3").disabled = false;
+            document.getElementById("myRange-3").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-3").onclick = function () {
+
+          if (Arr[3] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-3").className = "btn btn-success";
+            document.getElementById("but-3").innerHTML = "Submitted";
+            document.getElementById("myRange-3").disabled = "true";
+            document.getElementById("but-4").disabled = false;
+            document.getElementById("myRange-4").disabled = false;
+          }
+
+        };
+
+
+        document.getElementById("but-4").onclick = function () {
+
+          if (Arr[4] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-4").className = "btn btn-success";
+            document.getElementById("but-4").innerHTML = "Submitted";
+            document.getElementById("myRange-4").disabled = "true";
+            document.getElementById("but-5").disabled = false;
+            document.getElementById("myRange-5").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-5").onclick = function () {
+
+          if (Arr[5] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-5").className = "btn btn-success";
+            document.getElementById("but-5").innerHTML = "Submitted";
+            document.getElementById("myRange-5").disabled = "true";
+            document.getElementById("but-6").disabled = false;
+            document.getElementById("myRange-6").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-6").onclick = function () {
+
+          if (Arr[6] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-6").className = "btn btn-success";
+            document.getElementById("but-6").innerHTML = "Submitted";
+            document.getElementById("myRange-6").disabled = "true";
+            document.getElementById("but-7").disabled = false;
+            document.getElementById("myRange-7").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-7").onclick = function () {
+
+          if (Arr[7] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[7] != 100 - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5] - Arr[6]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-7").className = "btn btn-success";
+            document.getElementById("but-7").innerHTML = "Submitted";
+            document.getElementById("myRange-7").disabled = "true";
+          }
+        };
+
+      }
+
+      else if (choice === 9) {
+
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+          document.getElementById("right-2").innerHTML = 100 - this.value - Arr[0];
+          document.getElementById("myRange-2").max = 100 - this.value - Arr[0];
+
+        };
+
+        document.getElementById("myRange-2").oninput = function () {
+          document.getElementById("demo-2").innerHTML = this.value;
+          Arr[2] = this.value;
+          document.getElementById("right-3").innerHTML = 100 - this.value - Arr[0] - Arr[1];
+          document.getElementById("myRange-3").max = 100 - this.value - Arr[0] - Arr[1];
+        };
+
+        document.getElementById("myRange-3").oninput = function () {
+          document.getElementById("demo-3").innerHTML = this.value;
+          Arr[3] = this.value;
+          document.getElementById("right-4").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+          document.getElementById("myRange-4").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+        };
+
+        document.getElementById("myRange-4").oninput = function () {
+          document.getElementById("demo-4").innerHTML = this.value;
+          Arr[4] = this.value;
+          document.getElementById("right-5").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+          document.getElementById("myRange-5").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+        };
+
+        document.getElementById("myRange-5").oninput = function () {
+          document.getElementById("demo-5").innerHTML = this.value;
+          Arr[5] = this.value;
+          document.getElementById("right-6").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4];
+          document.getElementById("myRange-6").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4];
+        };
+
+
+        document.getElementById("myRange-6").oninput = function () {
+          document.getElementById("demo-6").innerHTML = this.value;
+          Arr[6] = this.value;
+          document.getElementById("right-7").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5];
+          document.getElementById("myRange-7").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5];
+        };
+
+        document.getElementById("myRange-7").oninput = function () {
+          document.getElementById("demo-7").innerHTML = this.value;
+          Arr[7] = this.value;
+          document.getElementById("right-8").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5] - Arr[6];
+          document.getElementById("myRange-8").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5] - Arr[6];
+        };
+
+        document.getElementById("myRange-8").oninput = function () {
+          document.getElementById("demo-8").innerHTML = this.value;
+          Arr[8] = this.value;
+        };
+
+        document.getElementById("but-0").onclick = function () {
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+            document.getElementById("but-2").disabled = false;
+            document.getElementById("myRange-2").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-2").onclick = function () {
+
+          if (Arr[2] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-2").className = "btn btn-success";
+            document.getElementById("but-2").innerHTML = "Submitted";
+            document.getElementById("myRange-2").disabled = "true";
+            document.getElementById("but-3").disabled = false;
+            document.getElementById("myRange-3").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-3").onclick = function () {
+
+          if (Arr[3] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-3").className = "btn btn-success";
+            document.getElementById("but-3").innerHTML = "Submitted";
+            document.getElementById("myRange-3").disabled = "true";
+            document.getElementById("but-4").disabled = false;
+            document.getElementById("myRange-4").disabled = false;
+          }
+
+        };
+
+
+        document.getElementById("but-4").onclick = function () {
+
+          if (Arr[4] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-4").className = "btn btn-success";
+            document.getElementById("but-4").innerHTML = "Submitted";
+            document.getElementById("myRange-4").disabled = "true";
+            document.getElementById("but-5").disabled = false;
+            document.getElementById("myRange-5").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-5").onclick = function () {
+
+          if (Arr[5] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-5").className = "btn btn-success";
+            document.getElementById("but-5").innerHTML = "Submitted";
+            document.getElementById("myRange-5").disabled = "true";
+            document.getElementById("but-6").disabled = false;
+            document.getElementById("myRange-6").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-6").onclick = function () {
+
+          if (Arr[6] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-6").className = "btn btn-success";
+            document.getElementById("but-6").innerHTML = "Submitted";
+            document.getElementById("myRange-6").disabled = "true";
+            document.getElementById("but-7").disabled = false;
+            document.getElementById("myRange-7").disabled = false;
+          }
+
+        };
+
+
+        document.getElementById("but-7").onclick = function () {
+
+          if (Arr[7] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-7").className = "btn btn-success";
+            document.getElementById("but-7").innerHTML = "Submitted";
+            document.getElementById("myRange-7").disabled = "true";
+            document.getElementById("but-8").disabled = false;
+            document.getElementById("myRange-8").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-8").onclick = function () {
+
+          if (Arr[8] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[8] != 100 - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5] - Arr[6] - Arr[7]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-8").className = "btn btn-success";
+            document.getElementById("but-8").innerHTML = "Submitted";
+            document.getElementById("myRange-8").disabled = "true";
+          }
+        };
+
+      }
+
+
+      else if (choice === 10) {
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+          document.getElementById("right-2").innerHTML = 100 - this.value - Arr[0];
+          document.getElementById("myRange-2").max = 100 - this.value - Arr[0];
+
+        };
+
+        document.getElementById("myRange-2").oninput = function () {
+          document.getElementById("demo-2").innerHTML = this.value;
+          Arr[2] = this.value;
+          document.getElementById("right-3").innerHTML = 100 - this.value - Arr[0] - Arr[1];
+          document.getElementById("myRange-3").max = 100 - this.value - Arr[0] - Arr[1];
+        };
+
+        document.getElementById("myRange-3").oninput = function () {
+          document.getElementById("demo-3").innerHTML = this.value;
+          Arr[3] = this.value;
+          document.getElementById("right-4").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+          document.getElementById("myRange-4").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2];
+        };
+
+        document.getElementById("myRange-4").oninput = function () {
+          document.getElementById("demo-4").innerHTML = this.value;
+          Arr[4] = this.value;
+          document.getElementById("right-5").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+          document.getElementById("myRange-5").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3];
+        };
+
+        document.getElementById("myRange-5").oninput = function () {
+          document.getElementById("demo-5").innerHTML = this.value;
+          Arr[5] = this.value;
+          document.getElementById("right-6").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4];
+          document.getElementById("myRange-6").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4];
+        };
+
+
+        document.getElementById("myRange-6").oninput = function () {
+          document.getElementById("demo-6").innerHTML = this.value;
+          Arr[6] = this.value;
+          document.getElementById("right-7").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5];
+          document.getElementById("myRange-7").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5];
+        };
+
+        document.getElementById("myRange-7").oninput = function () {
+          document.getElementById("demo-7").innerHTML = this.value;
+          Arr[7] = this.value;
+          document.getElementById("right-8").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5] - Arr[6];
+          document.getElementById("myRange-8").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5] - Arr[6];
+        };
+
+        document.getElementById("myRange-8").oninput = function () {
+          document.getElementById("demo-8").innerHTML = this.value;
+          Arr[8] = this.value;
+          document.getElementById("right-9").innerHTML = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5] - Arr[6] - Arr[7];
+          document.getElementById("myRange-9").max = 100 - this.value - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5] - Arr[6] - Arr[7];
+        };
+
+        document.getElementById("myRange-9").oninput = function () {
+          document.getElementById("demo-9").innerHTML = this.value;
+          Arr[9] = this.value;
+        };
+
+        document.getElementById("but-0").onclick = function () {
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+            document.getElementById("but-2").disabled = false;
+            document.getElementById("myRange-2").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-2").onclick = function () {
+
+          if (Arr[2] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-2").className = "btn btn-success";
+            document.getElementById("but-2").innerHTML = "Submitted";
+            document.getElementById("myRange-2").disabled = "true";
+            document.getElementById("but-3").disabled = false;
+            document.getElementById("myRange-3").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-3").onclick = function () {
+
+          if (Arr[3] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-3").className = "btn btn-success";
+            document.getElementById("but-3").innerHTML = "Submitted";
+            document.getElementById("myRange-3").disabled = "true";
+            document.getElementById("but-4").disabled = false;
+            document.getElementById("myRange-4").disabled = false;
+          }
+
+        };
+
+
+        document.getElementById("but-4").onclick = function () {
+
+          if (Arr[4] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-4").className = "btn btn-success";
+            document.getElementById("but-4").innerHTML = "Submitted";
+            document.getElementById("myRange-4").disabled = "true";
+            document.getElementById("but-5").disabled = false;
+            document.getElementById("myRange-5").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-5").onclick = function () {
+
+          if (Arr[5] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-5").className = "btn btn-success";
+            document.getElementById("but-5").innerHTML = "Submitted";
+            document.getElementById("myRange-5").disabled = "true";
+            document.getElementById("but-6").disabled = false;
+            document.getElementById("myRange-6").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-6").onclick = function () {
+
+          if (Arr[6] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-6").className = "btn btn-success";
+            document.getElementById("but-6").innerHTML = "Submitted";
+            document.getElementById("myRange-6").disabled = "true";
+            document.getElementById("but-7").disabled = false;
+            document.getElementById("myRange-7").disabled = false;
+          }
+
+        };
+
+
+        document.getElementById("but-7").onclick = function () {
+
+          if (Arr[7] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-7").className = "btn btn-success";
+            document.getElementById("but-7").innerHTML = "Submitted";
+            document.getElementById("myRange-7").disabled = "true";
+            document.getElementById("but-8").disabled = false;
+            document.getElementById("myRange-8").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-8").onclick = function () {
+
+          if (Arr[8] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-8").className = "btn btn-success";
+            document.getElementById("but-8").innerHTML = "Submitted";
+            document.getElementById("myRange-8").disabled = "true";
+            document.getElementById("but-9").disabled = false;
+            document.getElementById("myRange-9").disabled = false;
+          }
+
+        };
+
+        document.getElementById("but-9").onclick = function () {
+
+          if (Arr[9] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[9] != 100 - Arr[0] - Arr[1] - Arr[2] - Arr[3] - Arr[4] - Arr[5] - Arr[6] - Arr[7] - Arr[8]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-9").className = "btn btn-success";
+            document.getElementById("but-9").innerHTML = "Submitted";
+            document.getElementById("myRange-9").disabled = "true";
+          }
+        };
+
+
+      }
+
+console.log(Arr)
+    function addFields(num) {
+      // Generate a dynamic number of inputs
+
+      // Get the element where the inputs will be added to
+      var container = document.getElementById("scale_input");
+
+      // Remove every children it had before
+      while (container.hasChildNodes()) {
+        container.removeChild(container.lastChild);
+      }
+      for (i = 0; i < num; i++) {
+        // Append a node with a random text
+        if (i === 9) {
+          container.appendChild(document.createTextNode("Product " + (i + 1) + " Name "));
+        }
+        else {
+          container.appendChild(document.createTextNode("Product " + (i + 1) + " Name "));
+        }
+        // Create an <input> element, set its type and name attributes
+        var input = document.createElement("input");
+        input.type = "text";
+        input.name = "scale_choice " + i;
+        input.class = "form-control";
+        input.id = "text-" + i;
+        input.value = "Product " + (i+1);
+        input.required = "true";
+        
+
+        container.appendChild(input);
+
+        // Append a line break 
+        container.appendChild(document.createElement("br"));
+
+        //slider inputs
+
+      }
+    }
+
+    function addProd(num) {
+
+      var slid = document.getElementById("ProdValues");
+
+
+      while (slid.hasChildNodes()) {
+        slid.removeChild(slid.lastChild);
+      }
+
+      for (i = 0; i < num; i++) {
+
+        var doc = document.createElement("div");
+        doc.id = "doc-" + i;
+        
+
+        //<h2 class="modal-title" id="exampleModalLongTitle" align="center">val 1</h2>
+        var input = document.createElement("h3");
+        input.className = "head-" + i;
+        input.align = "center";
+         //input.innerHTML= $("#text-" + i).val();
+        input.innerHTML=product_names[i]
+
+        //<input type="range" min='0' max='100' value='0' class='slider' id='myRange-1'>
+        var newdiv = document.createElement("div");
+
+        var input2 = document.createElement("input");
+        input2.type = "range";
+        input2.min = "0";
+        input2.max = "100";
+        input2.value = 0;
+        input2.className = "slider";
+        input2.id = "myRange-" + i;
+
+        newdiv.appendChild(input2);
+
+        var input3 = document.createElement("div");
+
+        input3.className = "Footer text-center";
+        input3.id = "Foot-" + i;
+
+        newdiv.appendChild(input3);
+        doc.appendChild(input);
+        //  doc.appendChild(input2);
+        //  doc.appendChild(input3);
+        doc.appendChild(newdiv);
+        doc.appendChild(document.createElement("hr"));
+        slid.appendChild(doc);
+
+
+        var divv = document.getElementById("Foot-" + i);
+
+        var inputbtn1 = document.createElement("button");
+        inputbtn1.type = "submit";
+        inputbtn1.className = "btn btn-info";
+        inputbtn1.id = "but-" + i;
+        inputbtn1.innerHTML = "Rate";
+
+        if (i > 0) {
+          input2.disabled = true;
+          inputbtn1.disabled = true;
+        }
+
+
+        var input4 = document.createElement("div");
+
+
+        input4.id = "left-" + i;
+        input4.style = "float : left";
+        input4.innerHTML = 0;
+
+        var input5 = document.createElement("div");
+
+
+        input5.id = "right-" + i;
+        input5.style = "float : right";
+        input5.innerHTML = 100;
+
+        var input6 = document.createElement("div");
+
+
+        input6.id = "demo-" + i;
+        input6.align = "center";
+        input6.innerHTML = 0;
+
+        divv.appendChild(input4);
+        divv.appendChild(input5);
+        divv.appendChild(input6);
+        divv.appendChild(inputbtn1);
+
+      }
+
+
+    }
 
                     	let time = {{defaults.time|safe}};
                     	const countdownEl = document.getElementById("countdown");
@@ -543,13 +1935,12 @@
                     	//serial.innerHTML = parseInt(serial.innerHTML-1)
                     	function updateAnswer(){
                     		$("#test").click(function(){
-                    			ans = slider.value;
-                    			test.innerHTML = "Submitted";
+                    	
+                    			test.innerHTML = "Submitted all Responses";
                     			test.style="pointer-events: none";
-                    			scoretag.value=ans;
+                    			scoretag.value=responses;
                                 document.getElementById("time-out-response").style.display = "none"
-                    			document.getElementById("jsform").submit();
-                                                     checkStatus();
+                    			console.log(scoretag.value)
                     		})
                     }
 

@@ -25,12 +25,22 @@ def dowell_scale_admin(request):
         scalecolor = request.POST['scolor']
         time = request.POST['time']
         number_of_scales=request.POST['numberofscale']
+        product_count=request.POST['ProdCount']
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
         eventID = get_event_id()
-        scale_type="percent-sum"
+        product_names=[request.POST.get('scale_choice 0', "None"),
+            request.POST.get('scale_choice 1', "None"),
+            request.POST.get('scale_choice 2', "None"),
+            request.POST.get('scale_choice 3', "None"),
+            request.POST.get('scale_choice 4', "None"),
+            request.POST.get('scale_choice 5', "None"),
+            request.POST.get('scale_choice 6', "None"),
+            request.POST.get('scale_choice 7', "None"),
+            request.POST.get('scale_choice 8', "None")]
+        
         try:
-            field_add={"event_id":eventID,"settings":{"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "scale-category": "percent_sum scale","scale_type":scale_type,} }
+            field_add={"event_id":eventID,"settings":{"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "scale-category": "percent_sum scale","ProductCount":product_count,"productnames":product_names} }
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             #return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
 
@@ -138,12 +148,8 @@ def brand_product_preview(request):
     field_add={"settings.template_name":template_name}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
-    print(data)
     x= data["data"][0]['settings']
-    print(x)
     context["defaults"]=x
-    """for i in x:
-        number_of_scale=i['number_of_scales']    """
     number_of_scale=x["number_of_scales"]
     scale_id = data['data'][0]["_id"]
     context["no_scales"]=int(number_of_scale)
@@ -158,7 +164,7 @@ def brand_product_preview(request):
     x = data["data"]
     for i in x:
         b = i['score'][0]['instance_id'].split("/")[0]
-        print(b)
+        #print(b)
         context['existing_scales'].append(b)
     name=url.replace("'","")
     context['template_url']= f"{public_url}{name}?brand_name=your_brand&product_name=your_product"

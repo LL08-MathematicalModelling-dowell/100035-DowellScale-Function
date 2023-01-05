@@ -83,7 +83,7 @@ def dowell_scale1(request, tname1):
     field_add={"settings.template_name":tname1}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
-    print(data)
+    #print(data)
     context["scale_id"] = data['data'][0]['_id']
     x= data['data'][0]['settings']
     context["defaults"]=x
@@ -138,9 +138,9 @@ def brand_product_preview(request):
     field_add={"settings.template_name":template_name}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
-    print(data)
+    #print(data)
     x= data["data"][0]['settings']
-    print(x)
+    #print(x)
     context["defaults"]=x
     """for i in x:
         number_of_scale=i['number_of_scales']    """
@@ -158,7 +158,7 @@ def brand_product_preview(request):
     x = data["data"]
     for i in x:
         b = i['score'][0]['instance_id'].split("/")[0]
-        print(b)
+        #print(b)
         context['existing_scales'].append(b)
     name=url.replace("'","")
     context['template_url']= f"{public_url}{name}?brand_name=your_brand&product_name=your_product"
