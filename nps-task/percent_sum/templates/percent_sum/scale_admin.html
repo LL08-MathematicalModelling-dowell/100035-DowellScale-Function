@@ -189,9 +189,21 @@
           <h2 align="center"><u>Customize your scale</u></h2>
           <div class="form-group col-md-6">
             <label for="head">Name of Scale</label>
-            <input type="text" name="nameofscale" class="form-control" id="head" placeholder="Name of scale" value='val'
+            <input type="text" name="nameofscale" class="form-control" id="head" placeholder="Name of scale" required="True"
               required>
           </div>
+          <div class="form-group col-md-6">
+                            <label for="head">Number of Scales</label>
+                            <input
+                                type="text"
+                                name="numberofscale"
+                                class="form-control"
+                                id="no_of_scales"
+                                placeholder="Number of scale"
+                                required="True"
+                                value="1"
+                            />
+            </div>
 
           <div class="form-group col-md-6">
             <label for="orientation">Orientation</label>
@@ -215,7 +227,7 @@
           <div class="form-group col-md-6">
             <label for="time">Time</label>
             <input type="number" name="time" class="form-control" id="time" placeholder="Time" required="False"
-              value=20>
+              value=0>
           </div>
           <div class="form-group col-md-6" id="scale_input" name="Scale_Input"></div>
 
@@ -1655,8 +1667,6 @@
 
         newdiv.appendChild(input3);
         doc.appendChild(input);
-        //  doc.appendChild(input2);
-        //  doc.appendChild(input3);
         doc.appendChild(newdiv);
         doc.appendChild(document.createElement("hr"));
         slid.appendChild(doc);
