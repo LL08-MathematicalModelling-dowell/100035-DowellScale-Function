@@ -80,11 +80,13 @@ def update_template(template_id, data):
 # data = {"score":10}
 # x = update_template(id, data)
 eventID = get_event_id()
-left = "Very unlikely"
-right = "Very likely"
-center = "Select score"
-text = f"{left}+{center}+{right}"
-field_add = {"event_id":eventID,"settings":{"orientation":"horizontal","numberrating":10,"scalecolor":"rgb(255, 213, 128)","roundcolor":"rgb(255, 239, 213)","fontcolor":"rgb(217, 83, 79)","fomat":"numbers","time":0,"template_name":"Nps_Default","name":"Nps_Default","text":text, "left":"Very unlikely","right":"Very likely","center":"Select score", "scale-category": "nps scale", "no_of_scales":1}}
+field_add = {"eventId": eventID,
+             "settings": {"question": "Do you wish to recommend this application to your friend?", "orientation": "horizontal", "scalecolor": "#6df782",
+                          "fontcolor": "green", "time": 0, "template_name": "Nps_lite_Default", "name": "Nps_lite_Default",
+                          "center": "May be", "left": "No", "right": "Yes", "scale-category": "npslite scale",
+                          "no_of_scales": 1}}
+
+# field_add = {"event_id":eventID,"settings":{"orientation":"horizontal","numberrating":10,"scalecolor":"rgb(255, 213, 128)","roundcolor":"rgb(255, 239, 213)","fontcolor":"rgb(217, 83, 79)","fomat":"numbers","time":0,"template_name":"Nps_Default","name":"Nps_Default","text":text, "left":"Very unlikely","right":"Very likely","center":"Select score", "scale-category": "nps scale", "no_of_scales":1}}
 x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
 print(x)
 #

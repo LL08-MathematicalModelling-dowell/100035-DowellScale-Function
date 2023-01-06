@@ -111,8 +111,8 @@ def dowell_npslite_scale_settings(request):
 @csrf_exempt
 def dowell_npslite_scale(request, tname):
     user = request.session.get('user_name')
-    if user == None:
-        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-lite-default-admin/")
+    # if user == None:
+    #     return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-lite/nps-lite-default-admin/")
 
     context={}
     context["public_url"] = public_url
@@ -183,6 +183,10 @@ def dowell_npslite_scale(request, tname):
                 context['response_saved'] = i['category'][0]['category']
                 context['score'] = "show"
                 print("Scale exists--------->", existing_scale)
+        if data["data"][0]["scale_data"]["scale_id"] == "63b7ccac0175aa060a42b554":
+            existing_scale = False
+            # context['response_saved'] = i['score'][0]['score']
+            context['score'] = ""
 
         print("Scale exists--------->", existing_scale)
 
@@ -190,6 +194,9 @@ def dowell_npslite_scale(request, tname):
         category = request.POST['scoretag']
         eventID = get_event_id()
         category = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'category': category}
+        if len(data['data']) != 0:
+            if data["data"][0]["scale_data"]["scale_id"] == "63b7ccac0175aa060a42b554":
+                category = {"instance_id": f"Default", 'category': category}
         print("Scale exists--------->", existing_scale)
         print("Nps Lite Category Choice--->",category)
 

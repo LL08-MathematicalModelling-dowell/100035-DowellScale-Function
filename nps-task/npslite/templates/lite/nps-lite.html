@@ -186,7 +186,8 @@
         copyText.style.color = "#ccc";
         copyText.style.fontSize = "18px";
         copyText.style.fontWeight = "400";
-        copyText.innerHTML = `{{public_url|safe}}/nps-lite-scale/defaultnplslite/?brand_name=<b>your-brand</b>&product_name=<b>your-product</b>`
+        copyText.innerHTML = `{{public_url|safe}}/nps-lite/nps-lite-scale/Nps_lite_Default/?brand_name=<b>your-brand
+        </b>&product_name=<b>your-product</b>`
         }
       window.onload = codeAddress;
 
@@ -194,7 +195,7 @@
         var clip = document.getElementById("clip-icon");
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
-        input_temp.value = `{{public_url|safe}}/nps-lite/nps-lite-scale/defaultnplslite/?brand_name=your brand&product_name=your product`;
+        input_temp.value = `{{public_url|safe}}/nps-lite/nps-lite-scale/Nps_lite_Default/?brand_name=your brand&product_name=your product`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");
