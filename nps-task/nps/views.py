@@ -120,23 +120,32 @@ def dowell_scale1(request, tname1):
     print("This is my scale_data", data)
 
     existing_scale = False
-    if len(data['data']) != 0:
+
+    if len(data['data']) != 0 :
         scale_data = data["data"][0]["scale_data"]
         score_data = data["data"]
         # score_data = data["data"][0]['score']
-        print("This is my scale_data", scale_data, score_data)
+        print("This is my scale_data", scale_data)
 
         total_score = 0
         for i in score_data:
+            if data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
+                break
             instance_id = i['score'][0]['instance_id'].split("/")[0]
             print("Instance_id --->", instance_id)
             if len(instance_id) > 3:
                 continue
+
+
             b = i['score'][0]['score']
             print("Score of scales-->", b)
             total_score += int(b)
 
         for i in score_data:
+            if data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
+                break
+            if len(instance_id) > 3:
+                continue
             instance_id = i['score'][0]['instance_id'].split("/")[0]
             print("instance_id[[[[[[[[[",instance_id)
             print("current[[[[[[[[[",current_url)
@@ -149,7 +158,6 @@ def dowell_scale1(request, tname1):
         print("Scale exists--------->", existing_scale )
 
         print("Total scores of this scale",total_score)
-
     if request.method == 'POST':
         score = request.POST['scoretag']
         eventID = get_event_id()
