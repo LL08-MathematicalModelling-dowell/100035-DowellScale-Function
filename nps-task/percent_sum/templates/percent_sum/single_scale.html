@@ -505,23 +505,15 @@
                 </div>
                     <br />
                     <div class="rate" align="center">
-                        <button class="btn btn-primary" id="test">Rate</button>
+                        <button class="btn btn-primary" id="test">Submit</button>
                     </div>
                 </div>
                 <script>
-                    	var slider = document.getElementById("myRange-1");
-                    	var output = document.getElementById("demo-0");
-                    	//slider.style.background ='{{defaults.scalecolor|safe}}';
-                    	output.innerHTML = (slider.value + "%"); // Display the default slider value
-                    // Update the current slider value (each time you drag the slider handle)
-                    	slider.oninput = function() {
-                    	output.innerHTML = this.value+"%";
-                    	}
+    
                         var k = "None"
                         let product_names={{defaults.productnames|safe}}
                         product_names = product_names.filter(function(item){
-                                        return item !== k
-                                    })
+                                        return item !== k})
 
                         console.log(product_names)
                         const choice = Number("{{defaults.ProductCount}}");
@@ -530,23 +522,22 @@
                         var Arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
                     	scoretag = document.getElementById("scoretag");
-                                             function checkStatus(){
-                                                 var scale_container = document.getElementById("scale-container-main")
-                                                 var card_response = document.getElementById("card-response")
-                                                 scale_container.style.display = "none"
-                                                 card_response.style.display = "inline-block"
+                        function checkStatus(){
+                                            var scale_container = document.getElementById("scale-container-main")
+                                             var card_response = document.getElementById("card-response")
+                                             scale_container.style.display = "none"
+                                            card_response.style.display = "inline-block"
                                              }
-                                             //console.log('{{score|safe}}')
-setScale()
+                                            
+                        setScale()
                         function setScale() {
                         const choice = Number("{{defaults.ProductCount}}");
 
                         if (choice > 1 && choice < 11) {
-                            //addFields(num = choice);
                             addProd(num = choice);}}
 
                         [].forEach.call(document.getElementsByClassName("slider"), function (slid) {
-        slid.style.background = "{{defaults.scalecolor|safe}}";});
+                            slid.style.background = "{{defaults.scalecolor|safe}}";});
 
         if (choice === 2) {
 
@@ -573,7 +564,7 @@ setScale()
             document.getElementById("myRange-0").disabled = "true";
             document.getElementById("but-1").disabled = false;
             document.getElementById("myRange-1").disabled = false;
-            responses.push(this.value)
+            responses.push(document.getElementById("myRange-0").value)
             console.log(responses)
           }
 
@@ -591,6 +582,8 @@ setScale()
             document.getElementById("but-1").className = "btn btn-success";
             document.getElementById("but-1").innerHTML = "Submitted";
             document.getElementById("myRange-1").disabled = "true";
+            responses.push(document.getElementById("myRange-1").value)
+            console.log(responses)
           }
 
         };
@@ -629,7 +622,7 @@ setScale()
             document.getElementById("myRange-0").disabled = "true";
             document.getElementById("but-1").disabled = false;
             document.getElementById("myRange-1").disabled = false;
-            responses.push(this.value)
+            responses.push(document.getElementById("myRange-0").value)
             console.log(responses)
           }
 
@@ -646,6 +639,8 @@ setScale()
             document.getElementById("myRange-1").disabled = "true";
             document.getElementById("but-2").disabled = false;
             document.getElementById("myRange-2").disabled = false;
+            responses.push(document.getElementById("myRange-1").value)
+            console.log(responses)
           }
 
         };
@@ -662,6 +657,8 @@ setScale()
             document.getElementById("but-2").className = "btn btn-success";
             document.getElementById("but-2").innerHTML = "Submitted";
             document.getElementById("myRange-2").disabled = "true";
+            responses.push(document.getElementById("myRange-2").value)
+            console.log(responses)
           }
 
         };
@@ -814,6 +811,8 @@ setScale()
             document.getElementById("myRange-0").disabled = "true";
             document.getElementById("but-1").disabled = false;
             document.getElementById("myRange-1").disabled = false;
+            responses.push(document.getElementById("myRange-0").value)
+            console.log(responses)
           }
 
         };
@@ -829,6 +828,8 @@ setScale()
             document.getElementById("myRange-1").disabled = "true";
             document.getElementById("but-2").disabled = false;
             document.getElementById("myRange-2").disabled = false;
+            responses.push(document.getElementById("myRange-1").value)
+            console.log(responses)
           }
 
         };
@@ -844,6 +845,8 @@ setScale()
             document.getElementById("myRange-2").disabled = "true";
             document.getElementById("but-3").disabled = false;
             document.getElementById("myRange-3").disabled = false;
+            responses.push(document.getElementById("myRange-2").value)
+            console.log(responses)
           }
 
         };
@@ -859,6 +862,8 @@ setScale()
             document.getElementById("myRange-3").disabled = "true";
             document.getElementById("but-4").disabled = false;
             document.getElementById("myRange-4").disabled = false;
+            responses.push(document.getElementById("myRange-3").value)
+            console.log(responses)
           }
 
         };
@@ -876,6 +881,8 @@ setScale()
             document.getElementById("but-3").className = "btn btn-success";
             document.getElementById("but-3").innerHTML = "Submitted";
             document.getElementById("myRange-3").disabled = "true";
+            responses.push(document.getElementById("myRange-3").value)
+            console.log(responses)
           }
 
         };
@@ -936,6 +943,8 @@ setScale()
             document.getElementById("myRange-0").disabled = "true";
             document.getElementById("but-1").disabled = false;
             document.getElementById("myRange-1").disabled = false;
+            responses.push(document.getElementById("myRange-0").value)
+            console.log(responses)
           }
 
         };
@@ -951,6 +960,8 @@ setScale()
             document.getElementById("myRange-1").disabled = "true";
             document.getElementById("but-2").disabled = false;
             document.getElementById("myRange-2").disabled = false;
+            responses.push(document.getElementById("myRange-1").value)
+            console.log(responses)
           }
 
         };
@@ -966,6 +977,8 @@ setScale()
             document.getElementById("myRange-2").disabled = "true";
             document.getElementById("but-3").disabled = false;
             document.getElementById("myRange-3").disabled = false;
+            responses.push(document.getElementById("myRange-2").value)
+            console.log(responses)
           }
 
         };
@@ -981,6 +994,8 @@ setScale()
             document.getElementById("myRange-3").disabled = "true";
             document.getElementById("but-4").disabled = false;
             document.getElementById("myRange-4").disabled = false;
+            responses.push(document.getElementById("myRange-3").value)
+            console.log(responses)
           }
 
         };
@@ -997,6 +1012,8 @@ setScale()
             document.getElementById("myRange-4").disabled = "true";
             document.getElementById("but-5").disabled = false;
             document.getElementById("myRange-5").disabled = false;
+            responses.push(document.getElementById("myRange-4").value)
+            console.log(responses)
           }
 
         };
@@ -1014,6 +1031,8 @@ setScale()
             document.getElementById("but-5").className = "btn btn-success";
             document.getElementById("but-5").innerHTML = "Submitted";
             document.getElementById("myRange-5").disabled = "true";
+            responses.push(document.getElementById("myRange-5").value)
+            console.log(responses)
           }
 
         };
@@ -1080,6 +1099,8 @@ setScale()
             document.getElementById("myRange-0").disabled = "true";
             document.getElementById("but-1").disabled = false;
             document.getElementById("myRange-1").disabled = false;
+            responses.push(document.getElementById("myRange-0").value)
+            console.log(responses)
           }
 
         };
@@ -1095,6 +1116,8 @@ setScale()
             document.getElementById("myRange-1").disabled = "true";
             document.getElementById("but-2").disabled = false;
             document.getElementById("myRange-2").disabled = false;
+            responses.push(document.getElementById("myRange-1").value)
+            console.log(responses)
           }
 
         };
@@ -1110,6 +1133,8 @@ setScale()
             document.getElementById("myRange-2").disabled = "true";
             document.getElementById("but-3").disabled = false;
             document.getElementById("myRange-3").disabled = false;
+            responses.push(document.getElementById("myRange-2").value)
+            console.log(responses)
           }
 
         };
@@ -1125,6 +1150,8 @@ setScale()
             document.getElementById("myRange-3").disabled = "true";
             document.getElementById("but-4").disabled = false;
             document.getElementById("myRange-4").disabled = false;
+            responses.push(document.getElementById("myRange-3").value)
+            console.log(responses)
           }
 
         };
@@ -1141,7 +1168,9 @@ setScale()
             document.getElementById("myRange-4").disabled = "true";
             document.getElementById("but-5").disabled = false;
             document.getElementById("myRange-5").disabled = false;
-          }
+            responses.push(document.getElementById("myRange-4").value);
+            console.log(responses);
+        }
 
         };
 
@@ -1156,6 +1185,8 @@ setScale()
             document.getElementById("myRange-5").disabled = "true";
             document.getElementById("but-6").disabled = false;
             document.getElementById("myRange-6").disabled = false;
+            responses.push(document.getElementById("myRange-5").value);
+            console.log(responses);
           }
 
         };
@@ -1172,6 +1203,8 @@ setScale()
             document.getElementById("but-6").className = "btn btn-success";
             document.getElementById("but-6").innerHTML = "Submitted";
             document.getElementById("myRange-6").disabled = "true";
+            responses.push(document.getElementById("myRange-6").value);
+            console.log(responses);
           }
         };
 
@@ -1245,6 +1278,8 @@ setScale()
             document.getElementById("myRange-0").disabled = "true";
             document.getElementById("but-1").disabled = false;
             document.getElementById("myRange-1").disabled = false;
+            responses.push(document.getElementById("myRange-0").value);
+            console.log(responses);
           }
 
         };
@@ -1260,6 +1295,8 @@ setScale()
             document.getElementById("myRange-1").disabled = "true";
             document.getElementById("but-2").disabled = false;
             document.getElementById("myRange-2").disabled = false;
+            responses.push(document.getElementById("myRange-1").value);
+            console.log(responses);
           }
 
         };
@@ -1275,6 +1312,8 @@ setScale()
             document.getElementById("myRange-2").disabled = "true";
             document.getElementById("but-3").disabled = false;
             document.getElementById("myRange-3").disabled = false;
+            responses.push(document.getElementById("myRange-2").value);
+            console.log(responses);
           }
 
         };
@@ -1290,6 +1329,8 @@ setScale()
             document.getElementById("myRange-3").disabled = "true";
             document.getElementById("but-4").disabled = false;
             document.getElementById("myRange-4").disabled = false;
+            responses.push(document.getElementById("myRange-3").value);
+            console.log(responses);
           }
 
         };
@@ -1306,6 +1347,8 @@ setScale()
             document.getElementById("myRange-4").disabled = "true";
             document.getElementById("but-5").disabled = false;
             document.getElementById("myRange-5").disabled = false;
+            responses.push(document.getElementById("myRange-4").value);
+            console.log(responses);
           }
 
         };
@@ -1321,6 +1364,8 @@ setScale()
             document.getElementById("myRange-5").disabled = "true";
             document.getElementById("but-6").disabled = false;
             document.getElementById("myRange-6").disabled = false;
+            responses.push(document.getElementById("myRange-5").value);
+            console.log(responses);
           }
 
         };
@@ -1336,6 +1381,8 @@ setScale()
             document.getElementById("myRange-6").disabled = "true";
             document.getElementById("but-7").disabled = false;
             document.getElementById("myRange-7").disabled = false;
+            responses.push(document.getElementById("myRange-6").value);
+            console.log(responses);
           }
 
         };
@@ -1352,6 +1399,8 @@ setScale()
             document.getElementById("but-7").className = "btn btn-success";
             document.getElementById("but-7").innerHTML = "Submitted";
             document.getElementById("myRange-7").disabled = "true";
+            responses.push(document.getElementById("myRange-7").value);
+            console.log(responses);
           }
         };
 
@@ -1433,6 +1482,8 @@ setScale()
             document.getElementById("myRange-0").disabled = "true";
             document.getElementById("but-1").disabled = false;
             document.getElementById("myRange-1").disabled = false;
+            responses.push(document.getElementById("myRange-0").value);
+            console.log(responses);
           }
 
         };
@@ -1448,6 +1499,8 @@ setScale()
             document.getElementById("myRange-1").disabled = "true";
             document.getElementById("but-2").disabled = false;
             document.getElementById("myRange-2").disabled = false;
+            responses.push(document.getElementById("myRange-1").value);
+            console.log(responses);
           }
 
         };
@@ -1463,6 +1516,8 @@ setScale()
             document.getElementById("myRange-2").disabled = "true";
             document.getElementById("but-3").disabled = false;
             document.getElementById("myRange-3").disabled = false;
+            responses.push(document.getElementById("myRange-2").value);
+            console.log(responses);
           }
 
         };
@@ -1478,6 +1533,8 @@ setScale()
             document.getElementById("myRange-3").disabled = "true";
             document.getElementById("but-4").disabled = false;
             document.getElementById("myRange-4").disabled = false;
+            responses.push(document.getElementById("myRange-3").value);
+            console.log(responses);
           }
 
         };
@@ -1494,6 +1551,8 @@ setScale()
             document.getElementById("myRange-4").disabled = "true";
             document.getElementById("but-5").disabled = false;
             document.getElementById("myRange-5").disabled = false;
+            responses.push(document.getElementById("myRange-4").value);
+            console.log(responses);
           }
 
         };
@@ -1509,6 +1568,8 @@ setScale()
             document.getElementById("myRange-5").disabled = "true";
             document.getElementById("but-6").disabled = false;
             document.getElementById("myRange-6").disabled = false;
+            responses.push(document.getElementById("myRange-5").value);
+            console.log(responses);
           }
 
         };
@@ -1524,6 +1585,8 @@ setScale()
             document.getElementById("myRange-6").disabled = "true";
             document.getElementById("but-7").disabled = false;
             document.getElementById("myRange-7").disabled = false;
+            responses.push(document.getElementById("myRange-6").value);
+            console.log(responses);
           }
 
         };
@@ -1540,6 +1603,8 @@ setScale()
             document.getElementById("myRange-7").disabled = "true";
             document.getElementById("but-8").disabled = false;
             document.getElementById("myRange-8").disabled = false;
+            responses.push(document.getElementById("myRange-7").value);
+            console.log(responses);
           }
 
         };
@@ -1556,6 +1621,8 @@ setScale()
             document.getElementById("but-8").className = "btn btn-success";
             document.getElementById("but-8").innerHTML = "Submitted";
             document.getElementById("myRange-8").disabled = "true";
+            responses.push(document.getElementById("myRange-8").value);
+            console.log(responses);
           }
         };
 
@@ -1644,6 +1711,8 @@ setScale()
             document.getElementById("myRange-0").disabled = "true";
             document.getElementById("but-1").disabled = false;
             document.getElementById("myRange-1").disabled = false;
+            responses.push(document.getElementById("myRange-0").value);
+            console.log(responses);
           }
 
         };
@@ -1659,6 +1728,8 @@ setScale()
             document.getElementById("myRange-1").disabled = "true";
             document.getElementById("but-2").disabled = false;
             document.getElementById("myRange-2").disabled = false;
+            responses.push(document.getElementById("myRange-1").value);
+            console.log(responses);
           }
 
         };
@@ -1674,6 +1745,8 @@ setScale()
             document.getElementById("myRange-2").disabled = "true";
             document.getElementById("but-3").disabled = false;
             document.getElementById("myRange-3").disabled = false;
+            responses.push(document.getElementById("myRange-2").value);
+            console.log(responses);
           }
 
         };
@@ -1689,6 +1762,8 @@ setScale()
             document.getElementById("myRange-3").disabled = "true";
             document.getElementById("but-4").disabled = false;
             document.getElementById("myRange-4").disabled = false;
+            responses.push(document.getElementById("myRange-3").value);
+            console.log(responses);
           }
 
         };
@@ -1705,6 +1780,8 @@ setScale()
             document.getElementById("myRange-4").disabled = "true";
             document.getElementById("but-5").disabled = false;
             document.getElementById("myRange-5").disabled = false;
+            responses.push(document.getElementById("myRange-4").value);
+            console.log(responses);
           }
 
         };
@@ -1720,6 +1797,8 @@ setScale()
             document.getElementById("myRange-5").disabled = "true";
             document.getElementById("but-6").disabled = false;
             document.getElementById("myRange-6").disabled = false;
+            responses.push(document.getElementById("myRange-5").value);
+            console.log(responses);
           }
 
         };
@@ -1735,6 +1814,8 @@ setScale()
             document.getElementById("myRange-6").disabled = "true";
             document.getElementById("but-7").disabled = false;
             document.getElementById("myRange-7").disabled = false;
+            responses.push(document.getElementById("myRange-6").value);
+            console.log(responses);
           }
 
         };
@@ -1751,6 +1832,8 @@ setScale()
             document.getElementById("myRange-7").disabled = "true";
             document.getElementById("but-8").disabled = false;
             document.getElementById("myRange-8").disabled = false;
+            responses.push(document.getElementById("myRange-7").value);
+            console.log(responses);
           }
 
         };
@@ -1766,6 +1849,8 @@ setScale()
             document.getElementById("myRange-8").disabled = "true";
             document.getElementById("but-9").disabled = false;
             document.getElementById("myRange-9").disabled = false;
+            responses.push(document.getElementById("myRange-8").value);
+            console.log(responses);
           }
 
         };
@@ -1782,6 +1867,8 @@ setScale()
             document.getElementById("but-9").className = "btn btn-success";
             document.getElementById("but-9").innerHTML = "Submitted";
             document.getElementById("myRange-9").disabled = "true";
+            responses.push(document.getElementById("myRange-9").value);
+            console.log(responses);
           }
         };
 
@@ -1895,14 +1982,14 @@ console.log(Arr)
 
         input4.id = "left-" + i;
         input4.style = "float : left";
-        input4.innerHTML = 0;
+        input4.innerHTML = 0+"%";
 
         var input5 = document.createElement("div");
 
 
         input5.id = "right-" + i;
         input5.style = "float : right";
-        input5.innerHTML = 100;
+        input5.innerHTML = 100+"%";
 
         var input6 = document.createElement("div");
 
@@ -1935,12 +2022,11 @@ console.log(Arr)
                     	//serial.innerHTML = parseInt(serial.innerHTML-1)
                     	function updateAnswer(){
                     		$("#test").click(function(){
-                    	
                     			test.innerHTML = "Submitted all Responses";
                     			test.style="pointer-events: none";
                     			scoretag.value=responses;
                                 document.getElementById("time-out-response").style.display = "none"
-                    			console.log(scoretag.value)
+                    			console.log([scoretag.value])
                     		})
                     }
 

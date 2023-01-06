@@ -29,7 +29,7 @@ def dowell_scale_admin(request):
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
         eventID = get_event_id()
-        product_names=[request.POST.get('scale_choice 0', "None"),
+        product_name=[request.POST.get('scale_choice 0', "None"),
             request.POST.get('scale_choice 1', "None"),
             request.POST.get('scale_choice 2', "None"),
             request.POST.get('scale_choice 3', "None"),
@@ -37,7 +37,11 @@ def dowell_scale_admin(request):
             request.POST.get('scale_choice 5', "None"),
             request.POST.get('scale_choice 6', "None"),
             request.POST.get('scale_choice 7', "None"),
-            request.POST.get('scale_choice 8', "None")]
+            request.POST.get('scale_choice 8', "None")] 
+        product_names = []
+        [product_names.append(x) for x in product_name if x not in product_names]
+        product_names.remove("None")
+        
         
         try:
             field_add={"event_id":eventID,"settings":{"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "scale-category": "percent_sum scale","ProductCount":product_count,"productnames":product_names} }

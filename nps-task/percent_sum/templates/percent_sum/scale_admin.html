@@ -169,6 +169,22 @@
       height: 2px;
       background: rgb(217, 217, 217);
     }
+    #checkbox {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 30px;
+            }
+
+
+            #checkbox input {
+                opacity: 0;
+                width: 10px;
+                height: 0;
+            }
+            #timeInput{
+                display: none;
+            }
   </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -214,7 +230,7 @@
             </select>
           </div>
           <div class="form-group col-md-6">
-            <label for="scolor">Scale Color</label>
+            <label for="scolor">Slider Color</label>
             <input type="color" name="scolor" class="form-control" id="scolor" placeholder="Background Color" required>
           </div><br>
           <div class="form-group col-md-6">
@@ -224,11 +240,34 @@
 
             </select>
           </div>
-          <div class="form-group col-md-6">
-            <label for="time">Time</label>
-            <input type="number" name="time" class="form-control" id="time" placeholder="Time" required="False"
-              value=0>
-          </div>
+          <div
+                            class="form-group col-md-3"
+                            style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                margin-top: 25px;
+                            "
+                        >
+                            <label for="checkbox">
+                                <input id="checkbox" type="checkbox" />
+                            </label>
+                            <span style="font-weight: bold">
+                                Click to set Time</span
+                            >
+                        </div>
+                        <div class="form-group col-md-3" id="timeInput">
+                            <label for="time">Time (sec)</label>
+                            <input
+                                class="form-control"
+                                id="time"
+                                value="0"
+                                name="time"
+                                onchange="myTime()"
+                                placeholder="Time"
+                                type="number"
+                            />
+                        </div>
           <div class="form-group col-md-6" id="scale_input" name="Scale_Input"></div>
 
           <div class="form-group col-md-12 text-right p-15">
@@ -283,16 +322,28 @@
   <script>
 
     //--------------------------------------Slider code--------------------------------- -->
-
+    function myTime() {
+        time = document.getElementById("time").value;
+    }
+    let checkbox = document.getElementById("checkbox");
+    checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+            document.getElementById("timeInput").style.display = "block";
+        } else {
+            document.getElementById("timeInput").style.display = "none";
+        }
+    });
     const cnt = document.getElementById('ProdCount');
     const summ = 100;
     var Arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     var ori = document.getElementById("orientation");
-  
 
 
     function preview() {
-      
+        for (i = 0; i < Number(cnt.value); i++) {
+        var check = document.getElementById("text-" + i).value;
+        console.log(check)
+        }
 
       if (ori.value == "vertical") {
 
@@ -1620,13 +1671,14 @@
 
       }
     }
+    
+
 
 
 
     function addProd(num) {
 
       var slid = document.getElementById("ProdValues");
-      console.log(slid)
 
 
 

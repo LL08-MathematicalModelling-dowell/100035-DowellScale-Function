@@ -265,10 +265,10 @@ function postScore(score){
             {% if user == "admin" %}
             <div class="text-dark"><h2 align="center"><u>{{hist}}</u></h2></div>
             <table>
-            {% for percentsum in percentsumall %}
+            {% for percent_sum in percentsumall %}
                 <tr>
         <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{nps.template_name}}">{{nps.template_name}}</a></td>-->
-                    <td><a href="https://100035.pythonanywhere.com/percent-sum/percent-sum-scale1/{{percent.template_name}}">{{percent.template_name}}</a></td>
+                    <td><a href="{{public_url}}/percent-sum/percent-sum-scale1/{{percent.template_name}}">{{percent.template_name}}</a></td>
                 </tr>
             {% endfor %}
             {% endif %}
@@ -342,7 +342,7 @@ function postScore(score){
     var clip = document.getElementById("clip-icon");
     var value = document.getElementById(id).innerHTML;
     var input_temp = document.createElement("input");
-    input_temp.value = `https://100035.pythonanywhere.com${b}?brand_name=your brand&product_name=your product`;
+    input_temp.value = `{{public_url|safe}}${b}?brand_name=your brand&product_name=your product`;
     document.body.appendChild(input_temp);
     input_temp.select();
     document.execCommand("copy");
@@ -380,7 +380,7 @@ function postScore(score){
         copyText.style.color = "#ccc";
         copyText.style.fontSize = "14px";
         copyText.style.fontWeight = "400";
-        copyText.innerHTML = `https://100035.pythonanywhere.com/percent/percent-scale1/default_percent_scale6787?brand_name=your_brand&product_name=your_product`
+        copyText.innerHTML = `{{public_url|safe}}/percent-sum/percent-sum-scale1/default_percent-sum_scale6787?brand_name=your_brand&product_name=your_product`
         }
       window.onload = codeAddress;
 
@@ -389,7 +389,7 @@ function postScore(score){
         var clip = document.getElementById("clip-icon");
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
-        input_temp.value = `https://100035.pythonanywhere.com/percent/percent-scale1/default_percent_scale6787?brand_name=your_brand&product_name=your_product`;
+        input_temp.value = `{{public_url|safe}}/percent-sum/percent-sum-scale1/default_percent-sum_scale6787?brand_name=your_brand&product_name=your_product`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");
