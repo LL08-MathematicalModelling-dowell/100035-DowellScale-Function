@@ -111,9 +111,10 @@ def dowell_npslite_scale_settings(request):
 @csrf_exempt
 def dowell_npslite_scale(request, tname):
     user = request.session.get('user_name')
-    # if user == None:
-    #     return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-lite/nps-lite-default-admin/")
+    if user == None:
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-lite/nps-lite-default-admin/")
 
+    print("___+++_+ USER", user)
     context={}
     context["public_url"] = public_url
     brand_name = request.GET.get('brand_name', None)
@@ -206,7 +207,7 @@ def dowell_npslite_scale(request, tname):
                 x = dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
                 print("Nps Lite Scale Response---->",x)
                 # User details
-                user_json = json.loads(z)
+                user_json = json.loads(x)
                 details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
                 user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                     "ABCDE", "insert", details, "nil")
