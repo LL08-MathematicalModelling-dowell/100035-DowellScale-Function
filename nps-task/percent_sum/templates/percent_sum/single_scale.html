@@ -390,7 +390,7 @@
             	Checklist()
 
                    let check = {{recorded_score}};
-                   //console.log(check)
+                   console.log(check)
                    if (check === 101){
                        console.log("No answer given")
                     }
@@ -399,7 +399,7 @@
                        var card_response = document.getElementById("card-response")
                        scale_container.style.display = "none"
                        card_response.style.display = "inline-block"
-            		view.innerHTML="Your response of "+ check +"%" +" has been submitted"
+            		view.innerHTML="Your response of "+ check +" has been submitted"
 
 
                 }
@@ -2019,14 +2019,15 @@ console.log(Arr)
                     	updateAnswer()
                     	setInterval(updateCountdown, 1000)
                     	serial = document.getElementById("serial")
-                    	//serial.innerHTML = parseInt(serial.innerHTML-1)
+                    	serial.innerHTML = parseInt(serial.innerHTML-1)
                     	function updateAnswer(){
                     		$("#test").click(function(){
                     			test.innerHTML = "Submitted all Responses";
                     			test.style="pointer-events: none";
-                    			scoretag.value=responses;
+                    			scoretag.value=[responses];
                                 document.getElementById("time-out-response").style.display = "none"
-                    			console.log([scoretag.value])
+                    			document.getElementById("jsform").submit();
+                                checkStatus();
                     		})
                     }
 
