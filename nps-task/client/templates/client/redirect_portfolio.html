@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
+	<title>Create portfolio</title>
+</head>
+<style> @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap');
+body{
+font-family: Kanit;
+}
+</style>
+<body>
+	<div class="d-flex align-items-center justify-content-center"
+	     style="display: flex; flex-direction: column; justify-content: center; align-items: center">
+		<img style="width: 200px; height: 200px" src="{% static 'images/dowell-logo.png' %}">
+		<div>
+			<h3>You Don't Have a Portfolio <a href="https://100093.pythonanywhere.com/" id="msg"></a></h3>
+		</div>
+	</div>
+<script>
+	function showText(target, message, index, interval) {
+	  if (index < message.length) {
+	    document.getElementById(target).append(message[index++]);
+	    setTimeout(function () {
+	      showText(target, message, index, interval);
+	    }, interval);
+	  }
+	}
+
+	// Use the function like this:
+	showText("msg", "Create Here.", 0, 150);
+</script>
+</body>
+</html>

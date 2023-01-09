@@ -120,11 +120,12 @@ def dowell_scale1(request, tname1):
     print("This is my scale_data", data)
 
     existing_scale = False
+
     if len(data['data']) != 0:
         scale_data = data["data"][0]["scale_data"]
         score_data = data["data"]
         # score_data = data["data"][0]['score']
-        print("This is my scale_data", scale_data, score_data)
+        print("This is my scale_data", scale_data)
 
         total_score = 0
         for i in score_data:
@@ -132,11 +133,17 @@ def dowell_scale1(request, tname1):
             print("Instance_id --->", instance_id)
             if len(instance_id) > 3:
                 continue
+
+
             b = i['score'][0]['score']
             print("Score of scales-->", b)
             total_score += int(b)
 
         for i in score_data:
+            # if data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
+            #     break
+            if len(instance_id) > 3:
+                continue
             instance_id = i['score'][0]['instance_id'].split("/")[0]
             print("instance_id[[[[[[[[[",instance_id)
             print("current[[[[[[[[[",current_url)
@@ -145,17 +152,22 @@ def dowell_scale1(request, tname1):
                 context['response_saved'] = i['score'][0]['score']
                 context['score'] = "show"
                 print("Scale exists--------->", existing_scale)
-
-        print("Scale exists--------->", existing_scale )
-
-        print("Total scores of this scale",total_score)
+            elif data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
+                existing_scale = False
+                # context['response_saved'] = i['score'][0]['score']
+                context['score'] = ""
 
     if request.method == 'POST':
         score = request.POST['scoretag']
         eventID = get_event_id()
         score = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'score':score}
+        if len(data['data']) != 0:
+            if data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
+                score = {"instance_id": f"Default", 'score': score}
+
         print("Scale exists--------->", existing_scale )
         if existing_scale == False:
+            # if existing_scale == False or data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
             try:
                 field_add={"event_id":eventID,"scale_data":{"scale_id":context["scale_id"],"scale_type":"nps scale"}, "brand_data":{"brand_name":context["brand_name"],"product_name":context["product_name"]},"score":[score]}
                 z=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")

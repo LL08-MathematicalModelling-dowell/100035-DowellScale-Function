@@ -324,8 +324,6 @@ $(document).ready(function() {
             x.innerHTML = `Response ${response.length} of ${parseInt('{{defaults.no_of_scales|safe}}')} submitted`
             x.className = "show";
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-
-
         }
     }
 
@@ -432,7 +430,7 @@ setrating = function(id) {
                 function checkStatus(){
                     console.log('{{score|safe}}')
                      if ('{{score|safe}}' === 'show'){
-                         var scale_container = document.getElementById("scale-container-main")
+                        var scale_container = document.getElementById("scale-container-main")
                         var card_response = document.getElementById("card-response")
                         var response_saved = document.getElementById("response-saved")
 

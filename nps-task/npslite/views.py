@@ -112,8 +112,9 @@ def dowell_npslite_scale_settings(request):
 def dowell_npslite_scale(request, tname):
     user = request.session.get('user_name')
     if user == None:
-        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-lite-default-admin/")
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-lite/nps-lite-default-admin/")
 
+    print("___+++_+ USER", user)
     context={}
     context["public_url"] = public_url
     brand_name = request.GET.get('brand_name', None)
@@ -183,6 +184,10 @@ def dowell_npslite_scale(request, tname):
                 context['response_saved'] = i['category'][0]['category']
                 context['score'] = "show"
                 print("Scale exists--------->", existing_scale)
+        if data["data"][0]["scale_data"]["scale_id"] == "63b7ccac0175aa060a42b554":
+            existing_scale = False
+            # context['response_saved'] = i['score'][0]['score']
+            context['score'] = ""
 
         print("Scale exists--------->", existing_scale)
 
@@ -190,6 +195,9 @@ def dowell_npslite_scale(request, tname):
         category = request.POST['scoretag']
         eventID = get_event_id()
         category = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'category': category}
+        if len(data['data']) != 0:
+            if data["data"][0]["scale_data"]["scale_id"] == "63b7ccac0175aa060a42b554":
+                category = {"instance_id": f"Default", 'category': category}
         print("Scale exists--------->", existing_scale)
         print("Nps Lite Category Choice--->",category)
 
@@ -199,7 +207,7 @@ def dowell_npslite_scale(request, tname):
                 x = dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
                 print("Nps Lite Scale Response---->",x)
                 # User details
-                user_json = json.loads(z)
+                user_json = json.loads(x)
                 details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
                 user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                     "ABCDE", "insert", details, "nil")

@@ -317,7 +317,7 @@ setrating = function(id) {
         copyText.style.color = "#ccc";
         copyText.style.fontSize = "14px";
         copyText.style.fontWeight = "400";
-        copyText.innerHTML = `{{public_url|safe}}/nps-scale1/defaultnpsscale?brand_name=your%20brand&product_name=your%20product`
+        copyText.innerHTML = `{{public_url|safe}}/nps-scale1/Nps_Default?brand_name=your%20brand&product_name=your%20product`
         }
       window.onload = codeAddress;
 
@@ -326,7 +326,7 @@ setrating = function(id) {
         var clip = document.getElementById("clip-icon");
         var value = document.getElementById(id).innerHTML;
         var input_temp = document.createElement("input");
-        input_temp.value = `{{public_url|safe}}/nps-scale1/defaultnpsscale?brand_name=your%20brand&product_name=your%20product`;
+        input_temp.value = `{{public_url|safe}}/nps-scale1/Nps_Default?brand_name=your%20brand&product_name=your%20product`;
         document.body.appendChild(input_temp);
         input_temp.select();
         document.execCommand("copy");
