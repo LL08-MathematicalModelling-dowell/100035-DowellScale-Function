@@ -31,7 +31,7 @@ def dowell_scale_admin(request):
             labelscale = request.POST['likert']
             labeltype = request.POST['labeltype']
             time = request.POST['time']
-            scale=[request.POST.get('scale_choice 0', "None"),
+            scales=[request.POST.get('scale_choice 0', "None"),
             request.POST.get('scale_choice 1', "None"),
             request.POST.get('scale_choice 2', "None"),
             request.POST.get('scale_choice 3', "None"),
@@ -41,9 +41,7 @@ def dowell_scale_admin(request):
             request.POST.get('scale_choice 7', "None"),
             request.POST.get('scale_choice 8', "None")
             ]
-            scales=[]
-            [scales.append(x)for x in scale if x not in scales]
-            scales.remove("None")
+            
             eventID = get_event_id()
             rand_num = random.randrange(1, 10000)
             template_name = f"{name.replace(' ', '')}{rand_num}"
