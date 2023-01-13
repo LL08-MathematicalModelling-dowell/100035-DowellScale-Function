@@ -188,9 +188,10 @@ def default_scale_admin(request):
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
     context["username"]=username
-    field_add = {"scale-category": "percent scale"}
+    field_add = {"settings.scale-category": "percent scale"}
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
+    print(data)
     context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
     return render(request, 'percent/default.html', context)

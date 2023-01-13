@@ -193,15 +193,17 @@ def default_scale_admin(request):
     context = {}
     context["public_url"] = public_url
     context['user'] = 'admin'
-    context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:300px;overflow-y: scroll;"
+    context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:500px;overflow-y: scroll;"
     context["hist"] = "Scale History"
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
     context["username"]=username
-    field_add = {"scale-category": "percent-sum scale"}
+    field_add = {"settings.scale-category": "percent_sum scale"}
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
+    #print(data)
     context["percentsumall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
+    print(context["percentsumall"])
 
     return render(request, 'percent_sum/default.html', context)
 
