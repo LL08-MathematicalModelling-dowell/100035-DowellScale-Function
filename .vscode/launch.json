@@ -8,8 +8,17 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "http://localhost:8080",
+            "url": "http://localhost:8000",
             "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name":"Test",
+            "python":"",
+            "type":"python",
+            "request":"launch",
+            "program":"/Users/Courage/Desktop/WorkFiles/version/version_2/nps-task/manage.py",
+            "console":"internalConsole",
+            "args":["runserver"]
         }
     ]
 }
