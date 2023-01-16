@@ -52,7 +52,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'likert',
     'login',
-    'client.apps.ClientConfig'
+    'percent_sum',
+    'client.apps.ClientConfig',
+    'api.apps.ApiConfig',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

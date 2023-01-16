@@ -89,6 +89,7 @@
       <div class = "scales">
 	      <a  id="likert">Likert Scale</a>
 	      <a  id="percent">Percent Scale</a>
+        <a  id="percent-sum">Percent-Sum Scale</a>
 	      <a  id="nps">Nps Scale</a>
 	      <a  id="stapel">Stapel scale</a>
 	      <a  id="nps-lite">Nps Lite scale</a>
@@ -102,6 +103,7 @@
       var stapel = document.getElementById("stapel");
       var nps = document.getElementById("nps");
       var npsLite = document.getElementById("nps-lite");
+      var percent_sum = document.getElementById("percent-sum");
 
       if (test==="owner"){
         percent.href = "{{public_url|safe}}/percent/percent-admin/default"
@@ -109,6 +111,7 @@
         nps.href = "{{public_url|safe}}/nps-admin/default"
         stapel.href = "{{public_url|safe}}/stapel/stapel-admin/default"
         npsLite.href = "{{public_url|safe}}/nps-lite/nps-lite-default-admin/"
+        percent_sum.href = "{{public_url|safe}}/percent-sum/percent-sum-admin/default"
       }
       else{
         percent.href = "{{public_url|safe}}/percent/percent-scale/default"
