@@ -1,19 +1,12 @@
-from django.shortcuts import render
-
-# Create your views here.
 import random
 import json
-from django.shortcuts import render, redirect, HttpResponse
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
-from django.views.decorators.clickjacking import xframe_options_exempt
-from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
 
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-
 
 # CREATE SCALE SETTINGS
 @api_view(['POST',])
@@ -172,7 +165,7 @@ def single_scale_response_api_view(request, id=None):
 @api_view(['GET',])
 def scale_response_api_view(request):
     try:
-        field_add = {}
+        field_add = {"settings.scale-category": "likert scale"}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
             "1094", "ABCDE", "fetch", field_add, "nil")
     except:

@@ -132,7 +132,7 @@ def nps_response_view_submit(request):
 @api_view(['GET',])
 def scale_settings_api_view(request):
     try:
-        field_add = {}
+        field_add = {"settings.scale-category": "nps scale"}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
             field_add, "nil")
     except:
