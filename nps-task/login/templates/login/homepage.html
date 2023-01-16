@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% block title %}Scales{% endblock %}
 {% block content %}
-    <style>
+<style>
       .header {
         font-size: 24px;
         font-weight: bold;
@@ -18,7 +18,9 @@
         padding: 14px 20px;
         text-align: center;
         text-decoration: none;
-        display: inline-block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 25px;
         margin-top: 20px;
         width: 180px;
@@ -32,6 +34,9 @@
         color: #05890b;
         font-size: 20px;
       }
+
+
+
       .scales{
         font-size:20px;
         justify-content:space-between;
@@ -65,36 +70,37 @@
         justify-content:center;
       }
 	}
-    </style>
+
+</style>
 {% load static %}
-    <div class="header">
-        <img
-          width="200"
-          height="200"
-          src="/static/images/dowell-logo.png"
-          class="attachment-thumbnail size-thumbnail"
-          alt=""
-          loading="lazy"
-          srcset="
+<div class="header">
+	<img
+			alt=""
+			alt="Home"
+			class="attachment-thumbnail size-thumbnail"
+			height="200"
+			loading="lazy"
+			sizes="(max-width: 150px) 100vw, 150px"
+			src="/static/images/dowell-logo.png"
+			srcset="
             /static/images/dowell-logo.png 150w,
             /static/images/dowell-logo.png  48w,
             /static/images/dowell-logo.png 300w
           "
-          sizes="(max-width: 150px) 100vw, 150px"
-          alt="Home"
-        />
-      <h1>Dowell Scales</h1>
+			width="200"
+	/>
+	<h1>Dowell Scales</h1>
 
-      <br/>
-      <div class = "scales">
-	      <a  id="likert">Likert Scale</a>
-	      <a  id="percent">Percent Scale</a>
-        <a  id="percent-sum">Percent-Sum Scale</a>
-	      <a  id="nps">Nps Scale</a>
-	      <a  id="stapel">Stapel scale</a>
-	      <a  id="nps-lite">Nps Lite scale</a>
-    </div>
-    <script >
+	<br/>
+	<div class="scales">
+		<a id="likert">Likert Scale</a>
+		<a id="percent">Percent Scale</a>
+		<a id="percent-sum" style="font-size: 16px;">Percent-Sum Scale</a>
+		<a id="nps">Nps Scale</a>
+		<a id="stapel">Stapel scale</a>
+		<a id="nps-lite">Nps Lite scale</a>
+	</div>
+	<script>
       var test = "{{user_role|safe}}";
       console.log(test)
       console.log(test);
@@ -120,6 +126,7 @@
         stapel.href = "{{public_url|safe}}/stapel/stapel-scale/default"
         npsLite.href = "{{public_url|safe}}/nps-lite/nps-lite-default/"
       }
-    </script>
-    </div>
+
+	</script>
+</div>
 {% endblock %}

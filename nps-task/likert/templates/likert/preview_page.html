@@ -240,8 +240,8 @@
     function checkExistenceOfScale(){
            var elements = document.querySelectorAll('button')
            for( var i = 0; i < elements.length; i++ ) {
-               let b = {{existing_scales|safe}}.find(item=> item == elements[i].innerHTML.split(" ")[1])
-               if(b == elements[i].innerHTML.split(" ")[1]){
+               let b = {{existing_scales|safe}}.find(item=> item == elements[i].innerHTML.split(" ")[1].trim())
+               if(b == elements[i].innerHTML.split(" ")[1].trim()){
                    elements[i].disabled=true
                }
            }
