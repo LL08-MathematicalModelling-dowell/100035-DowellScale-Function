@@ -29,6 +29,7 @@ def settings_api_view_create(request):
         rand_num = random.randrange(1, 10000)
         name = response['name']
         template_name = f"{name.replace(' ', '')}{rand_num}"
+        print(template_name)
 
         eventID = get_event_id()
 
@@ -39,7 +40,7 @@ def settings_api_view_create(request):
                                   "right": response['right'], "center": response['center'], "scale-category": "nps scale",
                                   "no_of_scales": response['no_of_scales']}}
 
-        print(field_add)
+        # print(field_add)
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
             field_add, "nil")
 
@@ -145,7 +146,8 @@ def scale_settings_api_view(request):
 @api_view(['GET',])
 def single_scale_settings_api_view(request, id=None):
     try:
-        field_add = {"_id": id }
+        # field_add = {"_id": id }
+        field_add = {"settings.template_name": id, }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
             "fetch", field_add, "nil")
         settings_json = json.loads(x)

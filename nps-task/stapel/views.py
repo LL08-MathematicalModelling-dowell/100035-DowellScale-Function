@@ -20,9 +20,21 @@ def settings_api_view_create(request):
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
         left = response['left']
-        center = response['center']
         right = response['right']
-        text = f"{left}+{center}+{right}"
+        text = f"{left}+{right}"
+        spacing_unit = int(response['spacing_unit'])
+        rand_num = random.randrange(1, 10000)
+        template_name = f"{response['name'].replace(' ', '')}{rand_num}"
+        scale = []
+        for i in range(-(response['scale_upper_limit']), response['scale_upper_limit'] + 1):
+            if i % response['spacing_unit'] == 0 and i != 0:
+                scale.append(i)
+        if response['scale_upper_limit'] > 10 or response['scale_upper_limit'] < 0 or response['spacing_unit'] > 5 or response['spacing_unit'] < 1:
+            raise Exception("Check scale limits and spacing_unit")
+
+        if response['time'] == "":
+            time = 0
+
         rand_num = random.randrange(1, 10000)
         name = response['name']
         template_name = f"{name.replace(' ', '')}{rand_num}"
@@ -30,10 +42,11 @@ def settings_api_view_create(request):
         eventID = get_event_id()
 
         field_add = {"event_id": eventID,
-                     "settings": {"orientation": response['orientation'], "numberrating": response['numberrating'], "scalecolor": response['scalecolor'],
-                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": response['fomat'], "time": response['time'],
-                                  "template_name": template_name, "name": response['name'], "text": text, "left": response['left'],
-                                  "right": response['right'], "center": response['center'], "scale-category": "nps scale",
+                     "settings": {"orientation": response['orientation'], "scale_upper_limit": response['scale_upper_limit'],
+                                  "scale_lower_limit": -response['scale_upper_limit'], "scalecolor": response['scalecolor'],
+                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": "numbers", "time": response['time'],
+                                  "template_name": template_name, "name": name, "text": text, "left": response['left'],
+                                  "right": response['right'], "scale": scale, "scale-category": "stapel scale",
                                   "no_of_scales": response['no_of_scales']}}
 
         print(field_add)
