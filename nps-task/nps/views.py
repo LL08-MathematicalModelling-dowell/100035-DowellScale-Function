@@ -12,6 +12,47 @@ from rest_framework import status
 from rest_framework.response import Response
 
 
+def find_category(score):
+    if score <= 6:
+        category = "Detractor"
+    elif score <= 8:
+        category = "Neutral"
+    elif score < 0 or score > 10:
+        return Response({"Error": "Score can be only from 1-10"})
+    else:
+        category = "Promoter"
+    return category
+def total_score_fun(id):
+    b = 0
+    field_add = {"scale_data.scale_id": id}
+    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+        "1094",
+        "ABCDE", "fetch", field_add, "nil")
+    data = json.loads(response_data)
+    print(data)
+    total_score = 0
+    all_scores = []
+    instanceID = 0
+
+    if len(data['data']) != 0:
+        score_data = data["data"]
+        for i in score_data:
+            b = i['score'][0]['score']
+            all_scores.append(i['score'])
+            print("Score of scales-->", b)
+            total_score += int(b)
+
+            instanceID = int(i['score'][0]['instance_id'].split("/")[0])
+
+    if total_score == 0 or len(all_scores) == 0:
+        overall_category = "No response provided"
+        category = "No response provided"
+    else:
+        overall_category = total_score / len(all_scores)
+        category = find_category(overall_category)
+
+    return overall_category, category,all_scores, instanceID, b
+
 # CREATE SCALE SETTINGS
 @api_view(['POST',])
 def settings_api_view_create(request):
@@ -55,52 +96,58 @@ def settings_api_view_create(request):
         return Response({"success": x, "payload": field_add, "scale_urls": urls})
     return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET',])
+def calculate_total_score(request, id=None):
+    try:
+        field_add = {"settings.template_name": id, }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "fetch", field_add, "nil")
+
+        settings_json = json.loads(x)
+        id = settings_json['data'][0]["_id"]
+        print("This is my settings",id)
+        overall_category, category, all_scores, instanceID, b = total_score_fun(id.strip())
+    except:
+        return Response({"error": "Please try again"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response({"All_scores": all_scores, "Category": category},status=status.HTTP_200_OK)
+
 
 # SUMBIT SCALE RESPONSE
 @api_view(['POST',])
 def nps_response_view_submit(request):
     if request.method == 'POST':
-        print("Ambrose")
-
         response = request.data
         try:
             user = response['username']
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        id = response['id']
+        # id = response['id']
+        id = response['template_name']
         score = response['score']
         instance_id = response['instance_id']
-        field_add = {"_id": id}
+        field_add = {"settings.template_name": id, }
+        # field_add = {"_id": id}
         default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
             "fetch", field_add, "nil")
         data = json.loads(default)
         x = data['data'][0]['settings']
         number_of_scale = x['no_of_scales']
+        id = data['data'][0]['_id']
 
         # find existing scale reports
-        field_add = {"scale_data.scale_id": id}
-        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-            "ABCDE", "fetch", field_add, "nil")
-        data = json.loads(response_data)
-        print(data)
-        total_score = 0
-
-        if len(data['data']) != 0:
-            score_data = data["data"]
-            print(instance_id)
-            for i in score_data:
-                b = i['score'][0]['score']
-                print("Score of scales-->", b)
-                total_score += int(b)
-
-                if instance_id == int(i['score'][0]['instance_id'].split("/")[0]):
-                    return Response({"error": "Scale Response Exists!", "total score": total_score}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        overall_category, o_category, all_scores, instanceID, b = total_score_fun(id)
+        category = find_category(b)
+        # print("This is my instance ID: ",instanceID)
+        if instance_id == instanceID:
+            return Response({"error": "Scale Response Exists!", "current_score": b,"Category": category}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         eventID = get_event_id()
         score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score}
 
         if int(instance_id) > int(number_of_scale):
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        category = find_category(response["score"])
 
         field_add = {"event_id": eventID, "scale_data": {"scale_id": id, "scale_type": "nps scale"},
                      "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
@@ -111,24 +158,10 @@ def nps_response_view_submit(request):
         details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
-
-        field_add = {"scale_data.scale_id": id}
-        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-            "1094",
-            "ABCDE", "fetch", field_add, "nil")
-        data = json.loads(response_data)
-        print(data)
-        total_score = 0
-
-        if len(data['data']) != 0:
-            score_data = data["data"]
-            print(instance_id)
-            for i in score_data:
-                b = i['score'][0]['score']
-                print("Score of scales-->", b)
-                total_score += int(b)
-        return Response({"success": z, "payload": field_add, "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}", "total score": total_score})
+        return Response({"success": z, "score": score,"payload": field_add, "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}","Category": category})
+        # return Response({"success": z, "score": {score},"category": category,"payload": field_add, "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}", "total score": f"{all_scores} \n TotalScore: {total_score} \n Category: {o_category}"})
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
+
 # GET ALL SCALES
 @api_view(['GET',])
 def scale_settings_api_view(request):

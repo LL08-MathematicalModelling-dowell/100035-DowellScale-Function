@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create,nps_response_view_submit
+from .views import calculate_total_score,dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create,nps_response_view_submit
 
 
 app_name="nps"
@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/nps_responses_create', nps_response_view_submit, name="nps_response_submit_api"),
     path('api/nps_settings', scale_settings_api_view, name="scale_settings_api"),
     path('api/nps_responses', scale_response_api_view, name="scale_response_api"),
+    path('api/total_responses/<str:id>', calculate_total_score, name="calculate_total_score_api"),
     path('api/nps_settings/<str:id>', single_scale_settings_api_view, name="single_scale_settings_api"),
     path('api/nps_responses/<str:id>', single_scale_response_api_view, name="single_scale_response_api"),
 ]
