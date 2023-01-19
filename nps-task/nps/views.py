@@ -69,14 +69,17 @@ def settings_api_view_create(request):
         text = f"{left}+{center}+{right}"
         rand_num = random.randrange(1, 10000)
         name = response['name']
+        time = response['time']
         template_name = f"{name.replace(' ', '')}{rand_num}"
         print(template_name)
+        if time == "":
+            time = 0
 
         eventID = get_event_id()
 
         field_add = {"event_id": eventID,
                      "settings": {"orientation": response['orientation'], "numberrating": response['numberrating'], "scalecolor": response['scalecolor'],
-                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": response['fomat'], "time": response['time'],
+                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": response['fomat'], "time": 'time',
                                   "template_name": template_name, "name": response['name'], "text": text, "left": response['left'],
                                   "right": response['right'], "center": response['center'], "scale-category": "nps scale",
                                   "no_of_scales": response['no_of_scales']}}
@@ -214,7 +217,8 @@ def single_scale_response_api_view(request, id=None):
 @api_view(['GET',])
 def scale_response_api_view(request):
     try:
-        field_add = {}
+        # field_add = {}
+        field_add = {"scale_data.scale_type": "nps scale", }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
             "1094", "ABCDE", "fetch", field_add, "nil")
     except:

@@ -22,17 +22,17 @@ def settings_api_view_create(request):
         left = response['left']
         right = response['right']
         text = f"{left}+{right}"
+        time = response['time']
         spacing_unit = int(response['spacing_unit'])
-        rand_num = random.randrange(1, 10000)
-        template_name = f"{response['name'].replace(' ', '')}{rand_num}"
+        scale_lower_limit = int(response['scale_upper_limit'])
         scale = []
-        for i in range(-(response['scale_upper_limit']), response['scale_upper_limit'] + 1):
+        for i in range(-scale_lower_limit, int(response['scale_upper_limit']) + 1):
             if i % response['spacing_unit'] == 0 and i != 0:
                 scale.append(i)
-        if response['scale_upper_limit'] > 10 or response['scale_upper_limit'] < 0 or response['spacing_unit'] > 5 or response['spacing_unit'] < 1:
+        if int(response['scale_upper_limit']) > 10 or int(response['scale_upper_limit']) < 0 or spacing_unit > 5 or spacing_unit < 1:
             raise Exception("Check scale limits and spacing_unit")
 
-        if response['time'] == "":
+        if time == "":
             time = 0
 
         rand_num = random.randrange(1, 10000)
@@ -43,13 +43,12 @@ def settings_api_view_create(request):
 
         field_add = {"event_id": eventID,
                      "settings": {"orientation": response['orientation'], "scale_upper_limit": response['scale_upper_limit'],
-                                  "scale_lower_limit": -response['scale_upper_limit'], "scalecolor": response['scalecolor'],
-                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": "numbers", "time": response['time'],
+                                  "scale_lower_limit": -scale_lower_limit, "scalecolor": response['scalecolor'],
+                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": "numbers", "time": time,
                                   "template_name": template_name, "name": name, "text": text, "left": response['left'],
                                   "right": response['right'], "scale": scale, "scale-category": "stapel scale",
                                   "no_of_scales": response['no_of_scales']}}
 
-        print(field_add)
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
             field_add, "nil")
 
@@ -77,10 +76,12 @@ def stapel_response_view_submit(request):
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        id = response['id']
+        # id = response['id']
+        id = response['template_name']
         score = response['score']
         instance_id = response['instance_id']
-        field_add = {"_id": id}
+        field_add = {"settings.template_name": id, }
+        # field_add = {"_id": id}
         default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
             "fetch", field_add, "nil")
         data = json.loads(default)
@@ -121,21 +122,21 @@ def stapel_response_view_submit(request):
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
 
-        field_add = {"scale_data.scale_id": id}
-        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-            "1094",
-            "ABCDE", "fetch", field_add, "nil")
-        data = json.loads(response_data)
-        print(data)
-        total_score = 0
-
-        if len(data['data']) != 0:
-            score_data = data["data"]
-            print(instance_id)
-            for i in score_data:
-                b = i['score'][0]['score']
-                print("Score of scales-->", b)
-                total_score += int(b)
+        # field_add = {"scale_data.scale_id": id}
+        # response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+        #     "1094",
+        #     "ABCDE", "fetch", field_add, "nil")
+        # data = json.loads(response_data)
+        # print(data)
+        # total_score = 0
+        #
+        # if len(data['data']) != 0:
+        #     score_data = data["data"]
+        #     print(instance_id)
+        #     for i in score_data:
+        #         b = i['score'][0]['score']
+        #         print("Score of scales-->", b)
+        #         total_score += int(b)
         return Response({"success": z, "payload": field_add, "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}", "total score": total_score})
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 # GET ALL SCALES
@@ -189,7 +190,8 @@ def single_scale_response_api_view(request, id=None):
 @api_view(['GET',])
 def scale_response_api_view(request):
     try:
-        field_add = {}
+        # field_add = {}
+        field_add = {"scale_data.scale_type": "stapel scale", }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
             "1094", "ABCDE", "fetch", field_add, "nil")
     except:
