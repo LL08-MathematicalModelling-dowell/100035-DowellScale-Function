@@ -88,6 +88,9 @@ def stapel_response_view_submit(request):
         x = data['data'][0]['settings']
         number_of_scale = x['no_of_scales']
 
+        if score not in x['scale']:
+            return Response({"error": "Invalid Selection.","Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
+
         # find existing scale reports
         field_add = {"scale_data.scale_id": id}
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
