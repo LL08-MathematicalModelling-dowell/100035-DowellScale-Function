@@ -23,13 +23,13 @@ def homepage(request):
             profile_detais= json.loads(response.text)
             request.session["userinfo"]=profile_detais["userinfo"]
             request.session["user_name"]=profile_detais["userinfo"]["username"]
-            request.session["portfolio_info"]=profile_detais["portfolio_info"]
-            request.session["role"]=profile_detais["portfolio_info"]["role"]
-            context['user_role'] = request.session.get('role')
-            context['user_role'] = 'owner'
+            context['members'] = profile_detais["members"]
+            # request.session["portfolio_info"]=profile_detais["portfolio_info"]
+            # request.session["role"]=profile_detais["portfolio_info"]["role"]
+            # context['user_role'] = request.session.get('role')
+            # context['user_role'] = 'owner'
             context['user_name'] = request.session["user_name"]
-            # if len(profile_detais["userinfo"]) == 0:
-            # print("+++++++++++", request.session.get('role'))
+            # print("+++++++++++", request.session.get('portfolio_info'))
             return render(request, 'client/homepage.html', context)
         except:
             return redirect('client:redirect_portfolio')

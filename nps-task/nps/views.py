@@ -51,7 +51,7 @@ def total_score_fun(id):
         overall_category = total_score / len(all_scores)
         category = find_category(overall_category)
 
-    return overall_category, category,all_scores, instanceID, b
+    return overall_category, category,all_scores, instanceID, b, total_score
 
 # CREATE SCALE SETTINGS
 @api_view(['POST',])
@@ -109,7 +109,7 @@ def calculate_total_score(request, id=None):
         settings_json = json.loads(x)
         id = settings_json['data'][0]["_id"]
         print("This is my settings",id)
-        overall_category, category, all_scores, instanceID, b = total_score_fun(id.strip())
+        overall_category, category, all_scores, instanceID, b,total_score = total_score_fun(id.strip())
     except:
         return Response({"error": "Please try again"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response({"All_scores": all_scores, "Category": category},status=status.HTTP_200_OK)
@@ -249,24 +249,21 @@ def dowell_scale_admin(request):
         no_of_scales = request.POST["no_of_scales"]
         center = request.POST["center"]
         time = request.POST['time']
+        show_total = request.POST['checkboxScores']
         text = f"{left}+{center}+{right}"
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
         if time == "":
             time = 0
-        print("This is my time", time)
-        # objcolor = system_settings.objects.create(orientation=orientation,numberrating=numberrating,scalecolor=scalecolor,roundcolor=roundcolor,fontcolor=fontcolor,fomat=fomat,time=time,template_name=template_name,name=name,text=text, left=left,right=right,center=center)
-        # objcolor.save()
         try:
             eventID = get_event_id()
-            field_add = {"event_id":eventID,"settings":{"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "no_of_scales":no_of_scales}}
+            field_add = {"event_id":eventID,"settings":{"orientation":orientation,"numberrating":numberrating,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"center":center, "scale-category": "nps scale", "no_of_scales":no_of_scales, "show_total_score": show_total}}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
-            print("This is what is saved",x)
+            print("This is what is saved",field_add)
             # User details
             user_json = json.loads(x)
             details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
             user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
-            print("+++++++++++++",user_details)
             return redirect(f"{public_url}/nps-scale1/{template_name}")
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -276,6 +273,7 @@ def dowell_scale_admin(request):
 @xframe_options_exempt
 @csrf_exempt
 def dowell_scale1(request, tname1):
+    global response_saved
     context={}
     context["public_url"] = public_url
     # Get url parameters
@@ -314,6 +312,9 @@ def dowell_scale1(request, tname1):
     field_add={"settings.template_name":tname1,}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
+    id_scores = data['data'][0]["_id"]
+    overall_category, category, all_scores, instanceID, b ,total_score= total_score_fun(id_scores.strip())
+
     context["scale_id"] = data['data'][0]['_id']
     # print("+++++++++++++ Scale ID",context["scale_id"])
     x= data['data'][0]['settings']
@@ -363,6 +364,8 @@ def dowell_scale1(request, tname1):
                 existing_scale = True
                 context['response_saved'] = i['score'][0]['score']
                 context['score'] = "show"
+                context['all_scores'] = all_scores
+                context['total_scores'] = total_score
                 print("Scale exists--------->", existing_scale)
             elif data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
                 existing_scale = False
@@ -371,6 +374,7 @@ def dowell_scale1(request, tname1):
 
     if request.method == 'POST':
         score = request.POST['scoretag']
+        context['response_saved'] = score
         eventID = get_event_id()
         score = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'score':score}
         if len(data['data']) != 0:
@@ -392,6 +396,11 @@ def dowell_scale1(request, tname1):
                 user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
                 context['score'] = "show"
                 print("++++++++++", user_details)
+
+                # calculate_total_score
+                overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id_scores.strip())
+                context['all_scores'] = all_scores
+                context['total_scores'] = total_score
             except:
                 context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'nps/single_scale.html',context)

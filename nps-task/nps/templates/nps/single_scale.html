@@ -356,7 +356,7 @@ $(document).ready(function() {
 });
 
 
-setrating = function(id) {
+let setrating = function(id) {
     for (var i = 0; i < mbuttons.length; i++) {
         if (+id >= +mbuttons[i].id) {
             mbuttons[i].style.color = "white";
@@ -392,6 +392,10 @@ setrating = function(id) {
           </div>
             <h1 class="card-header text-center">Success</h1>
             <p class="card-paragraph text-center">We received your response; <span id="response-saved">({{response_saved}})</span><br/> Thanks!</p>
+	         {% if show_total == 'true' %}
+            <p class="card-paragraph text-center">TOTAL SCORE {{ total_scores }}</p>
+            <p class="card-paragraph text-center">{{ all_scores }}</p>
+	         {% endif %}
           </div>
         <div class="col-sm-8 bg-light" id="scale-container-main" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
         <h1 align="center" class="text-danger"><span id="serial">{{cur_url}}/{{no_of_scales}}</span><b>{{defaults.name}}</b><span id="countdown"></span></h1><br>
