@@ -39,7 +39,7 @@ def total_score_fun(id):
         for i in score_data:
             b = i['score'][0]['score']
             all_scores.append(i['score'])
-            print("Score of scales-->", b)
+            # print("Score of scales-->", b)
             total_score += int(b)
 
             instanceID = int(i['score'][0]['instance_id'].split("/")[0])
@@ -318,8 +318,8 @@ def dowell_scale1(request, tname1):
     context["scale_id"] = data['data'][0]['_id']
     # print("+++++++++++++ Scale ID",context["scale_id"])
     x= data['data'][0]['settings']
+    context['show_total'] = x['show_total_score']
     context["defaults"]=x
-    print("+++++++++++++", x['time'])
     context["text"]=x['text'].split("+")
     number_of_scale=x['no_of_scales']
     context["no_of_scales"]=number_of_scale
@@ -330,7 +330,6 @@ def dowell_scale1(request, tname1):
     field_add={"scale_data.scale_id":context["scale_id"]}
     response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
     data=json.loads(response)
-    print("This is my scale_data", data)
 
     existing_scale = False
 
@@ -338,18 +337,15 @@ def dowell_scale1(request, tname1):
         scale_data = data["data"][0]["scale_data"]
         score_data = data["data"]
         # score_data = data["data"][0]['score']
-        print("This is my scale_data", scale_data)
 
         total_score = 0
         for i in score_data:
             instance_id = i['score'][0]['instance_id'].split("/")[0]
-            print("Instance_id --->", instance_id)
             if len(instance_id) > 3:
                 continue
 
 
             b = i['score'][0]['score']
-            print("Score of scales-->", b)
             total_score += int(b)
 
         for i in score_data:
@@ -358,15 +354,15 @@ def dowell_scale1(request, tname1):
             if len(instance_id) > 3:
                 continue
             instance_id = i['score'][0]['instance_id'].split("/")[0]
-            print("instance_id[[[[[[[[[",instance_id)
-            print("current[[[[[[[[[",current_url)
+
             if instance_id == current_url:
                 existing_scale = True
                 context['response_saved'] = i['score'][0]['score']
                 context['score'] = "show"
                 context['all_scores'] = all_scores
                 context['total_scores'] = total_score
-                print("Scale exists--------->", existing_scale)
+                print(context['show_total'])
+
             elif data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
                 existing_scale = False
                 # context['response_saved'] = i['score'][0]['score']
@@ -381,13 +377,11 @@ def dowell_scale1(request, tname1):
             if data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
                 score = {"instance_id": f"Default", 'score': score}
 
-        print("Scale exists--------->", existing_scale )
         if existing_scale == False:
             # if existing_scale == False or data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
             try:
                 field_add={"event_id":eventID,"scale_data":{"scale_id":context["scale_id"],"scale_type":"nps scale"}, "brand_data":{"brand_name":context["brand_name"],"product_name":context["product_name"]},"score":[score]}
                 z=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
-                print("Scale NEW added successfully", z)
 
                 # User details
                 user_json = json.loads(z)
@@ -395,12 +389,13 @@ def dowell_scale1(request, tname1):
                 details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
                 user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
                 context['score'] = "show"
-                print("++++++++++", user_details)
 
                 # calculate_total_score
                 overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id_scores.strip())
                 context['all_scores'] = all_scores
                 context['total_scores'] = total_score
+
+                print("Ambrose")
             except:
                 context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'nps/single_scale.html',context)
