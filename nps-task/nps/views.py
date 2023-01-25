@@ -323,6 +323,8 @@ def dowell_scale1(request, tname1):
     context["text"]=x['text'].split("+")
     number_of_scale=x['no_of_scales']
     context["no_of_scales"]=number_of_scale
+    context["total_score_scales"]=int(number_of_scale)*10
+
     current_url = url.split('/')[-1]
     context['cur_url'] = current_url
 
@@ -344,7 +346,6 @@ def dowell_scale1(request, tname1):
             if len(instance_id) > 3:
                 continue
 
-
             b = i['score'][0]['score']
             total_score += int(b)
 
@@ -361,7 +362,6 @@ def dowell_scale1(request, tname1):
                 context['score'] = "show"
                 context['all_scores'] = all_scores
                 context['total_scores'] = total_score
-                print(context['show_total'])
 
             elif data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
                 existing_scale = False
@@ -378,9 +378,10 @@ def dowell_scale1(request, tname1):
                 score = {"instance_id": f"Default", 'score': score}
 
         if existing_scale == False:
-            # if existing_scale == False or data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
+            overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id_scores.strip())
+            total_score_save = f"{total_score}/{context['total_score_scales']}"
             try:
-                field_add={"event_id":eventID,"scale_data":{"scale_id":context["scale_id"],"scale_type":"nps scale"}, "brand_data":{"brand_name":context["brand_name"],"product_name":context["product_name"]},"score":[score]}
+                field_add={"event_id":eventID,"scale_data":{"scale_id":context["scale_id"],"scale_type":"nps scale"}, "brand_data":{"brand_name":context["brand_name"],"product_name":context["product_name"]},"score":[score],"total_score":total_score_save}
                 z=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
 
                 # User details
@@ -395,7 +396,7 @@ def dowell_scale1(request, tname1):
                 context['all_scores'] = all_scores
                 context['total_scores'] = total_score
 
-                print("Ambrose")
+                print(field_add)
             except:
                 context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'nps/single_scale.html',context)

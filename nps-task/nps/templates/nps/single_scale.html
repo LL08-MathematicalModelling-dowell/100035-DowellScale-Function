@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <meta charset="UTF-8">
+	<link rel="icon" type="image/x-icon" href="{% static '/images/dowell-logo.png' %}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -393,7 +394,7 @@ let setrating = function(id) {
             <h1 class="card-header text-center">Success</h1>
             <p class="card-paragraph text-center">We received your response; <span id="response-saved">({{response_saved}})</span><br/> Thanks!</p>
 	         {% if show_total == 'true' %}
-            <p class="card-paragraph text-center">TOTAL SCORE {{ total_scores }}</p>
+	         <p class="card-paragraph text-center"><b>TOTAL SCORE : {{ total_scores }} / {{total_score_scales}}</b></p>
             <p class="card-paragraph text-center">{{ all_scores }}</p>
 	         {% endif %}
           </div>

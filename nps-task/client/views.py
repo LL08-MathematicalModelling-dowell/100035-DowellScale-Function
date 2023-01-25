@@ -23,8 +23,7 @@ def homepage(request):
             profile_detais= json.loads(response.text)
             request.session["userinfo"]=profile_detais["userinfo"]
             request.session["user_name"]=profile_detais["userinfo"]["username"]
-            context['members'] = profile_detais["members"]
-            # request.session["portfolio_info"]=profile_detais["portfolio_info"]
+            request.session["portfolio_info"]=profile_detais["portfolio_info"]
             # request.session["role"]=profile_detais["portfolio_info"]["role"]
             # context['user_role'] = request.session.get('role')
             # context['user_role'] = 'owner'

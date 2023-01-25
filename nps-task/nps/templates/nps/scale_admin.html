@@ -3,6 +3,8 @@
 <html lang="en">
 <head>
 	<title>NPS Scale</title>
+	<link rel="icon" type="image/x-icon" href="{% static '/images/dowell-logo.png' %}">
+
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
@@ -192,7 +194,7 @@ input:checked + .slider:before {
 		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
 			<form id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunction();">
 				{% csrf_token %}
-				<h2 align="center"><u>Customize your scale</u></h2>
+				<h2 align="center"><u>Setup a new scale</u></h2>
 				<div class="form-group col-md-6">
 					<label for="head">Name of Scale</label>
 					<input class="form-control" id="head" name="nameofscale" onchange="myName()"
