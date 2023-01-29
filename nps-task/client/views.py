@@ -24,11 +24,16 @@ def homepage(request):
             request.session["userinfo"]=profile_detais["userinfo"]
             request.session["user_name"]=profile_detais["userinfo"]["username"]
             request.session["portfolio_info"]=profile_detais["portfolio_info"]
-            # request.session["role"]=profile_detais["portfolio_info"]["role"]
-            # context['user_role'] = request.session.get('role')
-            # context['user_role'] = 'owner'
+            context["member_type"] = profile_detais["portfolio_info"][0]['member_type']
+            context["porfolio_name"] = profile_detais["portfolio_info"][0]['portfolio_name']
+            context["portfolio_username"] = profile_detais["portfolio_info"][0]['username'][0]
+            context["data_type"] = profile_detais["portfolio_info"][0]['data_type']
+            context["operations_right"] = profile_detais["portfolio_info"][0]['operations_right']
+            context["role"] = profile_detais["portfolio_info"][0]['role']
+            context["org_name"] = profile_detais["portfolio_info"][0]['org_name']
+
             context['user_name'] = request.session["user_name"]
-            # print("+++++++++++", request.session.get('portfolio_info'))
+            # print("+++++++++++", member_type, porfolio_name, username, data_type, operations_right, role, org_name)
             return render(request, 'client/homepage.html', context)
         except:
             return redirect('client:redirect_portfolio')
