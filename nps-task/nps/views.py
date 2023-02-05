@@ -128,6 +128,7 @@ def nps_response_view_submit(request):
         # id = response['id']
         id = response['template_name']
         score = response['score']
+        categ = find_category(score)
         instance_id = response['instance_id']
         field_add = {"settings.template_name": id, }
         # field_add = {"_id": id}
@@ -145,7 +146,7 @@ def nps_response_view_submit(request):
         if instance_id == instanceID:
             return Response({"error": "Scale Response Exists!", "current_score": b,"Category": category}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         eventID = get_event_id()
-        score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score}
+        score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score, "category": categ}
 
         if int(instance_id) > int(number_of_scale):
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -370,9 +371,10 @@ def dowell_scale1(request, tname1):
 
     if request.method == 'POST':
         score = request.POST['scoretag']
+        categ = find_category(score)
         context['response_saved'] = score
         eventID = get_event_id()
-        score = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'score':score}
+        score = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'score':score, category: categ}
         if len(data['data']) != 0:
             if data["data"][0]["scale_data"]["scale_id"] == "63b5ad4f571d55f21bab1ce6":
                 score = {"instance_id": f"Default", 'score': score}

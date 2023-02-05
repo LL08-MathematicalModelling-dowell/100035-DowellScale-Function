@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=
+    , initial-scale=1.0">
+    <title>Form</title>
+</head>
+<body style="background-color: cadetblue;">
+    <form action="/insertQrImageData/" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="title" required autofocus><br><br>
+        <input type="number" name="processId" placeholder="process Id" min="1" required autofocus><br><br>
+        <input type="number" name="processSequenceId" placeholder="process sequence Id" min="1" required><br><br>
+        <input type="number" name="minimumSeries" placeholder="minimum series" min="1" required><br><br>
+        <input type="number" name="minimumSeriesDatapoint" placeholder="minimum series datapoint" min="1" required><br><br>
+        <input type="number" name="minimumContinousDatapoint" placeholder="maximum continous datapoint" min="1" required><br><br>
+        <input type="number" name="numOfValues" onfocus="this.value=''" placeholder="series" oninput="array()" required><br><br>
+        <div id="dynamic"></div>
+        <select name="startTricks">
+            <option value="no">NO</option>
+            <option value="yes">YES</option>
+        </select><br><br>
+        <input type="submit">
+    </form>
+</body>
+<script>
+    function array(){
+        var sequence=parseInt(document.getElementsByName("numOfValues")[0].value);
+        var fields="";
+        console.log(sequence);
+        if(sequence<=4){
+            alert("Enter sequence of values must be greater then 4");
+        }
+        else{
+        for(var i=0;i<sequence;i++){
+            var j=i+1;
+            fields=fields+'<p>1000'+j+' : <input type="text" name="1000'+j+'" min="1" required><p><br>';
+        }
+        document.getElementById("dynamic").innerHTML=fields;}
+    }
+</script>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Representation</title>
+</head>
+<body>
+    {% csrf_token %}
+    <!-- <p><strong>{{data}}</p> -->
+    <h1>DATA</h1><br>
+    {%for i in data%}
+    <p><strong>title |</strong> {{i.title}}</p>
+    <p><strong>Process_id |</strong> {{i.Process_id}}</p>
+    <p><strong>processSequenceId |</strong> {{i.processSequenceId}}</p>
+    <p><strong>series |</strong> {{i.series}}</p>
+    <p><strong>minimumSeries |</strong> {{i.minimumSeries}}</p>
+    <p><strong>minimumSeriesDatapoint |</strong> {{i.minimumSeriesDatapoint}}</p>
+    <p><strong>minimumContinuousDatapoint |</strong> {{i.minimumContinuousDatapoint}}</p>
+    <p><strong>mean |</strong> {{i.mean}}</p>
+    <p><strong>median |</strong> {{i.median}}</p>
+    <p><strong>mode |</strong> {{i.mode}}</p>
+    <p><strong>moment1 |</strong> {{i.moment1}}</p>
+    <p><strong>moment2 |</strong> {{i.moment2}}</p>
+    <p><strong>moment3 |</strong> {{i.moment3}}</p>
+    <p><strong>moment4 |</strong> {{i.moment4}}</p>
+    <p><strong>normalDistribution |</strong> {{i.normalDistribution}}</p>
+    <p><strong>skewness |</strong> {{i.skewness}}</p>
+    <p><strong>kurtosis |</strong> {{i.kurtosis}}</p>
+    <p><strong>range |</strong></strong> {{i.range}}</p>
+    <p><strong>standardDeviation |</strong> {{i.standardDeviation}}</p>
+    <p><strong>count |</strong>{{i.count_val}}</p>
+    <p><strong>startTricks |</strong> {{i.startTricks}}</p>
+    <p><strong>processTime |</strong>{{i.processTime}}</p>
+    <br><br>
+    {%endfor%}
+</body>
+</html>
