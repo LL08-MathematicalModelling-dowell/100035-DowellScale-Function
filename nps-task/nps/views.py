@@ -69,6 +69,40 @@ def settings_api_view_create(request):
         text = f"{left}+{center}+{right}"
         rand_num = random.randrange(1, 10000)
         name = response['name']
+
+        if 'custom_input_1' in response.values():
+            custom_input_1 = response['custom_input_1']
+        else:
+            custom_input_1 = ""
+        if 'custom_input_2' in response.values():
+            custom_input_2 = response['custom_input_2']
+        else:
+            custom_input_2 = ""
+        if 'custom_input_3' in response.values():
+            custom_input_3 = response['custom_input_3']
+        else:
+            custom_input_3 = ""
+        if 'custom_input_4' in response.values():
+            custom_input_4 = response['custom_input_4']
+        else:
+            custom_input_4 = ""
+        if 'custom_input_5' in response.values():
+            custom_input_5 = response['custom_input_5']
+        else:
+            custom_input_5 = ""
+        if 'custom_input_6' in response.values():
+            custom_input_6 = response['custom_input_6']
+        else:
+            custom_input_6 = ""
+        if 'custom_input_7' in response.values():
+            custom_input_7 = response['custom_input_7']
+        else:
+            custom_input_7 = ""
+        if 'custom_input_8' in response.values():
+            custom_input_8 = response['custom_input_8']
+        else:
+            custom_input_8 = ""
+
         time = response['time']
         template_name = f"{name.replace(' ', '')}{rand_num}"
         print(template_name)
@@ -78,11 +112,10 @@ def settings_api_view_create(request):
         eventID = get_event_id()
 
         field_add = {"event_id": eventID,
-                     "settings": {"orientation": response['orientation'], "numberrating": response['numberrating'], "scalecolor": response['scalecolor'],
-                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": response['fomat'], "time": 'time',
+                     "settings": {"orientation": response['orientation'], "numberrating": 10, "scalecolor": response['scalecolor'],"numberrating":10,"no_of_scales":1,
+                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": response['fomat'], "time": time,
                                   "template_name": template_name, "name": response['name'], "text": text, "left": response['left'],
-                                  "right": response['right'], "center": response['center'], "scale-category": "nps scale",
-                                  "no_of_scales": response['no_of_scales']}}
+                                  "right": response['right'], "center": response['center'], "scale-category": "nps scale", "custom_input_1": custom_input_1, "custom_input_2":custom_input_2, "custom_input_3": custom_input_3,"custom_input_4": custom_input_4, "custom_input_5":custom_input_5, "custom_input_6":custom_input_6, "custom_input_7":custom_input_7, "custom_input_8":custom_input_8,"show_total_score": 'true'}}
 
         # print(field_add)
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
@@ -93,9 +126,9 @@ def settings_api_view_create(request):
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
         urls = []
-        for i in range(1, response['no_of_scales'] + 1):
-            url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-            urls.append(url)
+        # for i in range(1, response['no_of_scales'] + 1):
+        urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+            # urls.append(url)
         return Response({"success": x, "payload": field_add, "scale_urls": urls})
     return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
 
