@@ -70,35 +70,35 @@ def settings_api_view_create(request):
         rand_num = random.randrange(1, 10000)
         name = response['name']
 
-        if 'custom_input_1' in response.values():
-            custom_input_1 = response['custom_input_1']
+        if 'custom_input_id' in response:
+            custom_input_id = response['custom_input_1']
         else:
-            custom_input_1 = ""
-        if 'custom_input_2' in response.values():
-            custom_input_2 = response['custom_input_2']
+            custom_input_id = ""
+        if 'custom_input_groupings' in response:
+            custom_input_groupings = response['custom_input_2']
         else:
-            custom_input_2 = ""
-        if 'custom_input_3' in response.values():
+            custom_input_groupings = {}
+        if 'custom_input_3' in response:
             custom_input_3 = response['custom_input_3']
         else:
             custom_input_3 = ""
-        if 'custom_input_4' in response.values():
+        if 'custom_input_4' in response:
             custom_input_4 = response['custom_input_4']
         else:
             custom_input_4 = ""
-        if 'custom_input_5' in response.values():
+        if 'custom_input_5' in response:
             custom_input_5 = response['custom_input_5']
         else:
             custom_input_5 = ""
-        if 'custom_input_6' in response.values():
+        if 'custom_input_6' in response:
             custom_input_6 = response['custom_input_6']
         else:
             custom_input_6 = ""
-        if 'custom_input_7' in response.values():
+        if 'custom_input_7' in response:
             custom_input_7 = response['custom_input_7']
         else:
             custom_input_7 = ""
-        if 'custom_input_8' in response.values():
+        if 'custom_input_8' in response:
             custom_input_8 = response['custom_input_8']
         else:
             custom_input_8 = ""
@@ -110,12 +110,11 @@ def settings_api_view_create(request):
             time = 0
 
         eventID = get_event_id()
-
         field_add = {"event_id": eventID,
                      "settings": {"orientation": response['orientation'], "numberrating": 10, "scalecolor": response['scalecolor'],"numberrating":10,"no_of_scales":1,
                                   "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": response['fomat'], "time": time,
                                   "template_name": template_name, "name": response['name'], "text": text, "left": response['left'],
-                                  "right": response['right'], "center": response['center'], "scale-category": "nps scale", "custom_input_1": custom_input_1, "custom_input_2":custom_input_2, "custom_input_3": custom_input_3,"custom_input_4": custom_input_4, "custom_input_5":custom_input_5, "custom_input_6":custom_input_6, "custom_input_7":custom_input_7, "custom_input_8":custom_input_8,"show_total_score": 'true'}}
+                                  "right": response['right'], "center": response['center'], "scale-category": "nps scale", "custom_input_id": custom_input_id, "custom_input_groupings":custom_input_groupings, "custom_input_3": custom_input_3,"custom_input_4": custom_input_4, "custom_input_5":custom_input_5, "custom_input_6":custom_input_6, "custom_input_7":custom_input_7, "custom_input_8":custom_input_8,"show_total_score": 'true'}}
 
         # print(field_add)
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
