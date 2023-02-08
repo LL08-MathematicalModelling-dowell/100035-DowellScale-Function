@@ -71,11 +71,11 @@ def settings_api_view_create(request):
         name = response['name']
 
         if 'custom_input_id' in response:
-            custom_input_id = response['custom_input_1']
+            custom_input_id = response['custom_input_id']
         else:
             custom_input_id = ""
         if 'custom_input_groupings' in response:
-            custom_input_groupings = response['custom_input_2']
+            custom_input_groupings = response['custom_input_groupings']
         else:
             custom_input_groupings = {}
         if 'custom_input_3' in response:
