@@ -54,6 +54,110 @@ def total_score_fun(id):
 
     return overall_category, category,all_scores, instanceID, b, total_score
 
+# Custom configuration api
+@api_view(['POST','PUT','GET'])
+def custom_configuration_view(request):
+    if request.method == 'GET':
+        response = request.data
+        id = response['template_id']
+        field_add = {"custom_input_id": id, }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
+            "fetch", field_add, "nil")
+        return Response({"data": json.loads(x), })
+    elif request.method == "POST":
+        response = request.data
+        custom_input_id = response['custom_input_id']
+        custom_input_groupings = response['custom_input_groupings']
+
+        if 'custom_input_3' in response:
+            custom_input_3 = response['custom_input_3']
+        else:
+            custom_input_3 = ""
+        if 'custom_input_4' in response:
+            custom_input_4 = response['custom_input_4']
+        else:
+            custom_input_4 = ""
+        if 'custom_input_5' in response:
+            custom_input_5 = response['custom_input_5']
+        else:
+            custom_input_5 = ""
+        if 'custom_input_6' in response:
+            custom_input_6 = response['custom_input_6']
+        else:
+            custom_input_6 = ""
+        if 'custom_input_7' in response:
+            custom_input_7 = response['custom_input_7']
+        else:
+            custom_input_7 = ""
+        if 'custom_input_8' in response:
+            custom_input_8 = response['custom_input_8']
+        else:
+            custom_input_8 = ""
+        field_add = { "custom_input_id": custom_input_id, "custom_input_groupings":custom_input_groupings, "custom_input_3": custom_input_3,"custom_input_4": custom_input_4, "custom_input_5":custom_input_5, "custom_input_6":custom_input_6, "custom_input_7":custom_input_7, "custom_input_8":custom_input_8, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
+            "insert", field_add, "nil")
+        return Response({"message": json.loads(x), "data": field_add})
+
+    elif request.method == "PUT":
+        response = request.data
+        id = response['template_id']
+        field_add = {"custom_input_id": id, }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
+            "fetch", field_add, "nil")
+        settings = json.loads(x)
+        settings = settings['data'][0]
+        print(settings)
+
+        # if 'custom_input_id' in response:
+        #     custom_input_id = response['custom_input_id']
+        # else:
+        #     custom_input_id = settings["custom_input_id"]
+        if 'custom_input_groupings' in response:
+            custom_input_groupings = response['custom_input_groupings']
+        else:
+            custom_input_groupings = settings["custom_input_groupings"]
+        if 'custom_input_3' in response:
+            custom_input_3 = response['custom_input_3']
+        else:
+            custom_input_3 =settings["custom_input_3"]
+        if 'custom_input_4' in response:
+            custom_input_4 = response['custom_input_4']
+        else:
+            custom_input_4 =settings["custom_input_4"]
+        if 'custom_input_5' in response:
+            custom_input_5 = response['custom_input_5']
+        else:
+            custom_input_5 =settings["custom_input_5"]
+        if 'custom_input_6' in response:
+            custom_input_6 = response['custom_input_6']
+        else:
+            custom_input_6 =settings["custom_input_6"]
+        if 'custom_input_7' in response:
+            custom_input_7 = response['custom_input_7']
+        else:
+            custom_input_7 =settings["custom_input_7"]
+        if 'custom_input_8' in response:
+            custom_input_8 = response['custom_input_8']
+        else:
+            custom_input_8 =settings["custom_input_8"]
+        update_field = {"custom_input_groupings": custom_input_groupings,
+                     "custom_input_3": custom_input_3, "custom_input_4": custom_input_4,
+                     "custom_input_5": custom_input_5, "custom_input_6": custom_input_6,
+                     "custom_input_7": custom_input_7, "custom_input_8": custom_input_8,
+                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
+            "update", field_add, update_field)
+        return Response({"success": "Successful Updated ", "data": update_field})
+
+    return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
 # CREATE SCALE SETTINGS
 @api_view(['POST','PUT','GET'])
 def settings_api_view_create(request):
@@ -80,38 +184,7 @@ def settings_api_view_create(request):
         rand_num = random.randrange(1, 10000)
         name = response['name']
 
-        if 'custom_input_id' in response:
-            custom_input_id = response['custom_input_id']
-        else:
-            custom_input_id = ""
-        if 'custom_input_groupings' in response:
-            custom_input_groupings = response['custom_input_groupings']
-        else:
-            custom_input_groupings = {}
-        if 'custom_input_3' in response:
-            custom_input_3 = response['custom_input_3']
-        else:
-            custom_input_3 = ""
-        if 'custom_input_4' in response:
-            custom_input_4 = response['custom_input_4']
-        else:
-            custom_input_4 = ""
-        if 'custom_input_5' in response:
-            custom_input_5 = response['custom_input_5']
-        else:
-            custom_input_5 = ""
-        if 'custom_input_6' in response:
-            custom_input_6 = response['custom_input_6']
-        else:
-            custom_input_6 = ""
-        if 'custom_input_7' in response:
-            custom_input_7 = response['custom_input_7']
-        else:
-            custom_input_7 = ""
-        if 'custom_input_8' in response:
-            custom_input_8 = response['custom_input_8']
-        else:
-            custom_input_8 = ""
+
 
         time = response['time']
         template_name = f"{name.replace(' ', '')}{rand_num}"
@@ -124,7 +197,7 @@ def settings_api_view_create(request):
                      "settings": {"orientation": response['orientation'], "numberrating": 10, "scalecolor": response['scalecolor'],"numberrating":10,"no_of_scales":1,
                                   "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": response['fomat'], "time": time,
                                   "template_name": template_name, "name": response['name'], "text": text, "left": response['left'],
-                                  "right": response['right'], "center": response['center'], "scale-category": "nps scale", "custom_input_id": custom_input_id, "custom_input_groupings":custom_input_groupings, "custom_input_3": custom_input_3,"custom_input_4": custom_input_4, "custom_input_5":custom_input_5, "custom_input_6":custom_input_6, "custom_input_7":custom_input_7, "custom_input_8":custom_input_8,"show_total_score": 'true', "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+                                  "right": response['right'], "center": response['center'], "scale-category": "nps scale", "show_total_score": 'true', "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
 
         # print(field_add)
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",

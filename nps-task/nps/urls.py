@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import calculate_total_score,dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create,nps_response_view_submit,dynamic_scale_instances
+from .views import custom_configuration_view,calculate_total_score,dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create,nps_response_view_submit,dynamic_scale_instances
 
 
 app_name="nps"
@@ -14,6 +14,7 @@ urlpatterns = [
     # Rest endpoints
     path('api/nps_create_instance', dynamic_scale_instances, name="dynamic_instance"),
     path('api/nps_settings_create/', settings_api_view_create, name="create_scale_settings_api"),
+    path('api/nps_custom_data/', custom_configuration_view, name="custom_configs"),
     path('api/nps_responses_create', nps_response_view_submit, name="nps_response_submit_api"),
     path('api/nps_settings', scale_settings_api_view, name="scale_settings_api"),
     path('api/nps_responses', scale_response_api_view, name="scale_response_api"),
