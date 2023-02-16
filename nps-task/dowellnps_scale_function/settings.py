@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'percent_sum',
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',
-    'statricks.apps.StatricksConfig'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
