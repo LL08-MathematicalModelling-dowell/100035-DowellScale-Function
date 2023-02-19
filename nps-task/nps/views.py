@@ -163,11 +163,17 @@ def custom_configuration_view(request):
 def settings_api_view_create(request):
     if request.method == 'GET':
         response = request.data
-        id = response['scale_id']
-        field_add = {"_id": id, }
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-            "fetch", field_add, "nil")
-        return Response({"data": json.loads(x),})
+        if "scale_id" in response:
+            id = response['scale_id']
+            field_add = {"_id": id, }
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                "fetch", field_add, "nil")
+            return Response({"data": json.loads(x),})
+        else:
+            field_add = {"settings.scale-category": "nps scale"}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                field_add, "nil")
+            return Response({"data": json.loads(x), })
 
     elif request.method == 'POST':
         response = request.data
