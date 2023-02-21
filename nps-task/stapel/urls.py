@@ -11,7 +11,7 @@ urlpatterns = [
     path('stapel-admin/default/', default_scale_admin, name='default_page_admin'),
 
     # Rest endpoints
-    path('api/stapel_settings_create', settings_api_view_create, name="stapel_create_scale_settings_api"),
+    path('api/stapel_settings_create/', settings_api_view_create, name="stapel_create_scale_settings_api"),
     path('api/stapel_responses_create', stapel_response_view_submit, name="stapel_nps_response_submit_api"),
     path('api/stapel_settings', scale_settings_api_view, name="stapel_scale_settings_api"),
     path('api/stapel_responses', scale_response_api_view, name="stapel_scale_response_api"),
