@@ -287,53 +287,6 @@ def scale_response_api_view(request):
         return Response(json.loads(x))
 
 
-def dowell_editor_admin(request, id):
-    field_add = {"_id": id, }
-    context = {}
-    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-        "fetch", field_add, "nil")
-    settings_json = json.loads(x)
-    settings = settings_json['data'][0]['settings']
-    context["settings"] = settings
-    print(settings)
-    if request.method == 'POST':
-        name = request.POST['nameofscale']
-        orientation = request.POST['orientation']
-        numberrating = 10
-        scalecolor = request.POST['scolor']
-        roundcolor = request.POST['rcolor']
-        fontcolor = request.POST['fcolor']
-        fomat = request.POST['format']
-        left = request.POST["left"]
-        right = request.POST["right"]
-        no_of_scales = request.POST["no_of_scales"]
-        center = request.POST["center"]
-        time = request.POST['time']
-        show_total = request.POST['checkboxScores']
-        text = f"{left}+{center}+{right}"
-        # rand_num = random.randrange(1, 10000)
-        template_name = name
-        if time == "":
-            time = 0
-
-        update_field = {"settings": {"orientation": orientation,
-                                     "scalecolor": scalecolor, "numberrating": 10, "no_of_scales": 1,
-                                     "roundcolor": roundcolor, "fontcolor": fontcolor,
-                                     "fomat": fomat, "time": time,
-                                     "template_name": template_name, "name": name, "text": text,
-                                     "left": left,
-                                     "right": right, "center": center,
-                                     "scale-category": "nps scale", "show_total_score": 'true',
-                                     "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-            field_add, update_field)
-        urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-
-        # return HttpResponse(urls)
-
-    return render(request, 'nps/editor_scale_admin.html', context)
-
-
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
