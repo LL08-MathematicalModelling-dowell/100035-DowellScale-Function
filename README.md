@@ -16,7 +16,7 @@
     }
     
 ```
-##Update Scale through Settings(PUT)
+## Update Scale through Settings(PUT)
 #### Request METHOD: GET
 #### URL: https://100035.pythonanywhere.com/nps-editor/settings/<str:Mongodb_ID>
 #### Example: https://100035.pythonanywhere.com/nps-editor/settings/63e8b4c87f4aa8f650162b7a
