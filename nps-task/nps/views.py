@@ -115,10 +115,6 @@ def custom_configuration_view(request):
         settings = settings['data'][0]
         print(settings)
 
-        # if 'custom_input_id' in response:
-        #     custom_input_id = response['custom_input_id']
-        # else:
-        #     custom_input_id = settings["custom_input_id"]
         if 'custom_input_groupings' in response:
             custom_input_groupings = response['custom_input_groupings']
         else:
@@ -170,12 +166,21 @@ def settings_api_view_create(request):
             field_add = {"_id": id, }
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                 "fetch", field_add, "nil")
-            return Response({"data": json.loads(x), })
+            settings_json = json.loads(x)
+            settings = settings_json['data'][0]['settings']
+            template_name = settings["template_name"]
+            urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+            if int(settings["no_of_scales"]) > 1:
+                urls = []
+                for i in range(1, int(settings["no_of_scales"]) + 1):
+                    url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
+                    urls.append(url)
+            return Response({"data": json.loads(x),"urls": urls})
         else:
             field_add = {"settings.scale-category": "nps scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                 field_add, "nil")
-            return Response({"data": json.loads(x), })
+            return Response({"data": json.loads(x) })
 
     elif request.method == 'POST':
         response = request.data
@@ -218,7 +223,7 @@ def settings_api_view_create(request):
         details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
-        urls = []
+        # urls = []
         # for i in range(1, response['no_of_scales'] + 1):
         urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
         # urls.append(url)
@@ -247,17 +252,14 @@ def settings_api_view_create(request):
             right = settings["right"]
 
         text = f"{left}+{center}+{right}"
-        rand_num = random.randrange(1, 10000)
 
-        if 'name' in response:
-            name = response['name']
-        else:
-            name = settings["name"]
+
+        name = settings["name"]
         if 'time' in response:
             time = response['time']
         else:
             time = settings["time"]
-        template_name = f"{name.replace(' ', '')}{rand_num}"
+        template_name = settings["template_name"]
         if time == "":
             time = 0
         if 'orientation' in response:
@@ -283,7 +285,7 @@ def settings_api_view_create(request):
 
         update_field = {
             "settings": {"orientation": orientation,
-                         "scalecolor": scalecolor, "numberrating": 10, "no_of_scales": 1,
+                         "scalecolor": scalecolor, "numberrating": 10, "no_of_scales": settings["no_of_scales"],
                          "roundcolor": roundcolor, "fontcolor": fontcolor,
                          "fomat": fomat, "time": time,
                          "template_name": template_name, "name": name, "text": text,
@@ -294,7 +296,14 @@ def settings_api_view_create(request):
         # print(field_add)
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
             field_add, update_field)
+
         urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+
+        if int(settings["no_of_scales"]) > 1:
+            urls = []
+            for i in range(1,int(settings["no_of_scales"]) + 1):
+                url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
+                urls.append(url)
 
         return Response({"success": "Successful Updated ", "data": update_field, "scale_urls": urls})
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
@@ -310,24 +319,32 @@ def dynamic_scale_instances(request):
     settings_json = json.loads(x)
     settings = settings_json['data'][0]['settings']
     template_name = settings['template_name']
+    scale_type = settings['scale-category']
+    name_url = ""
+
+    if scale_type == "stapel scale":
+        name_url = "/stapel/stapel-scale1/"
+    elif scale_type == "nps scale":
+        name_url = "/nps-scale1/"
+    else:
+        return Response({"error": "Scale not intergrated yet"}, status=status.HTTP_400_BAD_REQUEST)
+
     start = 1
     instances = []
     if 'instances' in settings:
         start = len(settings['instances']) + 1
         print(start)
         for x in range(1, len(settings['instances']) + 1):
-            instance = {
-                f"document{x}": f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=document{x}/{x}"}
+            instance = {f"document{x}": f"{public_url}{name_url}{template_name}?brand_name=your_brand&product_name=document/{x}"}
             instances.append(instance)
     if 'no_of_documents' in response:
         no_of_documents = response['no_of_documents'] + start
         for x in range(start, int(no_of_documents)):
             instance = {
-                f"document{x}": f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=document{x}/{x}"}
+                f"document{x}": f"{public_url}{name_url}{template_name}?brand_name=your_brand&product_name=document/{x}"}
             instances.append(instance)
     else:
-        instance = {
-            f"document{start}": f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=document{start}/{start}"}
+        instance = {f"document{start}": f"{public_url}{name_url}{template_name}?brand_name=your_brand&product_name=document/{start}"}
         instances.append(instance)
 
     print(start)
@@ -343,7 +360,6 @@ def dynamic_scale_instances(request):
     settings_json = json.loads(x)
 
     return Response({"success": z, "response": settings_json['data'][0]['settings']})
-
 
 @api_view(['GET', ])
 def calculate_total_score(request, id=None):
@@ -481,6 +497,8 @@ def scale_response_api_view(request):
     if request.method == 'GET':
         return Response(json.loads(x))
 
+@xframe_options_exempt
+@csrf_exempt
 def dowell_editor_admin(request, id):
     field_add = {"_id": id, }
     context = {}
