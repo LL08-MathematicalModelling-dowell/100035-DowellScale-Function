@@ -194,16 +194,7 @@ input:checked + .slider:before {
 		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
 			<form id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunction();">
 				{% csrf_token %}
-				<h2 align="center"><u>Edit {{settings.template_name}}</u></h2>
-				<div class="form-group col-md-6">
-					<label for="head">Name of Scale</label>
-					<input class="form-control" id="head" name="nameofscale" onchange="myName()"
-					       placeholder="Name of scale"
-					       required type="text"
-                           value="{{settings.template_name}}"
-						   readonly="True">
-
-				</div>
+				<h2 align="center"><u>Edit {{settings.name}}</u></h2>
 				<div class="form-group col-md-6">
 					<label for="orientation">Orientation</label>
 					<select class="form-control" id="orientation" name="orientation" value="{{settings.orientation}}" required>

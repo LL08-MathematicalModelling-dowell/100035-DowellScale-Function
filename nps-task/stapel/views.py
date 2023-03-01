@@ -74,7 +74,7 @@ def settings_api_view_create(request):
             if int(settings["no_of_scales"]) > 1:
                 urls = []
                 for i in range(1, int(settings["no_of_scales"]) + 1):
-                    url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
+                    url = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
                     urls.append(url)
             return Response({"data": json.loads(x),"urls": urls})
         else:
@@ -143,7 +143,7 @@ def settings_api_view_create(request):
 
         update_field = {
             "settings": {"orientation": orientation, "scale_upper_limit": scale_upper_limit, "scale_lower_limit": -scale_lower_limit,
-                         "scalecolor": scalecolor, "spacing_unit": spacing_unit, "no_of_scales": settings["no_of_scales"],
+                         "scalecolor": scalecolor, "spacing_unit": spacing_unit,"fomat": "numbers", "no_of_scales": settings["no_of_scales"],
                          "roundcolor": roundcolor, "fontcolor": fontcolor,
                          "time": time,
                          "template_name": template_name, "name": name, "text": text,
@@ -213,7 +213,7 @@ def stapel_response_view_submit(request):
         if int(instance_id) > int(number_of_scale):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        field_add = {"event_id": eventID, "scale_data": {"scale_id": id, "scale_type": "nps scale"},
+        field_add = {"event_id": eventID, "scale_data": {"scale_id": id, "scale_type": "stapel scale"},
                      "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
                      "score": [score]}
         z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
@@ -338,7 +338,7 @@ def dowell_scale_admin(request):
             time = 0
         try:
             eventID = get_event_id()
-            field_add={"event_id":eventID,"settings":{"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale","no_of_scales":no_of_scales}}
+            field_add={"event_id":eventID,"settings":{"orientation":orientation ,"spacing_unit":spacing_unit,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale","no_of_scales":no_of_scales}}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(x)
             # User details
@@ -517,7 +517,7 @@ def default_scale(request):
 def default_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
-        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-admin/default/")
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/stapel/stapel-admin/default/")
     # print("++++++++++ USER DETAILS", user)
     # if role != owner:
     #     return redirect("https://100035.pythonanywhere.com/nps-scale/default/")
