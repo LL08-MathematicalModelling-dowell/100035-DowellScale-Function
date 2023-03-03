@@ -3,6 +3,8 @@
 <html lang="en">
 <head>
 	<title>NPS Scale</title>
+	<link rel="icon" type="image/x-icon" href="{% static '/images/dowell-logo.png' %}">
+
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
@@ -192,7 +194,7 @@ input:checked + .slider:before {
 		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
 			<form id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunction();">
 				{% csrf_token %}
-				<h2 align="center"><u>Customize your scale</u></h2>
+				<h2 align="center"><u>Setup a new scale</u></h2>
 				<div class="form-group col-md-6">
 					<label for="head">Name of Scale</label>
 					<input class="form-control" id="head" name="nameofscale" onchange="myName()"
@@ -271,10 +273,23 @@ input:checked + .slider:before {
 					<span style="font-weight: bold">Toggle to set Time</span>
 				</div>
 
+
 				<div class="form-group col-md-3" id="timeInput">
 					<label for="time">Time (sec)</label>
 					<input class="form-control" id="time" name="time" onchange="myTime()" placeholder="Time" type="number">
 				</div>
+
+				<div class="form-group col-md-12 "
+				     style="display: flex; align-items: center; justify-content: start; margin-top: 25px">
+					<label class="switch">
+						<input id="checkboxScores"  type="checkbox">
+						<span class="slider round"></span>
+					</label>
+					<span style="font-weight: bold">Toggle to show total scores for all instances</span>
+				</div>
+
+				<input id="checkboxScoresInput" name="checkboxScores" type="text" value="false" style="display: none">
+
 				<div class="form-group col-md-12 text-right p-15">
 					<button class="btn btn-primary" id="saveBtn">Save</button>
 					<a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"
@@ -339,6 +354,7 @@ input:checked + .slider:before {
                   let rtext;
                   let time;
                   let no_of_scales;
+                  let showScores;
 
 
                   let checkbox = document.getElementById("checkbox");
@@ -348,6 +364,12 @@ input:checked + .slider:before {
 			         } else {
 			            document.getElementById("timeInput").style.display = "none";
 			         }
+			      });
+
+			      let checkboxScores = document.getElementById("checkboxScores");
+			      checkboxScores.addEventListener( "change", () => {
+			        console.log(checkboxScores.checked)
+			        document.getElementById("checkboxScoresInput").value = checkboxScores.checked;
 			      });
 
 
@@ -444,12 +466,6 @@ input:checked + .slider:before {
                     modal.style.flexDirection = "column";
                     scale_bg.style.width = "unset";
                   }
-
-
-
-
-
-
                   document.getElementById("exampleModalLongTitle").innerHTML=$("#head").val();
                   document.getElementById("left").innerHTML=$("#lefttext").val();
                   document.getElementById("right").innerHTML=$("#righttext").val();
@@ -460,7 +476,8 @@ input:checked + .slider:before {
                   em=$("#orientation").val();
 
                   $('#'+em).empty();
-                  n = $("#numberof").val();
+<!--                  n = $("#numberof").val();-->
+                  n= 10
                   //alert('#'+rt+" "+$("#bgcolor").val());
                   $('#red').css({"backgroundColor": $("#scolor").val()});
                   var name = $('#format').val();

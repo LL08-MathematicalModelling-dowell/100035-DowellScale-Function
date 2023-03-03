@@ -16,7 +16,6 @@ def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
         return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/percent/percent-admin/settings/")
-    # # print("+++++++++++++", request.session.get('user_name'))
     context={}
     context["public_url"] = public_url
 
@@ -29,10 +28,9 @@ def dowell_scale_admin(request):
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
         eventID = get_event_id()
-       # user = "test"
         scale_type="percent"
         try:
-            field_add={"scale_type":scale_type,"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "scale-category": "percent scale","event_id":eventID }
+            field_add={"event_id":eventID,"settings":{"orientation":orientation,"scalecolor":scalecolor,"time":time,"template_name":template_name,"number_of_scales":number_of_scales, "name":name, "scale-category": "percent scale","scale_type":scale_type,} }
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             #return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
 
@@ -64,15 +62,11 @@ def dowell_scale1(request, tname1):
         xy = x[1].replace('&', ',')
         y = xy.replace('=', ':')
         z = '{'+y+'}'
-        # return HttpResponse(names_values_dict['brand_name'])
         pls = ls.split("/")
         tname = pls[1]
-        # resp = response.objects.all()
-        # return HttpResponse(resp)
         context["brand_name"] = names_values_dict['brand_name']
         context["product_name"] = names_values_dict['product_name']
         context["scale_name"] = tname1
-
     except:
         f_path = request.get_full_path()
         response = redirect('percent:preview_page')
@@ -85,62 +79,55 @@ def dowell_scale1(request, tname1):
     context["hist"]="Scale History"
     context["bglight"]="bg-light"
     context["left"]="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)"
-    field_add={"template_name":tname1}
+    
+    field_add={"settings.template_name":tname1}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
-   #print(data)
-    x= data["data"]
+    #print(data)
+    context["scale_id"] = data['data'][0]['_id']
+    x= data['data'][0]['settings']
     context["defaults"]=x
-    for i in x:
-        number_of_scale=i['number_of_scales']
+    number_of_scale=x['number_of_scales']
 
     context["no_of_scales"]=number_of_scale
     num = url.split('/')
     url_id = num[-1]
-    field_add={"scale_name":context["scale_name"]}
+    field_add={"scale_data.scale_id":context["scale_id"]}
     response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
     data=json.loads(response)
     datas=data["data"]
     #print(datas)
+    existing_scale=False
     context["recorded_score"]=101
-    if len(datas) > 0:
+    if len(datas) != 0:
         for i in datas:
-            if url_id == i["score"]["id"]:
-                recorded_score=(i["score"]["score"])
+            if url_id == i["score"][0]["instance_id"].split('/')[0]:
+                existing_scale = True
+                recorded_score=(i["score"][0]["score"])
                 context["recorded_score"]=recorded_score
+                context['score'] = "show"
 
 
     if request.method == 'POST':
-        score=""
-        url = request.build_absolute_uri()
         current_url = url.split('/')[-1]
         score = request.POST['scoretag']
         eventID = get_event_id()
-        score = {'id': current_url, 'score':score}
+        score = {'instance_id': f"{current_url}/{context['no_of_scales']}", 'score':score}
         #print("Testing... 1", score)
-        try:
-            field_add={"scale_name":context["scale_name"], "scale_type":"percent"}
-            response=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","fetch",field_add,"nil")
-            data=json.loads(response)
-            x = data["data"]
-            for i in x:
-                b = i['score']['id']
-                if b == current_url:
-                    #print("Already exists")
-                    context["score"]="show"
-                    #return redirect(f"https://100014.pythonanywhere.com/main")
-            field_add={"score":score,"scale_name":context["scale_name"],"brand_name":context["brand_name"],"product_name":context["product_name"],"eventID":eventID, "response_by": user}
-            x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
+        if existing_scale == False:
+            try:
+                field_add={"event_id":eventID,"scale_data":{"scale_id":context["scale_id"],"scale_type":"percent scale"}, "brand_data":{"brand_name":context["brand_name"],"product_name":context["product_name"]},"score":[score]}
+                x=dowellconnection("dowellscale","bangalore","dowellscale","scale_reports","scale_reports","1094","ABCDE","insert",field_add,"nil")
 
-            # User details
-            user_json = json.loads(x)
-            details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
-            user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
-            context["score"] = "show"
+                # User details
+                user_json = json.loads(x)
+                details = {"scale_id":user_json['inserted_id'], "event_id": eventID, "username": user }
+                user_details = dowellconnection("dowellscale","bangalore","dowellscale","users","users","1098","ABCDE","insert",details,"nil")
+                context["score"] = "show"
 
-            return redirect(f"{url}")
-        except:
-            context["Error"] = "Error Occurred while save the custom pl contact admin"
+                return redirect(f"{url}")
+            except:
+                context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request,'percent/single_scale.html',context)
 
 def brand_product_preview(request):
@@ -148,19 +135,31 @@ def brand_product_preview(request):
     context["public_url"] = public_url
     url = request.COOKIES['url']
     template_name = url.split("/")[-1]
-    field_add={"template_name":template_name}
+    field_add={"settings.template_name":template_name}
     default = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data=json.loads(default)
-    x= data["data"]
+    #print(data)
+    x= data["data"][0]['settings']
+    #print(x)
     context["defaults"]=x
-    for i in x:
-        number_of_scale=i['number_of_scales']
-
+    """for i in x:
+        number_of_scale=i['number_of_scales']    """
+    number_of_scale=x["number_of_scales"]
+    scale_id = data['data'][0]["_id"]
     context["no_scales"]=int(number_of_scale)
     context["no_of_scales"]=[]
     for i in range(int(number_of_scale)):
         context["no_of_scales"].append(i)
-
+        
+    context['existing_scales'] = []
+    field_add = {"scale_data.scale_id": scale_id}
+    response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094","ABCDE", "fetch", field_add, "nil")
+    data = json.loads(response)
+    x = data["data"]
+    for i in x:
+        b = i['score'][0]['instance_id'].split("/")[0]
+        #print(b)
+        context['existing_scales'].append(b)
     name=url.replace("'","")
     context['template_url']= f"{public_url}{name}?brand_name=your_brand&product_name=your_product"
     #context['template_url']= f"http://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
@@ -180,6 +179,7 @@ def default_scale_admin(request):
     if user == None:
         return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}onanywhere.com/percent/percent-admin/default/")
     # print("++++++++++ USER DETAILS", user)
+    username= request.session["user_name"]
     context = {}
     context["public_url"] = public_url
     context['user'] = 'admin'
@@ -187,9 +187,11 @@ def default_scale_admin(request):
     context["hist"] = "Scale History"
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
-    field_add = {"scale-category": "percent scale"}
+    context["username"]=username
+    field_add = {"settings.scale-category": "percent scale"}
     all_scales = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","fetch",field_add,"nil")
     data = json.loads(all_scales)
+    print(data)
     context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
     return render(request, 'percent/default.html', context)

@@ -1,15 +1,305 @@
 import random
+import datetime
 import json
-import requests
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from nps.dowellconnection import dowellconnection
-from nps.login import get_user_profile
-import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from .eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
+
+# CREATE SCALE SETTINGS
+@api_view(['POST','GET','PUT'])
+def settings_api_view_create(request):
+    if request.method == 'POST':
+        response = request.data
+        try:
+            user = response['username']
+        except:
+            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+        left = response['left']
+        right = response['right']
+        text = f"{left}+{right}"
+        time = response['time']
+        spacing_unit = int(response['spacing_unit'])
+        scale_lower_limit = int(response['scale_upper_limit'])
+        scale = []
+        for i in range(-scale_lower_limit, int(response['scale_upper_limit']) + 1):
+            if i % response['spacing_unit'] == 0 and i != 0:
+                scale.append(i)
+        if int(response['scale_upper_limit']) > 10 or int(response['scale_upper_limit']) < 0 or spacing_unit > 5 or spacing_unit < 1:
+            raise Exception("Check scale limits and spacing_unit")
+
+        if time == "":
+            time = 0
+
+        rand_num = random.randrange(1, 10000)
+        name = response['name']
+        template_name = f"{name.replace(' ', '')}{rand_num}"
+
+        eventID = get_event_id()
+
+        field_add = {"event_id": eventID,
+                     "settings": {"orientation": response['orientation'], "spacing_unit":spacing_unit, "scale_upper_limit": response['scale_upper_limit'],
+                                  "scale_lower_limit": -scale_lower_limit, "scalecolor": response['scalecolor'],
+                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": "numbers", "time": time,
+                                  "template_name": template_name, "name": name, "text": text, "left": response['left'],
+                                  "right": response['right'], "scale": scale, "scale-category": "stapel scale",
+                                  "no_of_scales": 1,"date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
+            field_add, "nil")
+
+        user_json = json.loads(x)
+        details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
+            "insert", details, "nil")
+        # urls = []
+        urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+        return Response({"success": x, "data": field_add, "scale_url": urls})
+    elif request.method == 'GET':
+        response = request.data
+        if "scale_id" in response:
+            id = response['scale_id']
+            field_add = {"_id": id, }
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                "fetch", field_add, "nil")
+            settings_json = json.loads(x)
+            settings = settings_json['data'][0]['settings']
+            template_name = settings["template_name"]
+            urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+            if int(settings["no_of_scales"]) > 1:
+                urls = []
+                for i in range(1, int(settings["no_of_scales"]) + 1):
+                    url = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
+                    urls.append(url)
+            return Response({"data": json.loads(x),"urls": urls})
+        else:
+            field_add = {"settings.scale-category": "stapel scale"}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                field_add, "nil")
+
+            return Response({"data": json.loads(x),})
+    elif request.method == "PUT":
+        response = request.data
+        id = response['scale_id']
+        field_add = {"_id": id, }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "fetch", field_add, "nil")
+        settings_json = json.loads(x)
+        settings = settings_json['data'][0]['settings']
+        if 'left' in response:
+            left = response['left']
+        else:
+            left = settings["left"]
+        if 'scale_upper_limit' in response:
+            scale_upper_limit = int(response['scale_upper_limit'])
+        else:
+            scale_upper_limit = int(settings["scale_upper_limit"])
+        if 'right' in response:
+            right = response['right']
+        else:
+            right = settings["right"]
+        text = f"{left}+{right}"
+
+        name = settings["name"]
+        if 'time' in response:
+            time = response['time']
+        else:
+            time = settings["time"]
+        template_name = settings["template_name"]
+        if time == "":
+            time = 0
+        if 'orientation' in response:
+            orientation = response['orientation']
+        else:
+            orientation = settings["orientation"]
+        if 'scalecolor' in response:
+            scalecolor = response['scalecolor']
+        else:
+            scalecolor = settings["scalecolor"]
+        if 'roundcolor' in response:
+            roundcolor = response['roundcolor']
+        else:
+            roundcolor = settings["roundcolor"]
+        if 'fontcolor' in response:
+            fontcolor = response['fontcolor']
+        else:
+            fontcolor = settings["fontcolor"]
+        if 'spacing_unit' in response:
+            spacing_unit = response['spacing_unit']
+        else:
+            spacing_unit = settings["spacing_unit"]
+
+        scale_lower_limit = int(response['scale_upper_limit'])
+
+        scale = []
+        for i in range(-scale_lower_limit, int(response['scale_upper_limit']) + 1):
+            if i % response['spacing_unit'] == 0 and i != 0:
+                scale.append(i)
+
+        update_field = {
+            "settings": {"orientation": orientation, "scale_upper_limit": scale_upper_limit, "scale_lower_limit": -scale_lower_limit,
+                         "scalecolor": scalecolor, "spacing_unit": spacing_unit,"fomat": "numbers", "no_of_scales": settings["no_of_scales"],
+                         "roundcolor": roundcolor, "fontcolor": fontcolor,
+                         "time": time,
+                         "template_name": template_name, "name": name, "text": text,
+                         "left": left,
+                         "right": right,"scale":scale,
+                         "scale-category": "stapel scale",
+                         "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+        print(field_add)
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+            field_add, update_field)
+        urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+        if int(settings["no_of_scales"]) > 1:
+            urls = []
+            for i in range(1,int(settings["no_of_scales"]) + 1):
+                url = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
+                urls.append(url)
+
+        return Response({"success": "Successful Updated ", "data": update_field, "scale_urls": urls})
+    return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
+
+# SUMBIT SCALE RESPONSE
+@api_view(['POST',])
+def stapel_response_view_submit(request):
+    if request.method == 'POST':
+        response = request.data
+        try:
+            user = response['username']
+        except:
+            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # id = response['id']
+        id = response['template_name']
+        score = response['score']
+        instance_id = response['instance_id']
+        field_add = {"settings.template_name": id, }
+        # field_add = {"_id": id}
+        default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "fetch", field_add, "nil")
+        data = json.loads(default)
+        x = data['data'][0]['settings']
+        number_of_scale = x['no_of_scales']
+
+        if score not in x['scale']:
+            return Response({"error": "Invalid Selection.","Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
+
+        # find existing scale reports
+        field_add = {"scale_data.scale_id": id}
+        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+            "ABCDE", "fetch", field_add, "nil")
+        data = json.loads(response_data)
+        print(data)
+        total_score = 0
+
+        if len(data['data']) != 0:
+            score_data = data["data"]
+            print(instance_id)
+            for i in score_data:
+                b = i['score'][0]['score']
+                print("Score of scales-->", b)
+                total_score += int(b)
+
+                if instance_id == int(i['score'][0]['instance_id'].split("/")[0]):
+                    return Response({"error": "Scale Response Exists!", "total score": total_score}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        eventID = get_event_id()
+        score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score}
+
+        if int(instance_id) > int(number_of_scale):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        field_add = {"event_id": eventID, "scale_data": {"scale_id": id, "scale_type": "stapel scale"},
+                     "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
+                     "score": [score]}
+        z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+            "ABCDE", "insert", field_add, "nil")
+        user_json = json.loads(z)
+        details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
+            "insert", details, "nil")
+
+        # field_add = {"scale_data.scale_id": id}
+        # response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+        #     "1094",
+        #     "ABCDE", "fetch", field_add, "nil")
+        # data = json.loads(response_data)
+        # print(data)
+        # total_score = 0
+        #
+        # if len(data['data']) != 0:
+        #     score_data = data["data"]
+        #     print(instance_id)
+        #     for i in score_data:
+        #         b = i['score'][0]['score']
+        #         print("Score of scales-->", b)
+        #         total_score += int(b)
+        return Response({"success": z, "payload": field_add, "url": f"{public_url}/stapel/stapel-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}", "total score": total_score})
+    return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
+# GET ALL SCALES
+@api_view(['GET',])
+def scale_settings_api_view(request):
+    try:
+        field_add = {"settings.scale-category": "stapel scale"}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+            field_add, "nil")
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        return Response(json.loads(x))
+
+# GET SINGLE SCALE
+@api_view(['GET',])
+def single_scale_settings_api_view(request, id=None):
+    try:
+        # field_add = {"_id": id }
+        field_add = {"settings.template_name": id, }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "fetch", field_add, "nil")
+        settings_json = json.loads(x)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        settings = settings_json['data'][0]['settings']
+        no_of_scales = settings['no_of_scales']
+        template_name = settings['template_name']
+        urls = []
+        for i in range(1, no_of_scales + 1):
+            url = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
+            urls.append(url)
+        return Response({"payload": json.loads(x), "urls": urls})
+
+# GET SINGLE SCALE RESPONSE
+@api_view(['GET',])
+def single_scale_response_api_view(request, id=None):
+    try:
+        field_add = {"_id": id }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+            "1094", "ABCDE", "fetch", field_add, "nil")
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return Response({"payload":json.loads(x)})
+
+# GET ALL SCALES RESPONSES
+@api_view(['GET',])
+def scale_response_api_view(request):
+    try:
+        # field_add = {}
+        field_add = {"scale_data.scale_type": "stapel scale", }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+            "1094", "ABCDE", "fetch", field_add, "nil")
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        return Response(json.loads(x))
 
 
 def dowell_scale_admin(request):
@@ -48,7 +338,7 @@ def dowell_scale_admin(request):
             time = 0
         try:
             eventID = get_event_id()
-            field_add={"event_id":eventID,"settings":{"orientation":orientation,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale","no_of_scales":no_of_scales}}
+            field_add={"event_id":eventID,"settings":{"orientation":orientation ,"spacing_unit":spacing_unit,"scale_upper_limit":scale_upper_limit,"scale_lower_limit":-scale_upper_limit,"scalecolor":scalecolor,"roundcolor":roundcolor,"fontcolor":fontcolor,"fomat":fomat,"time":time,"template_name":template_name,"name":name,"text":text, "left":left,"right":right,"scale":scale, "scale-category": "stapel scale","no_of_scales":no_of_scales}}
             x = dowellconnection("dowellscale","bangalore","dowellscale","scale","scale","1093","ABCDE","insert",field_add,"nil")
             print(x)
             # User details
@@ -108,7 +398,7 @@ def dowell_scale1(request, tname1):
     context["scale_id"] = data['data'][0]['_id']
     x= data['data'][0]['settings']
     context["defaults"] = x
-    print("+++++++++++++", x['time'])
+    print("+++++++++++++", x)
     context["scale"] = x['scale']
     context["text"] = x['text'].split("+")
     number_of_scale = x['no_of_scales']
@@ -227,7 +517,7 @@ def default_scale(request):
 def default_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
-        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-admin/default/")
+        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/stapel/stapel-admin/default/")
     # print("++++++++++ USER DETAILS", user)
     # if role != owner:
     #     return redirect("https://100035.pythonanywhere.com/nps-scale/default/")

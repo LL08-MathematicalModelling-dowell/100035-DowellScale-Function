@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from dowellnps_scale_function import views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,8 +27,10 @@ urlpatterns = [
     path('percent/', include('percent.urls')),
     path('nps-lite/', include('npslite.urls')),
     path('likert/', include('likert.urls')),
-    # path('', include('scalefetch.urls')),
+    path('percent-sum/', include('percent_sum.urls')),
     path('home/', include('login.urls')),
+    path('client/', include('client.urls')),
+    path('api/', include('api.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
