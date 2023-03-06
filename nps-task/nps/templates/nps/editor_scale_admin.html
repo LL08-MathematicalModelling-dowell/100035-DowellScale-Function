@@ -198,7 +198,6 @@ input:checked + .slider:before {
 				<div class="form-group col-md-6">
 					<label for="orientation">Orientation</label>
 					<select class="form-control" id="orientation" name="orientation" value="{{settings.orientation}}" required>
-						<option value="{{settings.orientation}}">{{settings.orientation}}</option>
 						<option value="horizontal">Horizontal</option>
 						<option value="vertical">Vertical</option>
 					</select>
@@ -231,8 +230,7 @@ input:checked + .slider:before {
 				</div>
 				<div class="form-group col-md-6">
 					<label for="format">Format</label>
-					<select class="form-control" id="format" name="format" onchange="myFormat()" required>
-						<option selected="{{settings.fomat}}">{{settings.fomat}}</option>
+					<select class="form-control" id="format" name="format" onchange="myFormat()" value="{{settings.orientation}}" required>
 						<option value="numbers">Numbers</option>
 						<option value="emoji">Emojis</option>
 						<option value="stars">Stars</option>
@@ -359,6 +357,30 @@ input:checked + .slider:before {
                   let time;
                   let no_of_scales;
                   let showScores;
+
+				    // Get the value of the textbox
+				    var selectedValue = '{{settings.format|safe}}'
+
+				    // Select the corresponding option element
+				    var selectElement = document.getElementById("format");
+				    for (var i = 0; i < selectElement.options.length; i++) {
+				        if (selectElement.options[i].value == selectedValue) {
+				            selectElement.options[i].selected = true;
+				            break;
+				        }
+				    }
+
+				    // Get the value of the textbox
+				    var selectedVale = '{{settings.orientation|safe}}'
+
+				    // Select the corresponding option element
+				    var selectElment = document.getElementById("orientation");
+				    for (var i = 0; i < selectElment.options.length; i++) {
+				        if (selectElment.options[i].value == selectedVale) {
+				            selectElment.options[i].selected = true;
+				            break;
+				        }
+				    }
 
 
                   let checkbox = document.getElementById("checkbox");

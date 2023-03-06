@@ -206,7 +206,6 @@ input:checked + .slider:before {
                 <div class="form-group col-md-6">
                     <label for="orientation">Orientation</label>
                     <select class="form-control" id="orientation" name="orientation" required>
-                        <option value="{{settings.orientation}}">{{settings.orientation}}</option>
                         <option value="horizontal">Horizontal</option>
                         <option value="vertical">Vertical</option>
                     </select>
@@ -359,6 +358,19 @@ input:checked + .slider:before {
                   let rtext;
                   let time;
                   let no_of_scales;
+
+
+				    // Get the value of the textbox
+				    var selectedVale = '{{settings.orientation|safe}}'
+
+				    // Select the corresponding option element
+				    var selectElment = document.getElementById("orientation");
+				    for (var i = 0; i < selectElment.options.length; i++) {
+				        if (selectElment.options[i].value == selectedVale) {
+				            selectElment.options[i].selected = true;
+				            break;
+				        }
+				    }
 
                   function myFunctionSave() {
 					if (ltext === rtext){
