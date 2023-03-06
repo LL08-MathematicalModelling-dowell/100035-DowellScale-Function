@@ -392,11 +392,12 @@ input:checked + .slider:before {
 			         }
 			      });
 
-			      let checkboxScores = document.getElementById("checkboxScores");
-			      checkboxScores.addEventListener( "change", () => {
-			        console.log(checkboxScores.checked)
-			        document.getElementById("checkboxScoresInput").value = checkboxScores.checked;
-			      });
+
+
+			      if(parseInt({{settings.time|safe}}) > 0){
+			            checkbox.checked = true;
+						document.getElementById("timeInput").style.display = "block";
+			      }
 
 
                   function myFunction() {
