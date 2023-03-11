@@ -194,20 +194,10 @@ input:checked + .slider:before {
 		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
 			<form id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunction();">
 				{% csrf_token %}
-				<h2 align="center"><u>Edit {{settings.template_name}}</u></h2>
-				<div class="form-group col-md-6">
-					<label for="head">Name of Scale</label>
-					<input class="form-control" id="head" name="nameofscale" onchange="myName()"
-					       placeholder="Name of scale"
-					       required type="text"
-                           value="{{settings.template_name}}"
-						   readonly="True">
-
-				</div>
+				<h2 align="center"><u>Edit {{settings.name}}</u></h2>
 				<div class="form-group col-md-6">
 					<label for="orientation">Orientation</label>
 					<select class="form-control" id="orientation" name="orientation" value="{{settings.orientation}}" required>
-						<option value="{{settings.orientation}}">{{settings.orientation}}</option>
 						<option value="horizontal">Horizontal</option>
 						<option value="vertical">Vertical</option>
 					</select>
@@ -240,8 +230,7 @@ input:checked + .slider:before {
 				</div>
 				<div class="form-group col-md-6">
 					<label for="format">Format</label>
-					<select class="form-control" id="format" name="format" onchange="myFormat()" required>
-						<option selected="{{settings.fomat}}">{{settings.fomat}}</option>
+					<select class="form-control" id="format" name="format" onchange="myFormat()" value="{{settings.orientation}}" required>
 						<option value="numbers">Numbers</option>
 						<option value="emoji">Emojis</option>
 						<option value="stars">Stars</option>
@@ -305,8 +294,8 @@ input:checked + .slider:before {
 
 				<div class="form-group col-md-12 text-right p-15">
 					<button class="btn btn-primary" id="saveBtn">Save</button>
-					<a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"
-					   onclick="preview();">Preview</a>
+<!--					<a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"-->
+<!--					   onclick="preview();">Preview</a>-->
 				</div>
 			</form>
 		</div>
@@ -369,6 +358,30 @@ input:checked + .slider:before {
                   let no_of_scales;
                   let showScores;
 
+				    // Get the value of the textbox
+				    var selectedValue = '{{settings.format|safe}}'
+
+				    // Select the corresponding option element
+				    var selectElement = document.getElementById("format");
+				    for (var i = 0; i < selectElement.options.length; i++) {
+				        if (selectElement.options[i].value == selectedValue) {
+				            selectElement.options[i].selected = true;
+				            break;
+				        }
+				    }
+
+				    // Get the value of the textbox
+				    var selectedVale = '{{settings.orientation|safe}}'
+
+				    // Select the corresponding option element
+				    var selectElment = document.getElementById("orientation");
+				    for (var i = 0; i < selectElment.options.length; i++) {
+				        if (selectElment.options[i].value == selectedVale) {
+				            selectElment.options[i].selected = true;
+				            break;
+				        }
+				    }
+
 
                   let checkbox = document.getElementById("checkbox");
 			      checkbox.addEventListener( "change", () => {
@@ -379,11 +392,12 @@ input:checked + .slider:before {
 			         }
 			      });
 
-			      let checkboxScores = document.getElementById("checkboxScores");
-			      checkboxScores.addEventListener( "change", () => {
-			        console.log(checkboxScores.checked)
-			        document.getElementById("checkboxScoresInput").value = checkboxScores.checked;
-			      });
+
+
+			      if(parseInt({{settings.time|safe}}) > 0){
+			            checkbox.checked = true;
+						document.getElementById("timeInput").style.display = "block";
+			      }
 
 
                   function myFunction() {

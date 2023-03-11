@@ -169,7 +169,7 @@ def settings_api_view_create(request):
             settings_json = json.loads(x)
             settings = settings_json['data'][0]['settings']
             template_name = settings["template_name"]
-            urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+            urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
             if int(settings["no_of_scales"]) > 1:
                 urls = []
                 for i in range(1, int(settings["no_of_scales"]) + 1):
@@ -507,43 +507,81 @@ def dowell_editor_admin(request, id):
     settings_json = json.loads(x)
     settings = settings_json['data'][0]['settings']
     context["settings"] = settings
-    print(settings)
-    if request.method == 'POST':
-        name = request.POST['nameofscale']
-        orientation = request.POST['orientation']
-        numberrating = 10
-        scalecolor = request.POST['scolor']
-        roundcolor = request.POST['rcolor']
-        fontcolor = request.POST['fcolor']
-        fomat = request.POST['format']
-        left = request.POST["left"]
-        right = request.POST["right"]
-        no_of_scales = request.POST["no_of_scales"]
-        center = request.POST["center"]
-        time = request.POST['time']
-        show_total = request.POST['checkboxScores']
-        text = f"{left}+{center}+{right}"
-        # rand_num = random.randrange(1, 10000)
-        template_name = name
-        if time == "":
-            time = 0
+    scale_type = settings['scale-category']
 
-        update_field = {"settings": {"orientation": orientation,
-                                     "scalecolor": scalecolor, "numberrating": 10, "no_of_scales": 1,
-                                     "roundcolor": roundcolor, "fontcolor": fontcolor,
-                                     "fomat": fomat, "time": time,
-                                     "template_name": template_name, "name": name, "text": text,
-                                     "left": left,
-                                     "right": right, "center": center,
-                                     "scale-category": "nps scale", "show_total_score": 'true',
-                                     "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-            field_add, update_field)
-        urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+    if scale_type == "nps scale":
+        if request.method == 'POST':
+            name = settings["name"]
+            orientation = request.POST['orientation']
+            scalecolor = request.POST['scolor']
+            roundcolor = request.POST['rcolor']
+            fontcolor = request.POST['fcolor']
+            fomat = request.POST['format']
+            left = request.POST["left"]
+            right = request.POST["right"]
+            no_of_scales = request.POST["no_of_scales"]
+            center = request.POST["center"]
+            time = request.POST['time']
+            show_total = request.POST['checkboxScores']
+            text = f"{left}+{center}+{right}"
+            template_name = settings["template_name"]
+            if time == "":
+                time = 0
 
-        # return HttpResponse(urls)
+            update_field = {"settings": {"orientation": orientation,
+                                         "scalecolor": scalecolor, "numberrating": 10, "no_of_scales": no_of_scales,
+                                         "roundcolor": roundcolor, "fontcolor": fontcolor,
+                                         "fomat": fomat, "time": time,
+                                         "template_name": template_name, "name": name, "text": text,
+                                         "left": left,
+                                         "right": right, "center": center,
+                                         "scale-category": "nps scale", "show_total_score": show_total,
+                                         "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                field_add, update_field)
+            urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
 
-    return render(request, 'nps/editor_scale_admin.html', context)
+            # return HttpResponse(urls)
+
+        return render(request, 'nps/editor_scale_admin.html', context)
+    elif scale_type == "stapel scale":
+        if request.method == 'POST':
+            name = settings["name"]
+            orientation = request.POST['orientation']
+            scale_upper_limit = request.POST['scale_upper_limit']
+            spacing_unit = request.POST['spacing_unit']
+            scalecolor = request.POST['scolor']
+            roundcolor = request.POST['rcolor']
+            fontcolor = request.POST['fcolor']
+            left = request.POST["left"]
+            right = request.POST["right"]
+            no_of_scales = request.POST["no_of_scales"]
+            time = request.POST['time']
+            text = f"{left}+{right}"
+            template_name = settings["name"]
+            if time == "":
+                time = 0
+            scale = []
+            for i in range(-int(scale_upper_limit), int(scale_upper_limit) + 1):
+                if i % int(spacing_unit) == 0 and i != 0:
+                    scale.append(i)
+            update_field = {
+                "settings": {"orientation": orientation, "scale_upper_limit": scale_upper_limit,
+                             "scale_lower_limit": -int(scale_upper_limit),
+                             "scalecolor": scalecolor, "spacing_unit": spacing_unit, "fomat": "numbers",
+                             "no_of_scales": no_of_scales,
+                             "roundcolor": roundcolor, "fontcolor": fontcolor,
+                             "time": time,
+                             "template_name": template_name, "name": name, "text": text,
+                             "left": left,
+                             "right": right, "scale": scale,
+                             "scale-category": "stapel scale",
+                             "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+            print(field_add)
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                field_add, update_field)
+        return render(request, 'nps/editor_stapel_scale.html', context)
+
 
 
 def dowell_scale_admin(request):
