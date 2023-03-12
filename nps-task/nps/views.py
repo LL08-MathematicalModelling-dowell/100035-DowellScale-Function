@@ -581,6 +581,28 @@ def dowell_editor_admin(request, id):
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                 field_add, update_field)
         return render(request, 'nps/editor_stapel_scale.html', context)
+    elif scale_type == "percent scale":
+        if request.method == 'POST':
+            name = request.POST['nameofscale']
+            orientation = request.POST['orientation']
+            scalecolor = request.POST['scolor']
+            time = request.POST['time']
+            number_of_scales=request.POST['numberofscale']
+            rand_num = random.randrange(1, 10000)
+            template_name = f"{name.replace(' ', '')}{rand_num}"
+            eventID = get_event_id()
+            if time == "":
+                time = 0
+            update_field={"event_id":eventID, 
+                          "settings":{"orientation":orientation,"scalecolor":scalecolor,
+                                      "time":time,"template_name":template_name,
+                                      "number_of_scales":number_of_scales, "name":name, 
+                                      "scale-category": "percent scale",
+                                      "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} }
+            print(field_add)
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                field_add, update_field)
+        return render(request, 'nps/editor_percent_scale.html', context)
 
 
 
