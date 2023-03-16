@@ -2,13 +2,13 @@
 {% load  static %}
 <html lang="en">
 <head>
-    <title>Stapel Scale</title>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+	<title>Stapel Scale</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
 
-    <style id="fa-main" media="all">
+	<style id="fa-main" media="all">
   /*!
    * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
    * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
@@ -187,95 +187,96 @@ input:checked + .slider:before {
 
 
 
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 </head>
 <body class=".bg-secondary">
 <div id="snackbar"></div>
 <div class="container">
-    <div class="row" style="margin-top: 3%;">
-        <div class="col-lg-1 col-md-2 d-sm-none"></div>
-        <div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
-             style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
-            <form id="scale_settings" action="" method="POST" onsubmit="event.preventDefault(); myFunctionSave();">
-                {% csrf_token %}
-                <h2 align="center"><u>{{settings.name}}</u></h2>
+	<div class="row" style="margin-top: 3%;">
+		<div class="col-lg-1 col-md-2 d-sm-none"></div>
+		<div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
+		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
+			<form action="" id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunctionSave();">
+				{% csrf_token %}
+				<h2 align="center"><u>{{settings.name}}</u></h2>
 
-                <div class="form-group col-md-6">
-                    <label for="orientation">Orientation</label>
-                    <select class="form-control" id="orientation" name="orientation" required>
-                        <option value="horizontal">Horizontal</option>
-                        <option value="vertical">Vertical</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="scale_upper_limit">Scale upper limit <span
-                            id="upper-warn">Max number 10, min 1</span></label>
-                    <!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required>-->
-                    <input class="form-control" id="scale_upper_limit" max="10" min="1" name="scale_upper_limit"
-                           onchange="myFunction()" type="number" value="{{settings.scale_upper_limit}}">
-                </div>
+				<div class="form-group col-md-6">
+					<label for="orientation">Orientation</label>
+					<select class="form-control" id="orientation" name="orientation" required>
+						<option value="horizontal">Horizontal</option>
+						<option value="vertical">Vertical</option>
+					</select>
+				</div>
+				<div class="form-group col-md-4">
+					<label for="scale_upper_limit">Scale upper limit <span
+							id="upper-warn">Max number 10, min 1</span></label>
+					<!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required>-->
+					<input class="form-control" id="scale_upper_limit" max="10" min="1" name="scale_upper_limit"
+					       onchange="myFunction()" type="number" value="{{settings.scale_upper_limit}}">
+				</div>
 
-                <div class="form-group col-md-4">
-                    <label for="scale_lower_limit">Scale lower limit</label>
-                    <!--<input type="number" name="numberof" class="form-control" id="numberof" min="0" max="10" placeholder="Number of Scale" required>-->
-                    <input class="form-control" disabled id="scale_lower_limit" name="scale_lower_limit" type="number" value="{{settings.scale_lower_limit}}">
-                </div>
+				<div class="form-group col-md-4">
+					<label for="scale_lower_limit">Scale lower limit</label>
+					<!--<input type="number" name="numberof" class="form-control" id="numberof" min="0" max="10" placeholder="Number of Scale" required>-->
+					<input class="form-control" disabled id="scale_lower_limit" name="scale_lower_limit" type="number" value="{{settings.scale_lower_limit}}">
+				</div>
 
-                <div class="form-group col-md-4">
-                    <label for="spacing_unit">Spacing Unit <span id="spacing-warn">Max number 5, min 1</span></label>
-                    <!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required>-->
-                    <input class="form-control" value="{{settings.spacing_unit}}" id="spacing_unit" max="5" min="0" name="spacing_unit"
-                           onkeyup="mySpacing()"
-                           type="number">
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="scolor">Scale Color</label>
-                    <input class="form-control" id="scolor" name="scolor" value="{{settings.scalecolor}}"
-                           onchange="myScolor()"
-                           placeholder="Background Color"
-                           required type="color">
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="rcolor">Round Color</label>
-                    <input class="form-control" id="rcolor" name="rcolor" value="{{settings.roundcolor}}"  onchange="myRcolor()"
-                           placeholder="Font Color"
-                           required type="color">
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="fcolor">Font Color</label>
-                    <input class="form-control" id="fcolor" value="{{settings.fontcolor}}" name="fcolor" onchange="myFcolor()" placeholder="Scale Color"
-                           required type="color">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="format">Format</label>
-                    <input class="form-control" disabled id="format" value="{{settings.fomat}}" name="format"
-                           onchange="myFormat()"
-                           type="text" value="numbers">
+				<div class="form-group col-md-4">
+					<label for="spacing_unit">Spacing Unit <span id="spacing-warn">Max number 5, min 1</span></label>
+					<!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required>-->
+					<input class="form-control" id="spacing_unit" max="5" min="0" name="spacing_unit" onkeyup="mySpacing()"
+					       type="number"
+					       value="{{settings.spacing_unit}}">
+				</div>
+				<div class="form-group col-md-4">
+					<label for="scolor">Scale Color</label>
+					<input class="form-control" id="scolor" name="scolor" onchange="myScolor()"
+					       placeholder="Background Color"
+					       required
+					       type="color" value="{{settings.scalecolor}}">
+				</div>
+				<div class="form-group col-md-4">
+					<label for="rcolor">Round Color</label>
+					<input class="form-control" id="rcolor" name="rcolor" onchange="myRcolor()" placeholder="Font Color"
+					       required
+					       type="color" value="{{settings.roundcolor}}">
+				</div>
+				<div class="form-group col-md-4">
+					<label for="fcolor">Font Color</label>
+					<input class="form-control" id="fcolor" name="fcolor" onchange="myFcolor()" placeholder="Scale Color" required
+					       type="color" value="{{settings.fontcolor}}">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="format">Format</label>
+					<input class="form-control" disabled id="format" name="format" onchange="myFormat()"
+					       type="text"
+					       value="{{settings.fomat}}" value="numbers">
 
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="lefttext">Left</label>
-                    <input class="form-control" id="lefttext" name="left" value="{{settings.left}}"
-                           onchange="myLtext()" placeholder="Left Text"
-                           required type="text">
-                </div>
+				</div>
+				<div class="form-group col-md-6">
+					<label for="lefttext">Left</label>
+					<input class="form-control" id="lefttext" name="left" onchange="myLtext()"
+					       placeholder="Left Text" required
+					       type="text" value="{{settings.left}}">
+				</div>
 
-                <div class="form-group col-md-6">
-                    <label for="righttext">Right</label>
-                    <input class="form-control" id="righttext" name="right" value="{{settings.right}}"
-                           onchange="myRtext()" placeholder="Right Text"
-                           required type="text">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="time">Number of Scales</label>
-                    <input class="form-control" id="no_of_scales" min="1" value="{{settings.no_of_scales}}" name="no_of_scales"
-                           onchange="myNumScales()" placeholder="Number of scales" type="number" required>
-                </div>
+				<div class="form-group col-md-6">
+					<label for="righttext">Right</label>
+					<input class="form-control" id="righttext" name="right" onchange="myRtext()"
+					       placeholder="Right Text" required
+					       type="text" value="{{settings.right}}">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="time">Number of Scales</label>
+					<input class="form-control" id="no_of_scales" min="1" name="no_of_scales" onchange="myNumScales()"
+					       placeholder="Number of scales" required type="number" value="{{settings.no_of_scales}}">
+				</div>
 
-	            <div class="form-group col-md-3 "
+				<div class="form-group col-md-3 "
 				     style="display: flex; align-items: center; justify-content: center; margin-top: 25px">
 					<label class="switch">
 						<input id="checkbox" type="checkbox">
@@ -284,58 +285,58 @@ input:checked + .slider:before {
 					<span style="font-weight: bold">Toggle to set Time</span>
 				</div>
 
-                <div class="form-group col-md-6" id="timeInput">
-                    <label for="time">Time (sec)</label>
-                    <input class="form-control" id="time" value="{{settings.time}}" name="time" onchange="myTime()"
-                           placeholder="Time"
-                           type="text">
-                </div>
-                <div class="form-group col-md-12 text-right p-15">
+				<div class="form-group col-md-6" id="timeInput">
+					<label for="time">Time (sec)</label>
+					<input class="form-control" id="time" name="time" onchange="myTime()" placeholder="Time"
+					       type="text"
+					       value="{{settings.time}}">
+				</div>
+				<div class="form-group col-md-12 text-right p-15">
 
-                    <button class="btn btn-primary" id="saveBtn">Save</button>
-<!--                    <a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"-->
-<!--                       onclick="preview();">Preview</a>-->
-                </div>
-            </form>
-        </div>
-        <div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
+					<button class="btn btn-primary" id="saveBtn">Save</button>
+					<!--                    <a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"-->
+					<!--                       onclick="preview();">Preview</a>-->
+				</div>
+			</form>
+		</div>
+		<div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
 
-        </div>
-        <!-- Button trigger modal -->
+		</div>
+		<!-- Button trigger modal -->
 
-        <!-- Modal -->
+		<!-- Modal -->
 
-        <div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter"
-             role="dialog" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content" id="modalContent">
-                    <div class="modal-header">
-                        <h2 align="center" class="modal-title" id="exampleModalLongTitle"></h2>
-                        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body" id="modal-body">
-                        <div class="horizontal d-flex justify-content-center" id="red"></div>
-                        <center>
-                            <div id="horizontal"></div>
-                        </center>
-                        <br>
-                        <div class="pl-3" id="lab-hor" style="font-size:2em">
-                            <div id="left" style="float: left"></div>
-                            <div id="right" style="float: right"></div>
-                        </div>
+		<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter"
+		     role="dialog" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+				<div class="modal-content" id="modalContent">
+					<div class="modal-header">
+						<h2 align="center" class="modal-title" id="exampleModalLongTitle"></h2>
+						<button aria-label="Close" class="close" data-dismiss="modal" type="button">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+					<div class="modal-body" id="modal-body">
+						<div class="horizontal d-flex justify-content-center" id="red"></div>
+						<center>
+							<div id="horizontal"></div>
+						</center>
+						<br>
+						<div class="pl-3" id="lab-hor" style="font-size:2em">
+							<div id="left" style="float: left"></div>
+							<div id="right" style="float: right"></div>
+						</div>
 
 
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-                        <!--<button type="button" class="btn btn-primary">Save changes</button>-->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+						<!--<button type="button" class="btn btn-primary">Save changes</button>-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>
@@ -382,8 +383,6 @@ input:checked + .slider:before {
 	                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
 	                return document.getElementById('scale_settings').submit();
                     }
-
-
 
                   let checkbox = document.getElementById("checkbox");
 			      checkbox.addEventListener( "change", () => {
@@ -556,4 +555,5 @@ input:checked + .slider:before {
                      document.getElementById(i).style.color = $("#fcolor").val();
                   }
                   }
+
 </script>
