@@ -264,7 +264,7 @@ input:checked + .slider:before {
 					       onchange="myNumScales()" placeholder="Number of scales" type="number">
 				</div>
 
-				<div class="form-group col-md-3 "
+				<div class="form-group col-md-6 "
 				     style="display: flex; align-items: center; justify-content: center; margin-top: 25px">
 					<label class="switch">
 						<input id="checkbox" type="checkbox">
@@ -279,7 +279,7 @@ input:checked + .slider:before {
 					<input class="form-control" id="time" name="time" onchange="myTime()" placeholder="Time" type="number">
 				</div>
 
-				<div class="form-group col-md-12 "
+				<div class="form-group col-md-6 "
 				     style="display: flex; align-items: center; justify-content: start; margin-top: 25px">
 					<label class="switch">
 						<input id="checkboxScores"  type="checkbox">
@@ -288,7 +288,18 @@ input:checked + .slider:before {
 					<span style="font-weight: bold">Toggle to show total scores for all instances</span>
 				</div>
 
+				<div class="form-group col-md-6 "
+				     style="display: flex; align-items: center; justify-content: start; margin-top: 25px">
+					<label class="switch">
+						<input id="checkboxResponse"  type="checkbox">
+						<span class="slider round"></span>
+					</label>
+					<span style="font-weight: bold">Toggle to enable submission or response</span>
+				</div>
+
 				<input id="checkboxScoresInput" name="checkboxScores" type="text" value="false" style="display: none">
+				<input id="checkboxResponseInput" name="checkboxResponse" type="text" value="false"
+				       style="display: none">
 
 				<div class="form-group col-md-12 text-right p-15">
 					<button class="btn btn-primary" id="saveBtn">Save</button>
@@ -370,6 +381,13 @@ input:checked + .slider:before {
 			      checkboxScores.addEventListener( "change", () => {
 			        console.log(checkboxScores.checked)
 			        document.getElementById("checkboxScoresInput").value = checkboxScores.checked;
+			      });
+
+
+			      let checkboxResponse = document.getElementById("checkboxResponse");
+			      checkboxScores.addEventListener( "change", () => {
+			        console.log(checkboxResponse.checked)
+			        document.getElementById("checkboxResponseInput").value = checkboxResponse.checked;
 			      });
 
 
