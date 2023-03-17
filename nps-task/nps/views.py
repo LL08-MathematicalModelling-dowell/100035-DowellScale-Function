@@ -24,7 +24,6 @@ def find_category(score):
         category = "Promoter"
     return category
 
-
 def total_score_fun(id):
     b = 0
     field_add = {"scale_data.scale_id": id}
@@ -134,10 +133,10 @@ def settings_api_view_create(request):
 
     elif request.method == 'POST':
         response = request.data
-        try:
-            user = response['username']
-        except:
-            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+        # try:
+        #     user = response['username']
+        # except:
+        #     return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
         left = response['left']
         center = response['center']
@@ -167,9 +166,9 @@ def settings_api_view_create(request):
             field_add, "nil")
 
         user_json = json.loads(x)
-        details = {"scale_id": user_json['inserted_id'], "event_id": eventID["event_id"], "username": user}
-        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
-            "insert", details, "nil")
+        # details = {"scale_id": user_json['inserted_id'], "event_id": eventID["event_id"], "username": user}
+        # user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
+        #     "insert", details, "nil")
 
         urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
 
