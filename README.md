@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # 100035-DowellScale-Function
 
 ## NPS Scale APIs for data retrieval
@@ -199,7 +197,7 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 
 ```python
     {
-        "scale_id": "63e8b4c87f4aa8f650162b7a",                              #scale_id that you would wish to retrieve its details
+    "scale_id": "63e8b4c87f4aa8f650162b7a",   #scale_id that you would wish to retrieve its details
     }
     
 ```
@@ -207,9 +205,8 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 
 ```python
     {
-        "template_id": "27289",                                          #Template id for the editor
-        "scale_id": "63e8b4c87f4aa8f650162b7a",                          #Id for the current scale     
-        "custom_input_groupings": "{'group1': {'t1': 'id', 'i1': 'id'}}" #Groupings of elements related to the scale 
+    "custom_input_id": "27289",             #template id, should be unique
+    "custom_input_groupings": "{'inner1': {'key1': 'value', 'key8': 'value2'}}"     #dictionary/object containing group information and all elements in the template that will be used as parent elements when creating documents 
     }
     
 ```
@@ -217,9 +214,8 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 #### if request METHOD : PUT 
 ```python
     {
-        "template_id": "27289",                                          #Template id for the editor
-        "scale_id": "63e8b4c87f4aa8f650162b7a",                          #Id for the current scale     
-        "custom_input_groupings": "{'group1': {'t1': 'id', 'i1': 'id'}}" #Groupings of elements related to the scale 
+    "custom_input_id": "27289",             #template id, should be unique Mandatory
+    "custom_input_groupings": "{'inner1': {'key1': 'value', 'key8': 'value2'}}"     #dictionary/object containing group information and all elements in the template that will be used as parent elements when creating documents 
     }
 ```
 
@@ -228,4 +224,3 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 
 
 
->>>>>>> 78f85f904ef1b3d977bb6ba31bacf14e3ce2f287
