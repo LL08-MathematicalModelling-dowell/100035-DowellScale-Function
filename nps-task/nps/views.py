@@ -52,7 +52,6 @@ def total_score_fun(id):
 
     return overall_category, category, all_scores, instanceID, b, total_score
 
-
 # Custom configuration api
 @api_view(['POST', 'PUT', 'GET'])
 def custom_configuration_view(request):
@@ -327,23 +326,26 @@ def nps_response_view_submit(request):
             user = response['username']
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-
         # id = response['id']
-        id = response['template_name']
+        id = response['scale_id']
         score = response['score']
         categ = find_category(score)
         instance_id = response['instance_id']
-        field_add = {"settings.template_name": id, }
+        field_add = {"_id": id, "settings.scale-category": "nps scale"}
         # field_add = {"_id": id}
         default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-            "fetch", field_add, "nil")
+            "find", field_add, "nil")
         data = json.loads(default)
-        x = data['data'][0]['settings']
+        print("This is my data", data)
+        if data['data'] is None:
+            return Response({"Error": "Scale does not exist"})
+
+        x = data['data']['settings']
         number_of_scale = x['no_of_scales']
-        id = data['data'][0]['_id']
+        id = data['data']['_id']
 
         # find existing scale reports
-        overall_category, o_category, all_scores, instanceID, b = total_score_fun(id)
+        overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id)
         category = find_category(b)
         if instance_id == instanceID:
             return Response({"error": "Scale Response Exists!", "current_score": b, "Category": category},
@@ -436,6 +438,47 @@ def scale_response_api_view(request):
 
     if request.method == 'GET':
         return Response(json.loads(x))
+
+
+
+def evaluation_screen(request, id, document_no):
+    field_add = {"template_id": id,}
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
+        "fetch", field_add, "nil")
+    configurations = json.loads(x)
+    print(configurations)
+    # return render(request, 'nps/editor_scale_admin.html', context)
+
+
+def evaluation_editor(request, product_name, doc_no):
+    context= {}
+    field_add = {"brand_data.product_name": product_name}
+    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+        "1094", "ABCDE", "fetch", field_add, "nil")
+    data = json.loads(response_data)["data"]
+    # loop over token find the one with matching instance = document
+    all_scales = []
+    if len(data) != 0:
+        for x in data:
+            instance_id = int(x['score'][0]['instance_id'].split("/")[-1])
+            if instance_id == doc_no:  # document_number
+                all_scales.append(x)
+
+    nps_scales = 0
+    nps_score = 0
+    stapel_scales = 0
+    stapel_score = []
+
+    for x in all_scales:
+        scale_type = x["scale_data"]["scale_type"]  # nps/stapel/lite
+        if scale_type == "nps scale":
+            score = x['score'][0]['score']
+            nps_score += score
+            nps_scales += 1
+        elif scale_type == "stapel scale":
+            score = x['score'][0]['score']
+            stapel_score.append(score)
+            stapel_scales += 1
 
 @xframe_options_exempt
 @csrf_exempt
