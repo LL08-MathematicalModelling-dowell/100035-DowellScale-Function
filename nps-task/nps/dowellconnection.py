@@ -1,10 +1,5 @@
-import json
-from typing import NoReturn
-import urllib
-import pprint
-import certifi
 import requests
-url = 'https://100002.pythonanywhere.com/'
+url = 'http://uxlivinglab.pythonanywhere.com/'
 def dowellconnection(cluster,platform,database,collection,document,team_member_ID,function_ID,command,field,update_field):
     data={
       "cluster": cluster,
@@ -20,7 +15,7 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
        }
     headers = {'content-type': 'application/json'}
     try :
-      response = requests.post(url, json =data,headers=headers)
-      return response.text
+      response = requests.post(url, json=data,headers=headers)
+      return response.json()
     except:
       return "check your connectivity"
