@@ -1,0 +1,70 @@
+{% extends "index.html" %}
+{% block title %}Evaluation{% endblock %}
+{% block content %}
+<style>
+.container{
+    text-align:center;
+    font-weight:bold;
+}
+
+table {
+    	border-collapse: collapse;
+		width: 100%;
+		}
+		th, td {
+			text-align: left;
+			padding: 8px;
+			border-bottom: 1px solid #ddd;
+            font-size:20px
+		}
+		th {
+			background-color: #198754;
+			color: #FFFFFF;
+            font-weight: bold;
+		}
+
+</style>
+<div class ="container" id="container" >
+    <img
+			alt="Home"
+			class="attachment-thumbnail size-thumbnail"
+			height="200"
+			loading="lazy"
+			sizes="(max-width: 150px) 100vw, 150px"
+			src="/static/images/dowell-logo.png"
+			srcset="
+            /static/images/dowell-logo.png 150w,
+            /static/images/dowell-logo.png  48w,
+            /static/images/dowell-logo.png 300w
+          "
+			width="200"
+	/>
+    <h1>Evaluation Report</h1>
+
+</div>
+<div>
+    <table style="width: 100%;" class="report">
+<thead>
+<tr>
+<th style="width:33%">Scale Types</th>
+<th style="width:33%">Scale Occurence</th>
+<th  style="width:34%">Total Response</th>
+</tr>
+ <tbody>
+    <tr>
+      <td>NPS</td>
+      <td>{{ nps_scales}}</td>
+      <td>{{nps_score}}/{{nps_total_score}}</td>
+         
+    <tr>
+      <td>Stapel</td>
+      <td>{{stapel_scales}}</td>
+      <td>{{stapel_scores|safe}}</td>
+      
+      
+    </tr>
+  </tbody>
+	    </thead></table></div>
+
+
+{% endblock %}

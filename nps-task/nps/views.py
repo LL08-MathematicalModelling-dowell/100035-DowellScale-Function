@@ -440,18 +440,8 @@ def scale_response_api_view(request):
         return Response(json.loads(x))
 
 
-
-def evaluation_screen(request, id, document_no):
-    field_add = {"template_id": id,}
-    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
-        "fetch", field_add, "nil")
-    configurations = json.loads(x)
-    print(configurations)
-    # return render(request, 'nps/editor_scale_admin.html', context)
-
-
 def evaluation_editor(request, product_name, doc_no):
-    context= {}
+    context = {}
     field_add = {"brand_data.product_name": product_name}
     response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
         "1094", "ABCDE", "fetch", field_add, "nil")
@@ -460,7 +450,7 @@ def evaluation_editor(request, product_name, doc_no):
     all_scales = []
     if len(data) != 0:
         for x in data:
-            instance_id = int(x['score'][0]['instance_id'].split("/")[-1])
+            instance_id = x['score'][0]['instance_id'].split("/")[-1]
             if instance_id == doc_no:  # document_number
                 all_scales.append(x)
 
@@ -475,10 +465,19 @@ def evaluation_editor(request, product_name, doc_no):
             score = x['score'][0]['score']
             nps_score += score
             nps_scales += 1
+
         elif scale_type == "stapel scale":
             score = x['score'][0]['score']
             stapel_score.append(score)
             stapel_scales += 1
+
+    context["nps_scales"] = nps_scales
+    context["nps_score"] = nps_score
+    context["nps_total_score"] = nps_scales * 10
+    context["stapel_scales"] = stapel_scales
+    context["stapel_scores"] = stapel_score
+
+    return render(request, 'nps/editor_reports.html', context)
 
 @xframe_options_exempt
 @csrf_exempt
