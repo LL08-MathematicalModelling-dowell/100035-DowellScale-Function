@@ -456,6 +456,7 @@ def evaluation_editor(request, product_name, doc_no):
 
     nps_scales = 0
     nps_score = 0
+    context['nps_scores'] = []
     stapel_scales = 0
     stapel_score = []
 
@@ -463,6 +464,7 @@ def evaluation_editor(request, product_name, doc_no):
         scale_type = x["scale_data"]["scale_type"]  # nps/stapel/lite
         if scale_type == "nps scale":
             score = x['score'][0]['score']
+            context['nps_scores'].append(score)
             nps_score += score
             nps_scales += 1
 
