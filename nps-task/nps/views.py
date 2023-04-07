@@ -695,10 +695,12 @@ def dowell_scale1(request, tname1):
     context['cur_url'] = current_url
 
     #check if the url has an instance of if allow response variable == True/False
-    if allow_resp == False or type(current_url) != int:
+    if allow_resp == False or len(current_url) > 3:
         context["dont_click"] = True
         return render(request, 'nps/single_scale.html', context)
     else:
+        context["dont_click"] = False
+
         field_add = {"scale_data.scale_id": context["scale_id"]}
         response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
             "ABCDE", "fetch", field_add, "nil")
@@ -729,7 +731,6 @@ def dowell_scale1(request, tname1):
                     context['all_scores'] = all_scores
                     context['total_scores'] = total_score
 
-        context["dont_click"] = False
 
     if request.method == 'POST':
         score = request.POST['scoretag']
