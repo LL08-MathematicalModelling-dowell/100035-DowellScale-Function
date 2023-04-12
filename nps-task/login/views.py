@@ -34,8 +34,8 @@ def homepage(request):
       return redirect_to_login()
 
 def logout(request):
-    del request.session["userinfo"]
-    del request.session["user_name"]
+    # del request.session["userinfo"]
+    # del request.session["user_name"]
     # del request.session["portfolio_info"]
     # del request.session["role"]
     return redirect("https://100014.pythonanywhere.com/sign-out")

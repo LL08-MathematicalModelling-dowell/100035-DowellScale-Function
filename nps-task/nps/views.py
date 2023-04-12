@@ -31,9 +31,11 @@ def total_score_fun(id):
         "1094",
         "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response_data)
+    # print("This is my data", data)
+
     total_score = 0
     all_scores = []
-    instanceID = 0
+    instanceID = []
 
     if len(data['data']) != 0:
         score_data = data["data"]
@@ -41,7 +43,7 @@ def total_score_fun(id):
             b = i['score'][0]['score']
             all_scores.append(i['score'])
             total_score += int(b)
-            instanceID = int(i['score'][0]['instance_id'].split("/")[-1])
+            instanceID.append(int(i['score'][0]['instance_id'].split("/")[0]))
 
     if total_score == 0 or len(all_scores) == 0:
         overall_category = "No response provided"
@@ -115,7 +117,7 @@ def settings_api_view_create(request):
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                 "find", field_add, "nil")
             settings_json = json.loads(x)
-            settings = settings_json['data'][0]['settings']
+            settings = settings_json['data']['settings']
             template_name = settings["template_name"]
             urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
             if int(settings["no_of_scales"]) > 1:
@@ -150,7 +152,7 @@ def settings_api_view_create(request):
             time = 0
 
         eventID = get_event_id()
-        field_add = {"event_id": eventID["event_id"],
+        field_add = {"event_id": eventID,
                      "settings": {"orientation": response['orientation'],
                                   "scalecolor": response['scalecolor'], "numberrating": 10, "no_of_scales": 1,
                                   "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'],
@@ -165,7 +167,7 @@ def settings_api_view_create(request):
             field_add, "nil")
 
         user_json = json.loads(x)
-        # details = {"scale_id": user_json['inserted_id'], "event_id": eventID["event_id"], "username": user}
+        # details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
         # user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
         #     "insert", details, "nil")
 
@@ -336,7 +338,6 @@ def nps_response_view_submit(request):
         default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
             "find", field_add, "nil")
         data = json.loads(default)
-        print("This is my data", data)
         if data['data'] is None:
             return Response({"Error": "Scale does not exist"})
 
@@ -347,26 +348,38 @@ def nps_response_view_submit(request):
         # find existing scale reports
         overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id)
         category = find_category(b)
-        if instance_id == instanceID:
+
+        details = {"scale_id": response['scale_id'], "username": user}
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+            "ABCDE", "fetch", details, "nil")
+        user_dets = json.loads(user_details)
+        print(user_dets)
+        user_ids = []
+        # find all event ids in the users table for the specific scale
+        for i in user_dets['data']:
+            user_ids.append(i["event_id"])
+        print(data['data']['event_id'] in user_ids)
+        if instance_id in instanceID and data['data']['event_id'] in user_ids:
             return Response({"error": "Scale Response Exists!", "current_score": b, "Category": category},
                 status=status.HTTP_405_METHOD_NOT_ALLOWED)
         eventID = get_event_id()
         score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score, "category": categ}
 
         if int(instance_id) > int(number_of_scale):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
 
         category = find_category(response["score"])
 
-        field_add = {"event_id": eventID["event_id"], "scale_data": {"scale_id": id, "scale_type": "nps scale"},
+        field_add = {"event_id": eventID, "scale_data": {"scale_id": id, "scale_type": "nps scale"},
                      "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
                      "score": [score]}
         z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
             "ABCDE", "insert", field_add, "nil")
         user_json = json.loads(z)
-        details = {"scale_id": user_json['inserted_id'], "event_id": eventID["event_id"], "username": user}
+        details = {"scale_id": id, "event_id": eventID, "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
+        print(user_details)
         return Response({"success": z, "score": score, "payload": field_add,
                          "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}",
                          "Category": category})
@@ -576,7 +589,7 @@ def dowell_editor_admin(request, id):
             eventID = get_event_id()
             if time == "":
                 time = 0
-            update_field={"event_id":eventID["event_id"],
+            update_field={"event_id":eventID,
                           "settings":{"orientation":orientation,"scalecolor":scalecolor,
                                       "time":time,"template_name":template_name,
                                       "number_of_scales":number_of_scales, "name":name, 
@@ -620,7 +633,7 @@ def dowell_scale_admin(request):
             allow_resp = True
         try:
             eventID = get_event_id()
-            field_add = {"event_id": eventID["event_id"], "settings": {"orientation": orientation, "numberrating": numberrating,
+            field_add = {"event_id": eventID, "settings": {"orientation": orientation, "numberrating": numberrating,
                                                            "scalecolor": scalecolor, "roundcolor": roundcolor, "allow_resp": allow_resp,
                                                            "fontcolor": fontcolor, "fomat": fomat, "time": time,
                                                            "template_name": template_name, "name": name, "text": text,
@@ -631,7 +644,7 @@ def dowell_scale_admin(request):
                 field_add, "nil")
             # User details
             user_json = json.loads(x)
-            details = {"scale_id": user_json['inserted_id'], "event_id": eventID["event_id"], "username": user}
+            details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
             user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                 "ABCDE", "insert", details, "nil")
             return redirect(f"{public_url}/nps-scale1/{template_name}")
@@ -699,38 +712,45 @@ def dowell_scale1(request, tname1):
         context["dont_click"] = True
         return render(request, 'nps/single_scale.html', context)
     else:
+        user = request.session.get('user_name')
         context["dont_click"] = False
 
         field_add = {"scale_data.scale_id": context["scale_id"]}
         response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
             "ABCDE", "fetch", field_add, "nil")
+        details = {"scale_id":context["scale_id"], "username": user }
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+            "ABCDE", "fetch", details, "nil")
+
         data = json.loads(response)
-
+        user_dets = json.loads(user_details)
+        print("This are the users for this scale", user_dets)
         existing_scale = False
-
         if len(data['data']) != 0:
             scale_data = data["data"][0]["scale_data"]
             score_data = data["data"]
-
+            user_events = user_dets["data"]
             total_score = 0
+            # find all event ids present in the scale response
+            user_ids = []
+            # find all event ids in the users table for the specific scale
+            for i in user_events:
+                user_ids.append(i["event_id"])
+
             for i in score_data:
                 instance_id = i['score'][0]['instance_id'].split("/")[0]
+                event_id = i["event_id"]
                 if len(instance_id) > 3:
                     continue
-
                 b = i['score'][0]['score']
                 total_score += int(b)
-
-            for i in score_data:
-                instance_id = i['score'][0]['instance_id'].split("/")[0]
-
-                if instance_id == current_url:
+                # if instance_id == current_url :
+                if instance_id == current_url and event_id in user_ids:
                     existing_scale = True
                     context['response_saved'] = i['score'][0]['score']
                     context['score'] = "show"
                     context['all_scores'] = all_scores
                     context['total_scores'] = total_score
-
 
     if request.method == 'POST':
         score = request.POST['scoretag']
@@ -744,7 +764,7 @@ def dowell_scale1(request, tname1):
             overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id_scores.strip())
             total_score_save = f"{total_score}/{context['total_score_scales']}"
             try:
-                field_add = {"event_id": eventID["event_id"],
+                field_add = {"event_id": eventID,
                              "scale_data": {"scale_id": context["scale_id"], "scale_type": "nps scale"},
                              "brand_data": {"brand_name": context["brand_name"],
                                             "product_name": context["product_name"]}, "score": [score],
@@ -755,7 +775,7 @@ def dowell_scale1(request, tname1):
                 # User details
                 user_json = json.loads(z)
                 user = request.session.get('user_name')
-                details = {"scale_id": user_json['inserted_id'], "event_id": eventID["event_id"], "username": user}
+                details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
                 user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                     "ABCDE", "insert", details, "nil")
                 context['score'] = "show"
@@ -764,7 +784,6 @@ def dowell_scale1(request, tname1):
                     id_scores.strip())
                 context['all_scores'] = all_scores
                 context['total_scores'] = total_score
-
             except:
                 context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'nps/single_scale.html', context)
