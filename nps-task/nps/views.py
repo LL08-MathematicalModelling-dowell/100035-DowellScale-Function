@@ -12,7 +12,11 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 
-
+def compare_event_ids(arr1, arr2):
+    for elem in arr1:
+        if elem in arr2:
+            return True
+    return False
 def find_category(score):
     if int(score) <= 6:
         category = "Detractor"
@@ -31,7 +35,7 @@ def total_score_fun(id):
         "1094",
         "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response_data)
-    # print("This is my data", data)
+    existing_responses = data["data"]
 
     total_score = 0
     all_scores = []
@@ -52,7 +56,7 @@ def total_score_fun(id):
         overall_category = total_score / len(all_scores)
         category = find_category(overall_category)
 
-    return overall_category, category, all_scores, instanceID, b, total_score
+    return overall_category, category, all_scores, instanceID, b, total_score, existing_responses
 
 # Custom configuration api
 @api_view(['POST', 'PUT', 'GET'])
@@ -346,20 +350,27 @@ def nps_response_view_submit(request):
         id = data['data']['_id']
 
         # find existing scale reports
-        overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id)
+        overall_category, category, all_scores, instanceID, b, total_score,existing_responses = total_score_fun(id)
         category = find_category(b)
+        responses_id = []
+        for c in existing_responses:
+            specific_instance = int(c['score'][0]['instance_id'].split("/")[0])
+            if specific_instance == response['instance_id']:
+                responses_id.append(c['event_id'])
 
+        # print("Hello", responses_id)
         details = {"scale_id": response['scale_id'], "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
             "ABCDE", "fetch", details, "nil")
         user_dets = json.loads(user_details)
-        print(user_dets)
+        # print(user_dets)
         user_ids = []
         # find all event ids in the users table for the specific scale
         for i in user_dets['data']:
             user_ids.append(i["event_id"])
-        print(data['data']['event_id'] in user_ids)
-        if instance_id in instanceID and data['data']['event_id'] in user_ids:
+        # print("Taller",user_ids)
+        check_existance = compare_event_ids(responses_id, user_ids)
+        if check_existance:
             return Response({"error": "Scale Response Exists!", "current_score": b, "Category": category},
                 status=status.HTTP_405_METHOD_NOT_ALLOWED)
         eventID = get_event_id()
@@ -379,7 +390,9 @@ def nps_response_view_submit(request):
         details = {"scale_id": id, "event_id": eventID, "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
-        print(user_details)
+        # print(user_details)
+        # print("Testing Event id values 22", x)
+
         return Response({"success": z, "score": score, "payload": field_add,
                          "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}",
                          "Category": category})
@@ -693,8 +706,6 @@ def dowell_scale1(request, tname1):
         field_add, "nil")
     data = json.loads(default)
     id_scores = data['data']["_id"]
-    overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id_scores.strip())
-
     context["scale_id"] = data['data']['_id']
     x = data['data']['settings']
     context['show_total'] = x['show_total_score']
@@ -715,42 +726,30 @@ def dowell_scale1(request, tname1):
         user = request.session.get('user_name')
         context["dont_click"] = False
 
-        field_add = {"scale_data.scale_id": context["scale_id"]}
-        response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-            "ABCDE", "fetch", field_add, "nil")
+        overall_category, category, all_scores, instanceID, b, total_score, existing_responses = total_score_fun(context["scale_id"])
+        responses_id = []
+        for c in existing_responses:
+            specific_instance = int(c['score'][0]['instance_id'].split("/")[0])
+            if specific_instance == current_url:
+                responses_id.append(c['event_id'])
         details = {"scale_id":context["scale_id"], "username": user }
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
             "ABCDE", "fetch", details, "nil")
-
-        data = json.loads(response)
         user_dets = json.loads(user_details)
-        print("This are the users for this scale", user_dets)
+        user_events = user_dets["data"]
+        # find all event ids present in the scale response
+        user_ids = []
+        # find all event ids in the users table for the specific scale
+        for i in user_events:
+            user_ids.append(i["event_id"])
         existing_scale = False
-        if len(data['data']) != 0:
-            scale_data = data["data"][0]["scale_data"]
-            score_data = data["data"]
-            user_events = user_dets["data"]
-            total_score = 0
-            # find all event ids present in the scale response
-            user_ids = []
-            # find all event ids in the users table for the specific scale
-            for i in user_events:
-                user_ids.append(i["event_id"])
-
-            for i in score_data:
-                instance_id = i['score'][0]['instance_id'].split("/")[0]
-                event_id = i["event_id"]
-                if len(instance_id) > 3:
-                    continue
-                b = i['score'][0]['score']
-                total_score += int(b)
-                # if instance_id == current_url :
-                if instance_id == current_url and event_id in user_ids:
-                    existing_scale = True
-                    context['response_saved'] = i['score'][0]['score']
-                    context['score'] = "show"
-                    context['all_scores'] = all_scores
-                    context['total_scores'] = total_score
+        check_existance = compare_event_ids(responses_id, user_ids)
+        if check_existance:
+            existing_scale = True
+            context['response_saved'] = b
+            context['score'] = "show"
+            context['all_scores'] = all_scores
+            context['total_scores'] = total_score
 
     if request.method == 'POST':
         score = request.POST['scoretag']
@@ -761,7 +760,7 @@ def dowell_scale1(request, tname1):
         score = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'score': score, "category": categ}
 
         if existing_scale == False:
-            overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id_scores.strip())
+            overall_category, category, all_scores, instanceID, b, total_score,existing_responses = total_score_fun(id_scores.strip())
             total_score_save = f"{total_score}/{context['total_score_scales']}"
             try:
                 field_add = {"event_id": eventID,
@@ -780,7 +779,7 @@ def dowell_scale1(request, tname1):
                     "ABCDE", "insert", details, "nil")
                 context['score'] = "show"
                 # calculate_total_score
-                overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(
+                overall_category, category, all_scores, instanceID, b, total_score ,existing_responses = total_score_fun(
                     id_scores.strip())
                 context['all_scores'] = all_scores
                 context['total_scores'] = total_score
