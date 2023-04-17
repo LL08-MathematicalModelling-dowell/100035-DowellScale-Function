@@ -20,7 +20,7 @@ urlpatterns = [
     path('api/nps_responses_create', nps_response_view_submit, name="nps_response_submit_api"),
     path('api/nps_settings', scale_settings_api_view, name="scale_settings_api"),
     path('api/nps_responses', scale_response_api_view, name="scale_response_api"),
-    path('api/total_responses/<str:id>', calculate_total_score, name="calculate_total_score_api"),
+    path('api/total_responses/<str:doc_no>/<str:product_name>', calculate_total_score, name="calculate_total_score_api"),
     path('api/nps_settings/<str:id>', single_scale_settings_api_view, name="single_scale_settings_api"),
     path('api/nps_responses/<str:id>', single_scale_response_api_view, name="single_scale_response_api"),
 ]
