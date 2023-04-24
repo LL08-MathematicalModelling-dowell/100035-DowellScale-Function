@@ -1,5 +1,5 @@
 from dowellconnection import dowellconnection
-from new import stattricks_api
+from calculate_function import stattricks_api
 import json
 
 def total_score_fun(id):

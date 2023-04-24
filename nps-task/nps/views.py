@@ -7,7 +7,7 @@ from .eventID import get_event_id
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
-from .new import stattrick_result
+from .calculate_function import stattrick_result
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
@@ -303,18 +303,38 @@ def dynamic_scale_instances(request):
     return Response({"success": z, "response": settings_json['data'][0]['settings']})
 
 @api_view(['GET', ])
-def calculate_total_score(request, id=None):
+def calculate_total_score(doc_no=None, product_name=None):
     try:
-        field_add = {"settings.template_name": id, }
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-            "fetch", field_add, "nil")
+        field_add = {"brand_data.product_name": product_name}
+        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+            "1094", "ABCDE", "fetch", field_add, "nil")
+        data = json.loads(response_data)["data"]
+        # loop over token find the one with matching instance = document
+        all_scales = []
+        if len(data) != 0:
+            for x in data:
+                print(x)
+                instance_id = x['score'][0]['instance_id'].split("/")[0]
+                print("Instance_ID",instance_id)
 
-        settings_json = json.loads(x)
-        id = settings_json['data'][0]["_id"]
-        overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id.strip())
+                if instance_id == doc_no:  # document_number
+                    all_scales.append(x)
+
+        all_scores = []
+        nps_scales = 0
+        nps_score = 0
+        for x in all_scales:
+            scale_type = x["scale_data"]["scale_type"]  # nps/stapel/lite
+            if scale_type == "nps scale":
+                score = x['score'][0]['score']
+                all_scores.append(score)
+                nps_score += score
+                nps_scales += 1
     except:
-        return Response({"error": "Please try again"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    return Response({"All_scores": all_scores, "Category": category}, status=status.HTTP_200_OK)
+        return print({"error": "Please try again"})
+    # return print({"All_scores": all_scores, f"Total_score for document {doc_no}": nps_score})
+    print("all_scores", all_scores)
+    return all_scores
 
 
 # SUMBIT SCALE RESPONSE
@@ -490,7 +510,7 @@ def evaluation_editor(request, product_name, doc_no):
     context["nps_total_score"]=nps_scales * 10
     context["stapel_scales"]=stapel_scales
     context["stapel_scores"]=stapel_score
-    context["type"] = stattrick_result(648236798,"1", "abc123")
+    context["type"] = stattrick_result(23478672,"1", "abc123")
 
     response_json = context["type"]
 

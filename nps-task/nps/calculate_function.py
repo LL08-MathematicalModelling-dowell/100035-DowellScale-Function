@@ -1,6 +1,7 @@
 import requests
 # from new import stattricks_api
 import json
+from rest_framework.decorators import api_view
 
 import requests
 url = 'http://uxlivinglab.pythonanywhere.com/'
@@ -24,6 +25,7 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
     except:
       return "check your connectivity"
 
+@api_view(['GET', ])
 def calculate_total_score(doc_no=None, product_name=None):
     try:
         field_add = {"brand_data.product_name": product_name}
