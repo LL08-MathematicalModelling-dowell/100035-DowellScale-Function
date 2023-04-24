@@ -503,14 +503,14 @@ def evaluation_editor(request, product_name, doc_no):
             stapel_score.append(score)
             stapel_scales += 1
 
+    print(stattrick_result(342535,"1", "abc123"))
 
-     
     context["nps_scales"]=nps_scales
     context["nps_score"]=nps_score 
     context["nps_total_score"]=nps_scales * 10
     context["stapel_scales"]=stapel_scales
     context["stapel_scores"]=stapel_score
-    context["type"] = stattrick_result(23478672,"1", "abc123")
+    context["type"] = stattrick_result(231423499,"1", "abc123")
 
     response_json = context["type"]
 
