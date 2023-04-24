@@ -7,7 +7,7 @@ from .eventID import get_event_id
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
-
+from .new import stattrick_result
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
@@ -482,12 +482,24 @@ def evaluation_editor(request, product_name, doc_no):
             score = x['score'][0]['score']
             stapel_score.append(score)
             stapel_scales += 1
+
+
      
     context["nps_scales"]=nps_scales
     context["nps_score"]=nps_score 
     context["nps_total_score"]=nps_scales * 10
     context["stapel_scales"]=stapel_scales
     context["stapel_scores"]=stapel_score
+    context["type"] = stattrick_result(648236798,"1", "abc123")
+
+    response_json = context["type"]
+
+    poison_case_results = response_json.get("poison case results", {})
+    normal_case_results = response_json.get("normal case results", {})
+    context["poison_case_results"] = poison_case_results
+    context["normal_case_results"] = normal_case_results
+
+    print("\n\n\n stattrick function result",context["type"])
     
     return render(request, 'nps/editor_reports.html', context )
 

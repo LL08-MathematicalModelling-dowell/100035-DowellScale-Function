@@ -64,7 +64,36 @@ table {
       
     </tr>
   </tbody>
-</thead></div>
+</thead>
+    </table></div>
+<table>
+  <tr>
+    <th colspan="3">Scale Results</th>
+  </tr>
+  <tr>
+    <th>Category</th>
+    <th>Key</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td rowspan="{{ poison_case_results.items|length }}">Poison Case Results</td>
+    {% for key, value in poison_case_results.items %}
+      <td>{{ key }}</td>
+      <td>{{ value }}</td>
+  </tr>
+  <tr>
+    {% endfor %}
+  </tr>
+  <tr>
+    <td rowspan="{{ normal_case_results.items|length }}">Normal Case Results</td>
+    {% for key, value in normal_case_results.items %}
+      <td>{{ key }}</td>
+      <td>{{ value }}</td>
+  </tr>
+  <tr>
+    {% endfor %}
+  </tr>
+</table>
 
 
 {% endblock %}
