@@ -510,7 +510,11 @@ def evaluation_editor(request, product_name, doc_no):
     context["nps_total_score"]=nps_scales * 10
     context["stapel_scales"]=stapel_scales
     context["stapel_scores"]=stapel_score
-    context["type"] = stattrick_result(231423499,"1", "abc123")
+    try:
+        context["type"] = stattrick_result(231423499,"1", "abc123")
+    except:
+        # context["type"] = "No data"
+        HttpResponse("Process Id is already in Use, Use another one")
 
     response_json = context["type"]
 
