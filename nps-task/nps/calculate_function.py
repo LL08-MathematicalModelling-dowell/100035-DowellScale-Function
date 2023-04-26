@@ -76,7 +76,7 @@ def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues)
     return response.json()
 
 
-def stattrick_result(process_id,doc_no, product_name):
+def Evaluation_module(process_id, doc_no, product_name):
     title = "backendtesting"
     process_id = process_id
     process_sequence_id = 16

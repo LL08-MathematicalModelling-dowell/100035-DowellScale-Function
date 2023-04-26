@@ -7,7 +7,7 @@ from .eventID import get_event_id
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
-from .calculate_function import stattrick_result
+from .calculate_function import Evaluation_module
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
@@ -503,15 +503,13 @@ def evaluation_editor(request, product_name, doc_no):
             stapel_score.append(score)
             stapel_scales += 1
 
-    print(stattrick_result(342535,"1", "abc123"))
-
     context["nps_scales"]=nps_scales
     context["nps_score"]=nps_score 
     context["nps_total_score"]=nps_scales * 10
     context["stapel_scales"]=stapel_scales
     context["stapel_scores"]=stapel_score
     try:
-        context["type"] = stattrick_result(231423499,"1", "abc123")
+        context["type"] = Evaluation_module(832947228, "1", "abc123")
     except:
         # context["type"] = "No data"
         HttpResponse("Process Id is already in Use, Use another one")
