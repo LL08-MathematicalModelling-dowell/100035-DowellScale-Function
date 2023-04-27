@@ -454,12 +454,14 @@ def single_scale_settings_api_view(request, id=None):
 
     if request.method == 'GET':
         settings = settings_json['data'][0]['settings']
-        no_of_scales = settings['no_of_scales']
+        no_of_scales = int(settings['no_of_scales'])
+
         template_name = settings['template_name']
         urls = []
         for i in range(1, no_of_scales + 1):
             url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
             urls.append(url)
+
         return Response({"payload": json.loads(x), "urls": urls})
 
 
@@ -530,7 +532,6 @@ def evaluation_editor(request, product_name, doc_no):
     context["nps_total_score"] = nps_scales * 10
     context["stapel_scales"] = stapel_scales
     context["stapel_scores"] = stapel_score
-
     return render(request, 'nps/editor_reports.html', context)
 
 @xframe_options_exempt
@@ -578,6 +579,7 @@ def dowell_editor_admin(request, id):
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                 field_add, update_field)
             urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+            context["settings"] = update_field["settings"]
         return render(request, 'nps/editor_scale_admin.html', context)
     elif scale_type == "stapel scale":
         if request.method == 'POST':
