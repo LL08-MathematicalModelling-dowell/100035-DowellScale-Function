@@ -559,15 +559,17 @@ def dowell_editor_admin(request, id):
             center = request.POST["center"]
             time = request.POST['time']
             show_total = request.POST['checkboxScores']
+            allow_resp = False
             text = f"{left}+{center}+{right}"
             template_name = settings["template_name"]
             if time == "":
                 time = 0
 
+
             update_field = {"settings": {"orientation": orientation,
                                          "scalecolor": scalecolor, "numberrating": 10, "no_of_scales": no_of_scales,
                                          "roundcolor": roundcolor, "fontcolor": fontcolor,
-                                         "fomat": fomat, "time": time,
+                                         "fomat": fomat, "time": time, "allow_resp": allow_resp,
                                          "template_name": template_name, "name": name, "text": text,
                                          "left": left,
                                          "right": right, "center": center,
@@ -576,9 +578,6 @@ def dowell_editor_admin(request, id):
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                 field_add, update_field)
             urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-
-            # return HttpResponse(urls)
-
         return render(request, 'nps/editor_scale_admin.html', context)
     elif scale_type == "stapel scale":
         if request.method == 'POST':
@@ -678,7 +677,7 @@ def dowell_scale_admin(request):
                                                            "template_name": template_name, "name": name, "text": text,
                                                            "left": left, "right": right, "center": center,
                                                            "scale-category": "nps scale", "no_of_scales": no_of_scales,
-                                                           "show_total_score": show_total}}
+                                                           "show_total_score": show_total, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                 field_add, "nil")
             # User details
