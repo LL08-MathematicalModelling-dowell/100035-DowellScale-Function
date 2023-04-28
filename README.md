@@ -208,6 +208,7 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
         "template_id": "27289",                                          #Template id for the editor
         "scale_id": "63e8b4c87f4aa8f650162b7a",                          #Id for the current scale     
         "custom_input_groupings": "{'group1': {'t1': 'id', 'i1': 'id'}}" #Groupings of elements related to the scale 
+        "scale_label": "scale_label"                                     #Scale Label Provided by the user
     }
     
 ```
@@ -215,9 +216,8 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 #### if request METHOD : PUT 
 ```python
     {
-        "template_id": "27289",                                          #Template id for the editor
-        "scale_id": "63e8b4c87f4aa8f650162b7a",                          #Id for the current scale     
         "custom_input_groupings": "{'group1': {'t1': 'id', 'i1': 'id'}}" #Groupings of elements related to the scale 
+        "scale_label": "scale_label"                                     #Scale Label Provided by the user
     }
 ```
 
