@@ -8,9 +8,16 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
 from .calculate_function import Evaluation_module
+from .normality import Normality_api
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
+import random
+
+def generate_random_number():
+    min_number = 10 ** 2
+    max_number = 10 ** 6 - 1
+    return random.randint(min_number, max_number)
 
 
 def find_category(score):
@@ -472,6 +479,7 @@ def evaluation_screen(request, id, document_no):
 
 def evaluation_editor(request, product_name, doc_no):
     context= {}
+    result = {}
     field_add = {"brand_data.product_name": product_name}
     response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
         "1094", "ABCDE", "fetch", field_add, "nil")
@@ -508,8 +516,19 @@ def evaluation_editor(request, product_name, doc_no):
     context["nps_total_score"]=nps_scales * 10
     context["stapel_scales"]=stapel_scales
     context["stapel_scores"]=stapel_score
+    random_number = generate_random_number()
     try:
-        context["type"] = Evaluation_module(832947228, "1", "abc123")
+        context["type"] = Evaluation_module(random_number, "1", "abc123")
+        normality = Normality_api(random_number)
+        normality_data = normality.get('list1') if normality else None
+        context["n_title"] = normality.get('title')
+        context["n_process_id"] = normality.get('process_id')
+        context["n_bins"] = normality.get('bins')
+        context["n_allowed_error"] = normality.get('allowed_error')
+        context["n_series_count"] = normality.get('series_count')
+        context["n_list1"] = normality_data
+
+        # print(result)
     except:
         # context["type"] = "No data"
         HttpResponse("Process Id is already in Use, Use another one")
@@ -521,8 +540,6 @@ def evaluation_editor(request, product_name, doc_no):
     context["poison_case_results"] = poison_case_results
     context["normal_case_results"] = normal_case_results
 
-    print("\n\n\n stattrick function result",context["type"])
-    
     return render(request, 'nps/editor_reports.html', context )
 
 @xframe_options_exempt

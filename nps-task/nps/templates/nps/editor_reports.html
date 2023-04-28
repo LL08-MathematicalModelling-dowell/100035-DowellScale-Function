@@ -95,5 +95,47 @@ table {
   </tr>
 </table>
 
+<h2>Normality API Response Details</h2>
+<table>
+  <tr>
+    <th>Title</th>
+    <td>{{ n_title }}</td>
+  </tr>
+  <tr>
+    <th>Process ID</th>
+    <td>{{ n_process_id }}</td>
+  </tr>
+  <tr>
+    <th>Bins</th>
+    <td>{{ n_bins }}</td>
+  </tr>
+  <tr>
+    <th>Allowed Error</th>
+    <td>{{ n_allowed_error }}</td>
+  </tr>
+  <tr>
+    <th>Series Count</th>
+    <td>{{ n_series_count }}</td>
+  </tr>
+</table>
+
+<h2>List1 Calculations</h2>
+{% if n_list1 %}
+<table>
+  <tr>
+    <th>Key</th>
+    <th>Value</th>
+  </tr>
+  {% for key, value in n_list1.items %}
+  <tr>
+    <td>{{ key }}</td>
+    <td>{{ value }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No List1 Calculations available.</p>
+{% endif %}
+
 
 {% endblock %}
