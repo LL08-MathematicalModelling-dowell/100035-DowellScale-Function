@@ -311,24 +311,6 @@ def dynamic_scale_instances(request):
 @api_view(['GET', ])
 def calculate_total_score(request, doc_no=None, product_name=None):
     try:
-        # field_add = {"settings.template_name": id, }
-        # x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-        #     "fetch", field_add, "nil")
-
-        #         if instance_id == doc_no:  # document_number
-                    all_scales.append(x)
-
-        # all_scores = []
-        nps_scales = 0
-        nps_score = 0
-        for x in all_scales:
-            scale_type = x["scale_data"]["scale_type"]  # nps/stapel/lite
-        #     if scale_type == "nps scale":
-                score = x['score'][0]['score']
-                all_scores.append(score)
-                nps_score += score
-                nps_scales += 1
-
         field_add = {"brand_data.product_name": product_name}
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
             "1094", "ABCDE", "fetch", field_add, "nil")
