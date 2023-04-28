@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import dowell_editor_admin,custom_configuration_view,calculate_total_score,dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create,nps_response_view_submit,dynamic_scale_instances, evaluation_editor
+from .views import evaluation_editor,dowell_editor_admin,custom_configuration_view,calculate_total_score,dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create,nps_response_view_submit,dynamic_scale_instances
 
 
 app_name="nps"
@@ -12,6 +12,7 @@ urlpatterns = [
     path('nps-admin/default/', default_scale_admin, name='default_page_admin'),
     path('nps-editor/settings/<str:id>', dowell_editor_admin, name='default_page_admin'),
     path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
+    path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
 
     # Rest endpoints
     path('api/nps_create_instance', dynamic_scale_instances, name="dynamic_instance"),
@@ -20,7 +21,7 @@ urlpatterns = [
     path('api/nps_responses_create', nps_response_view_submit, name="nps_response_submit_api"),
     path('api/nps_settings', scale_settings_api_view, name="scale_settings_api"),
     path('api/nps_responses', scale_response_api_view, name="scale_response_api"),
-    path('api/total_responses/<str:id>', calculate_total_score, name="calculate_total_score_api"),
+    path('api/total_responses/<str:doc_no>/<str:product_name>', calculate_total_score, name="calculate_total_score_api"),
     path('api/nps_settings/<str:id>', single_scale_settings_api_view, name="single_scale_settings_api"),
     path('api/nps_responses/<str:id>', single_scale_response_api_view, name="single_scale_response_api"),
 ]

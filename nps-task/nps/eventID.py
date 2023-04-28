@@ -1,19 +1,23 @@
-import json
 from datetime import datetime
 import requests
 
 def get_event_id():
-    url = "https://uxlivinglab.pythonanywhere.com/create_event"
+    dd = datetime.now()
+    time = dd.strftime("%d:%m:%Y,%H:%M:%S")
+    url = "https://100003.pythonanywhere.com/event_creation"
+
     data = {
         "platformcode": "FB",
         "citycode": "101",
         "daycode": "0",
         "dbcode": "pfm",
-        "ip_address": "192.168.0.41",  # get from dowell track my ip function
-        "login_id": "lav",  # get from login function
-        "session_id": "new",  # get from login function
+        "ip_address": "192.168.0.41",
+        "login_id": "lav",
+        "session_id": "new",
         "processcode": "1",
-        "location": "22446576",  # get from dowell track my ip function
+        "regional_time": time,
+        "dowell_time": time,
+        "location": "22446576",
         "objectcode": "1",
         "instancecode": "100051",
         "context": "afdafa ",
@@ -26,10 +30,10 @@ def get_event_id():
         "hashtags": "hash tag alue",
         "mentions": "mentions value",
         "emojis": "emojis",
-        "bookmarks": "a book marks",
+
     }
+
     r = requests.post(url, json=data)
-    if r.status_code == 201:
-        return json.loads(r.text)
-    else:
-        return json.loads(r.text)["error"]
+    return r.text
+
+print(get_event_id())
