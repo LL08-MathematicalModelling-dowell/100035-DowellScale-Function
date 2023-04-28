@@ -469,7 +469,7 @@ def evaluation_screen(request, id, document_no):
     print(configurations)
     # return render(request, 'nps/editor_scale_admin.html', context)
 
-
+@csrf_exempt
 def evaluation_editor(request, product_name, doc_no):
     context= {}
     field_add = {"brand_data.product_name": product_name}
@@ -477,15 +477,18 @@ def evaluation_editor(request, product_name, doc_no):
         "1094", "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response_data)["data"]
     # loop over token find the one with matching instance = document
+    #print(data)
     all_scales = []
+    score_series=[]
     if len(data) != 0:
         for x in data:
             instance_id = x['score'][0]['instance_id'].split("/")[-1]
+            scores=x['score'][0]['score']
             if instance_id == doc_no:  # document_number
                 all_scales.append(x)
+                #score_series.append(scores)
                 
-    
-
+                
     nps_scales = 0
     nps_score = 0
     stapel_scales = 0
@@ -497,7 +500,7 @@ def evaluation_editor(request, product_name, doc_no):
             score = x['score'][0]['score']
             nps_score += score
             nps_scales += 1
-            
+            score_series.append(score)
         elif scale_type == "stapel scale":
             score = x['score'][0]['score']
             stapel_score.append(score)
@@ -510,16 +513,18 @@ def evaluation_editor(request, product_name, doc_no):
     context["nps_total_score"]=nps_scales * 10
     context["stapel_scales"]=stapel_scales
     context["stapel_scores"]=stapel_score
-    context["type"] = stattrick_result(23478672,"1", "abc123")
+    context['score_series']=score_series
+    context["type"] = stattrick_result(231423409,"1", "abc123")
 
     response_json = context["type"]
+    print(response_json)
 
     poison_case_results = response_json.get("poison case results", {})
     normal_case_results = response_json.get("normal case results", {})
     context["poison_case_results"] = poison_case_results
     context["normal_case_results"] = normal_case_results
 
-    print("\n\n\n stattrick function result",context["type"])
+    #print("\n\n\n stattrick function result",context["type"])
     
     return render(request, 'nps/editor_reports.html', context )
 
