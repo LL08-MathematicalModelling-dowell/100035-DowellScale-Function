@@ -73,9 +73,10 @@ def custom_configuration_view(request):
         template_id = response['template_id']
         custom_input_groupings = response['custom_input_groupings']
         scale_id = response["scale_id"]
+        scale_label = response["scale_label"]
 
         field_add = {"template_id": template_id, "custom_input_groupings": custom_input_groupings,
-                     "scale_id": scale_id,
+                     "scale_id": scale_id, "scale_label": scale_label,
                      "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
             "insert", field_add, "nil")
@@ -95,12 +96,17 @@ def custom_configuration_view(request):
         else:
             custom_input_groupings = settings["custom_input_groupings"]
 
+        if 'scale_label' in response:
+            scale_label = response['scale_label']
+        else:
+            scale_label = settings["scale_label"]
+
         scale_id = settings["scale_id"]
         template_id = settings["template_id"]
         date_created = settings["date_created"]
 
         update_field = {"custom_input_groupings": custom_input_groupings,
-                        "scale_id": scale_id,"template_id": template_id, "date_created": date_created,
+                        "scale_id": scale_id,"template_id": template_id, "scale_label":scale_label,"date_created": date_created,
                         "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
