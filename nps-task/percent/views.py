@@ -287,8 +287,7 @@ def dowell_scale_admin(request):
 def dowell_scale1(request, tname1):
     user = request.session.get('user_name')
     if user == None:
-        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/percent/percent-admin/default/")
-    # # print("+++++++++++++", request.session.get('user_name'))
+        user = "Anonymous"
     context={}
     context["public_url"] = public_url
     brand_name = request.GET.get('brand_name', None)

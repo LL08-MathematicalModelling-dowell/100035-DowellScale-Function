@@ -25,7 +25,7 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
     except:
       return "check your connectivity"
 
-# @api_view(['GET', ])
+#@api_view(['GET', ])
 def calculate_total_score(doc_no=None, product_name=None):
     try:
         field_add = {"brand_data.product_name": product_name}
@@ -76,7 +76,7 @@ def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues)
     return response.json()
 
 
-def Evaluation_module(process_id, doc_no, product_name):
+def stattrick_result(process_id,doc_no=None, product_name=None):
     title = "backendtesting"
     process_id = process_id
     process_sequence_id = 16

@@ -203,20 +203,20 @@ input:checked + .slider:before {
 					</select>
 				</div>
 			
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-6">
 					<label for="scolor">Scale Color</label>
 					<input class="form-control" id="scolor" name="scolor" onchange="myScolor()"
 					       placeholder="Background Color"
 					       required type="color"
                            value="{{settings.scalecolor}}">
 				</div>
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-6">
 					<label for="rcolor">Round Color</label>
 					<input class="form-control" id="rcolor" name="rcolor" onchange="myRcolor()" placeholder="Font Color"
 					       required type="color"
                            value="{{settings.roundcolor}}">
 				</div>
-				<div class="form-group col-md-4">
+				<div class="form-group col-md-6">
 					<label for="fcolor">Font Color</label>
 					<input class="form-control" id="fcolor" name="fcolor" onchange="myFcolor()"
 					       placeholder="Scale Color"
@@ -256,7 +256,7 @@ input:checked + .slider:before {
 					<label for="time">Number of Scales</label>
 					<input class="form-control" id="no_of_scales" min="1" max="100" name="no_of_scales"
 					       onchange="myNumScales()" placeholder="Number of scales" type="number"
-                           value="{{settings.no_of_scales}}">
+                           value="1" readonly>
 				</div>
 
 				<div class="form-group col-md-3 "
@@ -284,56 +284,14 @@ input:checked + .slider:before {
 					</label>
 					<span style="font-weight: bold">Toggle to show total scores for all instances</span>
 				</div>
-
 				<input id="checkboxScoresInput" name="checkboxScores" type="text" value="false" style="display: none">
-
 				<div class="form-group col-md-12 text-right p-15">
 					<button class="btn btn-primary" id="saveBtn">Save</button>
-<!--					<a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"-->
-<!--					   onclick="preview();">Preview</a>-->
+
 				</div>
 			</form>
 		</div>
-		<div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
-			<!--<img src="https://100014.pythonanywhere.com/media/brandlogos/thumbnails/" width="90%" height="100%" style="height:150px" alt="your logo"><hr>-->
-			<!--               	<div style="font-size:20px">Considering your experience with <b></b>, how likely would you be to recommend <b></b> to your friend or colleague<br></div><hr>-->
-			<!--                   <div class="horizontal d-flex justify-content-center" id="red"></div>-->
-			<!--                   <center><div class="d-flex justify-content-center" id="horizontal"></div></center>-->
-			<!--                   <hr>-->
-			<!--                   <br>-->
-		</div>
-		<!-- Button trigger modal -->
-
-		<!-- Modal -->
-
-		<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter"
-		     role="dialog" tabindex="-1">
-			<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-				<div class="modal-content" id="modalContent">
-					<div class="modal-header">
-						<h2 align="center" class="modal-title" id="exampleModalLongTitle"></h2>
-						<button aria-label="Close" class="close" data-dismiss="modal" type="button">
-							<span aria-hidden="true">×</span>
-						</button>
-					</div>
-					<div class="modal-body" id="modal-body">
-						<div class="horizontal d-flex justify-content-center" id="red"></div>
-						<center>
-							<div id="horizontal"></div>
-						</center>
-						<br>
-						<div class="pl-3" id="lab-hor" style="font-size:2em">
-							<div id="left"></div>
-							<div id="center"></div>
-							<div id="right"></div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-						<!--<button type="button" class="btn btn-primary">Save changes</button>-->
-					</div>
-				</div>
-			</div>
+		
 			<script>
                   var vert="vertical";
                   var hori="horizontal";
@@ -396,12 +354,10 @@ input:checked + .slider:before {
 
 
                   function myFunction() {
-					//if (ltext === ctext || ctext === rtext || ltext === rtext){
-					//	alert("Labels should be unique")
-					//	return
-					//}
+				
 	                var x = document.getElementById("snackbar");
 	                x.className = "show";
+                  x.innerHTML = 'Successfully Updated Scale';
 	                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
 	                return document.getElementById('scale_settings').submit();
                     }
@@ -416,7 +372,7 @@ input:checked + .slider:before {
                   function myNumScales() {
                       no_of_scales = document.getElementById("no_of_scales").value;
                       var x = document.getElementById("snackbar");
-                      x.innerHTML = `Successfully Updated the scale`;
+                      x.innerHTML = 'Successfully Updated the scale';
                   }
 
 

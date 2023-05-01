@@ -329,6 +329,7 @@ $(document).ready(function() {
 
     let dont_click = "{{dont_click|safe}}"
 
+    console.log(dont_click)
     if (mbuttons.length > 0 && dont_click === "False") {
         for (var i = 0; i < mbuttons.length; i++) {
             mbuttons[i].addEventListener("click", function() {

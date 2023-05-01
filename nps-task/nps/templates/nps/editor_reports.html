@@ -46,23 +46,20 @@ table {
     <table style="width: 100%;" class="report">
 <thead>
 <tr>
-<th style="width:33%">Scale Types</th>
-<th style="width:33%">Scale Occurence</th>
-<th  style="width:34%">Total Response</th>
+<th style="width:20%">Scale Type</th>
+<th style="width:30%">Scale Occurence</th>
+<th style="width:30%">Scale Responses</th>
+<th  style="width:20%">Total Response</th>
 </tr>
  <tbody>
     <tr>
       <td>NPS</td>
       <td>{{ nps_scales}}</td>
+      <td>{{score_series}}</td>
       <td>{{nps_score}}/{{nps_total_score}}</td>
+      
          
-    <tr>
-      <td>Stapel</td>
-      <td>{{stapel_scales}}</td>
-      <td>{{stapel_scores|safe}}</td>
-      
-      
-    </tr>
+    
   </tbody>
 </thead>
     </table></div>
