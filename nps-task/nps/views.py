@@ -58,6 +58,21 @@ def total_score_fun(id):
 
     return overall_category, category, all_scores, instanceID, b, total_score, existing_responses
 
+@api_view(['GET'])
+def custom_configuration_list(request):
+    response = request.data
+    id = response['template_id']
+    field_add = {"template_id": id, }
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
+        "fetch", field_add, "nil")
+    data = json.loads(x)
+    element_ids = []
+    for i in data['data']:
+        dic = i['custom_input_groupings']
+        all_values = list(dic.values())
+        for y in all_values:
+            element_ids.append(y)
+    return Response({"data": element_ids, })
 # Custom configuration api
 @api_view(['POST', 'PUT', 'GET'])
 def custom_configuration_view(request):
@@ -66,8 +81,9 @@ def custom_configuration_view(request):
         id = response['scale_id']
         field_add = {"scale_id": id, }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
-            "fetch", field_add, "nil")
+            "find", field_add, "nil")
         return Response({"data": json.loads(x), })
+
     elif request.method == "POST":
         response = request.data
         template_id = response['template_id']
