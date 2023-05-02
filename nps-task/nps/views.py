@@ -58,6 +58,21 @@ def total_score_fun(id):
 
     return overall_category, category, all_scores, instanceID, b, total_score, existing_responses
 
+@api_view(['GET'])
+def custom_configuration_list(request):
+    response = request.data
+    id = response['template_id']
+    field_add = {"template_id": id, }
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
+        "fetch", field_add, "nil")
+    data = json.loads(x)
+    element_ids = []
+    for i in data['data']:
+        dic = i['custom_input_groupings']
+        all_values = list(dic.values())
+        for y in all_values:
+            element_ids.append(y)
+    return Response({"data": element_ids, })
 # Custom configuration api
 @api_view(['POST', 'PUT', 'GET'])
 def custom_configuration_view(request):
@@ -66,20 +81,39 @@ def custom_configuration_view(request):
         id = response['scale_id']
         field_add = {"scale_id": id, }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
-            "fetch", field_add, "nil")
+            "find", field_add, "nil")
         return Response({"data": json.loads(x), })
+
     elif request.method == "POST":
         response = request.data
         template_id = response['template_id']
         custom_input_groupings = response['custom_input_groupings']
         scale_id = response["scale_id"]
+        scale_label = response["scale_label"]
 
-        field_add = {"template_id": template_id, "custom_input_groupings": custom_input_groupings,
-                     "scale_id": scale_id,
-                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
-            "insert", field_add, "nil")
-        return Response({"message": json.loads(x), "data": field_add})
+        try:
+            field_add = {"_id": scale_id }
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find",
+                field_add, "nil")
+            data = json.loads(x)
+            settings_values = data['data']['settings']
+
+            field_add1 = {"template_id": template_id, "custom_input_groupings": custom_input_groupings,
+                         "scale_id": scale_id, "scale_label": scale_label,"default_name":data['data']['settings']['name'],
+                         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
+                "insert", field_add1, "nil")
+
+            field_add = {"_id": scale_id, }
+            settings_values['name'] = scale_label
+            print("Hello this is my settings values", settings_values)
+            update_field = {
+                "settings": settings_values}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                field_add, update_field)
+            return Response({"message": json.loads(x), "data": field_add1})
+        except:
+            return Response({"message": "Error Occurred Try Again"}, status=status.HTTP_403_FORBIDDEN)
 
     elif request.method == "PUT":
         response = request.data
@@ -95,20 +129,24 @@ def custom_configuration_view(request):
         else:
             custom_input_groupings = settings["custom_input_groupings"]
 
+        if 'scale_label' in response:
+            scale_label = response['scale_label']
+        else:
+            scale_label = settings["scale_label"]
+
         scale_id = settings["scale_id"]
         template_id = settings["template_id"]
         date_created = settings["date_created"]
-
-        update_field = {"custom_input_groupings": custom_input_groupings,
-                        "scale_id": scale_id,"template_id": template_id, "date_created": date_created,
-                        "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
-            "update", field_add, update_field)
-        return Response({"success": "Successful Updated ", "data": update_field})
-
+        try:
+            update_field = {"custom_input_groupings": custom_input_groupings,
+                            "scale_id": scale_id,"template_id": template_id, "scale_label":scale_label,"date_created": date_created,
+                            "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data", "1181", "ABCDE",
+                "update", field_add, update_field)
+            return Response({"success": "Successful Updated ", "data": update_field})
+        except:
+            return Response({"message": "Error Occurred Try Again!"}, status=status.HTTP_403_FORBIDDEN)
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
-
 
 # CREATE SCALE SETTINGS
 @api_view(['POST', 'PUT', 'GET'])
@@ -122,12 +160,13 @@ def settings_api_view_create(request):
                 "find", field_add, "nil")
             settings_json = json.loads(x)
             settings = settings_json['data']['settings']
+            print(settings)
             template_name = settings["template_name"]
-            urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+            urls = f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor"
             if int(settings["no_of_scales"]) > 1:
                 urls = []
                 for i in range(1, int(settings["no_of_scales"]) + 1):
-                    url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
+                    url = f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor/{i}"
                     urls.append(url)
             return Response({"data": json.loads(x),"urls": urls})
         else:
@@ -175,7 +214,7 @@ def settings_api_view_create(request):
         # user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
         #     "insert", details, "nil")
 
-        urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+        urls = f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor"
 
         return Response({"success": x, "data": field_add, "scale_urls": urls})
 
@@ -246,12 +285,12 @@ def settings_api_view_create(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
             field_add, update_field)
 
-        urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
+        urls = f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor"
 
         if int(settings["no_of_scales"]) > 1:
             urls = []
             for i in range(1,int(settings["no_of_scales"]) + 1):
-                url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
+                url = f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor/{i}"
                 urls.append(url)
 
         return Response({"success": "Successful Updated ", "data": update_field, "scale_urls": urls})
@@ -284,16 +323,16 @@ def dynamic_scale_instances(request):
     if 'instances' in settings:
         start = len(settings['instances']) + 1
         for x in range(1, len(settings['instances']) + 1):
-            instance = {f"document{x}": f"{public_url}{name_url}{template_name}?brand_name=your_brand&product_name=document/{x}"}
+            instance = {f"document{x}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{x}"}
             instances.append(instance)
     if 'no_of_documents' in response:
         no_of_documents = response['no_of_documents'] + start
         for x in range(start, int(no_of_documents)):
             instance = {
-                f"document{x}": f"{public_url}{name_url}{template_name}?brand_name=your_brand&product_name=document/{x}"}
+                f"document{x}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{x}"}
             instances.append(instance)
     else:
-        instance = {f"document{start}": f"{public_url}{name_url}{template_name}?brand_name=your_brand&product_name=document/{start}"}
+        instance = {f"document{start}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{start}"}
         instances.append(instance)
 
     update_field = {
@@ -412,7 +451,7 @@ def nps_response_view_submit(request):
         # print("Testing Event id values 22", x)
 
         return Response({"success": z, "score": score, "payload": field_add,
-                         "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}",
+                         "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=WorkflowAI&product_name=editor/{response['instance_id']}",
                          "Category": category})
     # return Response({"success": z, "score": {score},"category": category,"payload": field_add, "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}", "total score": f"{all_scores} \n TotalScore: {total_score} \n Category: {o_category}"})
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
@@ -451,7 +490,7 @@ def single_scale_settings_api_view(request, id=None):
         template_name = settings['template_name']
         urls = []
         for i in range(1, no_of_scales + 1):
-            url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
+            url = f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor/{i}"
             urls.append(url)
 
         return Response({"payload": json.loads(x), "urls": urls})
