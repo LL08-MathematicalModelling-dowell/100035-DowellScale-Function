@@ -1,21 +1,4 @@
 import requests
-#
-# url = "https://100023.pythonanywhere.com/api"
-#
-# data = {
-#     "Process_id": 832947228,
-#     "allowable_error":"4",
-#     "ind_dev":"1",
-#     "bins":"10",
-#     "slope_percentage_deviation":"25"
-# }
-#
-# headers = {'content-type': 'application/json'}
-# response = requests.post(url, json=data, headers=headers)
-#
-# response_data = response.json()
-# print(response_data)
-
 
 def Normality_api(process_id):
     url = "https://100023.pythonanywhere.com/api"

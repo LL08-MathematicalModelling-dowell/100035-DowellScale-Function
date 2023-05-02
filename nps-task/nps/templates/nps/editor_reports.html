@@ -7,6 +7,112 @@
     font-weight:bold;
 }
 
+.results {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.results h2 {
+  font-size: 24px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.scale-results {
+  padding: 0;
+  margin: 0;
+}
+
+.scale-results h3 {
+  font-size: 20px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.scale-results button {
+  background-color: #f5f5f5;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.3s;
+margin-bottom: 10px;
+}
+
+.scale-results button:hover {
+background-color: #e9e9e9;
+}
+
+.scale-results .key {
+font-weight: bold;
+display: inline-block;
+width: 150px;
+}
+
+.normality-api-list {
+margin-top: 30px;
+}
+
+.normality-api-list button {
+background-color: #f5f5f5;
+border: none;
+padding: 10px;
+width: 100%;
+text-align: left;
+cursor: pointer;
+transition: background-color 0.2s ease-in-out;
+margin-bottom: 10px;
+}
+
+.normality-api-list button:hover {
+background-color: #e9e9e9;
+}
+
+.normality-api-list .key {
+font-weight: bold;
+display: inline-block;
+width: 150px;
+}
+
+.list1-calculation {
+margin-top: 30px;
+}
+
+.list1-calculation h2 {
+font-size: 20px;
+margin-bottom: 10px;
+}
+
+.list1-calculation button {
+background-color: #f5f5f5;
+border: none;
+padding: 10px;
+width: 100%;
+text-align: left;
+cursor: pointer;
+transition: background-color 0.2s ease-in-out;
+margin-bottom: 10px;
+}
+
+.list1-calculation button:hover {
+background-color: #e9e9e9;
+}
+
+.list1-calculation .key {
+font-weight: bold;
+display: inline-block;
+width: 150px;
+}
+
+p {
+margin-top: 20px;
+font-size: 18px;
+font-style: italic;
+color: #888;
+}
+
 table {
     	border-collapse: collapse;
 		width: 100%;
@@ -63,76 +169,94 @@ table {
   </tbody>
 </thead>
     </table></div>
-<table>
-  <tr>
-    <th colspan="3">Scale Results</th>
-  </tr>
-  <tr>
-    <th>Category</th>
-    <th>Key</th>
-    <th>Value</th>
-  </tr>
-  <tr>
-    <td rowspan="{{ poison_case_results.items|length }}">Poison Case Results</td>
-    {% for key, value in poison_case_results.items %}
-      <td>{{ key }}</td>
-      <td>{{ value }}</td>
-  </tr>
-  <tr>
-    {% endfor %}
-  </tr>
-  <tr>
-    <td rowspan="{{ normal_case_results.items|length }}">Normal Case Results</td>
-    {% for key, value in normal_case_results.items %}
-      <td>{{ key }}</td>
-      <td>{{ value }}</td>
-  </tr>
-  <tr>
-    {% endfor %}
-  </tr>
-</table>
 
-<h2>Normality API Response Details</h2>
-<table>
-  <tr>
-    <th>Title</th>
-    <td>{{ n_title }}</td>
-  </tr>
-  <tr>
-    <th>Process ID</th>
-    <td>{{ n_process_id }}</td>
-  </tr>
-  <tr>
-    <th>Bins</th>
-    <td>{{ n_bins }}</td>
-  </tr>
-  <tr>
-    <th>Allowed Error</th>
-    <td>{{ n_allowed_error }}</td>
-  </tr>
-  <tr>
-    <th>Series Count</th>
-    <td>{{ n_series_count }}</td>
-  </tr>
-</table>
 
-<h2>List1 Calculations</h2>
-{% if n_list1 %}
-<table>
-  <tr>
-    <th>Key</th>
-    <th>Value</th>
-  </tr>
-  {% for key, value in n_list1.items %}
-  <tr>
-    <td>{{ key }}</td>
-    <td>{{ value }}</td>
-  </tr>
-  {% endfor %}
-</table>
-{% else %}
-<p>No List1 Calculations available.</p>
-{% endif %}
+
+<div class="results">
+  <div class="scale-results">
+    <h2>Scale Results</h2>
+    <div class="poison-case-results">
+      <h3>Poison Case Results</h3>
+      <ul class="poison-case-list">
+        {% for key, value in poison_case_results.items %}
+        <li>
+          <button>
+            <span class="key">{{ key }}:</span>
+            <span class="value">{{ value }}</span>
+          </button>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="normal-case-results">
+      <h3>Normal Case Results</h3>
+      <ul class="normal-case-list">
+        {% for key, value in normal_case_results.items %}
+        <li>
+          <button>
+            <span class="key">{{ key }}:</span>
+            <span class="value">{{ value }}</span>
+          </button>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="normality-api-list">
+    <h2>Normality API Response Details</h2>
+    <ul>
+      <li>
+        <button>
+          <span class="key">Title:</span>
+          <span class="value">{{ n_title }}</span>
+        </button>
+      </li>
+      <li>
+        <button>
+          <span class="key">Process ID:</span>
+          <span class="value">{{ n_process_id }}</span>
+        </button>
+      </li>
+      <li>
+        <button>
+          <span class="key">Bins:</span>
+          <span class="value">{{ n_bins }}</span>
+        </button>
+      </li>
+      <li>
+        <button>
+          <span class="key">Allowed Error:</span>
+          <span class="value">{{ n_allowed_error }}</span>
+        </button>
+      </li>
+      <li>
+        <button>
+          <span class="key">Series Count:</span>
+          <span class="value">{{ n_series_count }}</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+  {% if n_list1 %}
+  <div class="list1-calculation">
+    <h2>List1 Calculations</h2>
+    <ul>
+      {% for key, value in n_list1.items %}
+      <li>
+        <button>
+          <span class="key">{{ key }}:</span>
+          <span class="value">{{ value }}</span>
+        </button>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% else %}
+  <p>No List1 Calculations available.</p>
+  {% endif %}
+</div>
+
+
 
 
 {% endblock %}
