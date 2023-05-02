@@ -7,7 +7,7 @@ from .eventID import get_event_id
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
-
+from .calculate_function import stattrick_result
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
@@ -350,14 +350,6 @@ def dynamic_scale_instances(request):
 @api_view(['GET', ])
 def calculate_total_score(request, doc_no=None, product_name=None):
     try:
-        # field_add = {"settings.template_name": id, }
-        # x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-        #     "fetch", field_add, "nil")
-
-        # settings_json = json.loads(x)
-        # id = settings_json['data'][0]["_id"]
-        # overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id.strip())
-
         field_add = {"brand_data.product_name": product_name}
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
             "1094", "ABCDE", "fetch", field_add, "nil")
@@ -540,13 +532,18 @@ def evaluation_editor(request, product_name, doc_no):
         "1094", "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response_data)["data"]
     # loop over token find the one with matching instance = document
+    #print(data)
     all_scales = []
+    score_series=[]
     if len(data) != 0:
         for x in data:
             instance_id = x['score'][0]['instance_id'].split("/")[-1]
+            scores=x['score'][0]['score']
             if instance_id == doc_no:  # document_number
                 all_scales.append(x)
-
+                #score_series.append(scores)
+                
+                
     nps_scales = 0
     nps_score = 0
     context['nps_scores'] = []
@@ -560,18 +557,33 @@ def evaluation_editor(request, product_name, doc_no):
             context['nps_scores'].append(score)
             nps_score += score
             nps_scales += 1
-
+            score_series.append(score)
         elif scale_type == "stapel scale":
             score = x['score'][0]['score']
             stapel_score.append(score)
             stapel_scales += 1
 
-    context["nps_scales"] = nps_scales
-    context["nps_score"] = nps_score
-    context["nps_total_score"] = nps_scales * 10
-    context["stapel_scales"] = stapel_scales
-    context["stapel_scores"] = stapel_score
-    return render(request, 'nps/editor_reports.html', context)
+
+     
+    context["nps_scales"]=nps_scales
+    context["nps_score"]=nps_score 
+    context["nps_total_score"]=nps_scales * 10
+    context["stapel_scales"]=stapel_scales
+    context["stapel_scores"]=stapel_score
+    context['score_series']=score_series
+    context["type"] = stattrick_result(231423409,"1", "abc123")
+
+    response_json = context["type"]
+    print(response_json)
+
+    poison_case_results = response_json.get("poison case results", {})
+    normal_case_results = response_json.get("normal case results", {})
+    context["poison_case_results"] = poison_case_results
+    context["normal_case_results"] = normal_case_results
+
+    #print("\n\n\n stattrick function result",context["type"])
+    
+    return render(request, 'nps/editor_reports.html', context )
 
 @xframe_options_exempt
 @csrf_exempt
