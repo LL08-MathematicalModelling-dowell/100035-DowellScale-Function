@@ -192,6 +192,16 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 ### 1. Create/Retrieve/Update custom configurtions
 
 #### Request METHOD : POST, PUT, GET
+#### End-Point : https://100035.pythonanywhere.com/api/nps_custom_data_all
+#### If request METHOD : GET
+
+```python
+    {
+        "template_id": "47576",                              #scale_id that you would wish to retrieve its details
+    }
+    
+```
+#### Request METHOD : POST, PUT, GET
 #### End-Point : https://100035.pythonanywhere.com/api/nps_custom_data/
 #### If request METHOD : GET
 
