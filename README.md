@@ -197,7 +197,7 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 
 ```python
     {
-        "template_id": "47576",                              #scale_id that you would wish to retrieve its details
+        "template_id": "47576",                              #template Id to retrieve all elements present in a template
     }
     
 ```
