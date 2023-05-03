@@ -7,10 +7,18 @@ from .eventID import get_event_id
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
-from .calculate_function import stattrick_result
+from .calculate_function import Evaluation_module
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
+
+from .normality import Normality_api
+
+
+def generate_random_number():
+    min_number = 10 ** 2
+    max_number = 10 ** 6 - 1
+    return random.randint(min_number, max_number)
 
 def compare_event_ids(arr1, arr2):
     for elem in arr1:
@@ -526,6 +534,7 @@ def scale_response_api_view(request):
 
 
 def evaluation_editor(request, product_name, doc_no):
+    random_number = generate_random_number()
     context = {}
     field_add = {"brand_data.product_name": product_name}
     response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
@@ -571,7 +580,15 @@ def evaluation_editor(request, product_name, doc_no):
     context["stapel_scales"]=stapel_scales
     context["stapel_scores"]=stapel_score
     context['score_series']=score_series
-    context["type"] = stattrick_result(231423409,"1", "abc123")
+    context["type"] = Evaluation_module(random_number, "1", "asd123")
+    normality = Normality_api(random_number)
+    normality_data = normality.get('list1') if normality else None
+    context["n_title"] = normality.get('title')
+    context["n_process_id"] = normality.get('process_id')
+    context["n_bins"] = normality.get('bins')
+    context["n_allowed_error"] = normality.get('allowed_error')
+    context["n_series_count"] = normality.get('series_count')
+    context["n_list1"] = normality_data
 
     response_json = context["type"]
     print(response_json)
