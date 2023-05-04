@@ -12,7 +12,8 @@ urlpatterns = [
     path('nps-admin/default/', default_scale_admin, name='default_page_admin'),
     path('nps-editor/settings/<str:id>', dowell_editor_admin, name='default_page_admin'),
     path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
-    path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
+    # path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
+
 
     # Rest endpoints
     path('api/nps_create_instance', dynamic_scale_instances, name="dynamic_instance"),
