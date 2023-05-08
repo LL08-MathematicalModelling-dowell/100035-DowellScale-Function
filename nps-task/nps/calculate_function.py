@@ -74,14 +74,15 @@ def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues)
     }
 
     response = requests.post(url, json=payload)
+    print("\n\nstattrick response", response, "\n\n")
 
     return response.json()
 
 
 def Evaluation_module(process_id,doc_no=None, product_name=None):
-    title = "backendtesting"
+    title = "evaluation_module"
     process_id = process_id
-    process_sequence_id = 16
+    process_sequence_id = 16 # like process id, depend on workflow process
     series = 3
     seriesvalues = {
         "list1": calculate_total_score(doc_no, product_name),

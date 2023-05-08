@@ -32,3 +32,4 @@ def Normality_api(process_id):
         'series_count': series_count,
         'list1': list1
     }
+
