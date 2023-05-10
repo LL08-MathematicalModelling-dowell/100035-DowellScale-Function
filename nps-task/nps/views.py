@@ -11,7 +11,6 @@ from .calculate_function import Evaluation_module
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-
 from .normality import Normality_api
 
 
@@ -66,7 +65,7 @@ def total_score_fun(id):
 
     return overall_category, category, all_scores, instanceID, b, total_score, existing_responses
 
-@api_view(['GET'])
+@api_view(['POST',])
 def custom_configuration_list(request):
     response = request.data
     id = response['template_id']
@@ -733,6 +732,7 @@ def dowell_scale_admin(request):
         text = f"{left}+{center}+{right}"
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
+        print(allow_resp)
         if time == "":
             time = 0
         if allow_resp == "false":
@@ -812,7 +812,6 @@ def dowell_scale1(request, tname1):
     context["total_score_scales"] = int(number_of_scale) * 10
     current_url = url.split('/')[-1]
     context['cur_url'] = current_url
-
     #check if the url has an instance of if allow response variable == True/False
     if allow_resp == False or len(current_url) > 3:
         context["dont_click"] = True
@@ -820,7 +819,6 @@ def dowell_scale1(request, tname1):
     else:
         user = request.session.get('user_name')
         context["dont_click"] = False
-
         overall_category, category, all_scores, instanceID, b, total_score, existing_responses = total_score_fun(context["scale_id"])
         responses_id = []
         for c in existing_responses:
