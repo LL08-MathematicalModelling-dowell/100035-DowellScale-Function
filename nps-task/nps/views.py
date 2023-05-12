@@ -7,7 +7,6 @@ from .eventID import get_event_id
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
-
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
