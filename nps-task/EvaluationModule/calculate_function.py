@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 import requests
-# from new import stattricks_api
+import random
 import json
 from rest_framework.decorators import api_view
 
@@ -109,3 +109,8 @@ def process_data(data, doc_no):
         scores[scale_type].append(score)
     print(scores, "scores\n\n")
     return scores
+
+def generate_random_number():
+    min_number = 10 ** 2
+    max_number = 10 ** 6 - 1
+    return random.randint(min_number, max_number)

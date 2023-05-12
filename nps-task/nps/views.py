@@ -492,43 +492,48 @@ def scale_response_api_view(request):
 
 
 def evaluation_editor(request, product_name, doc_no):
+    random_number = generate_random_number()
     context = {}
-    field_add = {"brand_data.product_name": product_name}
-    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-        "1094", "ABCDE", "fetch", field_add, "nil")
-    data = json.loads(response_data)["data"]
-    # loop over token find the one with matching instance = document
-    all_scales = []
+    data = fetch_data(product_name)
+
     if len(data) != 0:
-        for x in data:
-            instance_id = x['score'][0]['instance_id'].split("/")[-1]
-            if instance_id == doc_no:  # document_number
-                all_scales.append(x)
+        scores = process_data(data, doc_no)
+        nps_scales = len(scores["nps scale"])
+        nps_score = sum(scores["nps scale"])
+        stapel_scales = len(scores["stapel scale"])
+        stapel_score = scores["stapel scale"]
 
-    nps_scales = 0
-    nps_score = 0
-    context['nps_scores'] = []
-    stapel_scales = 0
-    stapel_score = []
+        context.update({
+            "nps_scales": nps_scales,
+            "nps_score": nps_score,
+            "nps_total_score": nps_scales * 10,
+            "stapel_scales": stapel_scales,
+            "stapel_scores": stapel_score,
+            "score_series": scores["nps scale"]
+        })
 
-    for x in all_scales:
-        scale_type = x["scale_data"]["scale_type"]  # nps/stapel/lite
-        if scale_type == "nps scale":
-            score = x['score'][0]['score']
-            context['nps_scores'].append(score)
-            nps_score += score
-            nps_scales += 1
+    response_json = Evaluation_module(random_number, doc_no, product_name)
+    context.update(response_json)
 
-        elif scale_type == "stapel scale":
-            score = x['score'][0]['score']
-            stapel_score.append(score)
-            stapel_scales += 1
+    poison_case_results = response_json.get("poison case results", {})
+    normal_case_results = response_json.get("normal case results", {})
+    context.update({
+        "poison_case_results": poison_case_results,
+        "normal_case_results": normal_case_results
+    })
 
-    context["nps_scales"] = nps_scales
-    context["nps_score"] = nps_score
-    context["nps_total_score"] = nps_scales * 10
-    context["stapel_scales"] = stapel_scales
-    context["stapel_scores"] = stapel_score
+    normality = Normality_api(random_number)
+    context.update(normality)
+
+    normality_data = normality.get('list1') if normality else None
+    context.update({
+        "n_title": normality.get('title'),
+        "n_process_id": normality.get('process_id'),
+        "n_bins": normality.get('bins'),
+        "n_allowed_error": normality.get('allowed_error'),
+        "n_series_count": normality.get('series_count'),
+        "n_list1": normality_data
+    })
 
     return render(request, 'nps/editor_reports.html', context)
 
