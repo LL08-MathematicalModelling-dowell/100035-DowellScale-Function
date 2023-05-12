@@ -7,18 +7,9 @@ from .eventID import get_event_id
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
-from .calculate_function import Evaluation_module, fetch_data, process_data
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-
-from .normality import Normality_api
-
-
-def generate_random_number():
-    min_number = 10 ** 2
-    max_number = 10 ** 6 - 1
-    return random.randint(min_number, max_number)
 
 def compare_event_ids(arr1, arr2):
     for elem in arr1:
@@ -319,6 +310,14 @@ def dynamic_scale_instances(request):
 @api_view(['GET', ])
 def calculate_total_score(request, doc_no=None, product_name=None):
     try:
+        # field_add = {"settings.template_name": id, }
+        # x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+        #     "fetch", field_add, "nil")
+
+        # settings_json = json.loads(x)
+        # id = settings_json['data'][0]["_id"]
+        # overall_category, category, all_scores, instanceID, b, total_score = total_score_fun(id.strip())
+
         field_add = {"brand_data.product_name": product_name}
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
             "1094", "ABCDE", "fetch", field_add, "nil")
@@ -454,14 +453,12 @@ def single_scale_settings_api_view(request, id=None):
 
     if request.method == 'GET':
         settings = settings_json['data'][0]['settings']
-        no_of_scales = int(settings['no_of_scales'])
-
+        no_of_scales = settings['no_of_scales']
         template_name = settings['template_name']
         urls = []
         for i in range(1, no_of_scales + 1):
             url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
             urls.append(url)
-
         return Response({"payload": json.loads(x), "urls": urls})
 
 
@@ -495,51 +492,45 @@ def scale_response_api_view(request):
 
 
 def evaluation_editor(request, product_name, doc_no):
-    random_number = generate_random_number()
     context = {}
-    data = fetch_data(product_name)
-
+    field_add = {"brand_data.product_name": product_name}
+    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+        "1094", "ABCDE", "fetch", field_add, "nil")
+    data = json.loads(response_data)["data"]
+    # loop over token find the one with matching instance = document
+    all_scales = []
     if len(data) != 0:
-        scores = process_data(data, doc_no)
-        nps_scales = len(scores["nps scale"])
-        nps_score = sum(scores["nps scale"])
-        stapel_scales = len(scores["stapel scale"])
-        stapel_score = scores["stapel scale"]
+        for x in data:
+            instance_id = x['score'][0]['instance_id'].split("/")[-1]
+            if instance_id == doc_no:  # document_number
+                all_scales.append(x)
 
-        context.update({
-            "nps_scales": nps_scales,
-            "nps_score": nps_score,
-            "nps_total_score": nps_scales * 10,
-            "stapel_scales": stapel_scales,
-            "stapel_scores": stapel_score,
-            "score_series": scores["nps scale"]
-        })
+    nps_scales = 0
+    nps_score = 0
+    context['nps_scores'] = []
+    stapel_scales = 0
+    stapel_score = []
 
-    response_json = Evaluation_module(random_number, doc_no, product_name)
-    context.update(response_json)
+    for x in all_scales:
+        scale_type = x["scale_data"]["scale_type"]  # nps/stapel/lite
+        if scale_type == "nps scale":
+            score = x['score'][0]['score']
+            context['nps_scores'].append(score)
+            nps_score += score
+            nps_scales += 1
 
-    poison_case_results = response_json.get("poison case results", {})
-    normal_case_results = response_json.get("normal case results", {})
-    context.update({
-        "poison_case_results": poison_case_results,
-        "normal_case_results": normal_case_results
-    })
+        elif scale_type == "stapel scale":
+            score = x['score'][0]['score']
+            stapel_score.append(score)
+            stapel_scales += 1
 
-    normality = Normality_api(random_number)
-    context.update(normality)
-
-    normality_data = normality.get('list1') if normality else None
-    context.update({
-        "n_title": normality.get('title'),
-        "n_process_id": normality.get('process_id'),
-        "n_bins": normality.get('bins'),
-        "n_allowed_error": normality.get('allowed_error'),
-        "n_series_count": normality.get('series_count'),
-        "n_list1": normality_data
-    })
+    context["nps_scales"] = nps_scales
+    context["nps_score"] = nps_score
+    context["nps_total_score"] = nps_scales * 10
+    context["stapel_scales"] = stapel_scales
+    context["stapel_scores"] = stapel_score
 
     return render(request, 'nps/editor_reports.html', context)
-
 
 @xframe_options_exempt
 @csrf_exempt
@@ -567,17 +558,15 @@ def dowell_editor_admin(request, id):
             center = request.POST["center"]
             time = request.POST['time']
             show_total = request.POST['checkboxScores']
-            allow_resp = False
             text = f"{left}+{center}+{right}"
             template_name = settings["template_name"]
             if time == "":
                 time = 0
 
-
             update_field = {"settings": {"orientation": orientation,
                                          "scalecolor": scalecolor, "numberrating": 10, "no_of_scales": no_of_scales,
                                          "roundcolor": roundcolor, "fontcolor": fontcolor,
-                                         "fomat": fomat, "time": time, "allow_resp": allow_resp,
+                                         "fomat": fomat, "time": time,
                                          "template_name": template_name, "name": name, "text": text,
                                          "left": left,
                                          "right": right, "center": center,
@@ -586,7 +575,9 @@ def dowell_editor_admin(request, id):
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                 field_add, update_field)
             urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-            context["settings"] = update_field["settings"]
+
+            # return HttpResponse(urls)
+
         return render(request, 'nps/editor_scale_admin.html', context)
     elif scale_type == "stapel scale":
         if request.method == 'POST':
@@ -686,7 +677,7 @@ def dowell_scale_admin(request):
                                                            "template_name": template_name, "name": name, "text": text,
                                                            "left": left, "right": right, "center": center,
                                                            "scale-category": "nps scale", "no_of_scales": no_of_scales,
-                                                           "show_total_score": show_total, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+                                                           "show_total_score": show_total}}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                 field_add, "nil")
             # User details
