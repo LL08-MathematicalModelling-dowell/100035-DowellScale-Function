@@ -1,5 +1,7 @@
+from collections import defaultdict
+
 import requests
-# from new import stattricks_api
+import random
 import json
 from rest_framework.decorators import api_view
 
@@ -72,14 +74,15 @@ def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues)
     }
 
     response = requests.post(url, json=payload)
+    print("\n\nstattrick response", response, "\n\n")
 
     return response.json()
 
 
 def Evaluation_module(process_id,doc_no=None, product_name=None):
-    title = "backendtesting"
+    title = "evaluation_module"
     process_id = process_id
-    process_sequence_id = 16
+    process_sequence_id = 16 # like process id, depend on workflow process
     series = 3
     seriesvalues = {
         "list1": calculate_total_score(doc_no, product_name),
@@ -89,3 +92,25 @@ def Evaluation_module(process_id,doc_no=None, product_name=None):
     print(result)
 
     return result
+
+def fetch_data(product_name):
+    field_add = {"brand_data.product_name": product_name}
+    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                      "1094", "ABCDE", "fetch", field_add, "nil")
+    return json.loads(response_data)["data"]
+
+def process_data(data, doc_no):
+    all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[-1] == doc_no]
+    scores = defaultdict(list)
+    for x in all_scales:
+        print(x, "x\n\n")
+        scale_type = x["scale_data"]["scale_type"]
+        score = x['score'][0]['score']
+        scores[scale_type].append(score)
+    print(scores, "scores\n\n")
+    return scores
+
+def generate_random_number():
+    min_number = 10 ** 2
+    max_number = 10 ** 6 - 1
+    return random.randint(min_number, max_number)
