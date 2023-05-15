@@ -7,12 +7,9 @@ from .eventID import get_event_id
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
-from .calculate_function import Evaluation_module
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-from .normality import Normality_api
-
 
 def generate_random_number():
     min_number = 10 ** 2
@@ -455,53 +452,6 @@ def scale_response_api_view(request):
     if request.method == 'GET':
         return Response(json.loads(x))
 
-
-def evaluation_editor(request, product_name, doc_no):
-    random_number = generate_random_number()
-    context = {}
-    data = fetch_data(product_name)
-
-    if len(data) != 0:
-        scores = process_data(data, doc_no)
-        nps_scales = len(scores["nps scale"])
-        nps_score = sum(scores["nps scale"])
-        stapel_scales = len(scores["stapel scale"])
-        stapel_score = scores["stapel scale"]
-
-        context.update({
-            "nps_scales": nps_scales,
-            "nps_score": nps_score,
-            "nps_total_score": nps_scales * 10,
-            "stapel_scales": stapel_scales,
-            "stapel_scores": stapel_score,
-            "score_series": scores["nps scale"]
-        })
-
-    response_json = Evaluation_module(random_number, doc_no, product_name)
-    context.update(response_json)
-
-    poison_case_results = response_json.get("poison case results", {})
-    normal_case_results = response_json.get("normal case results", {})
-    context.update({
-        "poison_case_results": poison_case_results,
-        "normal_case_results": normal_case_results
-    })
-
-    normality = Normality_api(random_number)
-    context.update(normality)
-
-    normality_data = normality.get('list1') if normality else None
-    context.update({
-        "n_title": normality.get('title'),
-        "n_process_id": normality.get('process_id'),
-        "n_bins": normality.get('bins'),
-        "n_allowed_error": normality.get('allowed_error'),
-        "n_series_count": normality.get('series_count'),
-        "n_list1": normality_data
-    })
-
-    return render(request, 'nps/editor_reports.html', context)
-
 @xframe_options_exempt
 @csrf_exempt
 def dowell_editor_admin(request, id):
@@ -605,7 +555,6 @@ def dowell_editor_admin(request, id):
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                 field_add, update_field)
         return render(request, 'nps/editor_percent_scale.html', context)
-
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:

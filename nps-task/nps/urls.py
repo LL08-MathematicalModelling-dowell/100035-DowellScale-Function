@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import custom_configuration_list,evaluation_editor,dowell_editor_admin,custom_configuration_view,calculate_total_score,dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create,nps_response_view_submit,dynamic_scale_instances
+from .views import custom_configuration_list,dowell_editor_admin,custom_configuration_view,calculate_total_score,dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create,nps_response_view_submit,dynamic_scale_instances
 
 
 app_name="nps"
@@ -11,9 +11,6 @@ urlpatterns = [
     path('nps-scale/default/', default_scale, name='default_page'),
     path('nps-admin/default/', default_scale_admin, name='default_page_admin'),
     path('nps-editor/settings/<str:id>', dowell_editor_admin, name='default_page_admin'),
-    path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
-    # path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
-
 
     # Rest endpoints
     path('api/nps_create_instance', dynamic_scale_instances, name="dynamic_instance"),
