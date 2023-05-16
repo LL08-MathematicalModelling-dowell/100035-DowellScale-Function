@@ -174,15 +174,16 @@ def stapel_response_view_submit(request):
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # id = response['id']
-        id = response['template_name']
+        id = response['scale_id']
         score = response['score']
         instance_id = response['instance_id']
-        field_add = {"settings.template_name": id, }
-        # field_add = {"_id": id}
+        field_add = {"_id": id}
         default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
             "fetch", field_add, "nil")
         data = json.loads(default)
+        if data['data'] is None:
+            return Response({"Error": "Scale does not exist"})
+
         x = data['data'][0]['settings']
         number_of_scale = x['no_of_scales']
 
@@ -223,21 +224,6 @@ def stapel_response_view_submit(request):
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
 
-        # field_add = {"scale_data.scale_id": id}
-        # response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-        #     "1094",
-        #     "ABCDE", "fetch", field_add, "nil")
-        # data = json.loads(response_data)
-        # print(data)
-        # total_score = 0
-        #
-        # if len(data['data']) != 0:
-        #     score_data = data["data"]
-        #     print(instance_id)
-        #     for i in score_data:
-        #         b = i['score'][0]['score']
-        #         print("Score of scales-->", b)
-        #         total_score += int(b)
         return Response({"success": z, "payload": field_add, "url": f"{public_url}/stapel/stapel-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}", "total score": total_score})
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 # GET ALL SCALES
@@ -356,7 +342,7 @@ def dowell_scale_admin(request):
 def dowell_scale1(request, tname1):
     user = request.session.get('user_name')
     if user == None:
-        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/stapel/stapel-admin/default/")
+        user = "Anonymous"
     context={}
     context["public_url"] = public_url
     brand_name = request.GET.get('brand_name', None)

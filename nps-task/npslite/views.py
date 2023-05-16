@@ -112,7 +112,7 @@ def dowell_npslite_scale_settings(request):
 def dowell_npslite_scale(request, tname):
     user = request.session.get('user_name')
     if user == None:
-        return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/nps-lite/nps-lite-default-admin/")
+        user = "Anonymous"
 
     print("___+++_+ USER", user)
     context={}
@@ -158,7 +158,6 @@ def dowell_npslite_scale(request, tname):
     context["scale_id"] = data['data'][0]['_id']
     x = data['data'][0]['settings']
     context["defaults"] = x
-    print("+++++++++++++", x['time'])
     number_of_scale = x['no_of_scales']
     context["no_of_scales"] = number_of_scale
     current_url = url.split('/')[-1]
@@ -169,27 +168,21 @@ def dowell_npslite_scale(request, tname):
     response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
         "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response)
-    print("This is my scale_data", data)
 
     existing_scale = False
-    if len(data['data']) != 0:
+    if len(data['data']) != 0 and data['data'][0]['_id'] != '642f1f98b85416d087c3ac57':
         score_data = data["data"]
 
         for i in score_data:
             instance_id = i['category'][0]['instance_id'].split("/")[0]
-            print("instance_id[[[[[[[[[", instance_id)
-            print("current[[[[[[[[[", current_url)
             if instance_id == current_url:
                 existing_scale = True
                 context['response_saved'] = i['category'][0]['category']
                 context['score'] = "show"
-                print("Scale exists--------->", existing_scale)
         if data["data"][0]["scale_data"]["scale_id"] == "63b7ccac0175aa060a42b554":
             existing_scale = False
             # context['response_saved'] = i['score'][0]['score']
             context['score'] = ""
-
-        print("Scale exists--------->", existing_scale)
 
     if request.method == 'POST':
         category = request.POST['scoretag']
@@ -198,8 +191,7 @@ def dowell_npslite_scale(request, tname):
         if len(data['data']) != 0:
             if data["data"][0]["scale_data"]["scale_id"] == "63b7ccac0175aa060a42b554":
                 category = {"instance_id": f"Default", 'category': category}
-        print("Scale exists--------->", existing_scale)
-        print("Nps Lite Category Choice--->",category)
+
 
         if existing_scale == False:
             try:

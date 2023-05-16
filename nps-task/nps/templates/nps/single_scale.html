@@ -329,6 +329,7 @@ $(document).ready(function() {
 
     let dont_click = "{{dont_click|safe}}"
 
+    console.log(dont_click)
     if (mbuttons.length > 0 && dont_click === "False") {
         for (var i = 0; i < mbuttons.length; i++) {
             mbuttons[i].addEventListener("click", function() {
@@ -395,25 +396,25 @@ let setrating = function(id) {
             <p class="card-paragraph text-center">We received your response; <span id="response-saved">({{response_saved}})</span><br/> Thanks!</p>
 	         {% if show_total == 'true' %}
 	         <p class="card-paragraph text-center"><b>TOTAL SCORE : {{ total_scores }} / {{total_score_scales}}</b></p>
-            <p class="card-paragraph text-center">{{ all_scores }}</p>
+{#            <p class="card-paragraph text-center">{{ all_scores }}</p>#}
 	         {% endif %}
           </div>
         <div class="col-sm-8 bg-light" id="scale-container-main" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
-        <h1 align="center" class="text-danger"><span id="serial">{{cur_url}}/{{no_of_scales}}</span><b>{{defaults.name}}</b><span id="countdown"></span></h1><br>
-            <div id="scale-container">
-                <div id="horizontal" ></div>
-                <div class="pl-3" id="labels-vert" style="font-size:2em">
-                    <div>{{text.0}}</div>
-                    <div>{{text.1}}</div>
-                    <div>{{text.2}}</div>
-                </div>
-            </div>
-<!--        <div id="horizontal" ></div>-->
-            <div class="pl-3" id="labels">
-                   <div style="float: left">{{text.0}}</div>
-                    <div style="float: right">{{text.2}}</div>
-                    <div style="display: flex; justify-content: center">{{text.1}}</div>
-            </div>
+{#        <h1 align="center" class="text-danger"><span id="serial">{{cur_url}}/{{no_of_scales}}</span><b>{{defaults.name}}</b><span id="countdown"></span></h1><br>#}
+{#            <div id="scale-container">#}
+{#                <div id="horizontal" ></div>#}
+{#                <div class="pl-3" id="labels-vert" style="font-size:2em">#}
+{#                    <div>{{text.0}}</div>#}
+{#                    <div>{{text.1}}</div>#}
+{#                    <div>{{text.2}}</div>#}
+{#                </div>#}
+{#            </div>#}
+{#<!--        <div id="horizontal" ></div>-->#}
+{#            <div class="pl-3" id="labels">#}
+{#                   <div style="float: left">{{text.0}}</div>#}
+{#                    <div style="float: right">{{text.2}}</div>#}
+{#                    <div style="display: flex; justify-content: center">{{text.1}}</div>#}
+{#            </div>#}
         <br>
 
     </div>

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'likert',
     'login',
+    'EvaluationModule',
     'percent_sum',
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',

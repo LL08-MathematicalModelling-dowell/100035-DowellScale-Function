@@ -192,12 +192,22 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 ### 1. Create/Retrieve/Update custom configurtions
 
 #### Request METHOD : POST, PUT, GET
+#### End-Point : https://100035.pythonanywhere.com/api/nps_custom_data_all
+#### If request METHOD : GET
+
+```python
+    {
+        "template_id": "47576",                              #template Id to retrieve all elements present in a template
+    }
+    
+```
+#### Request METHOD : POST, PUT, GET
 #### End-Point : https://100035.pythonanywhere.com/api/nps_custom_data/
 #### If request METHOD : GET
 
 ```python
     {
-        "scale_id": "63e8b4c87f4aa8f650162b7a",                              #scale_id that you would wish to retrieve its details
+    "scale_id": "63e8b4c87f4aa8f650162b7a",   #scale_id that you would wish to retrieve its details
     }
     
 ```
@@ -205,9 +215,11 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 
 ```python
     {
+
         "template_id": "27289",                                          #Template id for the editor
         "scale_id": "63e8b4c87f4aa8f650162b7a",                          #Id for the current scale     
-        "custom_input_groupings": "{'group1': {'t1': 'id', 'i1': 'id'}}" #Groupings of elements related to the scale 
+        "custom_input_groupings": {'t1': 'id', 'i1': 'id'}   #Groupings of elements related to the scale 
+        "scale_label": "scale_label"                                     #Scale Label Provided by the user
     }
     
 ```
@@ -215,9 +227,9 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 #### if request METHOD : PUT 
 ```python
     {
-        "template_id": "27289",                                          #Template id for the editor
-        "scale_id": "63e8b4c87f4aa8f650162b7a",                          #Id for the current scale     
-        "custom_input_groupings": "{'group1': {'t1': 'id', 'i1': 'id'}}" #Groupings of elements related to the scale 
+
+        "custom_input_groupings": {'t1': 'id', 'i1': 'id'}               #Groupings of elements related to the scale 
+        "scale_label": "scale_label"                                     #Scale Label Provided by the user
     }
 ```
 

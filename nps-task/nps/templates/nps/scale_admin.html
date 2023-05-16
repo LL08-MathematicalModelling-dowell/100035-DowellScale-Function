@@ -298,8 +298,7 @@ input:checked + .slider:before {
 				</div>
 
 				<input id="checkboxScoresInput" name="checkboxScores" type="text" value="false" style="display: none">
-				<input id="checkboxResponseInput" name="checkboxResponse" type="text" value="false"
-				       style="display: none">
+				<input id="checkboxResponseInput" name="checkboxResponse" type="text" value="false"style="display: none">
 
 				<div class="form-group col-md-12 text-right p-15">
 					<button class="btn btn-primary" id="saveBtn">Save</button>
@@ -385,7 +384,7 @@ input:checked + .slider:before {
 
 
 			      let checkboxResponse = document.getElementById("checkboxResponse");
-			      checkboxScores.addEventListener( "change", () => {
+			      checkboxResponse.addEventListener( "change", () => {
 			        console.log(checkboxResponse.checked)
 			        document.getElementById("checkboxResponseInput").value = checkboxResponse.checked;
 			      });
