@@ -4,8 +4,10 @@ import requests
 import random
 import json
 from rest_framework.decorators import api_view
-
 import requests
+
+
+# dowell API
 url = 'http://uxlivinglab.pythonanywhere.com/'
 def dowellconnection(cluster,platform,database,collection,document,team_member_ID,function_ID,command,field,update_field):
     data={
@@ -27,6 +29,8 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
     except:
       return "check your connectivity"
 
+
+# Returns a list of all the scores of a particular document
 #@api_view(['GET', ])
 def calculate_total_score(doc_no=None, product_name=None):
     try:
@@ -62,6 +66,7 @@ def calculate_total_score(doc_no=None, product_name=None):
     return all_scores
 
 
+# Statricks API
 def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues):
     url = "https://100004.pythonanywhere.com/api"
 
@@ -79,6 +84,7 @@ def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues)
     return response.json()
 
 
+# Get the results of scores through calling the calculate_total_score function and using the statricks API to get the results
 def Evaluation_module(process_id,doc_no=None, product_name=None):
     title = "evaluation_module"
     process_id = process_id
@@ -93,12 +99,15 @@ def Evaluation_module(process_id,doc_no=None, product_name=None):
 
     return result
 
+
+# This function fetches the data from the database
 def fetch_data(product_name):
     field_add = {"brand_data.product_name": product_name}
     response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                       "1094", "ABCDE", "fetch", field_add, "nil")
     return json.loads(response_data)["data"]
 
+# Separate function to process the data
 def process_data(data, doc_no):
     all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[-1] == doc_no]
     scores = defaultdict(list)
@@ -110,6 +119,7 @@ def process_data(data, doc_no):
     print(scores, "scores\n\n")
     return scores
 
+# Generates Random Number for the document to show API results using Process ID 
 def generate_random_number():
     min_number = 10 ** 2
     max_number = 10 ** 6 - 1
