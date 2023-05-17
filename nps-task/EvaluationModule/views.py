@@ -1,8 +1,10 @@
-from django.shortcuts import render
+# Create your views here.
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from .calculate_function import *
 from .normality import *
 
-# Create your views here.
+
 def evaluation_editor(request, product_name, doc_no):
     random_number = generate_random_number()
     context = {}
