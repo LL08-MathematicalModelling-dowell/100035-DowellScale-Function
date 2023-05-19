@@ -610,9 +610,12 @@ def dowell_scale_admin(request):
 @xframe_options_exempt
 @csrf_exempt
 def dowell_scale1(request, tname1):
+    url = request.build_absolute_uri()
+    current_url = url.split('/')[-1]
     brand_name = request.GET.get('brand_name')
     product_name = request.GET.get('product_name')
-    current_url = request.path_info.split('/')[-1]
+    # ur = str(request.path_info.split('/'))
+    # current_url = ur[len(ur) - 1]
 
     context = {
         "public_url": public_url,
