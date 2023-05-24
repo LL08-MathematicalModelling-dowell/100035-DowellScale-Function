@@ -19,11 +19,7 @@ def generate_random_number():
 def compare_event_ids(arr1, arr2):
     return bool(set(arr1) & set(arr2))  # returns True if there's a common element
 
-"""
-def compare_event_ids(arr1, arr2):
-    return bool(set(arr1) & set(arr2))  # returns True if there's a common element
 
-"""
 def find_category(score):
     if int(score) <= 6:
         category = "Detractor"
@@ -57,32 +53,6 @@ def total_score_fun(id):
         category = find_category(overall_category)
 
     return overall_category, category, all_scores, instance_ids, total_score, existing_responses
-
-"""
-def total_score_fun(id):
-    try:
-        field_add = {"scale_data.scale_id": id}
-        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch", field_add, "nil")
-        data = json.loads(response_data)
-    except Exception as e:
-        raise RuntimeError("Error loading JSON data.") from e
-
-    existing_responses = data["data"]
-
-    total_score = sum(int(i['score'][0]['score']) for i in existing_responses)
-    all_scores = [i['score'] for i in existing_responses]
-    instance_ids = [int(i['score'][0]['instance_id'].split("/")[0]) for i in existing_responses]
-
-    if total_score == 0 or len(all_scores) == 0:
-        overall_category = "No response provided"
-        category = "No response provided"
-    else:
-        overall_category = total_score / len(all_scores)
-        category = find_category(overall_category)
-
-    return overall_category, category, all_scores, instance_ids, total_score, existing_responses
-
-"""
 
 @api_view(['POST',])
 def custom_configuration_list(request):
