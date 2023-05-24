@@ -17,10 +17,7 @@ def generate_random_number():
     return random.randint(min_number, max_number)
 
 def compare_event_ids(arr1, arr2):
-    for elem in arr1:
-        if elem in arr2:
-            return True
-    return False
+    return bool(set(arr1) & set(arr2))  # returns True if there's a common element
 
 """
 def compare_event_ids(arr1, arr2):
@@ -39,15 +36,18 @@ def find_category(score):
     return category
 
 def total_score_fun(id):
-    field_add = {"scale_data.scale_id": id}
-    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                     "1094", "ABCDE", "fetch", field_add, "nil")
-    data = json.loads(response_data)
+    try:
+        field_add = {"scale_data.scale_id": id}
+        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch", field_add, "nil")
+        data = json.loads(response_data)
+    except Exception as e:
+        raise RuntimeError("Error loading JSON data.") from e
+
     existing_responses = data["data"]
 
-    total_score = sum(int(i['score'][0]['score']) for i in data['data'])
-    all_scores = [i['score'] for i in data['data']]
-    instance_ids = [int(i['score'][0]['instance_id'].split("/")[0]) for i in data['data']]
+    total_score = sum(int(i['score'][0]['score']) for i in existing_responses)
+    all_scores = [i['score'] for i in existing_responses]
+    instance_ids = [int(i['score'][0]['instance_id'].split("/")[0]) for i in existing_responses]
 
     if total_score == 0 or len(all_scores) == 0:
         overall_category = "No response provided"
