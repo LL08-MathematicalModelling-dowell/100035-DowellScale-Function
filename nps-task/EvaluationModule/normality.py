@@ -1,5 +1,7 @@
 import requests
 
+
+# Normality API
 def Normality_api(process_id):
     url = "https://100023.pythonanywhere.com/api"
 

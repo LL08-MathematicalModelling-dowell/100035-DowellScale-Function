@@ -4,7 +4,11 @@ from django.http import HttpResponse
 from .calculate_function import *
 from .normality import *
 
-
+"""
+This module takes radomm number, attaches it to the product name and doc_no and first save that data with 
+Evaluation API with process id as process id is the random number and then use that same random number to
+process the Normality API and get the responses of both the API's and then render the data to the template.
+"""
 def evaluation_editor(request, product_name, doc_no):
     random_number = generate_random_number()
     context = {}
