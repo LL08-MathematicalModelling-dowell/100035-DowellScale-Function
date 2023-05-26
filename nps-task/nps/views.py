@@ -146,13 +146,7 @@ def settings_api_view_create(request):
             field_add = {"_id": scale_id}
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                              "ABCDE", "find", field_add, "nil")
-            settings = json.loads(response_data)['data']['settings']
-            template_name = settings["template_name"]
-            urls = [f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor"]
-            if int(settings["no_of_scales"]) > 1:
-                urls = [f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor/{i}"
-                        for i in range(1, int(settings["no_of_scales"]) + 1)]
-            return Response({"data": json.loads(response_data), "urls": urls})
+            return Response({"data": json.loads(response_data)})
         else:
             field_add = {"settings.scale-category": "nps scale"}
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
@@ -163,12 +157,18 @@ def settings_api_view_create(request):
         response = request.data
         left = response['left']
         center = response['center']
+        # fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
         right = response['right']
         text = f"{left}+{center}+{right}"
         rand_num = random.randrange(1, 10000)
         name = response['name']
         time = response.get('time', "")
         template_name = f"{name.replace(' ', '')}{rand_num}"
+        fomat = response.get('fomat')
+        # if fomat == "emoji":
+        #     custom_format = response['custom_format']
+        # elif fomat == "image":
+        #     custom_image = response['custom_image']
         if time == "":
             time = 0
         eventID = get_event_id()
@@ -181,7 +181,7 @@ def settings_api_view_create(request):
                 "no_of_scales": 1,
                 "roundcolor": response.get('roundcolor'),
                 "fontcolor": response.get('fontcolor'),
-                "fomat": response.get('fomat'),
+                "fomat": fomat,
                 "time": time,
                 "template_name": template_name,
                 "name": name,
@@ -197,8 +197,8 @@ def settings_api_view_create(request):
         }
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                          "insert", field_add, "nil")
-        return Response({"success": response_data, "data": field_add,
-                         "scale_urls": f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor"})
+        return Response({"success": response_data, "data": field_add})
+        return Response({"success": response_data, "data": field_add})
 
     if request.method == "PUT":
         response = request.data
