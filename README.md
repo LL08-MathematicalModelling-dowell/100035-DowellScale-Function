@@ -233,3 +233,30 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
     }
 ```
 
+## VERSION 2 ENDPOINT
+### 1. Create a scale with a specific setting
+
+#### Request METHOD : POST
+#### End-Point : https://100035.pythonanywhere.com/api/nps_create/
+
+```python
+{
+"scale_id": "63e8b4c87f4aa8f650162b7a" ,    #Scale ID is mandatory when sending PUT request.
+"username": "your name",        #your username
+"orientation": "horizontal",    #orientation of the scale- horizontal/ vertical
+"scalecolor": "#8f1e1e",        #bg color of the scale
+"roundcolor": "#938585",        #color of the buttons in the scale
+"fontcolor": "#000000",        #color of the text inside the buttons
+"fomat": "numbers",            #format in which you wish the response to be recorded- numbers, stars, emojis
+"time": "60",                 #time limit in seconds that you wish to assign for providing each response- any natural no.
+"name": "testAPI",            #name you wish to assign to the scale
+"left": "good",               #label for the lowest rating (zero)- text
+"right": "best",              #label for the highest rating (10)- text
+"center": "neutral",          #label for  neutral ratings- text
+"label_images": {0: imagefile, 1: imagefile, 2: imagefile ...}  #if user selects image as the format pass the images along with the scale default labels in a dictionary.
+"fontstyle": "Arial, Helvetica, sans-serif"  #font style of the scale labels
+"emoji_format": {0: 😀, 1: 😃, 2: 😄 ...}  #if user selects emoji as the format pass the emojis along with the scale default labels in a dictionary.
+}    
+```
+
+
