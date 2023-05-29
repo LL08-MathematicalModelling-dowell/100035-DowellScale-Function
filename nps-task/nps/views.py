@@ -11,10 +11,12 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 
+
 def generate_random_number():
     min_number = 10 ** 2
     max_number = 10 ** 6 - 1
     return random.randint(min_number, max_number)
+
 
 def compare_event_ids(arr1, arr2):
     return bool(set(arr1) & set(arr2))  # returns True if there's a common element
@@ -30,6 +32,7 @@ def find_category(score):
     else:
         category = "Promoter"
     return category
+
 
 def total_score_fun(id):
     try:
@@ -450,7 +453,7 @@ def dowell_editor_admin(request, id):
     field_add = {"_id": id, }
     context = {}
     x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-        "find", field_add, "nil")
+                         "find", field_add, "nil")
     settings_json = json.loads(x)
     settings = settings_json['data']['settings']
     context["settings"] = settings
@@ -486,7 +489,7 @@ def dowell_editor_admin(request, id):
                                          "scale-category": "nps scale", "show_total_score": show_total,
                                          "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                field_add, update_field)
+                                 field_add, update_field)
             urls = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
             context["settings"] = update_field["settings"]
         return render(request, 'nps/editor_scale_admin.html', context)
@@ -530,7 +533,7 @@ def dowell_editor_admin(request, id):
             orientation = request.POST['orientation']
             scalecolor = request.POST['scolor']
             time = request.POST['time']
-            number_of_scales=request.POST['numberofscale']
+            number_of_scales = request.POST['numberofscale']
             rand_num = random.randrange(1, 10000)
             template_name = f"{name.replace(' ', '')}{rand_num}"
             eventID = get_event_id()
@@ -543,6 +546,8 @@ def dowell_editor_admin(request, id):
                                       "scale-category": "percent scale",
                                       "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} }
         return render(request, 'nps/editor_percent_scale.html', context)
+
+
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
@@ -584,7 +589,7 @@ def dowell_scale_admin(request):
                                                            "scale-category": "nps scale", "no_of_scales": no_of_scales,
                                                            "show_total_score": show_total, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-                field_add, "nil")
+                                 field_add, "nil")
             # User details
             user_json = json.loads(x)
             details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
@@ -592,6 +597,7 @@ def dowell_scale_admin(request):
         except:
             context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'nps/scale_admin.html', context)
+
 
 @xframe_options_exempt
 @csrf_exempt
@@ -617,7 +623,8 @@ def dowell_scale1(request, tname1):
 
     # scale settings call
     field_add = {"settings.template_name": tname1, }
-    default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find", field_add, "nil")
+    default = dowellconnection("dowellscale", "bangalore", "dowellscale",
+                               "scale", "scale", "1093", "ABCDE", "find", field_add, "nil")
     data = json.loads(default)
     id_scores = data['data']["_id"]
     context["scale_id"] = id_scores
@@ -630,7 +637,7 @@ def dowell_scale1(request, tname1):
     context["no_of_scales"] = number_of_scale
     context["total_score_scales"] = int(number_of_scale) * 10
 
-    #check if the url has an instance of if allow response variable == True/False
+    # check if the url has an instance of if allow response variable == True/False
     if not allow_resp or len(current_url) > 3:
         context["dont_click"] = True
         return render(request, 'nps/single_scale.html', context)
@@ -638,13 +645,15 @@ def dowell_scale1(request, tname1):
     user = request.session.get('user_name')
     context["dont_click"] = False
 
-    overall_category, category, all_scores, instanceID, total_score, existing_responses = total_score_fun(id_scores)
-    responses_id = [int(c['score'][0]['instance_id'].split("/")[0]) for c in existing_responses if int(c['score'][0]['instance_id'].split("/")[0]) == int(current_url)]
+    overall_category, category, all_scores, instanceID, total_score, existing_responses = total_score_fun(
+        id_scores)
+    responses_id = [int(c['score'][0]['instance_id'].split("/")[0])
+                    for c in existing_responses if int(c['score'][0]['instance_id'].split("/")[0]) == int(current_url)]
 
     details = {"scale_id": id_scores,
-        "username": user }
+               "username": user}
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-        "ABCDE", "fetch", details, "nil")
+                                    "ABCDE", "fetch", details, "nil")
     user_dets = json.loads(user_details)
     user_ids = [i["event_id"] for i in user_dets["data"]]
 
@@ -663,10 +672,12 @@ def dowell_scale1(request, tname1):
         context['response_saved'] = score
         eventID = get_event_id()
 
-        score = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'score': score, "category": categ}
+        score = {
+            "instance_id": f"{current_url}/{context['no_of_scales']}", 'score': score, "category": categ}
 
         if not existing_scale:
-            overall_category, category, all_scores, instanceID, total_score ,existing_responses = total_score_fun(id_scores.strip())
+            overall_category, category, all_scores, instanceID, total_score, existing_responses = total_score_fun(
+                id_scores.strip())
             total_score_save = f"{total_score}/{context['total_score_scales']}"
             try:
                 field_add = {"event_id": eventID,
@@ -679,7 +690,8 @@ def dowell_scale1(request, tname1):
                 context['score'] = "show"
 
                 # calculate_total_score
-                overall_category, category, all_scores, instanceID,  total_score ,existing_responses = total_score_fun(id_scores.strip())
+                overall_category, category, all_scores, instanceID,  total_score, existing_responses = total_score_fun(
+                    id_scores.strip())
                 context['all_scores'] = all_scores
                 context['total_scores'] = total_score
             except:
@@ -694,7 +706,7 @@ def brand_product_error(request):
     template_name = url.split("/")[2]
     field_add = {"settings.template_name": template_name}
     default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-        field_add, "nil")
+                               field_add, "nil")
     data = json.loads(default)
     x = data['data'][0]['settings']
     context["defaults"] = x
@@ -709,7 +721,7 @@ def brand_product_error(request):
     context['existing_scales'] = []
     field_add = {"scale_data.scale_id": scale_id}
     response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-        "ABCDE", "fetch", field_add, "nil")
+                                "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response)
     x = data["data"]
     for i in x:
@@ -719,6 +731,7 @@ def brand_product_error(request):
     name = url.replace("'", "")
     context['template_url'] = f"{public_url}{name}?brand_name=your_brand&product_name=your_product"
     return render(request, 'nps/error_page.html', context)
+
 
 def default_scale(request):
     context = {}
@@ -741,7 +754,8 @@ def default_scale_admin(request):
     context["urltext"] = "Create new scale"
     field_add = {"settings.scale-category": "nps scale"}
     all_scales = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-        field_add, "nil")
+                                  field_add, "nil")
     data = json.loads(all_scales)
-    context["npsall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
+    context["npsall"] = sorted(
+        data["data"], key=lambda d: d['_id'], reverse=True)
     return render(request, 'nps/default.html', context)
