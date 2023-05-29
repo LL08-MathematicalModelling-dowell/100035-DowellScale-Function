@@ -4,7 +4,8 @@ import json
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
-
+from django.core.files.storage import default_storage
+from concurrent.futures import ThreadPoolExecutor
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
@@ -635,3 +636,77 @@ def scale_response_api_view(request):
     if request.method == 'GET':
         return Response(json.loads(x))
 """
+
+
+
+@api_view(['POST', 'PUT', 'GET'])
+def new_nps_create(request):
+    response = request.data
+    left = response['left']
+    center = response['center']
+    fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
+    right = response['right']
+    text = f"{left}+{center}+{right}"
+    rand_num = random.randrange(1, 10000)
+    name = response['name']
+    time = response.get('time', "")
+    template_name = f"{name.replace(' ', '')}{rand_num}"
+    fomat = response.get('fomat')
+    stored_images = {}
+    custom_format = {}
+
+    if fomat == "emoji":
+        custom_format = response['custom_format']
+    elif fomat == "image":
+        image_dict = response.get('images', {})
+        def save_image(key, image_data):
+            image_path = f'images/{key}.png'  # Define a unique path for each image
+            default_storage.save(image_path, image_data)
+            stored_images[key] = image_path
+
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(save_image, key, image_data) for key, image_data in image_dict.items()]
+            # Wait for all image saving tasks to complete
+            for future in futures:
+                future.result()
+
+    if time == "":
+        time = 0
+    eventID = get_event_id()
+    field_add = {
+        "event_id": eventID,
+        "settings": {
+            "orientation": response.get('orientation'),
+            "scalecolor": response.get('scalecolor'),
+            "numberrating": 10,
+            "no_of_scales": 1,
+            "roundcolor": response.get('roundcolor'),
+            "fontcolor": response.get('fontcolor'),
+            "fomat": fomat,
+            "time": time,
+            "label_images":stored_images,
+            "fontstyle":fontstyle,
+            "template_name": template_name,
+            "name": name,
+            "text": text,
+            "left": left,
+            "right": right,
+            "emoji_format":custom_format,
+            "center": center,
+            "allow_resp": False,
+            "scale-category": "nps scale",
+            "show_total_score": 'true',
+            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+    }
+
+    def insert_data():
+        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "insert", field_add, "nil")
+        return response_data
+
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(insert_data)
+        response_data = future.result()
+
+    return Response({"success": response_data, "data": field_add})

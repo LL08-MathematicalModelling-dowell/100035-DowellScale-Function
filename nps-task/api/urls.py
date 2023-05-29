@@ -1,6 +1,5 @@
 from django.urls import path, include
-from .views import scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create, nps_response_view_submit, custom_configuration_list, custom_configuration_view, calculate_total_score,  scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create, nps_response_view_submit, dynamic_scale_instances
-
+from .views import scale_settings_api_view, new_nps_create, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create, nps_response_view_submit, custom_configuration_list, custom_configuration_view, calculate_total_score, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create, nps_response_view_submit, dynamic_scale_instances
 
 app_name = "api"
 
@@ -19,20 +18,23 @@ app_name = "api"
 # NPS Endpoints
 # Rest endpoints
 urlpatterns = [
-    path('nps_create_instance',
-         dynamic_scale_instances, name="dynamic_instance"),
-    path('nps_settings_create/', settings_api_view_create,
-         name="create_scale_settings_api"),
-    path('nps_custom_data/', custom_configuration_view, name="custom_configs"),
-    path('nps_custom_data_all', custom_configuration_list, name="all_elements"),
-    path('nps_responses_create', nps_response_view_submit,
-         name="nps_response_submit_api"),
-    path('nps_settings', scale_settings_api_view, name="scale_settings_api"),
-    path('nps_responses', scale_response_api_view, name="scale_response_api"),
-    path('total_responses/<str:doc_no>/<str:product_name>',
-         calculate_total_score, name="calculate_total_score_api"),
-    path('nps_settings/<str:id>', single_scale_settings_api_view,
-         name="single_scale_settings_api"),
-    path('nps_responses/<str:id>', single_scale_response_api_view,
-         name="single_scale_response_api"),
+	path('nps_create_instance',
+		dynamic_scale_instances, name="dynamic_instance"),
+	path('nps_settings_create/', settings_api_view_create,
+		name="create_scale_settings_api"),
+	path('nps_custom_data/', custom_configuration_view, name="custom_configs"),
+	path('nps_custom_data_all', custom_configuration_list, name="all_elements"),
+	path('nps_responses_create', nps_response_view_submit,
+		name="nps_response_submit_api"),
+	path('nps_settings', scale_settings_api_view, name="scale_settings_api"),
+	path('nps_responses', scale_response_api_view, name="scale_response_api"),
+	path('total_responses/<str:doc_no>/<str:product_name>',
+		calculate_total_score, name="calculate_total_score_api"),
+	path('nps_settings/<str:id>', single_scale_settings_api_view,
+		name="single_scale_settings_api"),
+	path('nps_responses/<str:id>', single_scale_response_api_view,
+		name="single_scale_response_api"),
+
+	# Updated Routes
+	path('nps_create/', new_nps_create, name="nps_create")
 ]

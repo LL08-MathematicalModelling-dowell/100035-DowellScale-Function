@@ -201,7 +201,6 @@ def settings_api_view_create(request):
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                          "insert", field_add, "nil")
         return Response({"success": response_data, "data": field_add})
-        return Response({"success": response_data, "data": field_add})
 
     if request.method == "PUT":
         response = request.data
