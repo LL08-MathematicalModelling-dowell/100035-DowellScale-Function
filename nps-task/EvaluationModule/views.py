@@ -1,18 +1,34 @@
-# Create your views here.
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.shortcuts import render
+from django.core.cache import cache
 from .calculate_function import *
 from .normality import *
+from concurrent.futures import ThreadPoolExecutor
 
 """
-This module takes radomm number, attaches it to the product name and doc_no and first save that data with 
-Evaluation API with process id as process id is the random number and then use that same random number to
-process the Normality API and get the responses of both the API's and then render the data to the template.
+This module takes random number, attaches it to the product name and doc_no and first saves that data with 
+Evaluation API with process id as the process id is the random number. It then uses the same random number to
+process the Normality API and get the responses of both the APIs, and finally renders the data to the template.
 """
 def evaluation_editor(request, product_name, doc_no):
     random_number = generate_random_number()
     context = {}
-    data = fetch_data(product_name)
+
+    # Fetch data from cache if available
+    cache_key = f"evaluation_editor_{product_name}_{doc_no}"
+    cached_data = cache.get(cache_key)
+    if cached_data:
+        return render(request, 'EvaluationModule/editor_reports.html', cached_data)
+
+    field_add = {"brand_data.product_name": product_name}
+
+    # Execute dowellconnection API call using ThreadPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        data_future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                      "1094", "ABCDE", "fetch", field_add, "nil")
+        data = json.loads(data_future.result())["data"]
+
+    all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[0] == doc_no]
+    calculate_score = [x['score'][0]['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
 
     if len(data) != 0:
         scores = process_data(data, doc_no)
@@ -30,8 +46,11 @@ def evaluation_editor(request, product_name, doc_no):
             "score_series": scores["nps scale"]
         })
 
-    response_json = Evaluation_module(random_number, doc_no, product_name)
-    context.update(response_json)
+    # Execute stattricks_api API call using ThreadPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3, {"list1": calculate_score})
+        response_json = response_json_future.result()
+        context.update(response_json)
 
     poison_case_results = response_json.get("poison case results", {})
     normal_case_results = response_json.get("normal case results", {})
@@ -40,8 +59,11 @@ def evaluation_editor(request, product_name, doc_no):
         "normal_case_results": normal_case_results
     })
 
-    normality = Normality_api(random_number)
-    context.update(normality)
+    # Execute Normality_api API call using ThreadPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        normality_future = executor.submit(Normality_api, random_number)
+        normality = normality_future.result()
+        context.update(normality)
 
     normality_data = normality.get('list1') if normality else None
     context.update({
@@ -52,4 +74,8 @@ def evaluation_editor(request, product_name, doc_no):
         "n_series_count": normality.get('series_count'),
         "n_list1": normality_data
     })
+
+    # Cache the data for future requests
+    cache.set(cache_key, context)
+
     return render(request, 'EvaluationModule/editor_reports.html', context)
