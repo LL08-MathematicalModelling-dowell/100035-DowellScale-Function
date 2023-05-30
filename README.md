@@ -135,6 +135,8 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 "template_name": "scale name",
 #name of the parent scale
 
+"scale_id": "mongodb doc id",
+#document id of the parent scale
 
 "instance_id":6 ,
 #instance id of the instance you wish to provide a response to
