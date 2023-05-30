@@ -642,6 +642,8 @@ def scale_response_api_view(request):
 @api_view(['POST', 'PUT', 'GET'])
 def new_nps_create(request):
     response = request.data
+    username = response['username']
+    user = response['user']
     left = response['left']
     center = response['center']
     fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
@@ -676,6 +678,8 @@ def new_nps_create(request):
     field_add = {
         "event_id": eventID,
         "settings": {
+            "username": username,
+            "user":user,
             "orientation": response.get('orientation'),
             "scalecolor": response.get('scalecolor'),
             "numberrating": 10,
@@ -699,7 +703,6 @@ def new_nps_create(request):
             "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
     }
-
     def insert_data():
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
             "insert", field_add, "nil")
