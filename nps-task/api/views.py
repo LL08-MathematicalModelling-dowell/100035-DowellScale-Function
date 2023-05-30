@@ -654,8 +654,14 @@ def new_nps_create(request):
     time = response.get('time', "")
     template_name = f"{name.replace(' ', '')}{rand_num}"
     fomat = response.get('fomat')
+    no_of_scales = int(response['no_of_scales'])
     stored_images = {}
     custom_format = {}
+
+    print("+++++++++++++",template_name)
+
+    if no_of_scales > 100 or no_of_scales < 1:
+        return Response({"no_of_scales": "Out of range" },status=status.HTTP_400_BAD_REQUEST)
 
     if fomat == "emoji":
         custom_format = response['custom_format']
@@ -683,7 +689,7 @@ def new_nps_create(request):
             "orientation": response.get('orientation'),
             "scalecolor": response.get('scalecolor'),
             "numberrating": 10,
-            "no_of_scales": 1,
+            "no_of_scales": no_of_scales,
             "roundcolor": response.get('roundcolor'),
             "fontcolor": response.get('fontcolor'),
             "fomat": fomat,
