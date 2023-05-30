@@ -249,6 +249,7 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 "roundcolor": "#938585",        #color of the buttons in the scale
 "fontcolor": "#000000",        #color of the text inside the buttons
 "fomat": "numbers",            #format in which you wish the response to be recorded- numbers, stars, emojis
+"no_of_scales": 6,            #Specify number of scales to be created with the same settings (1-100)
 "time": "60",                 #time limit in seconds that you wish to assign for providing each response- any natural no.
 "name": "testAPI",            #name you wish to assign to the scale
 "left": "good",               #label for the lowest rating (zero)- text
