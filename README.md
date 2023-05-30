@@ -242,6 +242,7 @@ Response=({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST
 ```python
 {
 "scale_id": "63e8b4c87f4aa8f650162b7a" ,    #Scale ID is mandatory when sending PUT request.
+"user": "boolean",              #response is either a yes or no to distinguish between a front end programmer / end user providing the settings. No for frontend (cannot change settings provided), Yes for end user
 "username": "your name",        #your username
 "orientation": "horizontal",    #orientation of the scale- horizontal/ vertical
 "scalecolor": "#8f1e1e",        #bg color of the scale
