@@ -313,7 +313,9 @@ def dynamic_scale_instances(request):
     x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                          "fetch", field_add, "nil")
     settings_json = json.loads(x)
-    return Response({"success": z, "response": settings_json['data'][0]['settings']})
+    settings_json = settings_json['data'][0]['settings']
+    del settings_json["instances"]
+    return Response({"success": z, "response": settings_json})
 
 
 @api_view(['GET'])
