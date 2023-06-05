@@ -50,39 +50,6 @@ It will Generate output response:
 }
 ```
 
-
-
-
-## Calculate Total Score
-
-It will show all user response Scores with the reference to document.
-
-```bash
-https://100035.pythonanywhere.com/api/total_responses/<str:doc_no>/<str:product_name>
-```
-
-like 
-```bash
-https://100035.pythonanywhere.com/api/total_responses/1/xyz000
-```
-
-which will provide the response:
-
-```bash
-{
-    "All_scores": [
-        2,
-        2,
-        2,
-        2,
-        4,
-        6,
-        9,
-        0
-    ],
-    "Total_score for document 1": 27
-}
-```
 ## Create Response
 Provide a response to a particular scale instance using the corresponding scale details.
 
@@ -136,6 +103,38 @@ you will get response with instance detail and link to which you can give Score 
     "url": "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/1",
     "Category": "Neutral"
 }
+```
+## New NPS create
+
+Create a scale with a specific setting
+
+Request: POST
+
+```bash
+https://100035.pythonanywhere.com/api/nps_create/
+```
+with body:
+
+```bash
+{
+"scale_id": "63e8b4c87f4aa8f650162b7a" ,    #Scale ID is mandatory when sending PUT request.
+"user": "boolean",              #response is either a yes or no to distinguish between a front end programmer / end user providing the settings. No for frontend (cannot change settings provided), Yes for end user
+"username": "your name",        #your username
+"orientation": "horizontal",    #orientation of the scale- horizontal/ vertical
+"scalecolor": "#8f1e1e",        #bg color of the scale
+"roundcolor": "#938585",        #color of the buttons in the scale
+"fontcolor": "#000000",        #color of the text inside the buttons
+"fomat": "numbers",            #format in which you wish the response to be recorded- numbers, stars, emojis
+"no_of_scales": 6,            #Specify number of scales to be created with the same settings (1-100)
+"time": "60",                 #time limit in seconds that you wish to assign for providing each response- any natural no.
+"name": "testAPI",            #name you wish to assign to the scale
+"left": "good",               #label for the lowest rating (zero)- text
+"right": "best",              #label for the highest rating (10)- text
+"center": "neutral",          #label for  neutral ratings- text
+"label_images": {0: imagefile, 1: imagefile, 2: imagefile ...}  #if user selects image as the format pass the images along with the scale default labels in a dictionary.
+"fontstyle": "Arial, Helvetica, sans-serif"  #font style of the scale labels
+"emoji_format": {0: 😀, 1: 😃, 2: 😄 ...}  #if user selects emoji as the format pass the emojis along with the scale default labels in a dictionary.
+}    
 ```
 
 ## Get scale Settings
@@ -221,6 +220,39 @@ it show all scales with their settings like:
             }
         }
     ]
+}
+```
+
+## Calculate Total Score
+
+It will show all user response Scores with the reference to document.
+
+Request: GET
+
+```bash
+https://100035.pythonanywhere.com/api/total_responses/<str:doc_no>/<str:product_name>
+```
+
+like 
+```bash
+https://100035.pythonanywhere.com/api/total_responses/1/xyz000
+```
+
+which will provide the response:
+
+```bash
+{
+    "All_scores": [
+        2,
+        2,
+        2,
+        2,
+        4,
+        6,
+        9,
+        0
+    ],
+    "Total_score for document 1": 27
 }
 ```
 ## NPS settings
@@ -360,38 +392,7 @@ Which will get the response:
     ]
 }
 ```
-## New NPS create
 
-Create a scale with a specific setting
-
-Request: POST
-
-```bash
-https://100035.pythonanywhere.com/api/nps_create/
-```
-with body:
-
-```bash
-{
-"scale_id": "63e8b4c87f4aa8f650162b7a" ,    #Scale ID is mandatory when sending PUT request.
-"user": "boolean",              #response is either a yes or no to distinguish between a front end programmer / end user providing the settings. No for frontend (cannot change settings provided), Yes for end user
-"username": "your name",        #your username
-"orientation": "horizontal",    #orientation of the scale- horizontal/ vertical
-"scalecolor": "#8f1e1e",        #bg color of the scale
-"roundcolor": "#938585",        #color of the buttons in the scale
-"fontcolor": "#000000",        #color of the text inside the buttons
-"fomat": "numbers",            #format in which you wish the response to be recorded- numbers, stars, emojis
-"no_of_scales": 6,            #Specify number of scales to be created with the same settings (1-100)
-"time": "60",                 #time limit in seconds that you wish to assign for providing each response- any natural no.
-"name": "testAPI",            #name you wish to assign to the scale
-"left": "good",               #label for the lowest rating (zero)- text
-"right": "best",              #label for the highest rating (10)- text
-"center": "neutral",          #label for  neutral ratings- text
-"label_images": {0: imagefile, 1: imagefile, 2: imagefile ...}  #if user selects image as the format pass the images along with the scale default labels in a dictionary.
-"fontstyle": "Arial, Helvetica, sans-serif"  #font style of the scale labels
-"emoji_format": {0: 😀, 1: 😃, 2: 😄 ...}  #if user selects emoji as the format pass the emojis along with the scale default labels in a dictionary.
-}    
-```
 
 
 
