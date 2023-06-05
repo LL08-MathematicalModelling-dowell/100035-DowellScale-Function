@@ -638,84 +638,166 @@ def scale_response_api_view(request):
 """
 
 
-
-@api_view(['POST', 'PUT', 'GET'])
+@api_view(['POST','PUT','GET'])
 def new_nps_create(request):
-    response = request.data
-    username = response['username']
-    user = response['user']
-    left = response['left']
-    center = response['center']
-    fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
-    right = response['right']
-    text = f"{left}+{center}+{right}"
-    rand_num = random.randrange(1, 10000)
-    name = response['name']
-    time = response.get('time', "")
-    template_name = f"{name.replace(' ', '')}{rand_num}"
-    fomat = response.get('fomat')
-    no_of_scales = int(response['no_of_scales'])
-    stored_images = {}
-    custom_format = {}
+    if request.method == 'POST':
+        response = request.data
+        username = response['username']
+        user = response['user']
+        left = response['left']
+        center = response['center']
+        fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
+        right = response['right']
+        text = f"{left}+{center}+{right}"
+        rand_num = random.randrange(1, 10000)
+        name = response['name']
+        time = response.get('time', "")
+        template_name = f"{name.replace(' ', '')}{rand_num}"
+        fomat = response.get('fomat')
+        no_of_scales = int(response['no_of_scales'])
+        stored_images = {}
+        custom_format = {}
 
-    print("+++++++++++++",template_name)
+        if no_of_scales > 100 or no_of_scales < 1:
+            return Response({"no_of_scales": "Out of range" }, status=status.HTTP_400_BAD_REQUEST)
 
-    if no_of_scales > 100 or no_of_scales < 1:
-        return Response({"no_of_scales": "Out of range" },status=status.HTTP_400_BAD_REQUEST)
+        if fomat == "emoji":
+            custom_format = response['custom_format']
+        elif fomat == "image":
+            image_dict = response.get('images', {})
+            def save_image(key, image_data):
+                image_path = f'images/{key}.png'  # Define a unique path for each image
+                default_storage.save(image_path, image_data)
+                stored_images[key] = image_path
 
-    if fomat == "emoji":
-        custom_format = response['custom_format']
-    elif fomat == "image":
-        image_dict = response.get('images', {})
-        def save_image(key, image_data):
-            image_path = f'images/{key}.png'  # Define a unique path for each image
-            default_storage.save(image_path, image_data)
-            stored_images[key] = image_path
+            with ThreadPoolExecutor() as executor:
+                futures = [executor.submit(save_image, key, image_data) for key, image_data in image_dict.items()]
+                # Wait for all image saving tasks to complete
+                for future in futures:
+                    future.result()
 
-        with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(save_image, key, image_data) for key, image_data in image_dict.items()]
-            # Wait for all image saving tasks to complete
-            for future in futures:
-                future.result()
-
-    if time == "":
-        time = 0
-    eventID = get_event_id()
-    field_add = {
-        "event_id": eventID,
-        "settings": {
-            "username": username,
-            "user":user,
-            "orientation": response.get('orientation'),
-            "scalecolor": response.get('scalecolor'),
-            "numberrating": 10,
-            "no_of_scales": no_of_scales,
-            "roundcolor": response.get('roundcolor'),
-            "fontcolor": response.get('fontcolor'),
-            "fomat": fomat,
-            "time": time,
-            "label_images":stored_images,
-            "fontstyle":fontstyle,
-            "template_name": template_name,
-            "name": name,
-            "text": text,
-            "left": left,
-            "right": right,
-            "emoji_format":custom_format,
-            "center": center,
-            "allow_resp": False,
-            "scale-category": "nps scale",
-            "show_total_score": 'true',
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        event_id = get_event_id()
+        field_add = {
+            "event_id": event_id,
+            "settings": {
+                "username": username,
+                "user": user,
+                "orientation": response.get('orientation'),
+                "scalecolor": response.get('scalecolor'),
+                "numberrating": 10,
+                "no_of_scales": no_of_scales,
+                "roundcolor": response.get('roundcolor'),
+                "fontcolor": response.get('fontcolor'),
+                "fomat": fomat,
+                "time": time,
+                "label_image": stored_images,
+                "fontstyle": fontstyle,
+                "template_name": template_name,
+                "name": name,
+                "text": text,
+                "left": left,
+                "right": right,
+                "emoji_format": custom_format,
+                "center": center,
+                "allow_resp": False,
+                "scale-category": "nps scale",
+                "show_total_score": 'true',
+                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
         }
-    }
-    def insert_data():
+        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", 
+                                            "insert", field_add, "nil")
+        return Response({"success": response_data, "data": field_add,})
+    
+    elif request.method == "PUT":
+        response = request.data
+        scale_id = response['scale_id']
+        if not scale_id:
+            return Response({"error": "Scale ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        field_add = {"_id": scale_id}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                "find", field_add, "nil")
+        settings_json = json.loads(x)
+        if not settings_json['data']:
+            return Response({"error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        
+        settings = settings_json['data'][0]['settings']
+        left = response.get('left', settings["left"])
+        center = response.get('center', settings["center"])
+        right = response.get('right', settings["right"])
+        text = f"{left}+{center}+{right}"
+        name = settings["name"]
+        time = response.get('time', settings["time"]) or 0
+        template_name = settings["template_name"]
+        orientation = response.get('orientation', settings["orientation"])
+        scalecolor = response.get('scalecolor', settings["scalecolor"])
+        roundcolor = response.get('roundcolor', settings["roundcolor"])
+        fontcolor = response.get('fontcolor', settings["fontcolor"])
+        fomat = response.get('fomat', settings["fomat"])
+        no_of_scales = int(response.get('no_of_scales', settings["no_of_scales"]))
+        stored_images = settings.get('label_image', {})
+        fontstyle = response.get('fontstyle', settings["fontstyle"])
+        custom_format = settings.get('emoji_format', {})
+        if no_of_scales > 100 or no_of_scales < 1:
+            return Response({"no_of_scales": "Out of range" }, status=status.HTTP_400_BAD_REQUEST)
+        if fomat == "emoji":
+            custom_format = response['custom_format']
+        elif fomat == "image":
+            image_dict = response.get('images', {})
+            def save_image(key, image_data):
+                image_path = f'images/{key}.png'
+                default_storage.save(image_path, image_data)
+                stored_images[key] = image_path
+
+            with ThreadPoolExecutor() as executor:
+                futures = [executor.submit(save_image, key, image_data) for key, image_data in image_dict.items()]
+                for future in futures:
+                    future.result()
+        update_field = {
+            "settings": {
+                "oreintation": orientation,
+                "scalecolor": scalecolor,
+                "roundcolor": roundcolor,
+                "fontcolor": fontcolor,
+                "fomat": fomat,
+                "time": time,
+                "label_image": stored_images,
+                "template_name": template_name,
+                "name": name,
+                "text": text,
+                "left": left,
+                "right": right,
+                "emoji_format": custom_format,
+                "center": center,
+                "no_of_scales": no_of_scales,
+                "fontstyle": fontstyle,
+                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+        }
+
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-            "insert", field_add, "nil")
-        return response_data
+                                            "update", field_add, update_field)
+        return Response({"success": response_data, "data": update_field,})
+    
+    elif request.method == 'GET':
+        response = request.data
+        scale_id = response.get('scale_id')
+        if not scale_id:
+            return Response({"error": "scale_id is required" }, status=status.HTTP_400_BAD_REQUEST)
 
-    with ThreadPoolExecutor() as executor:
-        future = executor.submit(insert_data)
-        response_data = future.result()
+        field_add = {"_id": scale_id}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                             "find", field_add, "nil")
+        settings_json = json.loads(x)
+        if not settings_json.get('data'):
+            return Response({"error": "scale not found" }, status=status.HTTP_404_NOT_FOUND)
 
-    return Response({"success": response_data, "data": field_add})
+        settings = settings_json['data']['settings']
+        return Response({"success": settings})
+    
+    else:
+        return Response({"error": "method not allowed" }, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+
+
+
