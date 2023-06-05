@@ -8,7 +8,7 @@ It creates Dynamic Instance by taking Scale Id as parameter like:
 Request: POST
 
 ```bash
-/api/nps_create_instance
+https://100035.pythonanywhere.com/api/nps_create_instance
 ```
 With Body (payload):
 
@@ -57,7 +57,7 @@ Request: POST
 like:
 
 ```bash
-http://127.0.0.1:8000/api/nps_responses_create
+https://100035.pythonanywhere.com/api/nps_responses_create
 ```
 with body (details that you have to Provide):
 ```bash
@@ -147,7 +147,7 @@ No Arguments needed
 Request: GET
 
 ```bash
-{{URL}}/api/nps_settings
+https://100035.pythonanywhere.com/api/nps_settings
 ```
 
 it show all scales with their settings like:
@@ -260,12 +260,12 @@ Get setting details of Scale.
 
 Request: GET
 ```bash 
-{{URL}}/api/nps_settings/<str:template_name>
+https://100035.pythonanywhere.com/api/nps_settings/<str:template_name>
 ```
 like:
 
 ```bash 
-{{URL}}/api/nps_settings/TestDic8931
+https://100035.pythonanywhere.com/api/nps_settings/TestDic8931
 ```
 Response will be like this:
 
@@ -318,11 +318,11 @@ This API gets Single the Single Scale Response through Scale_id and gets the Dat
 Requst: GET
 
 ```bash
-{{URL}}/api/nps_responses/<str:Scale_id>
+https://100035.pythonanywhere.com/api/nps_responses/<str:Scale_id>
 ```
 like:
 ```bash
-{{URL}}/api/nps_responses/63e8b4c87f4aa8f650162b7a
+https://100035.pythonanywhere.com/api/nps_responses/63e8b4c87f4aa8f650162b7a
 ```
 
 which will provide the Response like:
@@ -346,7 +346,7 @@ No Arguments needed
 Request: GET
 
 ```bash
-{{URL}}/api/nps_responses
+https://100035.pythonanywhere.com/api/nps_responses
 ```
 
 Which will get the response:
