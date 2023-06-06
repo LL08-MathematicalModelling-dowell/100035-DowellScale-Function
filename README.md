@@ -121,15 +121,195 @@
                                         "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/2",
                                         "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/3"
                                     ]
-                                }
+                 -----------------------------------------------------------------------------------------------------------------------------------                
+           4. Get All Scale Settings
+                     - URL: (GET) https://100035.pythonanywhere.com/api/nps_settings
+                     - Body: None    
+                     - Response: {
+                                "isSuccess": true,
+                                "data": [
+                                    {
+                                        "_id": "63a35edb3bb180f16ea32374",
+                                        "event_id": "FB1010000000167165102859533603",
+                                        "settings": {
+                                            "orientation": "horizontal",
+                                            "numberrating": 10,
+                                            "scalecolor": "#aa0808",
+                                            "roundcolor": "#2a5b74",
+                                            "fontcolor": "#000000",
+                                            "fomat": "numbers",
+                                            "time": "120",
+                                            "template_name": "TestSetting4834",
+                                            "name": "TestSetting",
+                                            "text": "Left+Center+Right",
+                                            "left": "Left",
+                                            "right": "Right",
+                                            "center": "Center",
+                                            "scale-category": "nps scale",
+                                            "no_of_scales": "4"
+                                        }
+                                    },
+                                    {
+                                        "_id": "63a35f973bb180f16ea3238e",
+                                        "event_id": "FB1010000000167165121658835342",
+                                        "settings": {
+                                            "orientation": "horizontal",
+                                            "numberrating": 10,
+                                            "scalecolor": "#ed0c0c",
+                                            "roundcolor": "#4f2654",
+                                            "fontcolor": "#000000",
+                                            "fomat": "numbers",
+                                            "time": "120",
+                                            "template_name": "TestSetting1098",
+                                            "name": "TestSetting",
+                                            "text": "Left+Center+Right",
+                                            "left": "Left",
+                                            "right": "Right",
+                                            "center": "Center",
+                                            "scale-category": "nps scale",
+                                            "no_of_scales": "4"
+                                        }
+                                    },
+                                    {
+                                        "_id": "63a360523bb180f16ea323b2",
+                                        "event_id": "FB1010000000167165140457988274",
+                                        "settings": {
+                                            "orientation": "horizontal",
+                                            "numberrating": 10,
+                                            "scalecolor": "#ed0c0c",
+                                            "roundcolor": "#4f2654",
+                                            "fontcolor": "#000000",
+                                            "fomat": "numbers",
+                                            "time": "120",
+                                            "template_name": "TestSetting2699",
+                                            "name": "TestSetting",
+                                            "text": "Left+Center+Right",
+                                            "left": "Left",
+                                            "right": "Right",
+                                            "center": "Center",
+                                            "scale-category": "nps scale",
+                                            "no_of_scales": "4"
+                                        }
+                                    }
+                                ]
+                            }                            
+            
+                                
+2.     Scale Responses
+       1. Create Scale Response         Description: Provide a response to a particular scale instance using the corresponding scale details.
+              - URL: (POST) https://100035.pythonanywhere.com/api/nps_responses_create
+              - Body: {
+                     "template_name": "nps",
+                     "scale_id": "63e8b4c87f4aa8f650162b7a",
+                     "instance_id":1 ,
+                     "brand_name":"xyz000",
+                     "product_name":"xyz000",
+                     "score":7,
+                     "username": "umarjaved"
+                     }
+              - Response: {
+                         "success": "{\"isSuccess\": true, \"inserted_id\": \"647e3a97264adfc99d2736be\"}",
+                         "score": {
+                             "instance_id": "1/4",
+                             "score": 7,
+                             "category": "Neutral"
+                         },
+                         "payload": {
+                             "event_id": "05:06:2023,19:42:15",
+                             "scale_data": {
+                                 "scale_id": "63e8b4c87f4aa8f650162b7a",
+                                 "scale_type": "nps scale"
+                             },
+                             "brand_data": {
+                                 "brand_name": "xyz000",
+                                 "product_name": "xyz000"
+                             },
+                             "score": [
+                                 {
+                                     "instance_id": "1/4",
+                                     "score": 7,
+                                     "category": "Neutral"
+                                 }
+                             ]
+                         },
+                         "url": "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/1",
+                         "Category": "Neutral"
+                     }                 
+                     
+           -----------------------------------------------------------------------------------------------------------------------------------                
+              
+       2. Get Single Scale Response
+              - URL: (GET) https://100035.pythonanywhere.com/api/nps_responses/<str:scale_id>
+              - Body: None
+              - Response: {
+                         "payload": {
+                             "isSuccess": true,
+                             "data": []
+                         }
+                     }
+           ----------------------------------------------------------------------------------------------------------------------------------                
+       3. Get All Scale Responses
+              - URL: (GET)
+              - Body: None
+              - Response: {
+                         "isSuccess": true,
+                         "data": [
+                                    {
+                                        "_id": "63a477d49b0e8a8545b262a2",
+                                        "event_id": "FB1010000000167172295758202024",
+                                        "scale_data": {
+                                            "scale_id": "63a403752be81449d3a32382",
+                                            "scale_type": "nps scale",
+                                            "instance_id": "3/4"
+                                        },
+                                        "brand_data": {
+                                            "brand_name": "your_brand",
+                                            "product_name": "your_product"
+                                        },
+                                        "score": {
+                                            "score": "2"
+                                        }
+                                    },
+                                    {
+                                        "_id": "63a47a3b9b0e8a8545b26336",
+                                        "event_id": "FB1010000000016717235725374497",
+                                        "scale_data": {
+                                            "scale_id": "63a403752be81449d3a32382",
+                                            "scale_type": "nps scale"
+                                        },
+                                        "brand_data": {
+                                            "brand_name": "your_brand",
+                                            "product_name": "your_product"
+                                        },
+                                        "score": [
+                                            {
+                                                "instance_id": "4/4",
+                                                "score": "10"
+                                            }
+                                        ]
+                                    },
+                                  ]  
+                                  
+4.     Calculate Total Score
+       - URL (GET) https://100035.pythonanywhere.com/api/total_responses/<str:doc_no>/<str:product_name>
+          e.g https://100035.pythonanywhere.com/api/total_responses/1/xyz000
+       - Body: None
+       - Response: {
+                  "All_scores": [
+                      2,
+                      2,
+                      2,
+                      2,
+                      4,
+                      6,
+                      9,
+                      0
+                  ],
+                  "Total_score for document 1": 27
+                  }        
              
 
-2.      All custom configuration
-        - URL: (POST) https://100035.pythonanywhere.com/api/nps_custom_data_all
-        - Body: { "templated_id": 47576 }
-        - Response: ---
-
-3.     Custom Configuration Data
+5.     Custom Configuration Data
         1. Upload Custom Configuration Data
                 - URL: (POST) https://100035.pythonanywhere.com/api/nps_custom_data/
                 - Body: { 
