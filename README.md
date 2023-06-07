@@ -18,9 +18,6 @@
                         "left": "good",
                         "right": "best",
                         "center": "neutral",
-                        "label_images": {"0": "imagefile", "1": "imagefile", "2": "imagefile"},
-                        "fontstyle": "Arial, Helvetica, sans-serif",
-                        "emoji_format": {"0": "😀", "1": "😃", "2": "😄"}
                          }   
                 - Response: {
                                 "success": "{\"isSuccess\": true, \"inserted_id\": \"647dac66eb4e515f77a2165f\"}",
@@ -240,16 +237,37 @@
               
        2. Get Single Scale Response
               - URL: (GET) https://100035.pythonanywhere.com/api/nps_responses/<str:scale_id>
+                     e.g https://100035.pythonanywhere.com/api/nps_responses/647f261b7c6579b2466771bf
               - Body: None
               - Response: {
                          "payload": {
                              "isSuccess": true,
-                             "data": []
+                             "data": [
+                                 {
+                                     "_id": "647f261b7c6579b2466771bf",
+                                     "event_id": "06:06:2023,12:27:07",
+                                     "scale_data": {
+                                         "scale_id": "647f2305264adfc99d27417c",
+                                         "scale_type": "nps scale"
+                                     },
+                                     "brand_data": {
+                                         "brand_name": "my_brand_name",
+                                         "product_name": "my_product_name"
+                                     },
+                                     "score": [
+                                         {
+                                             "instance_id": "1/1",
+                                             "score": 7,
+                                             "category": "Neutral"
+                                         }
+                                     ]
+                                 }
+                             ]
                          }
                      }
            ----------------------------------------------------------------------------------------------------------------------------------                
        3. Get All Scale Responses
-              - URL: (GET)
+              - URL: (GET) https://100035.pythonanywhere.com/api/nps_responses
               - Body: None
               - Response: {
                          "isSuccess": true,
