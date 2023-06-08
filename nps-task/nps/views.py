@@ -295,7 +295,6 @@ def dynamic_scale_instances(request):
         instances.append(instance)
     update_field = {
         "settings.no_of_scales": len(instances),
-        "settings.instances": instances,
         "settings.allow_resp": True
     }
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
