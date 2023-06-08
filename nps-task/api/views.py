@@ -265,9 +265,58 @@ def settings_api_view_create(request):
         return Response({"success": "Successful Updated ", "data": update_field, "scale_urls": urls})
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['POST'])
 def dynamic_scale_instances(request):
+    response = request.data
+    scale_id = response["scale_id"]
+    field_add = {"_id": scale_id}
+
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                         "fetch", field_add, "nil")
+    settings_json = json.loads(x)
+    settings = settings_json['data'][0]['settings']
+    template_name = settings['template_name']
+    settings['allow_resp'] = True
+    scale_type = settings['scale-category']
+    name_url = ""
+
+    if scale_type == "stapel scale":
+        name_url = "/stapel/stapel-scale1/"
+    elif scale_type == "nps scale":
+        name_url = "/nps-scale1/"
+    else:
+        return Response({"error": "Scale not integrated yet"}, status=status.HTTP_400_BAD_REQUEST)
+
+    instances = settings.get('instances', [])
+    start = len(instances) + 1
+
+    if 'no_of_documents' in response:
+        no_of_documents = response['no_of_documents'] + start
+        for x in range(start, int(no_of_documents)):
+            instance = {
+                f"document{x}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{x}"
+            }
+            instances.append(instance)
+    else:
+        instance = {
+            f"document{start}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{start}"
+        }
+        instances.append(instance)
+    update_field = {
+        "settings.no_of_scales": len(instances),
+        "settings.instances": instances,
+        "settings.allow_resp": True
+    }
+    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                         "update", field_add, update_field)
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                         "fetch", field_add, "nil")
+    settings_json = json.loads(x)
+    return Response({"success": z, "response": settings_json['data'][0]['settings']})
+
+
+@api_view(['POST'])
+def dynamic_scale_instances_new(request):
     response = request.data
     scale_id = response["scale_id"]
     field_add = {"_id": scale_id}
