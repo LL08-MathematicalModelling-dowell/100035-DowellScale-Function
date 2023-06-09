@@ -196,7 +196,6 @@
        1. Create Scale Response         Description: Provide a response to a particular scale instance using the corresponding scale details.
               - URL: (POST) https://100035.pythonanywhere.com/api/nps_responses_create
               - Body: {
-                     "template_name": "nps",
                      "scale_id": "63e8b4c87f4aa8f650162b7a",
                      "instance_id":1 ,
                      "brand_name":"xyz000",
