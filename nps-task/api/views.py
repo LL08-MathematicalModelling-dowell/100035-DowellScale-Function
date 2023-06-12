@@ -288,6 +288,9 @@ def settings_api_view_create(request):
 import asyncio
 
 
+from concurrent.futures import ThreadPoolExecutor
+import concurrent.futures
+
 @api_view(['POST'])
 def dynamic_scale_instances(request):
     response = request.data
@@ -325,17 +328,26 @@ def dynamic_scale_instances(request):
             f"document{start}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{start}"
         }
         instances.append(instance)
+
     update_field = {
         "settings.no_of_scales": len(instances),
         "settings.instances": instances,
         "settings.allow_resp": True
     }
-    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                         "update", field_add, update_field)
-    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                         "fetch", field_add, "nil")
+
+    with ThreadPoolExecutor() as executor:
+        futures = []
+        futures.append(executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                       "update", field_add, update_field))
+        futures.append(executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                       "fetch", field_add, "nil"))
+
+        results = [future.result() for future in concurrent.futures.as_completed(futures)]
+        z, x = results
+
     settings_json = json.loads(x)
     return Response({"success": z, "response": settings_json['data'][0]['settings']})
+
 
 
 @api_view(['GET'])
