@@ -10,9 +10,11 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from .eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
+from django.core.files.storage import default_storage
+from concurrent.futures import ThreadPoolExecutor
 
 # CREATE SCALE SETTINGS
-@api_view(['POST','GET','PUT'])
+@api_view(['POST','PUT','GET'])
 def settings_api_view_create(request):
     if request.method == 'POST':
         response = request.data
@@ -39,16 +41,50 @@ def settings_api_view_create(request):
         rand_num = random.randrange(1, 10000)
         name = response['name']
         template_name = f"{name.replace(' ', '')}{rand_num}"
+        custom_emoji_format={}
+        image_label_format={}
 
         eventID = get_event_id()
+        fomat = response.get('fomat')
+        if fomat == "emoji":
+            custom_emoji_format = response.get('custom_emoji_format', {})
+        elif fomat == "image":
+            image_label_format = response.get('image_label_format', {})
+            def save_image(key, image_data):
+                image_path = f'images/{key}.png'  # Define a unique path for each image
+                default_storage.save(image_path, image_data)
+                image_label_format[key] = image_path
+
+            with ThreadPoolExecutor() as executor:
+                futures = [executor.submit(save_image, key, image_data) for key, image_data in image_label_format.items()]
+                # Wait for all image saving tasks to complete
+                for future in futures:
+                    future.result()
+
 
         field_add = {"event_id": eventID,
-                     "settings": {"orientation": response['orientation'], "spacing_unit":spacing_unit, "scale_upper_limit": response['scale_upper_limit'],
-                                  "scale_lower_limit": -scale_lower_limit, "scalecolor": response['scalecolor'],
-                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": "numbers", "time": time,
-                                  "template_name": template_name, "name": name, "text": text, "left": response['left'],
-                                  "right": response['right'], "scale": scale, "scale-category": "stapel scale",
-                                  "no_of_scales": 1,"date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+                     "settings": {
+                         "orientation": response['orientation'], 
+                         "spacing_unit":spacing_unit, 
+                         "scale_upper_limit": response['scale_upper_limit'],
+                         "scale_lower_limit": -scale_lower_limit, 
+                         "scalecolor": response['scalecolor'],
+                         "roundcolor": response['roundcolor'], 
+                         "fontcolor": response['fontcolor'], 
+                         "fomat": fomat, 
+                         "time": time,
+                         "image_label_format": image_label_format,
+                         "custom_emoji_format": custom_emoji_format,
+                         "template_name": template_name, 
+                         "name": name, "text": text, 
+                         "left": response['left'],
+                         "right": response['right'], 
+                         "scale": scale, 
+                         "scale-category": "stapel scale",
+                          "no_of_scales": 1,
+                          "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+                    }
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
             field_add, "nil")
@@ -57,9 +93,128 @@ def settings_api_view_create(request):
         details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
-        # urls = []
-        urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-        return Response({"success": x, "data": field_add, "scale_url": urls})
+        return Response({"success": x, "data": field_add})
+
+    elif request.method == "PUT":
+        response = request.data
+        id = response['scale_id']
+        field_add = {"_id": id}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                             "fetch", field_add, "nil")
+        settings_json = json.loads(x)
+        settings = settings_json['data'][0]['settings']
+
+        if 'left' in response:
+            left = response['left']
+        else:
+            left = settings["left"]
+
+        if 'scale_upper_limit' in response:
+            scale_upper_limit = int(response['scale_upper_limit'])
+        else:
+            scale_upper_limit = int(settings["scale_upper_limit"])
+
+        if 'right' in response:
+            right = response['right']
+        else:
+            right = settings["right"]
+
+        text = f"{left}+{right}"
+
+        name = settings["name"]
+
+        if 'time' in response:
+            time = response['time']
+        else:
+            time = settings["time"]
+
+        template_name = settings["template_name"]
+
+        if time == "":
+            time = 0
+
+        if 'orientation' in response:
+            orientation = response['orientation']
+        else:
+            orientation = settings["orientation"]
+
+        if 'scalecolor' in response:
+            scalecolor = response['scalecolor']
+        else:
+            scalecolor = settings["scalecolor"]
+
+        if 'roundcolor' in response:
+            roundcolor = response['roundcolor']
+        else:
+            roundcolor = settings["roundcolor"]
+
+        if 'fontcolor' in response:
+            fontcolor = response['fontcolor']
+        else:
+            fontcolor = settings["fontcolor"]
+
+        if 'spacing_unit' in response:
+            spacing_unit = response['spacing_unit']
+        else:
+            spacing_unit = settings["spacing_unit"] or 1
+
+        scale_lower_limit = int(response['scale_upper_limit'])
+        # print(spacing_unit, type(spacing_unit))
+        scale = []
+        for i in range(-scale_lower_limit, int(response['scale_upper_limit']) + 1):
+            if i % int(spacing_unit) == 0 and i != 0:
+                scale.append(i)
+
+        update_field = {"settings": {"orientation": orientation,
+                                     "scale_upper_limit": scale_upper_limit,
+                                     "scale_lower_limit": -scale_lower_limit,
+                                     "scalecolor": scalecolor,
+                                     "spacing_unit": spacing_unit,
+                                     "fomat": "numbers",
+                                     "no_of_scales": settings["no_of_scales"],
+                                     "roundcolor": roundcolor,
+                                     "fontcolor": fontcolor,
+                                     "time": time,
+                                     "template_name": template_name,
+                                     "name": name,
+                                     "text": text,
+                                     "left": left,
+                                     "right": right,
+                                     "scale": scale,
+                                     "scale-category": "stapel scale",
+                                     "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                     }
+                        }
+
+        if settings.get('fomat') == "image":
+            image_label_format = settings.get('image_label_format', {})
+            update_field["settings"]["fomat"] = "image"
+            if 'image_label_format' in response:
+                image_label_format.update(response.get('image_label_format', {}))
+            update_field["settings"]["image_label_format"] = image_label_format
+            def save_image(key, image_data):
+                image_path = f'images/{key}.png'  # Define a unique path for each image
+                default_storage.save(image_path, image_data)
+                image_label_format[key] = image_path
+            with ThreadPoolExecutor() as executor:
+                futures = [executor.submit(save_image, key, image_data) for key, image_data in image_label_format.items()]
+                # Wait for all image saving tasks to complete
+                for future in futures:
+                    future.result()
+
+        elif settings.get('fomat') == "emoji":
+            custom_emoji_format = settings.get('custom_emoji_format', {})
+            update_field["settings"]["fomat"] = "emoji"
+            if 'custom_emoji_format' in response:
+                custom_emoji_format.update(response.get('custom_emoji_format', {}))
+            update_field["settings"]["custom_emoji_format"] = custom_emoji_format
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                             field_add, update_field)
+
+        return Response({"success": "Successful Updated ", "data": update_field})
+
+
     elif request.method == 'GET':
         response = request.data
         if "scale_id" in response:
@@ -83,85 +238,7 @@ def settings_api_view_create(request):
                 field_add, "nil")
 
             return Response({"data": json.loads(x),})
-    elif request.method == "PUT":
-        response = request.data
-        id = response['scale_id']
-        field_add = {"_id": id, }
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-            "fetch", field_add, "nil")
-        settings_json = json.loads(x)
-        settings = settings_json['data'][0]['settings']
-        if 'left' in response:
-            left = response['left']
-        else:
-            left = settings["left"]
-        if 'scale_upper_limit' in response:
-            scale_upper_limit = int(response['scale_upper_limit'])
-        else:
-            scale_upper_limit = int(settings["scale_upper_limit"])
-        if 'right' in response:
-            right = response['right']
-        else:
-            right = settings["right"]
-        text = f"{left}+{right}"
-
-        name = settings["name"]
-        if 'time' in response:
-            time = response['time']
-        else:
-            time = settings["time"]
-        template_name = settings["template_name"]
-        if time == "":
-            time = 0
-        if 'orientation' in response:
-            orientation = response['orientation']
-        else:
-            orientation = settings["orientation"]
-        if 'scalecolor' in response:
-            scalecolor = response['scalecolor']
-        else:
-            scalecolor = settings["scalecolor"]
-        if 'roundcolor' in response:
-            roundcolor = response['roundcolor']
-        else:
-            roundcolor = settings["roundcolor"]
-        if 'fontcolor' in response:
-            fontcolor = response['fontcolor']
-        else:
-            fontcolor = settings["fontcolor"]
-        if 'spacing_unit' in response:
-            spacing_unit = response['spacing_unit']
-        else:
-            spacing_unit = settings["spacing_unit"]
-
-        scale_lower_limit = int(response['scale_upper_limit'])
-
-        scale = []
-        for i in range(-scale_lower_limit, int(response['scale_upper_limit']) + 1):
-            if i % response['spacing_unit'] == 0 and i != 0:
-                scale.append(i)
-
-        update_field = {
-            "settings": {"orientation": orientation, "scale_upper_limit": scale_upper_limit, "scale_lower_limit": -scale_lower_limit,
-                         "scalecolor": scalecolor, "spacing_unit": spacing_unit,"fomat": "numbers", "no_of_scales": settings["no_of_scales"],
-                         "roundcolor": roundcolor, "fontcolor": fontcolor,
-                         "time": time,
-                         "template_name": template_name, "name": name, "text": text,
-                         "left": left,
-                         "right": right,"scale":scale,
-                         "scale-category": "stapel scale",
-                         "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
-        print(field_add)
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-            field_add, update_field)
-        urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-        if int(settings["no_of_scales"]) > 1:
-            urls = []
-            for i in range(1,int(settings["no_of_scales"]) + 1):
-                url = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-                urls.append(url)
-
-        return Response({"success": "Successful Updated ", "data": update_field, "scale_urls": urls})
+    
     return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
 
 # SUMBIT SCALE RESPONSE
