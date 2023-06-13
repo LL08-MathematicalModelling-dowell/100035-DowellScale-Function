@@ -285,9 +285,6 @@ def settings_api_view_create(request):
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-import asyncio
-
-
 from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures
 
@@ -335,19 +332,93 @@ def dynamic_scale_instances(request):
         "settings.allow_resp": True
     }
 
-    with ThreadPoolExecutor() as executor:
-        futures = []
-        futures.append(executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                       "update", field_add, update_field))
-        futures.append(executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                       "fetch", field_add, "nil"))
+    z = None
+    x = None
 
-        results = [future.result() for future in concurrent.futures.as_completed(futures)]
-        z, x = results
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                   "update", field_add, update_field),
+                   executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                   "fetch", field_add, "nil")]
+
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                if future == futures[0]:
+                    z = result
+                elif future == futures[1]:
+                    x = result
+            except Exception as e:
+                print(f"Exception: {e}")
 
     settings_json = json.loads(x)
     return Response({"success": z, "response": settings_json['data'][0]['settings']})
 
+
+
+from concurrent.futures import ThreadPoolExecutor
+import concurrent.futures
+
+
+@api_view(['POST'])
+def dynamic_scale_instances_new(request):
+    response = request.data
+    scale_id = response["scale_id"]
+    field_add = {"_id": scale_id}
+
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                         "fetch", field_add, "nil")
+    settings_json = json.loads(x)
+    settings = settings_json['data'][0]['settings']
+    template_name = settings['template_name']
+    settings['allow_resp'] = True
+    scale_type = settings['scale-category']
+    name_url = ""
+
+    if scale_type == "stapel scale":
+        name_url = "/stapel/stapel-scale1/"
+    elif scale_type == "nps scale":
+        name_url = "/nps-scale1/"
+    else:
+        return Response({"error": "Scale not integrated yet"}, status=status.HTTP_400_BAD_REQUEST)
+
+    instances = settings.get('instances', [])
+    start = len(instances) + 1
+
+    if 'no_of_documents' in response:
+        no_of_documents = response['no_of_documents'] + start
+        for x in range(start, int(no_of_documents)):
+            instance = {
+                f"document{x}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{x}"
+            }
+            instances.append(instance)
+    else:
+        instance = {
+            f"document{start}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{start}"
+        }
+        instances.append(instance)
+
+    update_field = {
+        "settings.no_of_scales": len(instances),
+        "settings.instances": instances,
+        "settings.allow_resp": True
+    }
+
+    with ThreadPoolExecutor() as executor:
+        future_z = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                   "1093", "ABCDE",
+                                   "update", field_add, update_field)
+        future_x = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                   "1093", "ABCDE",
+                                   "fetch", field_add, "nil")
+
+        z = future_z.result()  # Get the result of the first thread
+        x = future_x.result()  # Get the result of the second thread
+
+    settings_json = json.loads(x)
+    settings_json = settings_json['data'][0]['settings']
+    del settings_json["instances"]
+    return Response({"success": z, "response": settings_json})
 
 
 @api_view(['GET'])
