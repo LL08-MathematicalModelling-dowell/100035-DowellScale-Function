@@ -16,6 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 # CREATE SCALE SETTINGS
 @api_view(['POST','GET','PUT'])
 def settings_api_view_create(request):
+    global image_label_format
     if request.method == 'POST':
         response = request.data
         try:
