@@ -1,6 +1,8 @@
 import random
 import datetime
 import json
+from concurrent import futures
+
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
@@ -9,6 +11,12 @@ from concurrent.futures import ThreadPoolExecutor
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
+import concurrent.futures
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
+import concurrent.futures
+
+event_url = "https://100003.pythonanywhere.com/event_creation"
 
 
 def compare_event_ids(arr1, arr2):
@@ -72,9 +80,6 @@ def custom_configuration_list(request):
     return Response({"data": element_ids})
 
 # Custom configuration api
-
-
-from concurrent import futures
 
 @api_view(['GET', 'POST', 'PUT'])
 def custom_configuration_view(request):
@@ -204,7 +209,7 @@ def settings_api_view_create(request):
         template_name = f"{name.replace(' ', '')}{rand_num}"
         if time == "":
             time = 0
-        eventID = get_event_id()
+        eventID = event_url
         field_add = {
             "event_id": eventID,
             "settings": {
@@ -285,8 +290,6 @@ def settings_api_view_create(request):
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-from concurrent.futures import ThreadPoolExecutor
-import concurrent.futures
 
 @api_view(['POST'])
 def dynamic_scale_instances(request):
@@ -353,11 +356,6 @@ def dynamic_scale_instances(request):
 
     settings_json = json.loads(x)
     return Response({"success": z, "response": settings_json['data'][0]['settings']})
-
-
-
-from concurrent.futures import ThreadPoolExecutor
-import concurrent.futures
 
 
 @api_view(['POST'])
@@ -599,7 +597,7 @@ def likert_settings_api_view_create(request):
                   response.get('scale_choice 8', "None")
                   ]
 
-        eventID = get_event_id()
+        eventID = event_url
 
         field_add = {"event_id": eventID,
                      "settings": {"orientation": response['orientation'],
@@ -652,7 +650,7 @@ def nps_response_view_submit(request):
         x = data['data'][0]['settings']
         number_of_scale = x['no_of_scales']
 
-        eventID = get_event_id()
+        eventID = event_url
         score = {
             "instance_id": f"{response['instance_id']}/{number_of_scale}", 'score': response['score']}
 
@@ -783,7 +781,7 @@ def new_nps_create(request):
 
     if time == "":
         time = 0
-    eventID = get_event_id()
+    eventID = event_url
     field_add = {
         "event_id": eventID,
         "settings": {
