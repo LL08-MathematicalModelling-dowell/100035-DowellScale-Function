@@ -31,5 +31,5 @@ urlpatterns = [
 
 	# Updated Routes
 	path('nps_create/', new_nps_create, name="nps_create"),
-	path('nps_create_instance_two/',dynamic_scale_instances_new, name="dynamic_instance"),
+	path('nps_create_instance_new/',dynamic_scale_instances_new, name="dynamic_instance"),
 ]

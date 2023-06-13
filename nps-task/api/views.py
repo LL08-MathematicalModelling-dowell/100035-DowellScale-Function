@@ -1,3 +1,4 @@
+import concurrent
 import random
 import datetime
 import json
@@ -9,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
+import concurrent.futures
 
 
 def compare_event_ids(arr1, arr2):
@@ -16,7 +18,6 @@ def compare_event_ids(arr1, arr2):
         if elem in arr2:
             return True
     return False
-
 
 def find_category(score):
     if int(score) <= 6:
@@ -307,13 +308,27 @@ def dynamic_scale_instances(request):
         "settings.instances": instances,
         "settings.allow_resp": True
     }
-    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                         "update", field_add, update_field)
-    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                         "fetch", field_add, "nil")
+    z = None
+    x = None
+
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "update", field_add, update_field),
+                   executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                       "fetch", field_add, "nil")]
+
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                if future == futures[0]:
+                    z = result
+                elif future == futures[1]:
+                    x = result
+            except Exception as e:
+                print(f"Exception: {e}")
+
     settings_json = json.loads(x)
     return Response({"success": z, "response": settings_json['data'][0]['settings']})
-
 
 @api_view(['POST'])
 def dynamic_scale_instances_new(request):
@@ -325,10 +340,8 @@ def dynamic_scale_instances_new(request):
                          "fetch", field_add, "nil")
     settings_json = json.loads(x)
     settings = settings_json['data'][0]['settings']
-    template_name = settings['template_name']
     settings['allow_resp'] = True
     scale_type = settings['scale-category']
-    name_url = ""
 
     if scale_type == "stapel scale":
         name_url = "/stapel/stapel-scale1/"
@@ -337,35 +350,30 @@ def dynamic_scale_instances_new(request):
     else:
         return Response({"error": "Scale not integrated yet"}, status=status.HTTP_400_BAD_REQUEST)
 
-    instances = settings.get('instances', [])
-    start = len(instances) + 1
+    instances = settings['no_of_scales']
 
     if 'no_of_documents' in response:
-        no_of_documents = response['no_of_documents'] + start
-        for x in range(start, int(no_of_documents)):
-            instance = {
-                f"document{x}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{x}"
-            }
-            instances.append(instance)
+        no_of_scales = response['no_of_documents'] + instances
     else:
-        instance = {
-            f"document{start}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{start}"
-        }
-        instances.append(instance)
+        no_of_scales = instances + 1
     update_field = {
-        "settings.no_of_scales": len(instances),
-        "settings.instances": instances,
+        "settings.no_of_scales": no_of_scales,
         "settings.allow_resp": True
     }
-    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                         "update", field_add, update_field)
-    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                         "fetch", field_add, "nil")
+    with ThreadPoolExecutor() as executor:
+        future_z = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                   "1093", "ABCDE",
+                                   "update", field_add, update_field)
+        future_x = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                   "1093", "ABCDE",
+                                   "fetch", field_add, "nil")
+
+        z = future_z.result()  # Get the result of the first thread
+        x = future_x.result()  # Get the result of the second thread
+
     settings_json = json.loads(x)
     settings_json = settings_json['data'][0]['settings']
-    del settings_json["instances"]
     return Response({"success": z, "response": settings_json})
-
 
 @api_view(['GET'])
 def calculate_total_score(request, doc_no=None, product_name=None):
@@ -412,7 +420,6 @@ def nps_response_view_submit(request):
         default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                          "find", field_add, "nil")
         data = json.loads(default_scale)
-        print(data)
         if data['data'] is None:
             return Response({"Error": "Scale does not exist"})
 
@@ -502,7 +509,6 @@ def single_scale_response_api_view(request, id=None):
     if request.method == 'GET':
         return Response({"payload": json.loads(x)})
 
-
 # GET ALL SCALES RESPONSES
 @api_view(['GET', ])
 def scale_response_api_view(request):
@@ -513,7 +519,6 @@ def scale_response_api_view(request):
                              "1094", "ABCDE", "fetch", field_add, "nil")
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
     if request.method == 'GET':
         return Response(json.loads(x))
 
@@ -761,7 +766,6 @@ def new_nps_create(request):
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
 
-        print(user_details, details)
         return Response({"success": response_data, "data": field_add,})
     
     elif request.method == "PUT":
@@ -780,8 +784,8 @@ def new_nps_create(request):
         if settings['user'].lower() == "no":
             return Response({"error": "Cannot modify scale settings"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        print(settings)
         left = response.get('left', settings["left"])
+        username = response.get('username', settings["username"])
         center = response.get('center', settings["center"])
         right = response.get('right', settings["right"])
         text = f"{left}+{center}+{right}"
@@ -797,6 +801,8 @@ def new_nps_create(request):
         fomat = response.get('fomat', settings["fomat"])
         no_of_scales = int(response.get('no_of_scales', settings["no_of_scales"]))
         fontstyle = response.get('fontstyle', settings["fontstyle"])
+        event_ID = get_event_id()
+
         custom_emoji_format = {}
         image_label_format = {}
         if no_of_scales > 100 or no_of_scales < 1:
@@ -844,6 +850,12 @@ def new_nps_create(request):
 
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                             "update", field_add, update_field)
+
+        # Should be inserted in a thread
+        details = {"scale_id": json.loads(response_data)['inserted_id'], "event_id": event_ID, "username": username}
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
+            "insert", details, "nil")
+
         return Response({"success": response_data, "data": update_field,})
     elif request.method == 'GET':
         response = request.data
