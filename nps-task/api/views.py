@@ -145,8 +145,6 @@ def custom_configuration_view(request):
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
 # CREATE SCALE SETTINGS
-
-
 @api_view(['POST', 'PUT', 'GET'])
 def settings_api_view_create(request):
     if request.method == 'GET':
@@ -304,7 +302,37 @@ def dynamic_scale_instances(request):
         instances.append(instance)
     update_field = {
         "settings.no_of_scales": len(instances),
-        "settings.instances": instances,
+        "settings.instan": len(instances),
+        "settings.allow_resp": True
+    }
+    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                         "update", field_add, update_field)
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                         "fetch", field_add, "nil")
+    settings_json = json.loads(x)
+    return Response({"success": z, "response": settings_json['data'][0]['settings'], "instances": instances},)
+
+@api_view(['POST'])
+def dynamic_scale_instances_two(request):
+    response = request.data
+    scale_id = response["scale_id"]
+    field_add = {"_id": scale_id}
+
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                         "fetch", field_add, "nil")
+    settings_json = json.loads(x)
+    if len(settings_json['data']) < 1:
+        return Response({"error": "Scale not integrated yet"}, status=status.HTTP_400_BAD_REQUEST)
+    settings = settings_json['data'][0]['settings']
+    settings['allow_resp'] = True
+    instances = int(settings['no_of_scales'])
+    if 'no_of_documents' in response:
+        instances += int(response['no_of_documents'])
+    else:
+        instances += 1
+
+    update_field = {
+        "settings.no_of_scales": instances,
         "settings.allow_resp": True
     }
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -363,7 +391,6 @@ def dynamic_scale_instances_new(request):
                          "fetch", field_add, "nil")
     settings_json = json.loads(x)
     settings_json = settings_json['data'][0]['settings']
-    del settings_json["instances"]
     return Response({"success": z, "response": settings_json})
 
 
