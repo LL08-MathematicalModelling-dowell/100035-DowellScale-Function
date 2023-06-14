@@ -10,10 +10,13 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from .eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
+from django.core.files.storage import default_storage
+from concurrent.futures import ThreadPoolExecutor
 
 # CREATE SCALE SETTINGS
 @api_view(['POST','GET','PUT'])
 def settings_api_view_create(request):
+    global image_label_format
     if request.method == 'POST':
         response = request.data
         try:
@@ -39,16 +42,50 @@ def settings_api_view_create(request):
         rand_num = random.randrange(1, 10000)
         name = response['name']
         template_name = f"{name.replace(' ', '')}{rand_num}"
+        custom_emoji_format={}
+        image_label_format={}
 
         eventID = get_event_id()
+        fomat = response.get('fomat')
+        if fomat == "emoji":
+            custom_emoji_format = response.get('custom_emoji_format', {})
+        elif fomat == "image":
+            image_label_format = response.get('image_label_format', {})
+            def save_image(key, image_data):
+                image_path = f'images/{key}.png'  # Define a unique path for each image
+                default_storage.save(image_path, image_data)
+                image_label_format[key] = image_path
+
+            with ThreadPoolExecutor() as executor:
+                futures = [executor.submit(save_image, key, image_data) for key, image_data in image_label_format.items()]
+                # Wait for all image saving tasks to complete
+                for future in futures:
+                    future.result()
+
 
         field_add = {"event_id": eventID,
-                     "settings": {"orientation": response['orientation'], "spacing_unit":spacing_unit, "scale_upper_limit": response['scale_upper_limit'],
-                                  "scale_lower_limit": -scale_lower_limit, "scalecolor": response['scalecolor'],
-                                  "roundcolor": response['roundcolor'], "fontcolor": response['fontcolor'], "fomat": "numbers", "time": time,
-                                  "template_name": template_name, "name": name, "text": text, "left": response['left'],
-                                  "right": response['right'], "scale": scale, "scale-category": "stapel scale",
-                                  "no_of_scales": 1,"date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+                     "settings": {
+                         "orientation": response['orientation'], 
+                         "spacing_unit":spacing_unit, 
+                         "scale_upper_limit": response['scale_upper_limit'],
+                         "scale_lower_limit": -scale_lower_limit, 
+                         "scalecolor": response['scalecolor'],
+                         "roundcolor": response['roundcolor'], 
+                         "fontcolor": response['fontcolor'], 
+                         "fomat": fomat, 
+                         "time": time,
+                         "image_label_format": image_label_format,
+                         "custom_emoji_format": custom_emoji_format,
+                         "template_name": template_name, 
+                         "name": name, "text": text, 
+                         "left": response['left'],
+                         "right": response['right'], 
+                         "scale": scale, 
+                         "scale-category": "stapel scale",
+                          "no_of_scales": 1,
+                          "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+                    }
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
             field_add, "nil")
@@ -57,9 +94,7 @@ def settings_api_view_create(request):
         details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
-        # urls = []
-        urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-        return Response({"success": x, "data": field_add, "scale_url": urls})
+        return Response({"success": x, "data": field_add})
     elif request.method == 'GET':
         response = request.data
         if "scale_id" in response:
