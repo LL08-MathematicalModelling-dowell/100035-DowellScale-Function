@@ -14,6 +14,8 @@ import concurrent.futures
 
 
 def compare_event_ids(arr1, arr2):
+    print(arr1)
+    print(arr2)
     for elem in arr1:
         if elem in arr2:
             return True
@@ -435,7 +437,7 @@ def nps_response_view_submit(request):
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                         "ABCDE", "fetch", {"scale_id": scale_id, "username": user}, "nil")
         user_dets = json.loads(user_details)
-        user_ids = [i["event_id"] for i in user_dets['data']]
+        user_ids = [i["event_id"] for i in user_dets['data'] if int(i['instance_id']) == int(instance_id)]
         check_existance = compare_event_ids(responses_id, user_ids)
         if check_existance:
             return Response({"error": "Scale Response Exists!", "current_score": score, "Category": category},
@@ -451,7 +453,7 @@ def nps_response_view_submit(request):
         z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                              "ABCDE", "insert", field_add, "nil")
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                        "ABCDE", "insert", {"scale_id": scale_id, "event_id": event_id,
+                                        "ABCDE", "insert", {"scale_id": scale_id, "event_id": event_id,"instance_id": instance_id,
                                                             "username": user}, "nil")
         return Response({"success": z, "score": score_data, "payload": field_add,"Category": category})
     except Exception as e:

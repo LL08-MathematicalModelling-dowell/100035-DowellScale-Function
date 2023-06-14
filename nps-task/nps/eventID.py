@@ -1,6 +1,6 @@
 from datetime import datetime
 import requests
-
+import json
 def get_event_id():
     dd = datetime.now()
     time = dd.strftime("%d:%m:%Y,%H:%M:%S")
@@ -34,6 +34,8 @@ def get_event_id():
     }
 
     r = requests.post(url, json=data)
-    return r.text
+    response_data = json.loads(r.text)
+    event_id = response_data.get('event_id')
+    return event_id
 
 
