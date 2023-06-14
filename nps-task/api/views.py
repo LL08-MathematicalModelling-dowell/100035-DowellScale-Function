@@ -404,7 +404,7 @@ def calculate_total_score(request, doc_no=None, product_name=None):
 
 @api_view(['POST'])
 def nps_response_view_submit(request):
-    if request.method == 'POST':
+    try:
         response = request.data
         try:
             user = response['username']
@@ -453,10 +453,9 @@ def nps_response_view_submit(request):
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                         "ABCDE", "insert", {"scale_id": scale_id, "event_id": event_id,
                                                             "username": user}, "nil")
-        return Response({"success": z, "score": score_data, "payload": field_add,
-                         "url": f"{public_url}/nps-scale1/{settings['template_name']}?brand_name=WorkflowAI&product_name=editor/{response['instance_id']}",
-                         "Category": category})
-    return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"success": z, "score": score_data, "payload": field_add,"Category": category})
+    except Exception as e:
+        return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # GET ALL SCALES
 
@@ -694,184 +693,189 @@ def scale_response_api_view(request):
 @api_view(['POST','PUT','GET'])
 def new_nps_create(request):
     global image_label_format
+
     if request.method == 'POST':
-        response = request.data
-        username = response['username']
-        user = response['user']
-        left = response['left']
-        center = response['center']
-        fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
-        right = response['right']
-        text = f"{left}+{center}+{right}"
-        rand_num = random.randrange(1, 10000)
-        name = response['name']
-        time = response.get('time', "")
-        template_name = f"{name.replace(' ', '')}{rand_num}"
-        fomat = response.get('fomat')
-        no_of_scales = int(response['no_of_scales'])
-        custom_emoji_format={}
-        image_label_format={}
+        try:
+            response = request.data
+            username = response['username']
+            user = response['user']
+            left = response['left']
+            center = response['center']
+            fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
+            right = response['right']
+            text = f"{left}+{center}+{right}"
+            rand_num = random.randrange(1, 10000)
+            name = response['name']
+            time = response.get('time', "")
+            template_name = f"{name.replace(' ', '')}{rand_num}"
+            fomat = response.get('fomat')
+            no_of_scales = int(response['no_of_scales'])
+            custom_emoji_format={}
+            image_label_format={}
 
-        if no_of_scales > 100 or no_of_scales < 1:
-            return Response({"no_of_scales": "Out of range" }, status=status.HTTP_400_BAD_REQUEST)
+            if no_of_scales > 100 or no_of_scales < 1:
+                return Response({"no_of_scales": "Out of range" }, status=status.HTTP_400_BAD_REQUEST)
 
-        if fomat == "emoji":
-            custom_emoji_format = response.get('custom_emoji_format', {})
-        elif fomat == "image":
-            image_label_format = response.get('image_label_format', {})
-            def save_image(key, image_data):
-                image_path = f'images/{key}.png'  # Define a unique path for each image
-                default_storage.save(image_path, image_data)
-                image_label_format[key] = image_path
+            if fomat == "emoji":
+                custom_emoji_format = response.get('custom_emoji_format', {})
+            elif fomat == "image":
+                image_label_format = response.get('image_label_format', {})
+                def save_image(key, image_data):
+                    image_path = f'images/{key}.png'  # Define a unique path for each image
+                    default_storage.save(image_path, image_data)
+                    image_label_format[key] = image_path
 
-            with ThreadPoolExecutor() as executor:
-                futures = [executor.submit(save_image, key, image_data) for key, image_data in image_label_format.items()]
-                # Wait for all image saving tasks to complete
-                for future in futures:
-                    future.result()
+                with ThreadPoolExecutor() as executor:
+                    futures = [executor.submit(save_image, key, image_data) for key, image_data in image_label_format.items()]
+                    # Wait for all image saving tasks to complete
+                    for future in futures:
+                        future.result()
 
-        event_ID = get_event_id()
-        field_add = {
-            "event_id": event_ID,
-            "settings": {
-                "user": user,
-                "orientation": response.get('orientation'),
-                "scalecolor": response.get('scalecolor'),
-                "numberrating": 10,
-                "no_of_scales": no_of_scales,
-                "roundcolor": response.get('roundcolor'),
-                "fontcolor": response.get('fontcolor'),
-                "fomat": fomat,
-                "time": time,
-                "image_label_format": image_label_format,
-                "fontstyle": fontstyle,
-                "template_name": template_name,
-                "name": name,
-                "text": text,
-                "left": left,
-                "right": right,
-                "custom_emoji_format": custom_emoji_format,
-                "center": center,
-                "allow_resp": response['allow_resp'],
-                "scale-category": "nps scale",
-                "show_total_score": response['show_total_score'],
-                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            event_ID = get_event_id()
+            field_add = {
+                "event_id": event_ID,
+                "settings": {
+                    "user": user,
+                    "orientation": response.get('orientation'),
+                    "scalecolor": response.get('scalecolor'),
+                    "numberrating": 10,
+                    "no_of_scales": no_of_scales,
+                    "roundcolor": response.get('roundcolor'),
+                    "fontcolor": response.get('fontcolor'),
+                    "fomat": fomat,
+                    "time": time,
+                    "image_label_format": image_label_format,
+                    "fontstyle": fontstyle,
+                    "template_name": template_name,
+                    "name": name,
+                    "text": text,
+                    "left": left,
+                    "right": right,
+                    "custom_emoji_format": custom_emoji_format,
+                    "center": center,
+                    "allow_resp": response['allow_resp'],
+                    "scale-category": "nps scale",
+                    "show_total_score": response['show_total_score'],
+                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
             }
-        }
-        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", 
-                                            "insert", field_add, "nil")
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                                "insert", field_add, "nil")
 
-        # Should be inserted in a thread
-        details = {"scale_id": json.loads(response_data)['inserted_id'],"event_id": event_ID, "username": username}
-        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
-            "insert", details, "nil")
+            # Should be inserted in a thread
+            details = {"scale_id": json.loads(response_data)['inserted_id'],"event_id": event_ID, "username": username}
+            user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
+                "insert", details, "nil")
 
-        return Response({"success": response_data, "data": field_add,})
-    
+            return Response({"success": response_data, "data": field_add})
+        except Exception as e:
+            return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
     elif request.method == "PUT":
-        response = request.data
-        scale_id = response['scale_id']
-        if not scale_id:
-            return Response({"error": "Scale ID is required"}, status=status.HTTP_400_BAD_REQUEST)
-        field_add = {"_id": scale_id}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                "find", field_add, "nil")
-        settings_json = json.loads(x)
-        if not settings_json['data']:
-            return Response({"error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            response = request.data
+            scale_id = response['scale_id']
+            if not scale_id:
+                return Response({"error": "Scale ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+            field_add = {"_id": scale_id}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                    "find", field_add, "nil")
+            settings_json = json.loads(x)
+            if not settings_json['data']:
+                return Response({"error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
-        settings = settings_json['data']['settings']
-        if settings['user'].lower() == "no":
-            return Response({"error": "Cannot modify scale settings"}, status=status.HTTP_401_UNAUTHORIZED)
+            settings = settings_json['data']['settings']
+            if settings['user'].lower() == "no":
+                return Response({"error": "Cannot modify scale settings"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        left = response.get('left', settings["left"])
-        username = response.get('username', settings["username"])
-        center = response.get('center', settings["center"])
-        right = response.get('right', settings["right"])
-        text = f"{left}+{center}+{right}"
-        name = response.get('name', settings["name"])
-        time = response.get('time', settings["time"]) or 0
-        template_name = settings["template_name"]
-        orientation = response.get('orientation', settings["orientation"])
-        scalecolor = response.get('scalecolor', settings["scalecolor"])
-        roundcolor = response.get('roundcolor', settings["roundcolor"])
-        fontcolor = response.get('fontcolor', settings["fontcolor"])
-        allow_resp = response.get('allow_resp', settings["allow_resp"])
-        show_total_score = response.get('show_total_score', settings["show_total_score"])
-        fomat = response.get('fomat', settings["fomat"])
-        no_of_scales = int(response.get('no_of_scales', settings["no_of_scales"]))
-        fontstyle = response.get('fontstyle', settings["fontstyle"])
-        event_ID = get_event_id()
+            left = response.get('left', settings["left"])
+            center = response.get('center', settings["center"])
+            right = response.get('right', settings["right"])
+            text = f"{left}+{center}+{right}"
+            name = response.get('name', settings["name"])
+            time = response.get('time', settings["time"]) or 0
+            template_name = settings["template_name"]
+            orientation = response.get('orientation', settings["orientation"])
+            scalecolor = response.get('scalecolor', settings["scalecolor"])
+            roundcolor = response.get('roundcolor', settings["roundcolor"])
+            fontcolor = response.get('fontcolor', settings["fontcolor"])
+            allow_resp = response.get('allow_resp', settings["allow_resp"])
+            show_total_score = response.get('show_total_score', settings["show_total_score"])
+            fomat = response.get('fomat', settings["fomat"])
+            no_of_scales = int(response.get('no_of_scales', settings["no_of_scales"]))
+            fontstyle = response.get('fontstyle', settings["fontstyle"])
+            event_ID = get_event_id()
 
-        custom_emoji_format = {}
-        image_label_format = {}
-        if no_of_scales > 100 or no_of_scales < 1:
-            return Response({"no_of_scales": "Out of range"}, status=status.HTTP_400_BAD_REQUEST)
-        if fomat == "emoji":
-            custom_emoji_format = response.get('custom_emoji_format', settings["custom_emoji_format"])
-        elif fomat == "image":
-            image_label_format = response.get('image_label_format', settings["image_label_format"])
-            def save_image(key, image_data):
-                image_path = f'images/{key}.png'
-                default_storage.save(image_path, image_data)
-                image_label_format[key] = image_path
+            custom_emoji_format = {}
+            image_label_format = {}
+            if no_of_scales > 100 or no_of_scales < 1:
+                return Response({"no_of_scales": "Out of range"}, status=status.HTTP_400_BAD_REQUEST)
+            if fomat == "emoji":
+                custom_emoji_format = response.get('custom_emoji_format', settings["custom_emoji_format"])
+            elif fomat == "image":
+                image_label_format = response.get('image_label_format', settings["image_label_format"])
+                def save_image(key, image_data):
+                    image_path = f'images/{key}.png'
+                    default_storage.save(image_path, image_data)
+                    image_label_format[key] = image_path
 
-            with ThreadPoolExecutor() as executor:
-                futures = [executor.submit(save_image, key, image_data) for key, image_data in image_label_format.items()]
-                for future in futures:
-                    future.result()
-        update_field = {
-            "settings": {
-                "user": response['user'],
-                "orientation": orientation,
-                "scalecolor": scalecolor,
-                "numberrating": 10,
-                "no_of_scales": no_of_scales,
-                "roundcolor": roundcolor,
-                "fontcolor": fontcolor,
-                "fomat": fomat,
-                "time": time,
-                "image_label_format": image_label_format,
-                "template_name": template_name,
-                "name": name,
-                "text": text,
-                "left": left,
-                "right": right,
-                "custom_emoji_format": custom_emoji_format,
-                "center": center,
-                "allow_resp": allow_resp,
-                "show_total_score": show_total_score,
-                "scale-category": "nps scale",
-                "fontstyle": fontstyle,
-                "date_created": settings["date_created"],
-                "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                with ThreadPoolExecutor() as executor:
+                    futures = [executor.submit(save_image, key, image_data) for key, image_data in image_label_format.items()]
+                    for future in futures:
+                        future.result()
+            update_field = {
+                "event_id": event_ID,
+                "settings": {
+                    "user": response['user'],
+                    "orientation": orientation,
+                    "scalecolor": scalecolor,
+                    "numberrating": 10,
+                    "no_of_scales": no_of_scales,
+                    "roundcolor": roundcolor,
+                    "fontcolor": fontcolor,
+                    "fomat": fomat,
+                    "time": time,
+                    "image_label_format": image_label_format,
+                    "template_name": template_name,
+                    "name": name,
+                    "text": text,
+                    "left": left,
+                    "right": right,
+                    "custom_emoji_format": custom_emoji_format,
+                    "center": center,
+                    "allow_resp": allow_resp,
+                    "show_total_score": show_total_score,
+                    "scale-category": "nps scale",
+                    "fontstyle": fontstyle,
+                    "date_created": settings["date_created"],
+                    "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
             }
-        }
 
-        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                            "update", field_add, update_field)
-
-        # Should be inserted in a thread
-        details = {"scale_id": json.loads(response_data)['inserted_id'], "event_id": event_ID, "username": username}
-        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
-            "insert", details, "nil")
-
-        return Response({"success": response_data, "data": update_field,})
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                                "update", field_add, update_field)
+            return Response({"success": response_data, "data": update_field})
+        except Exception as e:
+            return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
-        response = request.data
-        scale_id = response.get('scale_id')
-        if not scale_id:
-            return Response({"error": "scale_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            response = request.data
+            scale_id = response.get('scale_id')
+            if not scale_id:
+                return Response({"error": "scale_id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        field_add = {"_id": scale_id}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                             "find", field_add, "nil")
-        settings_json = json.loads(x)
-        if not settings_json.get('data'):
-            return Response({"error": "scale not found" }, status=status.HTTP_404_NOT_FOUND)
+            field_add = {"_id": scale_id}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                 "find", field_add, "nil")
+            settings_json = json.loads(x)
+            if not settings_json.get('data'):
+                return Response({"error": "scale not found" }, status=status.HTTP_404_NOT_FOUND)
 
-        settings = settings_json['data']['settings']
-        return Response({"success": settings})
+            settings = settings_json['data']['settings']
+            return Response({"success": settings})
+        except Exception as e:
+            return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response({"error": "method not allowed" }, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
