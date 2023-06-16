@@ -1,13 +1,9 @@
 import random
 import json
-import requests
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from nps.dowellconnection import dowellconnection
-from nps.login import get_user_profile
-import urllib
+from nps.eventID import get_event_id
 from django.views.decorators.clickjacking import xframe_options_exempt
-from .eventID import get_event_id
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
 

@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from nps.dowellconnection import dowellconnection
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
-from .eventID import get_event_id
+from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
 from django.core.files.storage import default_storage
 from concurrent.futures import ThreadPoolExecutor
@@ -26,7 +26,8 @@ def settings_api_view_create(request):
         left = response['left']
         right = response['right']
         text = f"{left}+{right}"
-        time = response['time']
+        time = response.get('time', 0)
+        no_of_scales = response.get('no_of_scales', 1)
         spacing_unit = int(response['spacing_unit'])
         scale_lower_limit = int(response['scale_upper_limit'])
         scale = []
@@ -35,9 +36,6 @@ def settings_api_view_create(request):
                 scale.append(i)
         if int(response['scale_upper_limit']) > 10 or int(response['scale_upper_limit']) < 0 or spacing_unit > 5 or spacing_unit < 1:
             raise Exception("Check scale limits and spacing_unit")
-
-        if time == "":
-            time = 0
 
         rand_num = random.randrange(1, 10000)
         name = response['name']
@@ -82,8 +80,8 @@ def settings_api_view_create(request):
                          "right": response['right'], 
                          "scale": scale, 
                          "scale-category": "stapel scale",
-                          "no_of_scales": 1,
-                          "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                         "no_of_scales": no_of_scales,
+                         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         }
                     }
 
@@ -105,13 +103,7 @@ def settings_api_view_create(request):
             settings_json = json.loads(x)
             settings = settings_json['data'][0]['settings']
             template_name = settings["template_name"]
-            urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-            if int(settings["no_of_scales"]) > 1:
-                urls = []
-                for i in range(1, int(settings["no_of_scales"]) + 1):
-                    url = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-                    urls.append(url)
-            return Response({"data": json.loads(x),"urls": urls})
+            return Response({"data": json.loads(x)})
         else:
             field_add = {"settings.scale-category": "stapel scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
