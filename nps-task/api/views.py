@@ -431,15 +431,12 @@ def nps_response_view_submit(request):
         overall_category, _, _, _, _, existing_responses = total_score_fun(
             scale_id)
         category = find_category(score)
-        responses_id = [c['event_id'] for c in existing_responses if
-                        int(c['score'][0]['instance_id'].split("/")[0]) == int(instance_id)]
+
 
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                        "ABCDE", "fetch", {"scale_id": scale_id, "username": user}, "nil")
+                                        "ABCDE", "fetch", {"scale_id": scale_id, "username": user,"instance_id": instance_id}, "nil")
         user_dets = json.loads(user_details)
-        user_ids = [i["event_id"] for i in user_dets['data'] if int(i['instance_id']) == int(instance_id)]
-        check_existance = compare_event_ids(responses_id, user_ids)
-        if check_existance:
+        if len(user_dets['data']) >= 1:
             return Response({"error": "Scale Response Exists!", "current_score": score, "Category": category},
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
         event_id = get_event_id()
