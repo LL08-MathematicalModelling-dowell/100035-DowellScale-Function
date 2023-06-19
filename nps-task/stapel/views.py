@@ -103,7 +103,6 @@ def settings_api_view_create(request):
                              "fetch", field_add, "nil")
         settings_json = json.loads(x)
         settings = settings_json['data'][0]['settings']
-
         if 'left' in response:
             left = response['left']
         else:
@@ -170,10 +169,10 @@ def settings_api_view_create(request):
                                      "scale_lower_limit": -scale_lower_limit,
                                      "scalecolor": scalecolor,
                                      "spacing_unit": spacing_unit,
-                                     "fomat": "numbers",
                                      "no_of_scales": settings["no_of_scales"],
                                      "roundcolor": roundcolor,
                                      "fontcolor": fontcolor,
+                                     "fomat": response["fomat"],
                                      "time": time,
                                      "template_name": template_name,
                                      "name": name,
@@ -185,8 +184,8 @@ def settings_api_view_create(request):
                                      "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                      }
                         }
-
-        if settings.get('fomat') == "image":
+        
+        if response.get('fomat') == "image":
             image_label_format = settings.get('image_label_format', {})
             update_field["settings"]["fomat"] = "image"
             if 'image_label_format' in response:
@@ -202,7 +201,7 @@ def settings_api_view_create(request):
                 for future in futures:
                     future.result()
 
-        elif settings.get('fomat') == "emoji":
+        elif response.get('fomat') == "emoji":
             custom_emoji_format = settings.get('custom_emoji_format', {})
             update_field["settings"]["fomat"] = "emoji"
             if 'custom_emoji_format' in response:
