@@ -205,7 +205,7 @@ def stapel_response_view_submit(request):
         z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
             "ABCDE", "insert", field_add, "nil")
         user_json = json.loads(z)
-        details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+        details = {"scale_id": user_json['inserted_id'], "event_id": eventID,"instance_id": instance_id, "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
 
