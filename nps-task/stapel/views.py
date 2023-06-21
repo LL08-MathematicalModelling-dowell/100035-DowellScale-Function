@@ -227,8 +227,7 @@ def scale_settings_api_view(request):
 @api_view(['GET',])
 def single_scale_settings_api_view(request, id=None):
     try:
-        # field_add = {"_id": id }
-        field_add = {"settings.template_name": id, }
+        field_add = {"_id": id }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
             "fetch", field_add, "nil")
         settings_json = json.loads(x)
@@ -236,7 +235,7 @@ def single_scale_settings_api_view(request, id=None):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        return Response({"payload": json.loads(x)})
+        return Response({"payload": settings_json})
 
 # GET SINGLE SCALE RESPONSE
 @api_view(['GET',])
