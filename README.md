@@ -1,6 +1,5 @@
-## Dowell Scales API Documentation
-
-       
+## This is the official documentation for the DoWell Scale APIs
+### ENDPOINTS FOR CREATING AND UPDATING SCALES   
 1.      Scale Settings
         1. Upload Scale Settings
                 - URL: (POST) https://100035.pythonanywhere.com/api/nps_settings_create/
@@ -46,7 +45,7 @@
                                 },
                                 "scale_urls": "https://100035.pythonanywhere.com/nps-scale1/scalename9769?brand_name=WorkflowAI&product_name=editor"
                             }
-                -----------------------------------------------------------------------------------------------------------------
+                
          2. Update Scale Settings
                 - URL: (PUT) https://100035.pythonanywhere.com/api/nps_settings_create/
                 - Body: {
@@ -82,7 +81,7 @@
                                 },
                                 "scale_urls": "https://100035.pythonanywhere.com/nps-scale1/scalename9769?brand_name=WorkflowAI&product_name=editor"
                             }
-                   -----------------------------------------------------------------------------------------------------------------
+                  
           3. Get Scale Settings
                     - URL (GET) https://100035.pythonanywhere.com/api/nps_settings_create/
                     - Body:   {"scale_id": "63e8b4c87f4aa8f650162b7a"}
@@ -114,11 +113,11 @@
                                         }
                                     },
                                     "urls": [
-                                        "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/1",
-                                        "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/2",
+                                        "https://100035.pythonanywhere.com/nps-scale1/testing5350brand_name=WorkflowAI&product_name=editor/1",
+                                        "https://100035.pythonanywhere.com/nps-scale1/testing5350brand_name=WorkflowAI&product_name=editor/2",
                                         "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/3"
                                     ]
-                 -----------------------------------------------------------------------------------------------------------------------------------                
+                   
            4. Get All Scale Settings
                      - URL: (GET) https://100035.pythonanywhere.com/api/nps_settings
                      - Body: None    
@@ -191,12 +190,13 @@
                                 ]
                             }                            
             
-                                
+
+### ENDPOINTS FOR PROVIDING RESPONSE (RATING) TO A SCALE
 2.     Scale Responses
-       1. Create Scale Response         Description: Provide a response to a particular scale instance using the corresponding scale details.
+       1. Create Scale Response
+          Description: Provide a response to a particular scale instance using the corresponding scale details.
               - URL: (POST) https://100035.pythonanywhere.com/api/nps_responses_create
               - Body: {
-                     "template_name": "nps",
                      "scale_id": "63e8b4c87f4aa8f650162b7a",
                      "instance_id":1 ,
                      "brand_name":"xyz000",
@@ -232,8 +232,7 @@
                          "url": "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/1",
                          "Category": "Neutral"
                      }                 
-                     
-           -----------------------------------------------------------------------------------------------------------------------------------                
+                                    
               
        2. Get Single Scale Response
               - URL: (GET) https://100035.pythonanywhere.com/api/nps_responses/<str:scale_id>
@@ -265,7 +264,7 @@
                              ]
                          }
                      }
-           ----------------------------------------------------------------------------------------------------------------------------------                
+                  
        3. Get All Scale Responses
               - URL: (GET) https://100035.pythonanywhere.com/api/nps_responses
               - Body: None
@@ -308,7 +307,8 @@
                                     },
                                   ]  
                                   
-4.     Calculate Total Score
+### ENDPOINT FOR FETCHING THE TOTAL SCORE EVALUATION
+3.     Calculate Total Score
        - URL (GET) https://100035.pythonanywhere.com/api/total_responses/<str:doc_no>/<str:product_name>
           e.g https://100035.pythonanywhere.com/api/total_responses/1/xyz000
        - Body: None
@@ -327,7 +327,8 @@
                   }        
              
 
-5.     Custom Configuration Data
+### ENPOINTS FOR CONFIGURING THE SCALES WITH OTHER COMPONENTS OF A PRODUCT
+4.     Custom Configuration Data
         1. Upload Custom Configuration Data
                 - URL: (POST) https://100035.pythonanywhere.com/api/nps_custom_data/
                 - Body: { 
@@ -352,8 +353,8 @@
                                 "date_created": "2023-05-31 15:47:16"
                             }
                         }
-                        ------------------------------------------------------------
-        2. Update Custom Configuration Data
+                       
+         2. Update Custom Configuration Data
                     - URL: (PUT) https://100035.pythonanywhere.com/api/nps_custom_data/
                     - Body: {
                                 "template_id": "27289",
@@ -374,7 +375,7 @@
                                         "date_updated": "2023-05-31 15:53:01"
                                     }
                                 }
-                          -----------------------------------------------------------------
+                         
         3. Get Custom Configuration Data of a particular scale_id
                 - URL: (GET) https://100035.pythonanywhere.com/api/nps_custom_data/
                 - Body: { "scale_id": "63e8b4c87f4aa8f650162b7a" }
@@ -395,4 +396,3 @@
                                 }
                             }
                         }
-
