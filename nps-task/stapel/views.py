@@ -29,9 +29,7 @@ def settings_api_view_create(request):
         spacing_unit = int(response['spacing_unit'])
         scale_lower_limit = int(response['scale_upper_limit'])
         scale = []
-        for i in range(-scale_lower_limit, int(response['scale_upper_limit']) + 1):
-            if i % response['spacing_unit'] == 0 and i != 0:
-                scale.append(i)
+        scale = [i for i in range(-scale_lower_limit, int(response['scale_upper_limit']) + 1) if i % response['spacing_unit'] == 0 and i != 0]
         if int(response['scale_upper_limit']) > 10 or int(response['scale_upper_limit']) < 0 or spacing_unit > 5 or spacing_unit < 1:
             raise Exception("Check scale limits and spacing_unit")
 
@@ -234,14 +232,11 @@ def stapel_response_view_submit(request):
         data = json.loads(response_data)
         total_score = 0
 
-        if len(data['data']) != 0:
-            score_data = data["data"]
-            for i in score_data:
-                b = i['score'][0]['score']
-                total_score += int(b)
+        score_data = data.get("data", [])
+        total_score = sum(int(i['score'][0]['score']) for i in score_data)
 
-                if instance_id == int(i['score'][0]['instance_id'].split("/")[0]):
-                    return Response({"error": "Scale Response Exists!", "total score": total_score}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        if any(int(i['score'][0]['instance_id'].split("/")[0]) == instance_id for i in score_data):
+            return Response({"error": "Scale Response Exists!", "total score": total_score}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         eventID = get_event_id()
         score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score}
 
@@ -289,9 +284,7 @@ def single_scale_settings_api_view(request, id=None):
         no_of_scales = settings['no_of_scales']
         template_name = settings['template_name']
         urls = []
-        for i in range(1, no_of_scales + 1):
-            url = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-            urls.append(url)
+        urls = [f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}" for i in range(1, no_of_scales + 1)]
         return Response({"payload": json.loads(x), "urls": urls})
 
 # GET SINGLE SCALE RESPONSE
@@ -346,9 +339,7 @@ def dowell_scale_admin(request):
         template_name = f"{name.replace(' ', '')}{rand_num}"
         scale = []
         context['scale'] = scale
-        for i in range(-(scale_upper_limit), scale_upper_limit + 1):
-            if i % spacing_unit == 0 and i != 0:
-                scale.append(i)
+        scale = [i for i in range(-(scale_upper_limit), scale_upper_limit + 1) if i % spacing_unit == 0 and i != 0]
         if scale_upper_limit > 10 or scale_upper_limit < 0 or spacing_unit > 5 or spacing_unit < 1:
             raise Exception("Check scale limits and spacing_unit")
 
@@ -433,19 +424,12 @@ def dowell_scale1(request, tname1):
         # score_data = data["data"][0]['score']
 
         total_score = 0
-        for i in score_data:
-            instance_id = i['score'][0]['instance_id'].split("/")[0]
-            if len(instance_id) > 3:
-                continue
-            b = i['score'][0]['score']
-            total_score += int(b)
+        total_score = sum(int(i['score'][0]['score']) for i in score_data if len(i['score'][0]['instance_id'].split("/")[0]) <= 3)
 
-        for i in score_data:
-            instance_id = i['score'][0]['instance_id'].split("/")[0]
-            if instance_id == current_url:
-                existing_scale = True
-                context['response_saved'] = i['score'][0]['score']
-                context['score'] = "show"
+        existing_scale = any(i['score'][0]['instance_id'].split("/")[0] == current_url for i in score_data)
+        if existing_scale:
+            context['response_saved'] = next(i['score'][0]['score'] for i in score_data if i['score'][0]['instance_id'].split("/")[0] == current_url)
+            context['score'] = "show"
                 
 
     if request.method == 'POST':
@@ -486,8 +470,7 @@ def brand_product_error(request):
 
     context["no_scales"] = int(number_of_scale)
     context["no_of_scales"] = []
-    for i in range(int(number_of_scale)):
-        context["no_of_scales"].append(i)
+    context["no_of_scales"] = list(range(int(number_of_scale)))
 
     context['existing_scales'] = []
     field_add = {"scale_data.scale_id": scale_id}
@@ -495,9 +478,8 @@ def brand_product_error(request):
         "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response)
     x = data["data"]
-    for i in x:
-        b = i['score'][0]['instance_id'].split("/")[0]
-        context['existing_scales'].append(b)
+    existing_scales = [i['score'][0]['instance_id'].split("/")[0] for i in x]
+    context['existing_scales'].extend(existing_scales)
 
     name=url.replace("'","")
     context['template_url']= f"{public_url}{name}?brand_name=your_brand&product_name=your_product"
