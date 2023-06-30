@@ -5,4 +5,5 @@ app_name="evaluation_module"
 
 urlpatterns = [
     path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
+    path('scale/reports/csv/<str:product_name>/<str:doc_no>', csv_new, name="csv_new")
 ]
