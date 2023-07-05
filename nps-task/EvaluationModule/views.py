@@ -153,40 +153,38 @@ def by_username(request, username, scale_category):
         scale_category = 'nps scale'
     elif scale_category == 'stapel':
         scale_category = 'stapel scale'
+    elif scale_category == 'npslite':
+        scale_category = 'npslite scale'
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "fetch", {"username": username}, "nil")
     user_dets = json.loads(user_details)
-    print(f"\n\nuser_dets: {user_dets}\n\n")
     scale_i = [entry['scale_id'] for entry in user_dets['data']]
     list_of_scales = []
-    scale = []
     for scale_id in scale_i:
-        print(f"\n\nscale_id: {scale_id}\n\n")
         field_add = {"_id": scale_id}
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                              "fetch", field_add, "nil")
         settings_json = json.loads(x)
-        # print(f"\n\nsettings_json: {settings_json}\n\n")
-        # print(f"\n\nsettings_json: {settings_json['data']}\n\n")
         data = settings_json['data']
-        # print(f"\n\nsettings_json: {data}\n\n")
         if len(data) is not 0:
             now = data[0]
         else:
             now = {"scale-category": "nil"}
-        # print(f"\n\nnow: {now}\n\n")
+        if '_id' in now:
+            now['id'] = now.pop('_id')
+
+
         try:
             scale = now['settings']
+            scale = scale['scale-category']
+            if scale == scale_category:
+                list_of_scales.append(now)
         except:
-            pass
-        if scale is not "nil" and scale['scale-category'] == scale_category:
-            print(f"\n\nscale: {scale}\n\n")
-            list_of_scales.append(scale)
+            scale = now['scale-category']
+            if scale == scale_category:
+                list_of_scales.append(now)
 
-        # print(f"\n\nscale: {scale}\n\n")
-
-    print(f"\n\nlist_of_scales: {list_of_scales}\n\n")
 
     return render(request, 'EvaluationModule/by_username.html', {"responses": list_of_scales})
 
