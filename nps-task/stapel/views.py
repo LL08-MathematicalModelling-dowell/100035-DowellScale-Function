@@ -181,14 +181,7 @@ def settings_api_view_create(request):
         print(field_add)
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
             field_add, update_field)
-        urls = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-        if int(settings["no_of_scales"]) > 1:
-            urls = []
-            for i in range(1,int(settings["no_of_scales"]) + 1):
-                url = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-                urls.append(url)
-
-        return Response({"success": "Successful Updated ", "data": update_field, "scale_urls": urls})
+        return Response({"success": "Successful Updated ", "data": update_field})
     return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
 
 # SUMBIT SCALE RESPONSE
@@ -247,11 +240,11 @@ def stapel_response_view_submit(request):
         z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
             "ABCDE", "insert", field_add, "nil")
         user_json = json.loads(z)
-        details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+        details = {"scale_id": user_json['inserted_id'], "event_id": eventID,"instance_id": instance_id, "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
             "insert", details, "nil")
 
-        return Response({"success": z, "payload": field_add, "url": f"{public_url}/stapel/stapel-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}", "total score": total_score})
+        return Response({"success": z, "payload": field_add, "total score": total_score})
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 # GET ALL SCALES
 @api_view(['GET',])
@@ -269,8 +262,7 @@ def scale_settings_api_view(request):
 @api_view(['GET',])
 def single_scale_settings_api_view(request, id=None):
     try:
-        # field_add = {"_id": id }
-        field_add = {"settings.template_name": id, }
+        field_add = {"_id": id }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
             "fetch", field_add, "nil")
         settings_json = json.loads(x)
@@ -278,14 +270,7 @@ def single_scale_settings_api_view(request, id=None):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        settings = settings_json['data'][0]['settings']
-        no_of_scales = settings['no_of_scales']
-        template_name = settings['template_name']
-        urls = []
-        for i in range(1, no_of_scales + 1):
-            url = f"{public_url}/stapel/stapel-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-            urls.append(url)
-        return Response({"payload": json.loads(x), "urls": urls})
+        return Response({"payload": settings_json})
 
 # GET SINGLE SCALE RESPONSE
 @api_view(['GET',])
