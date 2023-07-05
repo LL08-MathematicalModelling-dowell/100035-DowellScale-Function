@@ -1,0 +1,22 @@
+{% extends "index.html" %}
+{% block title %}List of Responses{% endblock %}
+{% block content %}
+
+    <h1 style="margin-top: 5%;">List of Responses</h1>
+    <ul>
+    {% if responses %}
+        {% for response in responses %}
+        <li>
+            <strong>Template Name:</strong> {{ response.template_name }}<br>
+            <strong>Name:</strong> {{ response.name }}<br>
+            <strong>Text:</strong> {{ response.text }}<br>
+
+        </li>
+        {% endfor %}
+    {% else %}
+        <p>No responses found</p>
+    {% endif %}
+    </ul>
+
+{% endblock %}
+

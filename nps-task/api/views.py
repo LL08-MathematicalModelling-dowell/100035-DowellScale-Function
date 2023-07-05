@@ -304,6 +304,7 @@ def dynamic_scale_instances(request):
     template_name = settings['template_name']
     settings['allow_resp'] = True
     scale_type = settings['scale-category']
+
     name_url = ""
 
     if scale_type == "stapel scale":
