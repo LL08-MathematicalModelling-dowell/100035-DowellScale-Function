@@ -1,16 +1,96 @@
 import random
+import datetime
 import json
 import requests
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 #from .models import system_settings, response
 from nps.dowellconnection import dowellconnection
+from rest_framework import status
 from nps.login import get_user_profile
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
 
+@api_view(['POST','GET','PUT'])
+def settings_api_view_create(request):
+    if request.method == 'POST':
+        response = request.data
+        try:
+            user = response['username']
+        except:
+            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+        time = response['time']
+        if time == "":
+            time = 0
+        name = response['scale_name']
+        number_of_scales = response['number_of_scales']
+        orientation = response['orientation']
+        scale_color = response['scale_color']
+        product_count = response['product_count']
+        product_names = response['product_names']
+        if 2 < len(product_names) > 10:
+            return Response({"error": "Product name should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
+        if len(product_names) != int(product_count):
+            return Response({"error": "Product count and product name count should be same"}, status=status.HTTP_400_BAD_REQUEST)
+        eventID = get_event_id()
+        field_add = {"event_id": eventID,
+                     "settings": {  "orientation": orientation,"scale_color": scale_color, "number_of_scales": number_of_scales,
+                                    "time": time, "name": name, "scale-category": "percent_sum scale", 
+                                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                }
+                    }
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
+            field_add, "nil")
+
+        user_json = json.loads(x)
+        details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
+            "insert", details, "nil")
+        return Response({"success": x, "data": field_add})
+    elif request.method == 'GET':
+        response = request.data
+        if "scale_id" in response:
+            id = response['scale_id']
+            field_add = {"_id": id, }
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                "fetch", field_add, "nil")
+            settings_json = json.loads(x)
+            settings = settings_json['data'][0]['settings']
+            return Response({"data": json.loads(x)})
+        else:
+            field_add = {"settings.scale-category": "percent_sum scale"}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                field_add, "nil")
+
+            return Response({"data": json.loads(x),})
+    elif request.method == "PUT":
+        response = request.data
+        id = response['scale_id']
+        field_add = {"_id": id, }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "fetch", field_add, "nil")
+        settings_json = json.loads(x)
+        settings = settings_json['data'][0]['settings']
+        
+        name = settings["name"]
+        for key in settings.keys():
+            if key in response:
+                settings[key] = response[key]
+            else:
+                del settings[key]
+        settings["name"] = name
+        settings["scale-category"] = "percent_sum scale"
+        settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")       
+        update_field = { "settings": settings }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+            field_add, update_field)
+        return Response({"success": "Successfully Updated ", "data": update_field})
+    return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
 
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
