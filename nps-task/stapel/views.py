@@ -1,4 +1,6 @@
+import imghdr
 import random
+import base64
 import datetime
 import json
 from django.shortcuts import render, redirect
@@ -47,9 +49,23 @@ def settings_api_view_create(request):
             custom_emoji_format = response.get('custom_emoji_format', {})
         elif fomat == "image":
             image_label_format = response.get('image_label_format', {})
+
             def save_image(key, image_data):
-                image_path = f'images/{key}.png'  # Define a unique path for each image
-                default_storage.save(image_path, image_data)
+                try:
+                    # Decode the base64-encoded image data
+                    image_bytes = base64.b64decode(image_data)
+                except ValueError:
+                    # Handle invalid base64 data
+                    return
+
+                # Determine the file extension based on the image format
+                image_format = imghdr.what('', h=image_bytes)
+                if image_format is None:
+                    # Handle unsupported or unknown image formats
+                    return
+
+                image_path = f'images/{key}.{image_format}'  # Define a unique path for each image
+                default_storage.save(image_path, image_bytes)
                 image_label_format[key] = image_path
 
             with ThreadPoolExecutor() as executor:
@@ -57,7 +73,6 @@ def settings_api_view_create(request):
                 # Wait for all image saving tasks to complete
                 for future in futures:
                     future.result()
-
 
         field_add = {"event_id": eventID,
                      "settings": {
@@ -147,19 +162,32 @@ def settings_api_view_create(request):
             if 'image_label_format' in response:
                 image_label_format.update(response.get('image_label_format', {}))
             update_field["settings"]["image_label_format"] = image_label_format
-            
+
             def save_image(key, image_data):
-                image_path = f'images/{key}.png'  # Define a unique path for each image
-                default_storage.save(image_path, image_data)
+                try:
+                    # Decode the base64-encoded image data
+                    image_bytes = base64.b64decode(image_data)
+                except ValueError:
+                    # Handle invalid base64 data
+                    return
+
+                # Determine the file extension based on the image format
+                image_format = imghdr.what('', h=image_bytes)
+                if image_format is None:
+                    # Handle unsupported or unknown image formats
+                    return
+
+                image_path = f'images/{key}.{image_format}'  # Define a unique path for each image
+                default_storage.save(image_path, image_bytes)
                 image_label_format[key] = image_path
-            
+
             with ThreadPoolExecutor() as executor:
                 futures = [executor.submit(save_image, key, image_data) for key, image_data in image_label_format.items()]
-                
                 # Wait for all image saving tasks to complete
                 for future in futures:
                     future.result()
-        
+
+
         elif response.get('fomat') == "emoji":
             custom_emoji_format = settings.get('custom_emoji_format', {})
             update_field["settings"]["fomat"] = "emoji"
