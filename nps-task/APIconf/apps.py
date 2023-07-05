@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ApiconfConfig(AppConfig):
+class NpsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'APIconf'
+    name = 'nps'
