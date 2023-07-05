@@ -1,11 +1,67 @@
 {% extends "index.html" %}
-{% block title %}NPS Scale{% endblock %}
+{% block title %}STAPEL Scale{% endblock %}
 {% block content %}
+
     <style>
+    /* width */
+        ::-webkit-scrollbar {
+          width: 2px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+          background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+
+        .url-clipboard {
+        padding: 10px;
+        border: 1px solid #ccc;
+        max-width: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+        background-color: black;
+        border-radius: 5px;
+      }
+
+      input {
+        border: none;
+        outline: none;
+        width: 95%;
+        display: flex;
+        flex-wrap: wrap;
+        background-color: transparent;
+      }
+
+      i:hover {
+        color: lightblue;
+      }
+
+      i {
+          color: #fff;
+        cursor: pointer;
+        font-size: 2rem;
+      }
+
+        a{
+        text-decoration: none;
+        color: teal;
+        }
         #horizontal{
            display: flex;
            justify-content: space-between;
-<!--           background: blue;-->
+           padding: 20px;
        }
 
         #horizontal p{
@@ -21,10 +77,9 @@
         cursor: pointer;
         }
 
-        #labels-vert{
-        display: none;
+        #labels{
+        display: flex;
         justify-content: space-between;
-        flex-direction: column;
         }
 
         #countdown{
@@ -100,7 +155,7 @@ $(document).ready(function() {
                setrating(this.id);
             //   postScore(this.id)
             //   para = document.getElementById("lg").innerHTML=this.id;
-            //   document.getElementById("myText").value=this.id
+               document.getElementById("myText").value=this.id
 
             });
         }
@@ -115,7 +170,7 @@ function postScore(score){
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({
         score: parseInt(score),
-        scale_name: "{{default.name|safe}}",
+        scale_name: "default",
         brand_name: "",
         user: "",
         email: "",
@@ -136,37 +191,38 @@ setrating = function(id) {
     }
 }
 </script>
-
+    {% if user == "admin" %}
+    <div class="url-clipboard">
+      <p id="mytext"></p>
+      <!-- <button id="TextToCopy" ><img src="button_image.png"></button> -->
+      <i class="bi bi-clipboard" id="clip-icon" onclick="copy_function('mytext')"></i>
+    </div>
+    {% endif %}
 <div class="container ">
     <div class="row mt-4">
-        <div class="col-sm-2 {{bglight}}" style="{{left}}">
-            <div class="text-dark"><h2 align="center"><u>{{hist}}</u></h2></div>
-            <table>
+        <div class="col-sm-2 {{bglight}}" style="{% if user == 'admin' %} {{left}} {% endif %}">
             {% if user == "admin" %}
-            {% for nps in npsall %}
+            <div class="text-dark tabl" ><h3 align="center"><u>{{hist}}</u></h3></div>
+            <table>
+            {% for stapel in stapelall %}
                 <tr>
-        <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{nps.template_name}}">{{nps.template_name}}</a></td>-->
-                    <td><a href="{{public_url}}/nps-scale/{{nps.template_name}}">{{nps.template_name}}</a></td>
+                    <td><a href="{{public_url}}/stapel/stapel-scale1/{{stapel.settings.template_name}}">{{stapel.settings.template_name}}</a></td>
                 </tr>
             {% endfor %}
             {% endif %}
             </table>
         </div>
         <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
-            <h1 align="center" class="text-danger"><b>{{default.name}}</b><span id="countdown"></span></h1><br>
+        <!--<h1 align="center" class="text-danger"><b>Scale</b><span id="countdown"></span></h1><br>-->
+        <h1 align="center" class="text-danger"><b>Scale</b></h1><br>
             <div id="scale-container">
                 <div id="horizontal" ></div>
-                <div class="pl-3" id="labels-vert" style="font-size:2em">
-                    <div>{{text.0}}</div>
-                    <div>{{text.2}}</div>
-                    <div>{{text.1}}</div>
-                </div>
             </div>
 <!--        <div id="horizontal" ></div>-->
-            <div class="pl-3" id="labels" style="font-size:2em">
-                   <div style="float: left">{{text.0}}</div>
-                    <div style="float: right">{{text.2}}</div>
-                    <div style="margin: 0 auto; width: 30%;">{{text.1}}</div>
+            <div class="pl-3" id="labels">
+                   <div>Very unlikely</div>
+                    <!--<div>Select score</div>-->
+                    <div>Very likely</div>
             </div>
         <br>
         {% if user == "admin" %}
@@ -186,8 +242,7 @@ setrating = function(id) {
                 var sca_vert = document.getElementById("labels-vert")
                 var scale_cont = document.getElementById("scale-container")
                 var labels = document.getElementById("labels")
-                scale_bg.style.background = '{{default.scalecolor|safe}}';
-                scale_bg.style.padding = "20px 20px";
+                scale_bg.style.background = '#FFD580';
                 console.log('{{default.fomat|safe}}')
                 star = '{{default.fomat|safe}}'
 
@@ -202,51 +257,86 @@ setrating = function(id) {
                     scale_cont.style.width = "300px";
                     scale_cont.style.margin = "auto";
                 }
-                for (let i = 1; i <= n; i++) {
+
+                var ans = [-5,-4,-3,-2,-1,1,2,3,4,5];
+
+
+
+
+                 for (let i = 0; i < ans.length; i++) {
                     const para = document.createElement("p");
 
                     if (star==="stars"){
                        para.innerHTML = '<i class="fa fa-star"></i>';
                     }
                     else if(star==="emoji"){
-                        para.innerHTML = '<i class="far fa-grin"></i>';
+                        if (i > n/2){
+                            para.innerHTML = "&#128577;";
+                        }
+                        else{
+                            para.innerHTML = "\uD83D\uDE00";
+                        }
                     }
                     else{
-                        para.innerHTML = i;
+                        para.innerHTML = ans[i];
                     }
                     para.id=i
                     para.classList.add("number");
                     document.getElementById("horizontal").appendChild(para);
-<!--                    document.getElementById(i).innerHTML = i;-->
-                    document.getElementById(i).style.background ='{{default.roundcolor|safe}}';
-                    document.getElementById(i).style.color ="{{default.fontcolor|safe }}";
+                    document.getElementById(i).style.background ='rgb(255, 239, 213)';
+                    document.getElementById(i).style.color ="rgb(217, 83, 79)";
                 }
                 </script>
-        <script>
-            let time = {{default.time|safe}};
-
-            const countdownEl = document.getElementById("countdown");
-
-            setInterval(updateCountdown, 1000)
-
-            function updateCountdown(){
-                const minutes = Math.floor(time/60);
-                let seconds = time % 60;
-
-                seconds = seconds < 10 ? '0' + seconds : seconds;
-
-                countdownEl.innerHTML = `${minutes}:${seconds}`
-                seconds < 10 && minutes == 0 ? countdownEl.style.color = "red" : countdownEl.style.color = "black" ;
-                time--;
-                time = time < 0 ? redirectMain() : time;
-            }
-
-            function redirectMain(){
-                window.location.replace("http://100014.pythonanywhere.com/main")
-            }
-        </script>
     <div class="col-sm-2"></div>
-    {% endfor %}
 </div>
 </div>
+<script>
+    let time = 3600;
+
+    const countdownEl = document.getElementById("countdown");
+    score = document.getElementsByClassName("number");
+<!--    console.log(mbuttons);-->
+
+    setInterval(updateCountdown, 1000)
+
+    function updateCountdown(){
+        const minutes = Math.floor(time/60);
+        let seconds = time % 60;
+
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        countdownEl.innerHTML = `${minutes}:${seconds}`
+        seconds < 10  && minutes == 0 ? countdownEl.style.color = "red" : countdownEl.style.color = "black" ;
+        time--;
+        time = time < 0 ? redirectMain() : time;
+    }
+
+    function redirectMain(){
+        window.location.replace("http://100014.pythonanywhere.com/main")
+    }
+
+    function codeAddress() {
+        var copyText = document.getElementById('mytext')
+        copyText.style.color = "#ccc";
+        copyText.style.fontSize = "14px";
+        copyText.style.fontWeight = "400";
+        copyText.innerHTML = `{{public_url|safe}}/stapel/stapel-scale1/defaultstapelscale?brand_name=your%20brand&product_name=your%20product`
+        }
+      window.onload = codeAddress;
+
+      function copy_function(id){
+        var clip = document.getElementById("clip-icon");
+        var value = document.getElementById(id).innerHTML;
+        var input_temp = document.createElement("input");
+        input_temp.value = `{{public_url|safe}}/stapel/stapel-scale1/defaultstapelscale?brand_name=your%20brand&product_name=your%20product`;
+        document.body.appendChild(input_temp);
+        input_temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(input_temp);
+
+        clip.className = "bi bi-check2";
+        clip.style.color = "blue";
+        clip.style.cursor = "default";
+      }
+</script>
 {% endblock %}

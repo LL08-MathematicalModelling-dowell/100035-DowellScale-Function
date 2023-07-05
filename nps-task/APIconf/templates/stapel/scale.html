@@ -1,6 +1,7 @@
 {% extends "index.html" %}
-{% block title %}NPS Scale{% endblock %}
+{% block title %}Stapel Scale{% endblock %}
 {% block content %}
+	{% for default in defaults %}
     <style>
         #horizontal{
            display: flex;
@@ -145,7 +146,7 @@ setrating = function(id) {
             {% if user == "admin" %}
             {% for nps in npsall %}
                 <tr>
-        <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{nps.template_name}}">{{nps.template_name}}</a></td>-->
+        <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{stapel.template_name}}">{{stapel.template_name}}</a></td>-->
                     <td><a href="{{public_url}}/nps-scale/{{nps.template_name}}">{{nps.template_name}}</a></td>
                 </tr>
             {% endfor %}
