@@ -23,23 +23,31 @@ def settings_api_view_create(request):
             user = response['username']
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-        time = response['time']
-        if time == "":
-            time = 0
-        name = response['scale_name']
-        number_of_scales = response['number_of_scales']
-        orientation = response['orientation']
-        scale_color = response['scale_color']
-        product_count = response['product_count']
-        product_names = response['product_names']
-        if 2 < len(product_names) > 10:
+        try:
+            time = response['time']
+            if time == "":
+                time = 0
+            name = response['scale_name']
+            number_of_scales = response['number_of_scales']
+            orientation = response['orientation']
+            scale_color = response['scale_color']
+            product_count = response['product_count']
+            product_names = response['product_names']
+            user = response['user']
+        except KeyError as error:
+            return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
+        if 2 < product_count > 10:
             return Response({"error": "Product name should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
         if len(product_names) != int(product_count):
-            return Response({"error": "Product count and product name count should be same"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Product count and number of product names count should be same"}, status=status.HTTP_400_BAD_REQUEST)
+        if len(product_names) != len(set(product_names)):
+            return Response({"error": "Product names must be unique"}, status=status.HTTP_400_BAD_REQUEST)
+        
         eventID = get_event_id()
         field_add = {"event_id": eventID,
                      "settings": {  "orientation": orientation,"scale_color": scale_color, "number_of_scales": number_of_scales,
-                                    "time": time, "name": name, "scale-category": "percent_sum scale", 
+                                    "time": time, "name": name, "scale-category": "percent_sum scale", "user": user,
+                                    "product_names" : product_names, "product_count" : product_count,
                                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                 }
                     }
@@ -70,26 +78,34 @@ def settings_api_view_create(request):
             return Response({"data": json.loads(x),})
     elif request.method == "PUT":
         response = request.data
+        if "scale_id" not in response:
+            return Response({"error": "scale_id missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
+        if "product_count" or "product_names" in response:
+            product_count = response['product_count']
+            product_names = response['product_names']
+            if 2 < product_count > 10:
+                return Response({"error": "Product name should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
+            if len(product_names) != int(product_count):
+                return Response({"error": "Product count and number of product names count should be same"}, status=status.HTTP_400_BAD_REQUEST)
+            if len(product_names) != len(set(product_names)):
+                return Response({"error": "Product names must be unique"}, status=status.HTTP_400_BAD_REQUEST)
         id = response['scale_id']
         field_add = {"_id": id, }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
             "fetch", field_add, "nil")
         settings_json = json.loads(x)
-        settings = settings_json['data'][0]['settings']
-        
+        settings = settings_json['data'][0]['settings']        
         name = settings["name"]
         for key in settings.keys():
             if key in response:
                 settings[key] = response[key]
-            else:
-                del settings[key]
         settings["name"] = name
         settings["scale-category"] = "percent_sum scale"
         settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")       
         update_field = { "settings": settings }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
             field_add, update_field)
-        return Response({"success": "Successfully Updated ", "data": update_field})
+        return Response({"success": "Successfully Updated ", "data": settings})
     return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
 
 def dowell_scale_admin(request):
