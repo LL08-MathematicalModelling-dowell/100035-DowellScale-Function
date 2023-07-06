@@ -32,6 +32,7 @@ urlpatterns = [
     path('client/', include('client.urls')),
     path('api/', include('api.urls')),
     path('evaluation/', include('EvaluationModule.urls')),
+    path('apiconf/', include('APIconf.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
