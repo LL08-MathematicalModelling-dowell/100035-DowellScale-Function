@@ -3,6 +3,8 @@ import random
 import base64
 import datetime
 import json
+from concurrent import futures
+
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
@@ -557,7 +559,7 @@ def likert_settings_api_view_create(request):
                   response.get('scale_choice 8', "None")
                   ]
 
-        eventID = get_event_id()
+        eventID = event_url
 
         field_add = {"event_id": eventID,
                      "settings": {"orientation": response['orientation'],

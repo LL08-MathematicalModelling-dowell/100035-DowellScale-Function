@@ -1,0 +1,256 @@
+{% extends "index.html" %}
+{% block title %}Evaluation{% endblock %}
+{% block content %}
+<style>
+.container {
+  text-align: center;
+  font-weight: bold;
+}
+
+.results {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.results h2 {
+  font-size: 24px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.scale-results {
+  padding: 0;
+  margin: 0;
+}
+
+.scale-results h3 {
+  font-size: 20px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.scale-results .table-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.scale-results table {
+  width: calc(33.33% - 20px);
+  margin-bottom: 20px;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.scale-results th,
+.scale-results td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  font-size: 16px;
+  text-align: left;
+}
+
+.scale-results th {
+  background-color: #198754;
+  color: #fff;
+  font-weight: bold;
+}
+
+.scale-results tr:nth-child(even) {
+  background-color: #f5f5f5;
+}
+
+.scale-results tr:hover {
+  background-color: #e9e9e9;
+}
+
+p {
+  margin-top: 20px;
+  font-size: 18px;
+  font-style: italic;
+  color: #888;
+}
+
+table {
+    	border-collapse: collapse;
+		width: 100%;
+		}
+		th, td {
+			text-align: left;
+			padding: 8px;
+			border-bottom: 1px solid #ddd;
+            font-size:20px
+		}
+		th {
+			background-color: #198754;
+			color: #FFFFFF;
+            font-weight: bold;
+		}
+        .btnn {
+            Background-color: #097969;color: White; border: 0px;width: 130%;height: 140%;font-weight: bold;font-size:18px; border-radius: 5px; margin-top: 7%;
+        }
+</style>
+<div class="container" id="container">
+  <img
+    alt="Home"
+    class="attachment-thumbnail size-thumbnail"
+    height="200"
+    loading="lazy"
+    sizes="(max-width: 150px) 100vw, 150px"
+    src="/static/images/dowell-logo.png"
+    srcset="/static/images/dowell-logo.png 150w, /static/images/dowell-logo.png 48w, /static/images/dowell-logo.png 300w"
+    width="200"
+  />
+  <h1>Evaluation Report</h1>
+</div>
+
+
+<div>
+  <table style="width: 100%;" class="report">
+    <thead>
+      <tr>
+        <th style="width: 20%">Scale Type</th>
+        <th style="width: 30%">Scale Occurence</th>
+        <th style="width: 30%">Scale Responses</th>
+        <th style="width: 20%">Total Response</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>NPS</td>
+        <td>{{ headers.nps_scales }}</td>
+        <td>{{ headers.score_series }}</td>
+        <td>{{ headers.nps_score }}/{{ headers.nps_total_score }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+        <!-- HTML code -->
+<div class="download-button">
+  <a id="download-link" href="#" download="scale_data.csv">
+    <button onclick="downloadCSV()" class="btnn">Download CSV</button>
+  </a>
+</div>
+
+<div class="results">
+  <div class="scale-results">
+    <h2>Scale Results</h2>
+    <div class="sort-container">
+      <label for="sort-by">Sort by:</label>
+      <select id="sort-by" onchange="sortTables()">
+        <option value="">All</option>
+        <option value="nps scale">NPS Scale</option>
+        <option value="stapel scale">Stapel Scale</option>
+      </select>
+    </div>
+    <div class="table-wrapper">
+      {% for k in data_list %}
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th colspan="2">Scale Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, value in k.items %}
+          <tr>
+            <td>{{ key }}</td>
+            <td>{{ value }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+
+
+
+<script>
+  function sortTables() {
+  var selectedValue = document.getElementById("sort-by").value;
+  var scaleTables = document.getElementsByClassName("scale-table");
+  for (var i = 0; i < scaleTables.length; i++) {
+    var table = scaleTables[i];
+    var scaleType = table.querySelector("tbody tr:nth-child(4) td:nth-child(2)").innerHTML;
+    if (selectedValue === "" || scaleType.toLowerCase() === selectedValue) {
+      table.style.display = "";
+    } else {
+      table.style.display = "none";
+    }
+  }
+}
+
+// JavaScript code
+// JavaScript code
+function downloadCSV() {
+  var csvContent = "data:text/csv;charset=utf-8,";
+  var headersAdded = false;
+
+  // Get all the visible tables
+  var scaleTables = document.getElementsByClassName("scale-table");
+    var visibleTables = [];
+
+    for (var i = 0; i < scaleTables.length; i++) {
+      var table = scaleTables[i];
+      var displayStyle = window.getComputedStyle(table).getPropertyValue("display");
+      console.log(displayStyle, "display");
+
+      if (displayStyle !== "none") {
+        visibleTables.push(table);
+      }
+    }
+
+    console.log(visibleTables);
+
+
+  for (var i = 0; i < visibleTables.length; i++) {
+    var table = visibleTables[i];
+
+    // Get the table data rows
+    var dataRows = table.querySelectorAll("tbody tr");
+    var rowData = Array.from(dataRows).map((row) => {
+      return Array.from(row.children).map((td) => td.textContent);
+    });
+
+    // Transpose the rowData array
+    var transposedData = rowData[0].map((col, i) => rowData.map((row) => row[i]));
+
+    // Add table data to CSV content
+    transposedData.forEach((row) => {
+      if (!headersAdded) {
+          row.splice(2,0,"");
+        csvContent += row.join(",") + "\n";
+        headersAdded = true;
+      } else {
+          if (row[0] === "scale_id") {
+              return;
+          } else {
+              console.log(row[1][0], typeof(row[1][0]));
+              console.log(typeof row[1][0] === "string")
+              if (!isNaN(row[1][0]) && row[1][0] !== null) {
+                  csvContent += row.join(",") + "\n";
+              } else {
+                  row.splice(2,0,"");
+
+                  csvContent += row.join(",") + "\n";
+
+              }
+          }
+      }
+    });
+  }
+
+  // Create a download link
+  var encodedUri = encodeURI(csvContent);
+  var downloadLink = document.getElementById("download-link");
+  downloadLink.setAttribute("href", encodedUri);
+}
+
+</script>
+
+{% endblock %}

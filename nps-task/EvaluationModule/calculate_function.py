@@ -46,6 +46,10 @@ def calculate_total_score(doc_no=None, product_name=None):
         the current item x is included in the all_scales list.
         """
         all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[0] == doc_no]
+
+        print(f"\n\nall_scales: {all_scales}\n\n")
+        dat = [x['score'][0]['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
+        print(f"\n\ndata  {dat}\n\n")
         """
         Then this return statement then uses all_scales to return a new list containing score values
         from items where the scale_type equals "nps scale
