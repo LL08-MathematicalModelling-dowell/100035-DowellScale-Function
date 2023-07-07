@@ -163,6 +163,26 @@ def percent_sum_response_submit(request):
 
 
 
+@api_view(['GET'])
+def percent_sum_respnses(request, id=None):
+    try:
+        field_add = {"_id": id}
+        scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
+        scale_data = json.loads(scale)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        settings = scale_data['data'][0]['settings']
+        if settings.get('scale-category') != 'percent_sum scale':
+            return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+        no_of_products = settings['no_of_products']
+        product_names = settings['product_names']
+        urls = []
+        for i in range(no_of_products):
+            url = f"{public_url}/percent-sum/{id}?product_name={product_names[i]}"
+            urls.append(url)
+        return Response({"payload": scale_data['data'], "urls": urls})
 
 
 def dowell_scale_admin(request):
