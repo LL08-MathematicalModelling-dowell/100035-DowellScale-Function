@@ -1,0 +1,340 @@
+{% extends "index.html" %}
+{% block title %}NPS Scale{% endblock %}
+{% block content %}
+    <style>
+    /* width */
+        ::-webkit-scrollbar {
+          width: 2px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+          background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+
+        a{
+        text-decoration: none;
+        color: teal;
+        }
+        #horizontal{
+           display: flex;
+           justify-content: space-between;
+           padding: 20px;
+       }
+
+        #horizontal p{
+        font-size: 30px;
+        padding: 5px;
+        height: 60px;
+        width: 60px;
+        border-radius: 50%;
+        margin: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        }
+
+        #labels{
+        display: flex;
+        justify-content: space-between;
+        }
+
+        #countdown{
+        color: black;
+        float: right;
+        padding: 10px 20px;
+        font-size: 16px;
+        }
+
+        .url-clipboard {
+        padding: 10px;
+        border: 1px solid #ccc;
+        max-width: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+        background-color: black;
+        border-radius: 5px;
+      }
+
+      input {
+        border: none;
+        outline: none;
+        width: 95%;
+        display: flex;
+        flex-wrap: wrap;
+        background-color: transparent;
+      }
+
+      i:hover {
+        color: lightblue;
+      }
+
+      i {
+          color: #fff;
+        cursor: pointer;
+        font-size: 2rem;
+      }
+
+        @media screen and (max-width: 600px) {
+          #horizontal p{
+            font-size: 16px;
+            padding: 5px;
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            margin: 0.5px;
+            }
+
+           #labels{
+           font-size: 20px;
+           }
+        }
+
+        @media screen and (max-width: 995px) {
+            #horizontal{
+            padding: 10px;
+            }
+          #horizontal p{
+            font-size: 18px;
+            padding: 5px;
+            height: 40px;
+            width: 40px;
+            margin: .5px'
+            }
+
+           #labels{
+           font-size: 14px;
+           }
+        }
+        @media screen and (max-width: 335px) {
+            #horizontal{
+            padding: 10px;
+            }
+          #horizontal p{
+            font-size: 12px;
+            padding: 5px;
+            height: 30px;
+            width: 30px;
+            margin: .5px'
+            }
+
+           #labels{
+           font-size: 14px;
+           }
+        }
+    </style>
+<script>
+    var mbuttons =[];
+
+$(document).ready(function() {
+
+    // Get mbuttons list
+    mbuttons = document.getElementsByClassName("number");
+    console.log(mbuttons);
+
+
+    if (mbuttons.length >= 0) {
+        for (var i = 0; i < mbuttons.length; i++) {
+            mbuttons[i].addEventListener("click", function() {
+
+               console.log(this.id);
+               setrating(this.id);
+            //   postScore(this.id)
+            //   para = document.getElementById("lg").innerHTML=this.id;
+               document.getElementById("myText").value=this.id
+
+            });
+        }
+
+    }
+
+});
+
+function postScore(score){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '{{public_url|safe}}/nps-response/', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        score: parseInt(score),
+        scale_name: "default",
+        brand_name: "",
+        user: "",
+        email: "",
+    }));
+    window.location.replace("http://100014.pythonanywhere.com/main")
+}
+
+setrating = function(id) {
+    for (var i = 0; i < mbuttons.length; i++) {
+        if (+id >= +mbuttons[i].id) {
+            mbuttons[i].style.color = "white";
+            mbuttons[i].style.background = "#5cb85c";
+        }else {
+            mbuttons[i].style.color = "red";
+            mbuttons[i].style.background = "#fff";
+        }
+
+    }
+}
+</script>
+    {% if user == "admin" %}
+    <div class="url-clipboard">
+      <p id="mytext"></p>
+      <!-- <button id="TextToCopy" ><img src="button_image.png"></button> -->
+      <i class="bi bi-clipboard" id="clip-icon" onclick="copy_function('mytext')"></i>
+    </div>
+    {% endif %}
+
+<div class="container">
+    <div class="row mt-4">
+        <div class="col-sm-2 {{bglight}}" style="{% if user == 'admin' %} {{left}} {% endif %}">
+            {% if user == "admin" %}
+            <div class="text-dark"><h3 align="center"><u>{{hist}}</u></h3></div>
+            <table>
+            {% for nps in npsall %}
+                <tr>
+                    <td><a href="{{public_url}}/nps-scale1/{{nps.settings.template_name}}">{{nps.settings.template_name}}</a></td>
+                </tr>
+            {% endfor %}
+            {% endif %}
+            </table>
+        </div>
+        <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
+        <!--<h1 align="center" class="text-danger"><b>Scale</b><span id="countdown"></span></h1><br>-->
+        <h1 align="center" class="text-danger"><b>Scale</b></h1><br>
+            <div id="scale-container">
+                <div id="horizontal" ></div>
+            </div>
+<!--        <div id="horizontal" ></div>-->
+            <div class="pl-3" id="labels">
+                   <div>Very unlikely</div>
+                    <div>Select score</div>
+                    <div>Very likely</div>
+            </div>
+        <br>
+        {% if user == "admin" %}
+        <div class="pb-4">
+            <a class="{{btn}}" href="{% url 'APIconf:admin_page' %}" style="float:right">{{urltext}}</a>
+            <br>
+        </div>
+        {% endif %}
+    </div>
+    <script>
+                var vert="vertical";
+                var hori="horizontal";
+                var name="number";
+                var n=10;
+
+                var scale_bg = document.getElementById("horizontal")
+                var sca_vert = document.getElementById("labels-vert")
+                var scale_cont = document.getElementById("scale-container")
+                var labels = document.getElementById("labels")
+                scale_bg.style.background = '#FFD580';
+                console.log('{{default.fomat|safe}}')
+                star = '{{default.fomat|safe}}'
+
+                if ('{{default.orientation|safe}}' ==="vertical" ){
+
+                    scale_bg.style.flexDirection = "column";
+                    labels.style.display = "none";
+                    scale_bg.style.width = "100px";
+                    scale_bg.style.margin = "auto";
+                    scale_cont.style.display = "flex";
+                    sca_vert.style.display = "flex";
+                    scale_cont.style.width = "300px";
+                    scale_cont.style.margin = "auto";
+                }
+
+
+                for (let i = 0; i <= n; i++) {
+                    const para = document.createElement("p");
+
+                    if (star==="stars"){
+                       para.innerHTML = '<i class="fa fa-star"></i>';
+                    }
+                    else if(star==="emoji"){
+                        if (i > n/2){
+                            para.innerHTML = "&#128577;";
+                        }
+                        else{
+                            para.innerHTML = "\uD83D\uDE00";
+                        }
+                    }
+                    else{
+                        para.innerHTML = i;
+                    }
+                    para.id=i
+                    para.classList.add("number");
+                    document.getElementById("horizontal").appendChild(para);
+<!--                    document.getElementById(i).innerHTML = i;-->
+                    document.getElementById(i).style.background ='rgb(255, 239, 213)';
+                    document.getElementById(i).style.color ="rgb(217, 83, 79)";
+                }
+                </script>
+    <div class="col-sm-2"></div>
+</div>
+</div>
+<script>
+    let time = 3600;
+
+    const countdownEl = document.getElementById("countdown");
+    score = document.getElementsByClassName("number");
+<!--    console.log(mbuttons);-->
+
+    setInterval(updateCountdown, 1000)
+
+    function updateCountdown(){
+        const minutes = Math.floor(time/60);
+        let seconds = time % 60;
+
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        countdownEl.innerHTML = `${minutes}:${seconds}`
+        seconds < 10  && minutes == 0 ? countdownEl.style.color = "red" : countdownEl.style.color = "black" ;
+        time--;
+        time = time < 0 ? redirectMain() : time;
+    }
+
+    function redirectMain(){
+        window.location.replace("http://100014.pythonanywhere.com/main")
+    }
+
+    function codeAddress() {
+        var copyText = document.getElementById('mytext')
+        copyText.style.color = "#ccc";
+        copyText.style.fontSize = "14px";
+        copyText.style.fontWeight = "400";
+        copyText.innerHTML = `{{public_url|safe}}/nps-scale1/Nps_Default?brand_name=your%20brand&product_name=your%20product`
+        }
+      window.onload = codeAddress;
+
+
+    function copy_function(id){
+        var clip = document.getElementById("clip-icon");
+        var value = document.getElementById(id).innerHTML;
+        var input_temp = document.createElement("input");
+        input_temp.value = `{{public_url|safe}}/nps-scale1/Nps_Default?brand_name=your%20brand&product_name=your%20product`;
+        document.body.appendChild(input_temp);
+        input_temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(input_temp);
+
+        clip.className = "bi bi-check2";
+        clip.style.color = "blue";
+        clip.style.cursor = "default";
+      }
+</script>
+{% endblock %}
