@@ -103,7 +103,7 @@ def percent_sum_response_submit(request):
         username = response_data['username']
         scale_id = response_data['scale_id']
         event_id = response_data['event_id']
-        product_count = response_data['product_count']
+        responses = response_data['responses']
     except KeyError as e:
         return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -124,16 +124,16 @@ def percent_sum_response_submit(request):
     
     # Check if all required responses are present
     expected_responses = scale['data'][0]['settings']['ProductCount']
-    if int(expected_responses) != len(product_count):
-        return Response({"error": "Incorrect number of product."}, status=status.HTTP_400_BAD_REQUEST)
+    if int(expected_responses) != len(responses):
+        return Response({"error": "Incorrect number of responses."}, status=status.HTTP_400_BAD_REQUEST)
     
     # Check if all responses are valid numbers between 0 and 100
-    for count in product_count:
-        if not isinstance(count, (int, float)) or count < 0 or count > 100:
-            return Response({"error": "Invalid product count."}, status=status.HTTP_400_BAD_REQUEST)
+    for response in responses:
+        if not isinstance(response, (int, float)) or response < 0 or response > 100:
+            return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
     
     # Calculate total score
-    percent_sum = sum(product_count)
+    percent_sum = sum(responses)
     
     # Check if total score is greater than 100
     if percent_sum > 100:
@@ -153,7 +153,7 @@ def percent_sum_response_submit(request):
         "event_id": event_id,
         "username": username,
         "scale_id": scale_id,
-        "product_count": product_count,
+        "responses": responses,
         "percent_sum": percent_sum,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
