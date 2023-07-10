@@ -16,5 +16,5 @@ urlpatterns = [
     path('percent-sum-admin/default/',
          default_scale_admin, name='default_page_admin'),
     path('percent-sum-response-create/', percent_sum_response_submit, name="percent_sum_response_submit_api"),
-    path('percent-sum-responses/', percent_sum_respnses, name="percent_sum_response_submit_api")
+    path('percent-sum-responses/<str:id>', percent_sum_respnses, name="percent_sum_response_submit_api")
 ]

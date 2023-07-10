@@ -176,13 +176,9 @@ def percent_sum_respnses(request, id=None):
         settings = scale_data['data'][0]['settings']
         if settings.get('scale-category') != 'percent_sum scale':
             return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
-        no_of_products = settings['no_of_products']
-        product_names = settings['product_names']
-        urls = []
-        for i in range(no_of_products):
-            url = f"{public_url}/percent-sum/{id}?product_name={product_names[i]}"
-            urls.append(url)
-        return Response({"payload": scale_data['data'], "urls": urls})
+        no_of_products = settings['ProductCount']
+        product_names = settings['productnames']
+        return Response({"payload": scale_data['data']})
 
 
 def dowell_scale_admin(request):
