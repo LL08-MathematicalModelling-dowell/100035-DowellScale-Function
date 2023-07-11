@@ -9,5 +9,6 @@ urlpatterns = [
     path('scale/reports/username/<str:username>/<str:scale_category>', by_username, name="by_username"),
 
     # Rest endpoints
-    path('scale/reports/api/<str:username>/<str:scale_category>', by_username_api, name="by_username")
+    path('scale/reports/api/<str:username>/<str:scale_category>', by_username_api, name="by_username"),
+    path('target/', Target_API, name="target"),
 ]

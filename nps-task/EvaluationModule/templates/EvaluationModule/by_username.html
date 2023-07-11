@@ -7,10 +7,7 @@
     {% if responses %}
         {% for response in responses %}
         <li>
-            <strong>Template Name:</strong> {{ response.settings.template_name }}<br>
-            <strong>Scale Id:</strong> {{ response.id }}<br>
-            <strong>Name:</strong> {{ response.settings.name }}<br>
-            <strong>Text:</strong> {{ response.settings }}<br>
+            <strong>Scale Score:</strong> {{ response}}<br>
 
         </li>
         {% endfor %}

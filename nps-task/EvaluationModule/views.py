@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.core.cache import cache
 from .calculate_function import *
@@ -152,6 +153,7 @@ def csv_new(request, product_name, doc_no):
 
 
 def by_username(request, username, scale_category):
+    global now
     if scale_category == 'nps':
         scale_category = 'nps scale'
     elif scale_category == 'stapel':
@@ -173,26 +175,27 @@ def by_username(request, username, scale_category):
         if len(data) != 0:
             now = data[0]
         else:
-            now = {"scale-category": "nil"}
-        if '_id' in now:
-            now['id'] = now.pop('_id')
-
+            pass
 
         try:
-            scale = now['settings']
-            scale = scale['scale-category']
-            if scale == scale_category:
-                list_of_scales.append(now)
-        except:
-            scale = now['scale-category']
-            if scale == scale_category:
-                list_of_scales.append(now)
+            list_of_scales.append(now['settings']['scale'])
+
+        except KeyError:
+            try:
+                list_of_scales.append(now['scale'])
+            except:
+                try:
+                    list_of_scales.append(now['settings']['scales'])
+                except:
+                    pass
+    print(list_of_scales)
 
 
     return render(request, 'EvaluationModule/by_username.html', {"responses": list_of_scales})
 
 @api_view(['GET'])
 def by_username_api(request, username, scale_category):
+    global now
     if scale_category == 'nps':
         scale_category = 'nps scale'
     elif scale_category == 'stapel':
@@ -214,21 +217,52 @@ def by_username_api(request, username, scale_category):
         if len(data) != 0:
             now = data[0]
         else:
-            now = {"scale-category": "nil"}
-        if '_id' in now:
-            now['id'] = now.pop('_id')
-
+            pass
 
         try:
-            scale = now['settings']
-            scale = scale['scale-category']
-            if scale == scale_category:
-                list_of_scales.append(now)
-        except:
-            scale = now['scale-category']
-            if scale == scale_category:
-                list_of_scales.append(now)
+            list_of_scales.append(now['settings']['scale'])
+
+        except KeyError:
+            try:
+                list_of_scales.append(now['scale'])
+            except:
+                try:
+                    list_of_scales.append(now['settings']['scales'])
+                except:
+                    pass
 
 
     return Response({"responses": list_of_scales},status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def Target_API(request):
+    # get all response from this API payload
+
+    payload = request.data
+    print(f"payload: {payload}...")
+    # Make a GET request to the original API with the payload
+    response = requests.post("http://100032.pythonanywhere.com/api/targeted_population/", json=payload)
+
+    print(f"response: {response}...")
+    if response.json()['normal']['data']:
+        for i in response.json()['normal']['data']:
+            for j in i:
+                print(f"j: {j['_id']}...")
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                     "fetch", {"_id": j['_id']}, "nil")
+                settings_json = json.loads(x)
+                print(f"settings_json: {settings_json}...")
+                data = settings_json['data']
+                print(f"data: {data}...")
+    else:
+        print("no data")
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Return the response as JSON
+        return JsonResponse(response.json(), safe=False)
+
+
+
+    # If the request failed, return an error response
+    return JsonResponse({"error": "Failed to retrieve data from the original API."}, status=500)
