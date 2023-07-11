@@ -3,6 +3,9 @@ from django.core.cache import cache
 from .calculate_function import *
 from .normality import *
 from concurrent.futures import ThreadPoolExecutor
+from rest_framework.decorators import api_view
+from rest_framework import status
+from rest_framework.response import Response
 
 """
 This module takes random number, attaches it to the product name and doc_no and first saves that data with 
@@ -167,7 +170,7 @@ def by_username(request, username, scale_category):
                              "fetch", field_add, "nil")
         settings_json = json.loads(x)
         data = settings_json['data']
-        if len(data) is not 0:
+        if len(data) != 0:
             now = data[0]
         else:
             now = {"scale-category": "nil"}
@@ -187,4 +190,45 @@ def by_username(request, username, scale_category):
 
 
     return render(request, 'EvaluationModule/by_username.html', {"responses": list_of_scales})
+
+@api_view(['GET'])
+def by_username_api(request, username, scale_category):
+    if scale_category == 'nps':
+        scale_category = 'nps scale'
+    elif scale_category == 'stapel':
+        scale_category = 'stapel scale'
+    elif scale_category == 'npslite':
+        scale_category = 'npslite scale'
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "fetch", {"username": username}, "nil")
+    user_dets = json.loads(user_details)
+    scale_i = [entry['scale_id'] for entry in user_dets['data']]
+    list_of_scales = []
+    for scale_id in scale_i:
+        field_add = {"_id": scale_id}
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                             "fetch", field_add, "nil")
+        settings_json = json.loads(x)
+        data = settings_json['data']
+        if len(data) != 0:
+            now = data[0]
+        else:
+            now = {"scale-category": "nil"}
+        if '_id' in now:
+            now['id'] = now.pop('_id')
+
+
+        try:
+            scale = now['settings']
+            scale = scale['scale-category']
+            if scale == scale_category:
+                list_of_scales.append(now)
+        except:
+            scale = now['scale-category']
+            if scale == scale_category:
+                list_of_scales.append(now)
+
+
+    return Response({"responses": list_of_scales},status=status.HTTP_200_OK)
 
