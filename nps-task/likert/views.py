@@ -1,11 +1,181 @@
 import random
+import datetime
 import json
+from rest_framework.decorators import api_view
 from django.shortcuts import render, redirect, HttpResponse
+from rest_framework.response import Response
+from rest_framework import status
 from nps.dowellconnection import dowellconnection
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
+
+@api_view(['POST','GET','PUT'])
+def settings_api_view_create(request):
+    if request.method == 'POST':
+        response = request.data
+        try:
+            user = response['username']
+        except:
+            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+        try:
+            time = response['time']
+            if time == "":
+                time = 0
+            name = response['scale_name']
+            number_of_scales = response['number_of_scales']
+            orientation = response['orientation']
+            font_color = response['font_color']
+            round_color = response['round_color']
+            label_type = response['label_type']
+            if label_type == "text":
+                label_selection = response['label_scale_selection']
+            label_input = response['label_scale_input']
+        except KeyError as error:
+            return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if label_type != "text" and label_type != "emoji":
+            return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if label_type == "text":
+            if 2 < label_selection > 9 or label_selection == 6:
+                return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"}, status=status.HTTP_400_BAD_REQUEST)
+            if len(label_input) != label_selection:
+                return Response({"error": "Label selection and number of label input count should be same"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        eventID = get_event_id()
+        field_add = {"event_id": eventID,
+                     "settings": {  "orientation": orientation,"font_color": font_color, "number_of_scales": number_of_scales,
+                                    "time": time, "name": name, "scale-category": "likert scale", "user": user,
+                                    "round_color" : round_color, "label_type" : label_type, "label_selection" : label_selection,
+                                    "label_input" : label_input,
+                                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                }
+                    }
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
+            field_add, "nil")
+
+        user_json = json.loads(x)
+        details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
+            "insert", details, "nil")
+        return Response({"success": x, "data": field_add})
+    elif request.method == 'GET':
+        response = request.data
+        if "scale_id" in response:
+            id = response['scale_id']
+            field_add = {"_id": id, }
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                "fetch", field_add, "nil")
+            settings_json = json.loads(x)
+            settings = settings_json['data'][0]['settings']
+            return Response({"data": json.loads(x)})
+        else:
+            field_add = {"settings.scale-category": "percent_sum scale"}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                field_add, "nil")
+
+            return Response({"data": json.loads(x),})
+    elif request.method == "PUT":
+        response = request.data
+        if "scale_id" not in response:
+            return Response({"error": "scale_id missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
+        if response["label_type"] != "text" and response["label_type"] != "emoji":
+            return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
+        if response["label_type"] == "text" or "label_input" in response:
+            label_selection = response["label_scale_selection"]
+            label_input = response["label_scale_input"]
+            if 2 < label_selection > 9 or label_selection == 6:
+                return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"}, status=status.HTTP_400_BAD_REQUEST)
+            if len(label_input) != label_selection:
+                return Response({"error": "Label selection and number of label input count should be same"}, status=status.HTTP_400_BAD_REQUEST)
+        id = response['scale_id']
+        field_add = {"_id": id, }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "fetch", field_add, "nil")
+        settings_json = json.loads(x)
+        settings = settings_json['data'][0]['settings']        
+        name = settings["name"]
+        for key in settings.keys():
+            if key in response:
+                settings[key] = response[key]
+        settings["name"] = name
+        settings["scale-category"] = "likert scale"
+        settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")       
+        update_field = { "settings": settings }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+            field_add, update_field)
+        return Response({"success": "Successfully Updated ", "data": settings})
+    return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def submit_response_view(request):
+    response_data = request.data
+    try:
+        username = response_data['username']
+        scale_id = response_data['scale_id']
+        event_id = response_data['event_id']
+        response = response_data['response']
+    except KeyError as e:
+        return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Check if user is authorized to submit response
+    user = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "fetch", {"username": username}, "nil")
+    if not user:
+        return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    # Check if scale exists
+    scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch", {"_id": scale_id}, "nil")
+    if not scale:
+        return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Check if scale is of type "percent_sum scale"
+    scale_settings = json.loads(scale)
+    if scale_settings['data'][0]['settings'].get('scale-category') != 'likert scale':
+        return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if scale_settings['data'][0]['settings'].get('label_type') == "text":
+        if response not in scale_settings['data'][0]['settings'].get('label_input'):
+            return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if scale_settings['data'][0]['settings'].get('label_type') == "emoji":
+        upper_boundary = scale_settings['data'][0]['settings'].get('label_selection')
+        if type(response) != int or 0 < response > upper_boundary - 1:
+            return Response({"error": "Emoji response must be an integer within label selection range."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Check if response already exists for this event
+    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1095", "ABCDE", "fetch", {"event_id": event_id}, "nil")    
+    existing_response = json.loads(existing_response)    
+    if isinstance(existing_response, dict) and existing_response['data']:
+        return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Insert new response into database
+    response = {
+        "event_id": event_id,
+        "username": username,
+        "scale_id": scale_id,
+        "response": response,
+        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", response, "nil")
+    
+    return Response({"success": True, "response_id": response_id})
+
+@api_view(['GET'])
+def get_response_view(request, id=None):
+    try:
+        field_add = {"_id": id}
+        scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports","1094", "ABCDE", "fetch", field_add, "nil")
+        scale_data = json.loads(scale)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        response = scale_data['data'][0]
+        return Response({"payload": response})
+
 
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
