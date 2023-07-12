@@ -142,7 +142,7 @@ def submit_response_view(request):
 
 
 @api_view(['GET'])
-def get_response_view(request, id=None):
+def npslite_response_view(request, id=None):
     try:
         field_add = {"_id": id}
         response_data = dowellconnection("dowell_npslite_scale", "bangalore", "dowell_npslite_scale", "responses", "responses", "1094", "ABCDE", "fetch", field_add, "nil")
