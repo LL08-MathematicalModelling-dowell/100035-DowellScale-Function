@@ -247,11 +247,13 @@ def Target_API(request):
     if response.json()['normal']['data']:
         for i in response.json()['normal']['data']:
             for j in i:
+                print(f"j: {j}...")
                 print(f"j: {j['_id']}...")
-                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                     "fetch", {"_id": j['_id']}, "nil")
+                field_add = {"_id": j['_id']}
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                      "1094", "ABCDE", "fetch", field_add, "nil")
                 settings_json = json.loads(x)
-                print(f"settings_json: {settings_json}...")
+                print(f" {settings_json}")
                 data = settings_json['data']
                 print(f"data: {data}...")
     else:
