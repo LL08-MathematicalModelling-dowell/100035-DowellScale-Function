@@ -6,6 +6,7 @@ import json
 from concurrent import futures
 from django.shortcuts import redirect
 import stapel.views as stapel
+import likert.views as likert
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
@@ -962,4 +963,9 @@ def redirect_view(request):
         return stapel.settings_api_view_create(request)
     elif "stapel" in scaletype and "response" in scale_type:
         return stapel.stapel_response_view_submit(request)
+    elif "likert" in scaletype and "settings" in scale_type:
+        return likert.settings_api_view_create(request)
+    elif "likert" in scaletype and "response" in scale_type:
+        return likert.submit_response_view(request)
+
     return redirect('api:nps_response_submit_api')
