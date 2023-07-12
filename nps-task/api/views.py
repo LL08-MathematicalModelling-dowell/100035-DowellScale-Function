@@ -428,50 +428,66 @@ def nps_response_view_submit(request):
         except KeyError:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        scale_id = response['scale_id']
-        score = response['score']
-        category = find_category(score)
-        instance_id = response['instance_id']
-        field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
+        if 'document_responses' in response:
+            document_responses = response['document_responses']
+            instance_id = response['instance_id']
+            resp = []
+            for x in document_responses:
+                scale_id = x['scale_id']
+                score = x['score']
+                category = find_category(score)
+                success = response_submit_loop(response, scale_id, instance_id, user, category, score)
+                print(success)
+            return success
+        else:
+            scale_id = response['scale_id']
+            score = response['score']
+            category = find_category(score)
+            instance_id = response['instance_id']
+            return response_submit_loop(response, scale_id, instance_id, user, category, score)
 
-        default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                         "find", field_add, "nil")
-        data = json.loads(default_scale)
-        if data['data'] is None:
-            return Response({"Error": "Scale does not exist"})
-
-        settings = data['data']['settings']
-        number_of_scale = settings['no_of_scales']
-        scale_id = data['data']['_id']
-        overall_category, _, _, _, _, existing_responses = total_score_fun(
-            scale_id)
-        print("Existing Score", existing_responses)
-        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                        "ABCDE", "fetch",
-                                        {"scale_id": scale_id, "username": user, "instance_id": instance_id}, "nil")
-        user_dets = json.loads(user_details)
-        if len(user_dets['data']) >= 1:
-            b = [l['score'][0]['score'] for l in existing_responses if l['score'][0]['instance_id'].split("/")[0] == f"{instance_id}"]
-            category = find_category(b[0])
-            return Response({"error": "Scale Response Exists!", "current_score": b[0], "Category": category},
-                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        event_id = get_event_id()
-        score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
-                      "score": score, "category": category}
-        if int(instance_id) > int(number_of_scale):
-            return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
-        field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
-                     "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
-                     "score": [score_data]}
-        z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-                             "ABCDE", "insert", field_add, "nil")
-        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                        "ABCDE", "insert",
-                                        {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
-                                         "username": user}, "nil")
-        return Response({"success": z, "score": score_data, "payload": field_add, "Category": category})
     except Exception as e:
         return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+def response_submit_loop(response, scale_id, instance_id, user, category, score):
+    field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
+    default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                     "find", field_add, "nil")
+    data = json.loads(default_scale)
+    if data['data'] is None:
+        return Response({"Error": "Scale does not exist"})
+
+    settings = data['data']['settings']
+    number_of_scale = settings['no_of_scales']
+    scale_id = data['data']['_id']
+    overall_category, _, _, _, _, existing_responses = total_score_fun(
+        scale_id)
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "fetch",
+                                    {"scale_id": scale_id, "username": user, "instance_id": instance_id}, "nil")
+    user_dets = json.loads(user_details)
+    if len(user_dets['data']) >= 1:
+        b = [l['score'][0]['score'] for l in existing_responses if
+             l['score'][0]['instance_id'].split("/")[0] == f"{instance_id}"]
+        category = find_category(b[0])
+        return Response({"error": "Scale Response Exists!", "current_score": b[0], "Category": category},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    event_id = get_event_id()
+    score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
+                  "score": score, "category": category}
+    if int(instance_id) > int(number_of_scale):
+        return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
+    field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
+                 "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
+                 "score": [score_data]}
+    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+                         "ABCDE", "insert", field_add, "nil")
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "insert",
+                                    {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
+                                     "username": user}, "nil")
+    return Response({"success": z, "score": score_data, "payload": field_add, "Category": category})
 
 
 # GET ALL SCALES
@@ -947,4 +963,3 @@ def redirect_view(request):
     elif "stapel" in scaletype and "response" in scale_type:
         return stapel.stapel_response_view_submit(request)
     return redirect('api:nps_response_submit_api')
-
