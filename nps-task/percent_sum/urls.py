@@ -5,7 +5,6 @@ from .views import dowell_scale_admin, dowell_scale1, default_scale, default_sca
 app_name = "percent_sum"
 
 urlpatterns = [
-    path('percent-sum-settings', settings_api_view_create, name="create_percent_sum_scale_api"),
     # path('', rolescreen,name='login_page'),
     #path('percent-sum-admin/', login, name='percent_sum_login'),
     path('percent-sum-admin/settings/', dowell_scale_admin, name='admin_page'),
@@ -15,6 +14,7 @@ urlpatterns = [
     path('percent-sum-scale/default/', default_scale, name='default_page'),
     path('percent-sum-admin/default/',
          default_scale_admin, name='default_page_admin'),
-    path('percent-sum-response-create/', percent_sum_response_submit, name="percent_sum_response_submit_api"),
-    path('percent-sum-responses/<str:id>', percent_sum_respnses, name="percent_sum_response_submit_api")
+    path('api/percent-sum-settings', settings_api_view_create, name="create_percent_sum_scale_api"),
+    path('api/percent-sum-response-create/', percent_sum_response_submit, name="percent_sum_response_submit_api"),
+    path('api/percent-sum-responses/<str:id>', percent_sum_respnses, name="percent_sum_response_submit_api")
 ]
