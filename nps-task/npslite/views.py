@@ -159,7 +159,6 @@ def npslite_response_view(request, id=None):
         response_data = json.loads(response_data)       
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    print(response_data, '----00---0----')
     if request.method == 'GET' and 'data' in response_data:
         try:
             response = response_data['data'][0]
