@@ -10,6 +10,6 @@ urlpatterns = [
     path('nps-lite-scale/<str:tname>/', dowell_npslite_scale, name='scale_display_page'),
     path('embed/', brand_product_error, name='display_embed_page'),
     path('api/nps-lite-settings', settings_api_view_create, name="npslite_create_scale_settings_api"),
-    path('api/nps-lite-response-create/', submit_response_view, name="npslite_nps_response_submit_api"),
-    path('api/nps-lite-responses/<int:id>', npslite_response_view, name="npslite_scale_settings_api"),
+    path('api/nps-lite-response', submit_response_view, name="npslite_nps_response_submit_api"),
+    path('api/nps-lite-response/<str:id>', npslite_response_view, name="npslite_scale_settings_api"),
 ]
