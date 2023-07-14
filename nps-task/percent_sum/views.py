@@ -108,6 +108,78 @@ def settings_api_view_create(request):
         return Response({"success": "Successfully Updated ", "data": settings})
     return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['POST'])
+def percent_sum_response_submit(request):
+    response_data = request.data
+    try:
+        username = response_data['username']
+        scale_id = response_data['scale_id']
+        event_id = response_data['event_id']
+        responses = response_data['responses']
+    except KeyError as e:
+        return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if user is authorized to submit response
+    user = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "fetch",
+                            {"username": username}, "nil")
+    if not user:
+        return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    # Check if scale exists
+    scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                             {"_id": scale_id}, "nil")
+    if not scale:
+        return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Check if scale is of type "percent_sum scale"
+    scale = json.loads(scale)
+    if scale['data'][0]['settings'].get('scale-category') != 'percent_sum scale':
+        return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if all required responses are present
+    expected_responses = scale['data'][0]['settings']['ProductCount']
+    if int(expected_responses) != len(responses):
+        return Response({"error": "Incorrect number of responses."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if all responses are valid numbers between 0 and 100
+    for response in responses:
+        if not isinstance(response, (int, float)) or response < 0 or response > 100:
+            return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Calculate total score
+    percent_sum = sum(responses)
+
+    # Check if total score is greater than 100
+    if percent_sum > 100:
+        return Response({"error": "Total score cannot exceed 100."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if response already exists for this event
+    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                         "1095", "ABCDE", "fetch", {"event_id": event_id}, "nil")
+
+    existing_response = json.loads(existing_response)
+
+    if isinstance(existing_response, dict) and existing_response['data']:
+        return Response(
+            {"error": "Response already exists.", "percent_sum": existing_response['data'][0]['percent_sum']},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # Insert new response into database
+    response = {
+        "event_id": event_id,
+        "username": username,
+        "scale_id": scale_id,
+        "responses": responses,
+        "percent_sum": percent_sum,
+        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1095",
+                                   "ABCDE", "insert", response, "nil")
+
+    return Response({"success": True, "response_id": response_id})
+
+
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:

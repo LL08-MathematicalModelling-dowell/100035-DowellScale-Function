@@ -970,7 +970,7 @@ def redirect_view(request):
         return likert.submit_response_view(request)
     elif "percent_sum" in scaletype and "settings" in scale_type:
         return percent.settings_api_view_create(request)
-    # elif "percent_sum" in scaletype and "response" in scale_type:
-    #     return percent.submit_response_view(request)
+    elif "percent_sum" in scaletype and "response" in scale_type:
+        return percent.percent_sum_response_submit(request)
 
     return redirect('api:nps_response_submit_api')
