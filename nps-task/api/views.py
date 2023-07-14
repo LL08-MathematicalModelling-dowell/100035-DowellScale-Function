@@ -3,6 +3,7 @@ import random
 import base64
 import datetime
 import json
+from .api_key import processApikey
 from concurrent import futures
 from django.shortcuts import redirect
 import stapel.views as stapel
@@ -952,25 +953,46 @@ def new_nps_create(request):
     else:
         return Response({"error": "method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+@api_view(['POST','GET','PUT'])
+def error_response(request, message):
+    return Response({"error": message}, status=status.HTTP_403_FORBIDDEN)
+
 
 def redirect_view(request):
     scaletype = request.GET.get('scale_type')
     scale_type = request.GET.get('type')
-    if "nps" in scaletype and "settings" in scale_type:
-        return new_nps_create(request)
-    elif "nps" in scaletype and "response" in scale_type:
-        return nps_response_view_submit(request)
-    elif "stapel" in scaletype and "settings" in scale_type:
-        return stapel.settings_api_view_create(request)
-    elif "stapel" in scaletype and "response" in scale_type:
-        return stapel.stapel_response_view_submit(request)
-    elif "likert" in scaletype and "settings" in scale_type:
-        return likert.settings_api_view_create(request)
-    elif "likert" in scaletype and "response" in scale_type:
-        return likert.submit_response_view(request)
-    elif "percent_sum" in scaletype and "settings" in scale_type:
-        return percent.settings_api_view_create(request)
-    elif "percent_sum" in scaletype and "response" in scale_type:
-        return percent.percent_sum_response_submit(request)
 
-    return redirect('api:nps_response_submit_api')
+    try:
+        request_data = json.loads(request.body)
+        api_key = request_data.get('api_key')
+        api_resp = processApikey(api_key)
+
+        if api_resp['success'] is False:
+            error_message = api_resp['message']
+            return error_response(request, error_message)
+
+        elif api_resp['message'] == "The count is decremented":
+            if "nps" in scaletype and "settings" in scale_type:
+                return new_nps_create(request)
+            elif "nps" in scaletype and "response" in scale_type:
+                return nps_response_view_submit(request)
+            elif "stapel" in scaletype and "settings" in scale_type:
+                return stapel.settings_api_view_create(request)
+            elif "stapel" in scaletype and "response" in scale_type:
+                return stapel.stapel_response_view_submit(request)
+            elif "likert" in scaletype and "settings" in scale_type:
+                return likert.settings_api_view_create(request)
+            elif "likert" in scaletype and "response" in scale_type:
+                return likert.submit_response_view(request)
+            elif "percent_sum" in scaletype and "settings" in scale_type:
+                return percent.settings_api_view_create(request)
+            elif "percent_sum" in scaletype and "response" in scale_type:
+                return percent.percent_sum_response_submit(request)
+
+        elif api_resp['message'] == "Limit exceeded" or api_resp['message'] == "API key is inactive":
+            error_message = api_resp['message']
+            return Response({"error": error_message}, status=status.HTTP_403_FORBIDDEN, )
+
+    except KeyError:
+        return error_response(request, "Unauthorized.Provide Api Key!")
+
