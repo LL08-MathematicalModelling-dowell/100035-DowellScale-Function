@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
 
 
+
 @api_view(['POST','GET','PUT'])
 def settings_api_view_create(request):
     if request.method == 'POST':
@@ -124,12 +125,12 @@ def submit_response_view(request):
     
     # Check if scale is of type "npslite scale"
     scale_settings = json.loads(scale)
-    if scale_settings['data'][0]['scale_category'] != 'npslite scale':
+    if scale_settings['data'][0]['scale-category'] != 'npslite scale':
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
     
     # Check if response already exists for this event
-    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-        "ABCDE", "fetch", field_add, "nil")
+    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+        "ABCDE", "fetch", {"event_id": event_id}, "nil")
     existing_response = json.loads(existing_response)    
     if isinstance(existing_response, dict) and existing_response['data']:
         return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
@@ -142,7 +143,7 @@ def submit_response_view(request):
         "response": response,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
-    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
         "ABCDE", "fetch", field_add, "nil")
     
     return Response({"success": True, "response_id": response_id})
@@ -150,23 +151,22 @@ def submit_response_view(request):
 
 @api_view(['GET'])
 def npslite_response_view(request, id=None):
-    response = request.data
-    scale_id = response['scale_id']
-    try:
-        field_add = {"_id": scale_id}
-        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-        "ABCDE", "fetch", field_add, "nil")
-        response_data = json.loads(response_data)       
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    if request.method == 'GET' and 'data' in response_data:
+    if request.method == 'GET':
+
+        response = request.data
+        scale_id = response['scale_id']
         try:
-            response = response_data['data'][0]
+            field_add = {"_id": scale_id}
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+            "ABCDE", "fetch", field_add, "nil")
+            response_data = json.loads(response_data)
+            try:
+                response = response_data['data'][0]
+            except:
+                response = response_data['data']
+            return Response({"payload": response})     
         except:
-            response = response_data['data']
-        return Response({"payload": response})
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND, data={"error": response_data})
+            return Response(status=status.HTTP_404_NOT_FOUND, data={"error": response_data})
 
 
 
