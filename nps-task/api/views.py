@@ -5,6 +5,8 @@ import datetime
 import json
 from .api_key import processApikey
 from concurrent import futures
+from django.http import JsonResponse
+
 from django.shortcuts import redirect
 import stapel.views as stapel
 import likert.views as likert
@@ -420,8 +422,6 @@ def calculate_total_score(request, doc_no=None, product_name=None):
 
 
 # SUMBIT SCALE RESPONSE
-
-
 @api_view(['POST'])
 def nps_response_view_submit(request):
     try:
@@ -440,8 +440,8 @@ def nps_response_view_submit(request):
                 score = x['score']
                 category = find_category(score)
                 success = response_submit_loop(response, scale_id, instance_id, user, category, score)
-                print(success)
-            return success
+                resp.append(success.data)
+            return Response({"data": resp}, status=status.HTTP_200_OK)
         else:
             scale_id = response['scale_id']
             score = response['score']
@@ -451,8 +451,6 @@ def nps_response_view_submit(request):
 
     except Exception as e:
         return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
 def response_submit_loop(response, scale_id, instance_id, user, category, score):
     field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -962,6 +960,8 @@ def redirect_view(request):
     scaletype = request.GET.get('scale_type')
     scale_type = request.GET.get('type')
 
+    if scale_type == "" or scaletype == "":
+        return error_response(request, "scale_type and type should not be null!")
     try:
         request_data = json.loads(request.body)
         api_key = request_data.get('api_key')
@@ -988,7 +988,8 @@ def redirect_view(request):
                 return percent.settings_api_view_create(request)
             elif "percent_sum" in scaletype and "response" in scale_type:
                 return percent.percent_sum_response_submit(request)
-
+            else:
+                return error_response(request, "Scale will be available soon.")
         elif api_resp['message'] == "Limit exceeded" or api_resp['message'] == "API key is inactive":
             error_message = api_resp['message']
             return Response({"error": error_message}, status=status.HTTP_403_FORBIDDEN, )
