@@ -7,6 +7,14 @@
    - API documentation:
         https://documenter.getpostman.com/view/27724787/2s93mBvJ51
 
+- ## NPSLite scale
+   - Description: This is a basic NPS scale with only 3 inputs, a negative option, a neutral option and a positive option.
+   - Example:
+         ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/aa9d25f1-3c5b-4dab-a682-fed99c34c22c)
+
+   - API Documentation:
+        https://documenter.getpostman.com/view/27723419/2s946eBtwJ
+
 - ## LIKERT scale
    - Description: 
         A Likert scale is a rating scale used to measure opinions, attitudes, or behaviors. It consists of a statement or a question, followed by a series of odd numbered answer statements. Respondents choose the option that best corresponds with how they feel about the statement or question. Because respondents are presented with a range of possible answers, Likert scales are great for capturing the level of agreement or their feelings regarding the topic in a more nuanced way.
@@ -15,14 +23,6 @@
          ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/570264d8-199b-440c-9cc9-77f3af0a2b9d)
    - API documentation:
         https://documenter.getpostman.com/view/21255221/2s946h8Xeb
-
-- ## NPSLite scale
-   - Description: 
-   - Example:
-         ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/aa9d25f1-3c5b-4dab-a682-fed99c34c22c)
-
-   - Documentation:
-
 
 - ## PERCENT-SUM scale
    - Description: 
