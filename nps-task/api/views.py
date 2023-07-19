@@ -161,8 +161,6 @@ def custom_configuration_view(request):
 
 
 # CREATE SCALE SETTINGS
-
-
 @api_view(['POST', 'PUT', 'GET'])
 def settings_api_view_create(request):
     if request.method == 'GET':
@@ -422,35 +420,54 @@ def calculate_total_score(request, doc_no=None, product_name=None):
 
 
 # SUMBIT SCALE RESPONSE
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def nps_response_view_submit(request):
-    try:
+    if request.method == "POST":
+        try:
+            response = request.data
+            try:
+                user = response['username']
+            except KeyError:
+                return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+
+            if 'document_responses' in response:
+                document_responses = response['document_responses']
+                instance_id = response['instance_id']
+                resp = []
+                for x in document_responses:
+                    scale_id = x['scale_id']
+                    score = x['score']
+                    category = find_category(score)
+                    success = response_submit_loop(response, scale_id, instance_id, user, category, score)
+                    resp.append(success.data)
+                return Response({"data": resp}, status=status.HTTP_200_OK)
+            else:
+                scale_id = response['scale_id']
+                score = response['score']
+                category = find_category(score)
+                instance_id = response['instance_id']
+                return response_submit_loop(response, scale_id, instance_id, user, category, score)
+
+        except Exception as e:
+            return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == "GET":
         response = request.data
         try:
-            user = response['username']
-        except KeyError:
-            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+            if "scale_id" in response:
+                id = response['scale_id']
+                field_add = {"scale_data.scale_id": id,"scale_data.scale_type": "nps scale"}
+                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                 "scale_reports",
+                                                 "1094", "ABCDE", "fetch", field_add, "nil")
+                data = json.loads(response_data)
+                print(data)
+                return Response({"data": json.loads(response_data)})
+            else:
+                return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({"error":"Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if 'document_responses' in response:
-            document_responses = response['document_responses']
-            instance_id = response['instance_id']
-            resp = []
-            for x in document_responses:
-                scale_id = x['scale_id']
-                score = x['score']
-                category = find_category(score)
-                success = response_submit_loop(response, scale_id, instance_id, user, category, score)
-                resp.append(success.data)
-            return Response({"data": resp}, status=status.HTTP_200_OK)
-        else:
-            scale_id = response['scale_id']
-            score = response['score']
-            category = find_category(score)
-            instance_id = response['instance_id']
-            return response_submit_loop(response, scale_id, instance_id, user, category, score)
 
-    except Exception as e:
-        return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 def response_submit_loop(response, scale_id, instance_id, user, category, score):
     field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -502,7 +519,6 @@ def scale_settings_api_view(request):
                              field_add, "nil")
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
     if request.method == 'GET':
         return Response(json.loads(x))
 
@@ -820,7 +836,7 @@ def new_nps_create(request):
 
             return Response({"success": response_data, "data": field_add}, status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
     elif request.method == "PUT":
@@ -926,7 +942,7 @@ def new_nps_create(request):
                                              "update", field_add, update_field)
             return Response({"success": response_data, "data": update_field})
         except Exception as e:
-            return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
         try:
             response = request.data
@@ -937,7 +953,7 @@ def new_nps_create(request):
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
 
-            field_add = {"_id": scale_id}
+            field_add = {"_id": scale_id,"settings.scale-category": "nps scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -947,7 +963,7 @@ def new_nps_create(request):
             settings = settings_json['data']['settings']
             return Response({"success": settings})
         except Exception as e:
-            return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response({"error": "method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -964,7 +980,11 @@ def redirect_view(request):
         return error_response(request, "scale_type and type should not be null!")
     try:
         request_data = json.loads(request.body)
-        api_key = request_data.get('api_key')
+        if "api_key" in request_data:
+            api_key = request_data.get('api_key')
+        else:
+            return error_response(request, "api_key must be provided!")
+
         api_resp = processApikey(api_key)
 
         if api_resp['success'] is False:
@@ -993,7 +1013,6 @@ def redirect_view(request):
         elif api_resp['message'] == "Limit exceeded" or api_resp['message'] == "API key is inactive":
             error_message = api_resp['message']
             return Response({"error": error_message}, status=status.HTTP_403_FORBIDDEN, )
-
-    except KeyError:
-        return error_response(request, "Unauthorized.Provide Api Key!")
+    except Exception as e:
+        return error_response(request, e)
 
