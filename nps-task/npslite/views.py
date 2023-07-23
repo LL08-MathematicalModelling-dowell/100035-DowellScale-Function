@@ -37,9 +37,7 @@ def settings_api_view_create(request):
             center = response['center']
             left = response['left']
             right = response['right']
-            no_of_scales = response['no_of_scales']
-            
-            
+            no_of_scales = response['no_of_scales']           
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -127,7 +125,20 @@ def submit_response_view(request):
     scale_settings = json.loads(scale)
     if scale_settings['data'][0]['scale-category'] != 'npslite scale':
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+    if "document_responses" in response_data:
+        document_responses = response_data["document_responses"]
+        all_results = []
+        for single_response in document_responses:
+            response = single_response["response"]                    
+            success = response_submit_loop(event_id, user, scale_id, response)
+            all_results.append(success.data)
+        return Response({"data": all_results}, status=status.HTTP_200_OK)
+    else:
+        scale_id = response_data["scale_id"]
+        return response_submit_loop(event_id, user, scale_id, response) 
     
+
+def response_submit_loop(event_id, user, scale_id, response):
     # Check if response already exists for this event
     existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
         "ABCDE", "fetch", {"event_id": event_id}, "nil")
