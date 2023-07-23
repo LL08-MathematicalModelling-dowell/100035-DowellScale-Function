@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'login',
     'EvaluationModule',
     'percent_sum',
+    'Qsort',
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',
 ]

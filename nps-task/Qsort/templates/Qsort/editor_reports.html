@@ -1,0 +1,296 @@
+{% extends "index.html" %}
+{% block title %}Evaluation{% endblock %}
+{% block content %}
+<style>
+.container{
+    text-align:center;
+    font-weight:bold;
+}
+.results {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.results h2 {
+  font-size: 24px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.scale-results {
+  padding: 0;
+  margin: 0;
+}
+
+.scale-results h3 {
+  font-size: 20px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.scale-results button {
+  background-color: #f5f5f5;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.scale-results button:hover {
+  background-color: #e9e9e9;
+}
+
+.scale-results .key {
+  font-weight: bold;
+}
+
+.normality-api-list {
+  margin-top: 30px;
+}
+
+.normality-api-list button {
+  background-color: #f5f5f5;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  margin-bottom: 10px;
+}
+
+.normality-api-list button:hover {
+  background-color: #e9e9e9;
+}
+
+.normality-api-list .key {
+  font-weight: bold;
+  display: inline-block;
+  {#width: 150px;#}
+}
+
+.list1-calculation {
+  margin-top: 30px;
+}
+
+.list1-calculation h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.list1-calculation button {
+  background-color: #f5f5f5;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  margin-bottom: 10px;
+}
+
+.list1-calculation button:hover {
+  background-color: #e9e9e9;
+}
+
+.list1-calculation .key {
+  font-weight: bold;
+  display: inline-block;
+  {#width: 150px;#}
+}
+
+p {
+  margin-top: 20px;
+  font-size: 18px;
+  font-style: italic;
+  color: #888;
+}
+
+
+table {
+    	border-collapse: collapse;
+		width: 100%;
+		}
+		th, td {
+			text-align: left;
+			padding: 8px;
+			border-bottom: 1px solid #ddd;
+            font-size:20px
+		}
+		th {
+			background-color: #198754;
+			color: #FFFFFF;
+            font-weight: bold;
+		}
+
+</style>
+<div class ="container" id="container" >
+    <img
+			alt="Home"
+			class="attachment-thumbnail size-thumbnail"
+			height="200"
+			loading="lazy"
+			sizes="(max-width: 150px) 100vw, 150px"
+			src="/static/images/dowell-logo.png"
+			srcset="
+            /static/images/dowell-logo.png 150w,
+            /static/images/dowell-logo.png  48w,
+            /static/images/dowell-logo.png 300w
+          "
+			width="200"
+	/>
+    <h1>Evaluation Report</h1>
+
+</div>
+<div>
+    <table style="width: 100%;" class="report">
+<thead>
+<tr>
+<th style="width:20%">Scale Type</th>
+<th style="width:30%">Scale Occurence</th>
+<th style="width:30%">Scale Responses</th>
+<th  style="width:20%">Total Response</th>
+</tr>
+ <tbody>
+    <tr>
+      <td>NPS</td>
+      <td>{{ nps_scales}}</td>
+      <td>{{score_series}}</td>
+      <td>{{nps_score}}/{{nps_total_score}}</td>
+
+
+
+  </tbody>
+</thead>
+    </table></div>
+
+
+
+<div class="results">
+  <div class="scale-results">
+    <h2>Scale Results</h2>
+    <div class="poison-case-results">
+      <h3>Poison Case Results</h3>
+      <ul class="poison-case-list">
+        {% for key, value in poison_case_results.items %}
+        <li>
+          <div class="row">
+            <div class="col-md-6">
+              <button class="key">{{ key }}</button>
+            </div>
+            <div class="col-md-6">
+              <button class="value">{{ value }}</button>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="normal-case-results">
+      <h3>Normal Case Results</h3>
+      <ul class="normal-case-list">
+        {% for key, value in normal_case_results.items %}
+        <li>
+          <div class="row">
+            <div class="col-md-6">
+              <button class="key">{{ key }}</button>
+            </div>
+            <div class="col-md-6">
+              <button class="value">{{ value }}</button>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="normality-api-list">
+    <h2>Normality API Response Details</h2>
+    <ul>
+      <li>
+        <div class="row">
+          <div class="col-md-6">
+            <button class="key">Title:</button>
+          </div>
+          <div class="col-md-6">
+            <button class="value">{{ n_title }}</button>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <div class="col-md-6">
+            <button class="key">Process ID:</button>
+          </div>
+          <div class="col-md-6">
+            <button class="value">{{ n_process_id }}</button>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <div class="col-md-6">
+            <button class="key">Bins:</button>
+          </div>
+          <div class="col-md-6">
+            <button class="value">{{ n_bins }}</button>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <div class="col-md-6">
+            <button class="key">Allowed Error:</button>
+          </div>
+          <div class="col-md-6">
+            <button class="value">{{ n_allowed_error }}</button>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="row">
+          <div class="col-md-6">
+            <button class="key">Series Count:</button>
+          </div>
+          <div class="col-md-6">
+            <button class="value">{{ n_series_count }}</button>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+  {% if n_list1 %}
+  <div class="list1-calculation">
+    <h2>List1 Calculations</h2>
+    <ul>
+      {% for key, value in n_list1.items %}
+      <li>
+        <div class="row">
+          <div class="col-md-6">
+            <button class="key">{{ key }}</button>
+                   </div>
+      <div class="col-md-6">
+        <button class="value">{{ value }}</button>
+      </div>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+  </div>
+  {% else %}
+  <p>No List1 Calculations available.</p>
+  {% endif %}
+</div>
+
+
+
+
+
+{% endblock %}

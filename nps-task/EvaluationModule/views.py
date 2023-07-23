@@ -205,6 +205,7 @@ def by_username_api(request, username, scale_category):
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "fetch", {"username": username}, "nil")
     user_dets = json.loads(user_details)
+    # print(user_dets)
     scale_i = [entry['scale_id'] for entry in user_dets['data']]
     list_of_scales = []
     for scale_id in scale_i:
@@ -213,6 +214,7 @@ def by_username_api(request, username, scale_category):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                              "fetch", field_add, "nil")
         settings_json = json.loads(x)
+        print(settings_json)
         data = settings_json['data']
         if len(data) != 0:
             now = data[0]
@@ -239,30 +241,78 @@ def Target_API(request):
     # get all response from this API payload
 
     payload = request.data
+    user_type = {}
+    if "details" in payload:
+        user_type["details"] = payload.pop("details")
     print(f"payload: {payload}...")
     # Make a GET request to the original API with the payload
     response = requests.post("http://100032.pythonanywhere.com/api/targeted_population/", json=payload)
 
-    print(f"response: {response}...")
+    # print(f"response: {response.json()}...")
+    """
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "fetch", {"username": username}, "nil")
+    user_dets = json.loads(user_details)
+    # print(user_dets)
+    scale_i = [entry['scale_id'] for entry in user_dets['data']]
+    list_of_scales = []
+    for scale_id in scale_i:
+        field_add = {"_id": scale_id}
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                             "fetch", field_add, "nil")
+        settings_json = json.loads(x)
+        print(settings_json)
+        try:
+            settings = response_data['data'][0]['settings']
+            date_created = settings['date_created']
+            start_date = "2019/01/08"  
+            end_date = "2023/01/25"  
+            period = "life_time"  
+            
+            if period == "life_time":
+                # Use date_created as the start_date and current date as the end_date
+                start_date = datetime.datetime.strptime(date_created, "%Y-%m-%d %H:%M:%S")
+                end_date = datetime.datetime.now()
+            elif period == "last_month":
+                # Use the start and end dates of the previous month
+                current_date = datetime.datetime.now()
+                end_date = datetime.datetime(current_date.year, current_date.month, 1) - datetime.timedelta(days=1)
+                start_date = datetime.datetime(end_date.year, end_date.month, 1)
+            
+            # Print the date range
+            print("Start Date:", start_date)
+            print("End Date:", end_date)
+        except:
+            pass
+    """
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                         "1094", "ABCDE", "fetch")
+    print(f"x: {x}...")
     if response.json()['normal']['data']:
         for i in response.json()['normal']['data']:
             for j in i:
-                print(f"j: {j}...")
-                print(f"j: {j['_id']}...")
+                # print(f"j: {j}...")
+                # print(f"{j['_id']}")
                 field_add = {"_id": j['_id']}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                       "1094", "ABCDE", "fetch", field_add, "nil")
+                # print(f"x: {x}...x")
                 settings_json = json.loads(x)
-                print(f" {settings_json}")
+                # print(f" {settings_json}")
                 data = settings_json['data']
                 print(f"data: {data}...")
+                # try:
+                #     data[0][]
+
+
     else:
         print("no data")
-
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Return the response as JSON
-        return JsonResponse(response.json(), safe=False)
+    #
+    # # Check if the request was successful
+    # if response.status_code == 200:
+    #     # Return the response as JSON
+    #     return JsonResponse(response.json(), safe=False)
 
 
 
