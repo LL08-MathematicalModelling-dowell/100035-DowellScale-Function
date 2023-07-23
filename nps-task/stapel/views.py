@@ -259,8 +259,6 @@ def stapel_response_view_submit(request):
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
-                print("Hello")
-
                 scale_id = response['scale_id']
                 score = response['score']
                 instance_id = response['instance_id']
