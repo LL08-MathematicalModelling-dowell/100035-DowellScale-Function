@@ -25,10 +25,10 @@ def settings_api_view_create(request):
                 if time == "":
                     time = 0
                 name = response['scale_name']
-                number_of_scales = response['number_of_scales']
+                number_of_scales = response['no_of_scale']
                 orientation = response['orientation']
-                font_color = response['font_color']
-                round_color = response['round_color']
+                font_color = response['fontcolor']
+                round_color = response['roundcolor']
                 label_type = response['label_type']
                 if label_type == "text":
                     label_selection = response['label_scale_selection']

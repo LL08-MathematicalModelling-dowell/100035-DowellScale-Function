@@ -30,7 +30,7 @@ def settings_api_view_create(request):
                 if time == "":
                     time = 0
                 name = response['scale_name']
-                number_of_scales = response['number_of_scales']
+                number_of_scales = response['no_of_scale']
                 orientation = response['orientation']
                 scale_color = response['scale_color']
                 product_count = response['product_count']
