@@ -5,4 +5,5 @@ app_name="Qsort"
 
 urlpatterns = [
     path('qsort_analysis/', qsort_analysis, name="qsort_analysis"),
+    path('save_data/', save_data, name="save_data"),
 ]

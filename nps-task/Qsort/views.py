@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 from django.shortcuts import render
 # from ..EvaluationModule.calculate_function import *
@@ -6,6 +8,10 @@ from concurrent.futures import ThreadPoolExecutor
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
+# from .dowellconnection import dowellconnection
+# from ..EvaluationModule.calculate_function import *
+from .eventID import *
+from .dowellconnection import dowellconnection
 
 
 # Create your views here.
@@ -81,3 +87,73 @@ def qsort_analysis(request):
         }
         
     return JsonResponse({"Response":qsort_result}, status=status.HTTP_200_OK)
+
+@api_view(['GET', 'POST', 'PUT'])
+def save_data(request):
+    if request.method == 'POST':
+        # Extract the statements from the payload
+        payload = request.data
+        print(payload)
+
+        eventID = get_event_id()
+
+        field_add = {
+            "event_id": eventID,
+            "_id": payload["id"],
+            "product_name": payload["product_name"],
+            "sort_order": payload["sort_order"],
+            "scalecolor": payload["scalecolor"],
+            "fontstyle": payload["fontstyle"],
+            "fontcolor": payload["fontcolor"],
+            "statements": payload["statements"],
+        }
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
+                             field_add, "nil")
+
+        print(x)
+
+        # result = json.loads(x)
+
+        return JsonResponse({"Response":x}, status=status.HTTP_200_OK)
+
+    if request.method == 'GET':
+        # Extract the statements from the payload
+        payload = request.data
+        print(payload)
+
+        field_add = { "_id": payload["id"] }
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                             field_add, "nil")
+
+        print(x)
+
+        # result = json.loads(x)
+
+        return JsonResponse({"Response":x}, status=status.HTTP_200_OK)
+
+    if request.method == 'PUT':
+        # Extract the statements from the payload
+        payload = request.data
+        print(payload)
+
+        field_add = { "_id": payload["id"],
+                      "product_name": payload["product_name"],
+                      "sort_order": payload["sort_order"],
+                      "scalecolor": payload["scalecolor"],
+                      "fontstyle": payload["fontstyle"],
+                      "fontcolor": payload["fontcolor"],
+                      "statements": payload["statements"],
+                      }
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                             field_add, "nil")
+
+        print(x)
+
+        # result = json.loads(x)
+
+        return JsonResponse({"Response":x}, status=status.HTTP_200_OK)
+
+
