@@ -11,7 +11,7 @@ import datetime
 from nps.login import get_user_profile
 import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
-from .eventID import get_event_id
+from nps.eventID import get_event_id
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
 
