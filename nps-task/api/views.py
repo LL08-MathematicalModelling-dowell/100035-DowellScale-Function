@@ -1008,6 +1008,10 @@ def redirect_view(request):
                 return percent.settings_api_view_create(request)
             elif "percent_sum" in scaletype and "response" in scale_type:
                 return percent.percent_sum_response_submit(request)
+            elif "nps_lite" in scaletype and "settings" in scale_type:
+                return percent.settings_api_view_create(request)
+            elif "nps_lite" in scaletype and "response" in scale_type:
+                return percent.percent_sum_response_submit(request)
             else:
                 return error_response(request, "Scale will be available soon.")
         elif api_resp['message'] == "Limit exceeded" or api_resp['message'] == "API key is inactive":

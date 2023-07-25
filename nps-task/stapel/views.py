@@ -259,8 +259,6 @@ def stapel_response_view_submit(request):
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
-                print("Hello")
-
                 scale_id = response['scale_id']
                 score = response['score']
                 instance_id = response['instance_id']
@@ -279,7 +277,6 @@ def stapel_response_view_submit(request):
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
                 data = json.loads(response_data)
-                print(data)
                 return Response({"data": json.loads(response_data)})
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
