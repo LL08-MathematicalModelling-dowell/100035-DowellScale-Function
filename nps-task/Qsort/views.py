@@ -99,7 +99,6 @@ def save_data(request):
 
         field_add = {
             "event_id": eventID,
-            "_id": payload["id"],
             "product_name": payload["product_name"],
             "sort_order": payload["sort_order"],
             "scalecolor": payload["scalecolor"],
