@@ -114,7 +114,7 @@ def save_data(request):
 
         # result = json.loads(x)
 
-        return JsonResponse({"Response":x}, status=status.HTTP_200_OK)
+        return JsonResponse({"success":x, "data": field_add}, status=status.HTTP_200_OK)
 
     if request.method == 'GET':
         # Extract the statements from the payload
@@ -130,7 +130,7 @@ def save_data(request):
 
         # result = json.loads(x)
 
-        return JsonResponse({"Response":x}, status=status.HTTP_200_OK)
+        return JsonResponse({"Success":x, "data": field_add}, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
         # Extract the statements from the payload
@@ -153,6 +153,6 @@ def save_data(request):
 
         # result = json.loads(x)
 
-        return JsonResponse({"Response":x}, status=status.HTTP_200_OK)
+        return JsonResponse({"Success":x, "data": field_add}, status=status.HTTP_200_OK)
 
 
