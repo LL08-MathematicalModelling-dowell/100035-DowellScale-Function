@@ -111,10 +111,26 @@ def save_data(request):
                              field_add, "nil")
 
         print(x)
+        data_dict = json.loads(x)
+
+        # Access the value of the "inserted_id" key
+        inserted_id = data_dict["inserted_id"]
+        show_response = {
+            "Scale_id": inserted_id,
+            "event_id": eventID['event_id'],
+            "product_name": payload["product_name"],
+            "sort_order": payload["sort_order"],
+            "settings": {
+                "scalecolor": payload["scalecolor"],
+                "fontstyle": payload["fontstyle"],
+                "fontcolor": payload["fontcolor"],
+                "statements": payload["statements"]
+            }
+        }
 
         # result = json.loads(x)
 
-        return JsonResponse({"success":x, "data": field_add}, status=status.HTTP_200_OK)
+        return JsonResponse({"Response": show_response}, status=status.HTTP_200_OK)
 
     if request.method == 'GET':
         # Extract the statements from the payload
