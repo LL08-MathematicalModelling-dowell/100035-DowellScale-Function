@@ -1,15 +1,9 @@
-from collections import defaultdict
-
-import requests
-import random
-import json
-from rest_framework.decorators import api_view
 import requests
 
+url = 'http://uxlivinglab.pythonanywhere.com/'
 
-# dowell API
-url = 'http://100002.pythonanywhere.com/'
-def dowellconnection(cluster,platform,database,collection,document,team_member_ID,function_ID,command,field=None,update_field=None):
+def dowellconnection(cluster,platform,database,collection,document,team_member_ID,function_ID,command,field,update_field):
+
     data={
       "cluster": cluster,
       "platform": platform,
@@ -18,13 +12,15 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
       "document": document,
       "team_member_ID": team_member_ID,
       "function_ID": function_ID,
-      "command": "fetch",
-      "field": {"eventId": "FB1010000000166564637454228642"},
-      "update_field":{"template_name":"umarjaved"}
+      "command": command,
+      "field": field,
+      "update_field":update_field
        }
     headers = {'content-type': 'application/json'}
     try :
-      response = requests.post(url, json=data,headers=headers)
+      response = requests.post(url, json =data,headers=headers)
+      print(response.json())
       return response.json()
-    except:
-      return "check your connectivity"
+    except Exception as e:
+        print("Error:", e)
+        return "check your connectivity"

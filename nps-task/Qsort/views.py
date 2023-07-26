@@ -104,7 +104,7 @@ def save_data(request):
             "scalecolor": payload["scalecolor"],
             "fontstyle": payload["fontstyle"],
             "fontcolor": payload["fontcolor"],
-            "statements": payload["statements"],
+            "statements": payload["statements"]
         }
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
@@ -137,17 +137,17 @@ def save_data(request):
         payload = request.data
         print(payload)
 
-        field_add = { "_id": payload["id"],
-                      "product_name": payload["product_name"],
-                      "sort_order": payload["sort_order"],
-                      "scalecolor": payload["scalecolor"],
-                      "fontstyle": payload["fontstyle"],
-                      "fontcolor": payload["fontcolor"],
-                      "statements": payload["statements"],
-                      }
+        field_add = { "scale_id": payload["id"] }
+
+        update_field = {
+            "sort_order": payload["sort_order"],
+            "scalecolor": payload["scalecolor"],
+            "fontstyle": payload["fontstyle"],
+            "fontcolor": payload["fontcolor"]
+        }
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                             field_add, "nil")
+                             field_add, update_field)
 
         print(x)
 
