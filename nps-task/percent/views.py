@@ -22,253 +22,192 @@ def settings_api_view_create(request):
             user = response['username']
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-        time = response['time']
-        if time == "":
-            time = 0
-        rand_num = random.randrange(1, 10000)
-        name = response['name']
-        template_name = f"{name.replace(' ', '')}{rand_num}"
+        try:
+            time = response['time']
+            if time == "":
+                time = 0
+            name = response['scale_name']
+            number_of_scales = response['no_of_scale']
+            orientation = response['orientation']
+            scale_color = response['scale_color']
+            product_count = response['product_count']
+            product_names = response['product_names']
+            user = response['user']
+        except KeyError as error:
+            return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
+        if len(product_names) != int(product_count):
+            return Response({"error": "Product count and number of product names count should be same"},
+                                status=status.HTTP_400_BAD_REQUEST)
+        if len(product_names) != len(set(product_names)):
+            return Response({"error": "Product names must be unique"}, status=status.HTTP_400_BAD_REQUEST)
         eventID = get_event_id()
         field_add = {"event_id": eventID,
-                     "settings": {"orientation": response['orientation'],"scalecolor": response['scalecolor'],
-                                "time": time, "template_name": template_name, "name": name, 
-                                   "scale-category": "percent scale",
-                                  "number_of_scales": 1,"date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+                         "settings": {"orientation": orientation, "scale_color": scale_color,
+                                      "number_of_scales": number_of_scales,
+                                      "time": time, "name": name, "scale-category": "percent scale", "user": user,
+                                      "product_names": product_names, "product_count": product_count,
+                                      "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                      }
+                         }
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-            field_add, "nil")
+                                 field_add, "nil")
 
         user_json = json.loads(x)
         details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
-        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
-            "insert", details, "nil")
-        # urls = []
-        urls = f"{public_url}/percent/percent-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-        return Response({"success": x, "data": field_add, "scale_url": urls})
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                        "ABCDE",
+                                        "insert", details, "nil")
+        return Response({"success": x, "data": field_add})
     elif request.method == 'GET':
-        response = request.data
-        if "scale_id" in response:
+        try:
+            response = request.data
+            scale_id = response.get('scale_id')
+            if not scale_id:
+                field_add = {"settings.scale-category": "percent scale"}
+                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                                 "ABCDE", "fetch", field_add, "nil")
+                return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
+
+            field_add = {"_id": scale_id, "settings.scale-category": "percent scale"}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                 "find", field_add, "nil")
+            settings_json = json.loads(x)
+            if not settings_json.get('data'):
+                return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
+
+            settings = settings_json['data']['settings']
+            return Response({"success": settings})
+        except Exception as e:
+            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == "PUT":
+        try:
+            response = request.data
+            if "scale_id" not in response:
+                return Response({"error": "scale_id missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
+            if ("product_count" or "product_names") in response:
+                product_count = response['product_count']
+                product_names = response['product_names']
+                if len(product_names) != int(product_count):
+                    return Response({"error": "Product count and number of product names count should be same"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                if len(product_names) != len(set(product_names)):
+                    return Response({"error": "Product names must be unique"}, status=status.HTTP_400_BAD_REQUEST)
             id = response['scale_id']
             field_add = {"_id": id, }
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                "fetch", field_add, "nil")
+                                 "fetch", field_add, "nil")
             settings_json = json.loads(x)
             settings = settings_json['data'][0]['settings']
-            template_name = settings["template_name"]
-            urls = f"{public_url}/percent/percent-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-            if int(settings["number_of_scales"]) > 1:
-                urls = []
-                for i in range(1, int(settings["number_of_scales"]) + 1):
-                    url = f"{public_url}/percent/percent-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-                    urls.append(url)
-            return Response({"data": json.loads(x),"urls": urls})
-        else:
-            field_add = {"settings.scale-category": "percent scale"}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                field_add, "nil")
-
-            return Response({"data": json.loads(x),})
-    elif request.method == "PUT":
-        response = request.data
-        id = response['scale_id']
-        field_add = {"_id": id, }
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-            "fetch", field_add, "nil")
-        settings_json = json.loads(x)
-        settings = settings_json['data'][0]['settings']
-        
-        name = settings["name"]
-        if 'time' in response:
-            time = response['time']
-        else:
-            time = settings["time"]
-        template_name = settings["template_name"]
-        if time == "":
-            time = 0
-        if 'orientation' in response:
-            orientation = response['orientation']
-        else:
-            orientation = settings["orientation"]
-        if 'scalecolor' in response:
-            scalecolor = response['scalecolor']
-        else:
-            scalecolor = settings["scalecolor"]
-       
-        update_field = {
-            "settings": {"orientation": orientation, 
-                         "scalecolor": scalecolor, "number_of_scales": settings["number_of_scales"],
-                         "time": time,
-                         "template_name": template_name, "name": name, 
-                         "scale-category": "percent scale",
-                         "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-            field_add, update_field)
-        urls = f"{public_url}/percent/percent-scale1/{template_name}?brand_name=your_brand&product_name=product_name"
-        if int(settings["number_of_scales"]) > 1:
-            urls = []
-            for i in range(1,int(settings["number_of_scales"]) + 1):
-                url = f"{public_url}/percent/percent-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-                urls.append(url)
-
-        return Response({"success": "Successfully Updated ", "data": update_field, "scale_urls": urls})
-    return Response({"error": "Invalid data provided."},status=status.HTTP_400_BAD_REQUEST)
+            name = settings["name"]
+            for key in settings.keys():
+                if key in response:
+                    settings[key] = response[key]
+            settings["name"] = name
+            settings["scale-category"] = "percent_sum scale"
+            settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            update_field = {"settings": settings}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                                 field_add, update_field)
+            return Response({"success": "Successfully Updated ", "data": settings})
+        except Exception as e:
+            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # SUMBIT SCALE RESPONSE
 @api_view(['POST',])
 def percent_response_view_submit(request):
     if request.method == 'POST':
-        response = request.data
         try:
-            username = response['username']
-        except:
-            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-
-        # id = response['id']
-        try:
-            id = response['template_name']
-        except KeyError as e:
+            response_data = request.data
+            try:
+                username = response_data['username']
+                scale_id = response_data['scale_id']
+            except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
-        field_add = {"settings.template_name": id, }
-        # field_add = {"_id": id}
-        default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-            "fetch", field_add, "nil")
-        data = json.loads(default)
-        x = data['data'][0]['settings']
-        number_of_scale = x['no_of_scales']
+             # Check if user is authorized to submit response
+            user = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "fetch",
+                                    {"username": username}, "nil")
+            if not user:
+                return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if "document_responses" in response:
-                document_responses = response["document_responses"]
+            # Check if scale exists
+            scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                                     {"_id": scale_id}, "nil")
+            if not scale:
+                return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            # Check if scale is of type "percent scale"
+            scale = json.loads(scale)
+            if scale['data'][0]['settings'].get('scale-category') != 'percent scale':
+                return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+            if "document_responses" in response_data:
+                document_responses = response_data["document_responses"]
                 all_results = []
                 for single_response in document_responses:
-                    score = single_response["score"] 
-                    if score not in x['scale']:
-                        return Response({"error": "Invalid Selection.","Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
                     responses = single_response["responses"]
-                    instance_id = response['instance_id']
-                    success = response_submit_loop(instance_id, number_of_scale, responses, username)
+                    success = response_submit_loop(responses, scale_id, scale, username)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
-        else:
-            score = response["score"] 
-            if score not in x['scale']:
-                return Response({"error": "Invalid Selection.","Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
-            instance_id = response['instance_id']
-            return response_submit_loop(instance_id, number_of_scale, response, username)
+            else:
+                responses = response_data['responses']
+                return response_submit_loop(responses, scale_id, scale, username)
+        except Exception as e:
+            return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+def response_submit_loop(responses, scale_id, scale, username):
+    event_id = get_event_id()
+    # Check if all required responses are present
+    expected_responses = scale['data'][0]['settings']['ProductCount']
+    if int(expected_responses) != len(responses):
+        return Response({"error": "Incorrect number of responses."}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Check if all responses are valid numbers between 0 and 100
+    for response in responses:
+        if not isinstance(response, (int, float)) or response < 0 or response > 100:
+            return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
+    # Check if response already exists for this event
+    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                            "scale_reports",
+                                            "1095", "ABCDE", "fetch", {"event_id": event_id}, "nil")
 
-        # field_add = {"scale_data.scale_id": id}
-        # response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-        #     "1094",
-        #     "ABCDE", "fetch", field_add, "nil")
-        # data = json.loads(response_data)
-        # print(data)
-        # total_score = 0
-        #
-        # if len(data['data']) != 0:
-        #     score_data = data["data"]
-        #     print(instance_id)
-        #     for i in score_data:
-        #         b = i['score'][0]['score']
-        #         print("Score of scales-->", b)
-        #         total_score += int(b)
-    return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
+    existing_response = json.loads(existing_response)
 
-def response_submit_loop(instance_id, number_of_scale, response, username):
-    # find existing scale reports
-    field_add = {"scale_data.scale_id": id}
-    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-        "ABCDE", "fetch", field_add, "nil")
-    data = json.loads(response_data)
-    #print(data)
-    total_score = 0
+    if isinstance(existing_response, dict) and existing_response['data']:
+        return Response(
+            {"error": "Response already exists.", "percent_sum": existing_response['data'][0]['percent_sum']},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    if len(data['data']) != 0:
-        score_data = data["data"]
-        #print(instance_id)
-        for i in score_data:
-            b = i['score'][0]['score']
-            print("Score of scales-->", b)
-            total_score += int(b)
+    # Insert new response into database
+    response = {
+        "event_id": event_id,
+        "username": username,
+        "scale_id": scale_id,
+        "responses": responses,
+        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                    "1095",
+                                    "ABCDE", "insert", response, "nil")
 
-            if instance_id == int(i['score'][0]['instance_id'].split("/")[0]):
-                return Response({"error": "Scale Response Exists!", "total score": total_score}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-    eventID = get_event_id()
-    score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score}
-
-    if int(instance_id) > int(number_of_scale):
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    field_add = {"event_id": eventID, "scale_data": {"scale_id": id, "scale_type": "percent scale"},
-                    "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
-                    "score": [score]}
-    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-        "ABCDE", "insert", field_add, "nil")
-    user_json = json.loads(z)
-    details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": username}
-    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
-            "insert", details, "nil")
-    return Response({"success": z, "payload": field_add, "url": f"{public_url}/percent/percent-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}", "total score": total_score})
-# GET ALL SCALES
-@api_view(['GET',])
-def scale_settings_api_view(request):
-    try:
-        field_add = {"settings.scale-category": "percent scale"}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-            field_add, "nil")
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    if request.method == 'GET':
-        return Response(json.loads(x))
-
-# GET SINGLE SCALE
-@api_view(['GET',])
-def single_scale_settings_api_view(request, id=None):
-    try:
-        # field_add = {"_id": id }
-        field_add = {"settings.template_name": id, }
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-            "fetch", field_add, "nil")
-        settings_json = json.loads(x)
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        settings = settings_json['data'][0]['settings']
-        no_of_scales = settings['no_of_scales']
-        template_name = settings['template_name']
-        urls = []
-        for i in range(1, no_of_scales + 1):
-            url = f"{public_url}/percent/percent-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-            urls.append(url)
-        return Response({"payload": json.loads(x), "urls": urls})
+    return Response({"success": True, "response_id": response_id})
 
 # GET SINGLE SCALE RESPONSE
 @api_view(['GET',])
 def single_scale_response_api_view(request, id=None):
     try:
-        field_add = {"_id": id }
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-            "1094", "ABCDE", "fetch", field_add, "nil")
+        field_add = {"_id": id}
+        scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                                 field_add, "nil")
+        scale_data = json.loads(scale)
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        return Response({"payload":json.loads(x)})
+        settings = scale_data['data'][0]['settings']
+        if settings.get('scale-category') != 'percent scale':
+            return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"payload": scale_data['data']})
 
-# GET ALL SCALES RESPONSES
-@api_view(['GET',])
-def scale_response_api_view(request):
-    try:
-        # field_add = {}
-        field_add = {"scale_data.scale_type": "percent scale", }
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-            "1094", "ABCDE", "fetch", field_add, "nil")
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        return Response(json.loads(x))
 
 
 def dowell_scale_admin(request):

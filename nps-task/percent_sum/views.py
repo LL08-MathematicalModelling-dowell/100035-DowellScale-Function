@@ -39,7 +39,7 @@ def settings_api_view_create(request):
             except KeyError as error:
                 return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
             if 2 < product_count > 10:
-                return Response({"error": "Product name should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Product count should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
             if len(product_names) != int(product_count):
                 return Response({"error": "Product count and number of product names count should be same"},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -99,7 +99,7 @@ def settings_api_view_create(request):
                 product_count = response['product_count']
                 product_names = response['product_names']
                 if 2 < product_count > 10:
-                    return Response({"error": "Product name should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": "Product count should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
                 if len(product_names) != int(product_count):
                     return Response({"error": "Product count and number of product names count should be same"},
                                     status=status.HTTP_400_BAD_REQUEST)
