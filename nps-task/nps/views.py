@@ -756,7 +756,8 @@ def dowell_scale1(request, tname1):
     context['cur_url'] = current_url
 
     #check if the url has an instance of if allow response variable == True/False
-    if allow_resp == False or len(current_url) > 3:
+    # if allow_resp == False or len(current_url) > 3:
+    if allow_resp == False:
         context["dont_click"] = True
         return render(request, 'nps/single_scale.html', context)
     else:

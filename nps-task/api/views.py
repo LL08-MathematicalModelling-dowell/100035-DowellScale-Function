@@ -188,6 +188,7 @@ def settings_api_view_create(request):
         response = request.data
         left = response['left']
         center = response['center']
+        allow_resp = response.get('allow_resp', True)
         right = response['right']
         text = f"{left}+{center}+{right}"
         rand_num = random.randrange(1, 10000)
@@ -214,7 +215,7 @@ def settings_api_view_create(request):
                 "left": left,
                 "right": right,
                 "center": center,
-                "allow_resp": False,
+                "allow_resp": allow_resp,
                 "scale-category": "nps scale",
                 "show_total_score": 'true',
                 "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
