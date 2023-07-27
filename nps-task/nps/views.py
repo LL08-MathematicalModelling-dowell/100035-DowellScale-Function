@@ -761,6 +761,8 @@ def dowell_scale1(request, tname1):
         context["dont_click"] = True
         return render(request, 'nps/single_scale.html', context)
     else:
+        if len(current_url) > 3:
+            current_url = 1
         user = request.session.get('user_name')
         context["dont_click"] = False
         existing_scale = False
