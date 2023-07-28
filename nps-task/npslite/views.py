@@ -38,9 +38,7 @@ def settings_api_view_create(request):
             center = response['center']
             left = response['left']
             right = response['right']
-            no_of_scales = response['no_of_scales']
-            
-            
+            no_of_scales = response['no_of_scales']           
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -134,14 +132,20 @@ def submit_response_view(request):
     scale_settings = json.loads(scale)
     if scale_settings['data'][0]['scale-category'] != 'npslite scale':
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+    if "document_responses" in response_data:
+        document_responses = response_data["document_responses"]
+        all_results = []
+        for single_response in document_responses:
+            response = single_response["response"]                    
+            success = response_submit_loop(event_id, user, scale_id, response)
+            all_results.append(success.data)
+        return Response({"data": all_results}, status=status.HTTP_200_OK)
+    else:
+        scale_id = response_data["scale_id"]
+        return response_submit_loop(event_id, user, scale_id, response) 
     
-    # Check if response already exists for this event
-    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-        "ABCDE", "fetch", {"event_id": event_id}, "nil")
-    existing_response = json.loads(existing_response)    
-    if isinstance(existing_response, dict) and existing_response['data']:
-        return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+def response_submit_loop(event_id, user, scale_id, response):    
     # Insert new response into database
     field_add = {
         "event_id": event_id,
@@ -150,8 +154,8 @@ def submit_response_view(request):
         "response": response,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
-    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-        "ABCDE", "fetch", field_add, "nil")
+    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale",  "scale_reports", "scale_reports", "1094",
+        "ABCDE", "insert", field_add, "nil")
     
     return Response({"success": True, "response_id": response_id})
 
@@ -159,12 +163,10 @@ def submit_response_view(request):
 @api_view(['GET'])
 def npslite_response_view(request, id=None):
     if request.method == 'GET':
-
         response = request.data
-        scale_id = response['scale_id']
         try:
-            field_add = {"_id": scale_id}
-            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+            field_add = {"_id": id}
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
             "ABCDE", "fetch", field_add, "nil")
             response_data = json.loads(response_data)
             try:
