@@ -27,10 +27,11 @@ def settings_api_view_create(request):
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            question = response['question']
             orientation = response['orientation']
             scalecolor = response['scalecolor']
             fontcolor = response['fontcolor']
+            fontstyle = response['fontstyle']
+            fomat = response['fomat']
             time = response['time']
             template_name = response['template_name']
             name = response['name']
@@ -43,14 +44,20 @@ def settings_api_view_create(request):
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
         
+        custom_emoji_format={}
+        
+        if fomat == "emoji":
+            custom_emoji_format = response.get('custom_emoji_format', {})
         event_id = str(datetime.datetime.now().timestamp()).replace(".", "")
         field_add = {
             "event_id":event_id,
-            "question":question,
+            "fontstyle":fontstyle,
             "orientation":orientation,
             "scalecolor":scalecolor,
             "fontcolor":fontcolor,
             "time":time,
+            "fomat":fomat,
+            "custom_emoji_format":custom_emoji_format,
             "template_name":template_name,
             "name":name,
             "center":center, 
