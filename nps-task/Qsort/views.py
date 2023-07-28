@@ -48,45 +48,75 @@ def qsort_analysis(request):
                 "category_label": category_labels[category_index]
             }
 
-        # Create a dictionary representing the QSort analysis result
-        qsort_result = {
-            "user": payload["user"],
-            "name": payload["name"],
-            "id": payload["id"],
+        eventID = get_event_id()
+
+        field_add = {
+            "event_id": eventID,
             "product_name": payload["product_name"],
-            "sort_order": sort_order,
+            "sort_order": payload["sort_order"],
             "scalecolor": payload["scalecolor"],
             "fontstyle": payload["fontstyle"],
             "fontcolor": payload["fontcolor"],
-            "categories": categories,
+            "statements": payload["statements"],
+            "categories": categories
         }
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
+                             field_add, "nil")
+        data_dict = json.loads(x)
+
+        inserted_id = data_dict["inserted_id"]
+        show_response = {
+            "Scale_id": inserted_id,
+            "event_id": eventID['event_id'],
+            "product_name": payload["product_name"],
+            "sort_order": payload["sort_order"],
+            "settings": {
+                "scalecolor": payload["scalecolor"],
+                "fontstyle": payload["fontstyle"],
+                "fontcolor": payload["fontcolor"],
+                "statements": payload["statements"],
+                "categories": categories
+            }
+        }
+
+        return JsonResponse({"Response":show_response}, status=status.HTTP_200_OK)
+
 
     elif request.method == 'PUT':
-        qsort_result = {
-        "user": "user",
-        "name": "name",
-        "id": "id",
-        "product_name": "product_name",
-        "sort_order": "sort_order",
-        "scalecolor": "scalecolor",
-        "fontstyle": "fontstyle",
-        "fontcolor": "fontcolor",
+        payload = request.data
+        print(payload)
 
-        }
-    else:
-        qsort_result = {
-            "user": "user",
-            "name": "name",
-            "id": "id",
-            "product_name": "product_name",
-            "sort_order": "sort_order",
-            "scalecolor": "scalecolor",
-            "fontstyle": "fontstyle",
-            "fontcolor": "fontcolor",
+        field_add = {"scale_id": payload["id"]}
 
+        update_field = {
+            "sort_order": payload["sort_order"],
+            "scalecolor": payload["scalecolor"],
+            "fontstyle": payload["fontstyle"],
+            "fontcolor": payload["fontcolor"]
         }
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                             field_add, update_field)
+
+        print(x)
+
+        # result = json.loads(x)
+
+        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
+    elif request.method == 'GET':
+        payload = request.data
+        field_add = {"_id": payload["id"]}
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                             field_add, "nil")
+
+        print(x)
+
+        # result = json.loads(x)
+
+        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
         
-    return JsonResponse({"Response":qsort_result}, status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST', 'PUT'])
 def save_data(request):
