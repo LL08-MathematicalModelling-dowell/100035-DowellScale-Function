@@ -33,7 +33,7 @@ def settings_api_view_create(request):
             fontstyle = response['fontstyle']
             fomat = response['fomat']
             time = response['time']
-            template_name = response['template_name']
+            template_name = response.get('template_name', '')
             name = response['name']
             center = response['center']
             left = response['left']
