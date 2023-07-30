@@ -165,8 +165,56 @@ def settings_api_view_create(request):
 
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['POST'])
+def response_submit_api_view(request):
+    try:
+        scale_id = request.data['scale_id']
+        response = request.data['response']
+        username = request.data['username']
 
+        # Check if scale exists
+        field_add = {"_id": scale_id}
+        default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "fetch", field_add, "nil")
+        data = json.loads(default)
+        if data['data'] is None:
+            return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Check if response is valid
+        products = data['data'][0]['settings']['products']
+        product_names = [product['name'] for product in products]
+        for product in response:
+            print(product,' >>>>>>>>>>>')
+            if product['name'] not in product_names:
+                return Response({"error": f"Invalid product name: {name}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if ranking is unique
+        units = data['data'][0]['settings']['units']
+        if units == "Unique Ranking":
+            ranks = [product['rank'] for product in response]
+            if len(set(ranks)) != len(ranks):
+                return Response({"error": "Ranking is not unique."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"products": products})
+
+        # Update ranking in database
+        field_add = {"_id": scale_id}
+        update = {"$set": {"settings.products": response}}
+        dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update", field_add, update)
+
+        # Insert ranking response in scale_reports collection
+        event_id = get_event_id()
+        scale_data = {"scale_id": scale_id, "scale_type": "ranking scale"}
+        field_add = {"event_id": event_id, "scale_data": scale_data}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", field_add, "nil")
+
+        # Insert user details in users collection
+        details = {"scale_id": scale_id, "event_id": event_id, "username": username}
+        dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "insert", details, "nil")
+
+        return Response({"success": "Ranking submitted successfully."})
+    except:
+        return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
