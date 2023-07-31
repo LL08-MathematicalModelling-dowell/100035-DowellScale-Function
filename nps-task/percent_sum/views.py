@@ -30,7 +30,7 @@ def settings_api_view_create(request):
                 if time == "":
                     time = 0
                 name = response['scale_name']
-                number_of_scales = response['number_of_scales']
+                number_of_scales = response['no_of_scale']
                 orientation = response['orientation']
                 scale_color = response['scale_color']
                 product_count = response['product_count']
@@ -39,7 +39,7 @@ def settings_api_view_create(request):
             except KeyError as error:
                 return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
             if 2 < product_count > 10:
-                return Response({"error": "Product name should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Product count should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
             if len(product_names) != int(product_count):
                 return Response({"error": "Product count and number of product names count should be same"},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -99,7 +99,7 @@ def settings_api_view_create(request):
                 product_count = response['product_count']
                 product_names = response['product_names']
                 if 2 < product_count > 10:
-                    return Response({"error": "Product name should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": "Product count should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
                 if len(product_names) != int(product_count):
                     return Response({"error": "Product count and number of product names count should be same"},
                                     status=status.HTTP_400_BAD_REQUEST)
@@ -135,7 +135,6 @@ def percent_sum_response_submit(request):
                 username = response_data['username']
                 scale_id = response_data['scale_id']
                 event_id = response_data['event_id']
-                responses = response_data['responses']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -155,50 +154,18 @@ def percent_sum_response_submit(request):
             scale = json.loads(scale)
             if scale['data'][0]['settings'].get('scale-category') != 'percent_sum scale':
                 return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+            if "document_responses" in response_data:
+                document_responses = response_data["document_responses"]
+                all_results = []
+                for single_response in document_responses:
+                    responses = single_response["responses"]
+                    success = response_submit_loop(responses, scale_id, scale, event_id, username)
+                    all_results.append(success.data)
+                return Response({"data": all_results}, status=status.HTTP_200_OK)
+            else:
+                responses = response_data['responses']
+                return response_submit_loop(responses, scale_id, scale, event_id, username)
 
-            # Check if all required responses are present
-            expected_responses = scale['data'][0]['settings']['ProductCount']
-            if int(expected_responses) != len(responses):
-                return Response({"error": "Incorrect number of responses."}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Check if all responses are valid numbers between 0 and 100
-            for response in responses:
-                if not isinstance(response, (int, float)) or response < 0 or response > 100:
-                    return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Calculate total score
-            percent_sum = sum(responses)
-
-            # Check if total score is greater than 100
-            if percent_sum > 100:
-                return Response({"error": "Total score cannot exceed 100."}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Check if response already exists for this event
-            existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                                 "scale_reports",
-                                                 "1095", "ABCDE", "fetch", {"event_id": event_id}, "nil")
-
-            existing_response = json.loads(existing_response)
-
-            if isinstance(existing_response, dict) and existing_response['data']:
-                return Response(
-                    {"error": "Response already exists.", "percent_sum": existing_response['data'][0]['percent_sum']},
-                    status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-            # Insert new response into database
-            response = {
-                "event_id": event_id,
-                "username": username,
-                "scale_id": scale_id,
-                "responses": responses,
-                "percent_sum": percent_sum,
-                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            }
-            response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                           "1095",
-                                           "ABCDE", "insert", response, "nil")
-
-            return Response({"success": True, "response_id": response_id})
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -212,13 +179,56 @@ def percent_sum_response_submit(request):
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
                 data = json.loads(response_data)
-                print(data)
                 return Response({"data": json.loads(response_data)})
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
+def response_submit_loop(responses, scale_id, scale, event_id, username):
+    # Check if all required responses are present
+    expected_responses = scale['data'][0]['settings']['ProductCount']
+    if int(expected_responses) != len(responses):
+        return Response({"error": "Incorrect number of responses."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if all responses are valid numbers between 0 and 100
+    for response in responses:
+        if not isinstance(response, (int, float)) or response < 0 or response > 100:
+            return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Calculate total score
+    percent_sum = sum(responses)
+
+    # Check if total score is greater than 100
+    if percent_sum > 100:
+        return Response({"error": "Total score cannot exceed 100."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if response already exists for this event
+    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                            "scale_reports",
+                                            "1095", "ABCDE", "fetch", {"event_id": event_id}, "nil")
+
+    existing_response = json.loads(existing_response)
+
+    if isinstance(existing_response, dict) and existing_response['data']:
+        return Response(
+            {"error": "Response already exists.", "percent_sum": existing_response['data'][0]['percent_sum']},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # Insert new response into database
+    response = {
+        "event_id": event_id,
+        "username": username,
+        "scale_id": scale_id,
+        "responses": responses,
+        "percent_sum": percent_sum,
+        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                    "1095",
+                                    "ABCDE", "insert", response, "nil")
+
+    return Response({"success": True, "response_id": response_id})
 
 @api_view(['GET'])
 def percent_sum_respnses(request, id=None):
