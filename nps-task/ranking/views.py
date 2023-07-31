@@ -184,9 +184,8 @@ def response_submit_api_view(request):
         products = data['data'][0]['settings']['products']
         product_names = [product['name'] for product in products]
         for product in response:
-            print(product,' >>>>>>>>>>>')
             if product['name'] not in product_names:
-                return Response({"error": f"Invalid product name: {name}"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": f"Invalid product name: {product[name]}"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Check if ranking is unique
         units = data['data'][0]['settings']['units']
