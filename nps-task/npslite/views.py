@@ -31,7 +31,8 @@ def settings_api_view_create(request):
             scalecolor = response['scalecolor']
             fontcolor = response['fontcolor']
             time = response['time']
-            template_name = response['template_name']
+            rand_num = random.randrange(1, 10000)
+            template_name = response.get('template_name', f"{response['name'].replace(' ', '')}{rand_num}")]
             name = response['name']
             center = response['center']
             left = response['left']
