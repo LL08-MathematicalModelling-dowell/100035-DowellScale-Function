@@ -260,7 +260,7 @@ def stapel_response_view_submit(request):
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
                 scale_id = response['scale_id']
-                score = response['score']
+                score = response.get('score', '0')
                 instance_id = response['instance_id']
                 return response_submit_loop(response, scale_id, instance_id, user, score)
         except Exception as e:
