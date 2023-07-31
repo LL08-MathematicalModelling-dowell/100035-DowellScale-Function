@@ -29,17 +29,17 @@ def settings_api_view_create(request):
                 orientation = response['orientation']
                 font_color = response['fontcolor']
                 round_color = response['roundcolor']
-                label_type = response['label_type']
-                if label_type == "text":
+                fomat = response['fomat']
+                if fomat == "text":
                     label_selection = response['label_scale_selection']
                 label_input = response['label_scale_input']
             except KeyError as error:
                 return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
 
-            if label_type != "text" and label_type != "emoji":
+            if fomat != "text" and fomat != "emoji":
                 return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
 
-            if label_type == "text":
+            if fomat == "text":
                 if 2 < label_selection > 9 or label_selection == 6:
                     return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"}, status=status.HTTP_400_BAD_REQUEST)
                 if len(label_input) != label_selection:
@@ -49,7 +49,7 @@ def settings_api_view_create(request):
             field_add = {"event_id": eventID,
                          "settings": {  "orientation": orientation,"font_color": font_color, "number_of_scales": number_of_scales,
                                         "time": time, "name": name, "scale-category": "likert scale", "user": user,
-                                        "round_color" : round_color, "label_type" : label_type, "label_selection" : label_selection,
+                                        "round_color" : round_color, "fomat" : fomat, "label_selection" : label_selection,
                                         "label_input" : label_input,
                                         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                     }
@@ -91,9 +91,9 @@ def settings_api_view_create(request):
             response = request.data
             if "scale_id" not in response:
                 return Response({"error": "scale_id missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
-            if response["label_type"] != "text" and response["label_type"] != "emoji":
+            if response["fomat"] != "text" and response["fomat"] != "emoji":
                 return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
-            if response["label_type"] == "text" or "label_input" in response:
+            if response["fomat"] == "text" or "label_input" in response:
                 label_selection = response["label_scale_selection"]
                 label_input = response["label_scale_input"]
                 if 2 < label_selection > 9 or label_selection == 6:
@@ -181,11 +181,11 @@ def submit_response_view(request):
 
 
 def response_submit_loop(scale_settings, event_id, username, scale_id, response):
-    if scale_settings['data'][0]['settings'].get('label_type') == "text":
+    if scale_settings['data'][0]['settings'].get('fomat') == "text":
         if response not in scale_settings['data'][0]['settings'].get('label_input'):
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if scale_settings['data'][0]['settings'].get('label_type') == "emoji":
+    if scale_settings['data'][0]['settings'].get('fomat') == "emoji":
         upper_boundary = scale_settings['data'][0]['settings'].get('label_selection')
         if type(response) != int or 0 < response > upper_boundary - 1:
             return Response({"error": "Emoji response must be an integer within label selection range."}, status=status.HTTP_400_BAD_REQUEST)
