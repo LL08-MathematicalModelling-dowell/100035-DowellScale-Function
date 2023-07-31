@@ -27,7 +27,7 @@ def settings_api_view_create(request):
             time = 0
         rand_num = random.randrange(1, 10000)
         name = response['name']
-        template_name = f"{name.replace(' ', '')}{rand_num}"
+        template_name = response.get('template_name', f"{name.replace(' ', '')}{rand_num}")
         eventID = get_event_id()
         field_add = {"event_id": eventID,
                      "settings": {"orientation": response['orientation'],"scalecolor": response['scalecolor'],
