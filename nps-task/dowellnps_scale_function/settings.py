@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #"corsheaders",
-    'nps.apps.NpsConfig',
+    'APIconf',
     'stapel.apps.StapelConfig',
     'npslite.apps.NpsliteConfig',
     'percent.apps.PercentConfig',
@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',
 ]
+
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

@@ -1,0 +1,559 @@
+{% load i18n %}
+{% load  static %}
+<html lang="en">
+<head>
+	<title>Stapel Scale</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+
+	<style id="fa-main" media="all">
+  /*!
+   * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
+   * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+   */
+
+   .switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+    #snackbar {
+      visibility: hidden;
+      min-width: 250px;
+      margin-left: -125px;
+      background-color: green;
+      color: #fff;
+      text-align: center;
+      border-radius: 2px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1;
+      right: 10%;
+      top: 30px;
+      font-size: 17px;
+    }
+
+    #snackbar.show {
+      visibility: visible;
+      -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    @-webkit-keyframes fadein {
+      from {top: 0; opacity: 0;}
+      to {top: 30px; opacity: 1;}
+    }
+
+    @keyframes fadein {
+      from {top: 0; opacity: 0;}
+      to {top: 30px; opacity: 1;}
+    }
+
+    @-webkit-keyframes fadeout {
+      from {top: 30px; opacity: 1;}
+      to {top: 0; opacity: 0;}
+    }
+
+    @keyframes fadeout {
+      from {top: 30px; opacity: 1;}
+      to {top: 0; opacity: 0;}
+    }
+
+   #horizontal span{
+       font-size: 30px;
+       padding: 5px;
+       height: 70px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       width: 70px;
+       border-radius: 50%;
+       margin: 5px;
+       cursor: pointer;
+   }
+
+   #upper-warn, #spacing-warn{
+   font-size: 10px;
+   font-weight: 300;
+   font-style: italic;
+   color: red;
+   display:none;
+   }
+
+    #vertical span{
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+    }
+
+    #vertical {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        width: 100px;
+        align-items: center;
+    }
+
+    #labels-vert{
+        display: none;
+        justify-content: space-between;
+        flex-direction: column;
+        }
+
+<!--   #horizontal span{-->
+<!--       font-size: 30px;-->
+<!--       padding: 10px;-->
+<!--       border-radius: 50%;-->
+<!--       margin: 5px;-->
+<!--   }-->
+
+    #labels-vert{
+        /*display: none;*/
+        justify-content: space-between;
+        flex-direction: column;
+        }
+
+
+   #horizontal{
+       display: flex;
+       justify-content: space-between;
+   }
+
+   #timeInput{
+   display: none;
+   }
+
+
+
+
+
+
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body class=".bg-secondary">
+<div id="snackbar"></div>
+<div class="container">
+	<div class="row" style="margin-top: 3%;">
+		<div class="col-lg-1 col-md-2 d-sm-none"></div>
+		<div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
+		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
+			<form action="" id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunctionSave();">
+				{% csrf_token %}
+				<h2 align="center"><u>{{settings.name}}</u></h2>
+
+				<div class="form-group col-md-6">
+					<label for="orientation">Orientation</label>
+					<select class="form-control" id="orientation" name="orientation" required>
+						<option value="horizontal">Horizontal</option>
+						<option value="vertical">Vertical</option>
+					</select>
+				</div>
+				<div class="form-group col-md-4">
+					<label for="scale_upper_limit">Scale upper limit <span
+							id="upper-warn">Max number 10, min 1</span></label>
+					<!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required>-->
+					<input class="form-control" id="scale_upper_limit" max="10" min="1" name="scale_upper_limit"
+					       onchange="myFunction()" type="number" value="{{settings.scale_upper_limit}}">
+				</div>
+
+				<div class="form-group col-md-4">
+					<label for="scale_lower_limit">Scale lower limit</label>
+					<!--<input type="number" name="numberof" class="form-control" id="numberof" min="0" max="10" placeholder="Number of Scale" required>-->
+					<input class="form-control" disabled id="scale_lower_limit" name="scale_lower_limit" type="number" value="{{settings.scale_lower_limit}}">
+				</div>
+
+				<div class="form-group col-md-4">
+					<label for="spacing_unit">Spacing Unit <span id="spacing-warn">Max number 5, min 1</span></label>
+					<!--<input type="number" name="numberof" class="form-control" id="numberof"  placeholder="Number of Scale" required>-->
+					<input class="form-control" id="spacing_unit" max="5" min="0" name="spacing_unit" onkeyup="mySpacing()"
+					       type="number"
+					       value="{{settings.spacing_unit}}">
+				</div>
+				<div class="form-group col-md-4">
+					<label for="scolor">Scale Color</label>
+					<input class="form-control" id="scolor" name="scolor" onchange="myScolor()"
+					       placeholder="Background Color"
+					       required
+					       type="color" value="{{settings.scalecolor}}">
+				</div>
+				<div class="form-group col-md-4">
+					<label for="rcolor">Round Color</label>
+					<input class="form-control" id="rcolor" name="rcolor" onchange="myRcolor()" placeholder="Font Color"
+					       required
+					       type="color" value="{{settings.roundcolor}}">
+				</div>
+				<div class="form-group col-md-4">
+					<label for="fcolor">Font Color</label>
+					<input class="form-control" id="fcolor" name="fcolor" onchange="myFcolor()" placeholder="Scale Color" required
+					       type="color" value="{{settings.fontcolor}}">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="format">Format</label>
+					<input class="form-control" disabled id="format" name="format" onchange="myFormat()"
+					       type="text"
+					       value="{{settings.fomat}}" value="numbers">
+
+				</div>
+				<div class="form-group col-md-6">
+					<label for="lefttext">Left</label>
+					<input class="form-control" id="lefttext" name="left" onchange="myLtext()"
+					       placeholder="Left Text" required
+					       type="text" value="{{settings.left}}">
+				</div>
+
+				<div class="form-group col-md-6">
+					<label for="righttext">Right</label>
+					<input class="form-control" id="righttext" name="right" onchange="myRtext()"
+					       placeholder="Right Text" required
+					       type="text" value="{{settings.right}}">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="time">Number of Scales</label>
+					<input class="form-control" id="no_of_scales" min="1" name="no_of_scales" onchange="myNumScales()"
+					       placeholder="Number of scales" required type="number" value="{{settings.no_of_scales}}">
+				</div>
+
+				<div class="form-group col-md-3 "
+				     style="display: flex; align-items: center; justify-content: center; margin-top: 25px">
+					<label class="switch">
+						<input id="checkbox" type="checkbox">
+						<span class="slider round"></span>
+					</label>
+					<span style="font-weight: bold">Toggle to set Time</span>
+				</div>
+
+				<div class="form-group col-md-6" id="timeInput">
+					<label for="time">Time (sec)</label>
+					<input class="form-control" id="time" name="time" onchange="myTime()" placeholder="Time"
+					       type="text"
+					       value="{{settings.time}}">
+				</div>
+				<div class="form-group col-md-12 text-right p-15">
+
+					<button class="btn btn-primary" id="saveBtn">Save</button>
+					<!--                    <a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"-->
+					<!--                       onclick="preview();">Preview</a>-->
+				</div>
+			</form>
+		</div>
+		<div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
+
+		</div>
+		<!-- Button trigger modal -->
+
+		<!-- Modal -->
+
+		<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter"
+		     role="dialog" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+				<div class="modal-content" id="modalContent">
+					<div class="modal-header">
+						<h2 align="center" class="modal-title" id="exampleModalLongTitle"></h2>
+						<button aria-label="Close" class="close" data-dismiss="modal" type="button">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+					<div class="modal-body" id="modal-body">
+						<div class="horizontal d-flex justify-content-center" id="red"></div>
+						<center>
+							<div id="horizontal"></div>
+						</center>
+						<br>
+						<div class="pl-3" id="lab-hor" style="font-size:2em">
+							<div id="left" style="float: left"></div>
+							<div id="right" style="float: right"></div>
+						</div>
+
+
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+						<!--<button type="button" class="btn btn-primary">Save changes</button>-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+
+
+<script>
+                  var vert="vertical";
+                  var hori="horizontal";
+                  var name="number";
+                  var n=0;
+
+                  let head_name;
+                  let orient;
+                  let limit;
+                  let spacing;
+                  let scolor;
+                  let rcolor;
+                  let fcolor;
+                  let ltext;
+                  let rtext;
+                  let time;
+                  let no_of_scales;
+
+
+				    // Get the value of the textbox
+				    var selectedVale = '{{settings.orientation|safe}}'
+
+				    // Select the corresponding option element
+				    var selectElment = document.getElementById("orientation");
+				    for (var i = 0; i < selectElment.options.length; i++) {
+				        if (selectElment.options[i].value == selectedVale) {
+				            selectElment.options[i].selected = true;
+				            break;
+				        }
+				    }
+
+                  function myFunctionSave() {
+<!--					if (ltext === rtext){-->
+<!--						alert("Labels should be unique")-->
+<!--						return-->
+<!--					}-->
+	                var x = document.getElementById("snackbar");
+	                x.className = "show";
+	                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+	                return document.getElementById('scale_settings').submit();
+                    }
+
+                  let checkbox = document.getElementById("checkbox");
+			      checkbox.addEventListener( "change", () => {
+
+			         if ( checkbox.checked ) {
+			            document.getElementById("timeInput").style.display = "block";
+			         } else {
+			            document.getElementById("timeInput").style.display = "none";
+			         }
+			      });
+
+			      if(parseInt({{settings.time|safe}}) > 0){
+			            checkbox.checked = true;
+						document.getElementById("timeInput").style.display = "block";
+			      }
+
+                  var validateUpper = document.getElementById("scale_upper_limit").addEventListener('keyup', (e)=> {
+                    var upper_warn = document.getElementById("upper-warn")
+                    var spacing_warn = document.getElementById("spacing-warn")
+                    var btn = document.getElementById("saveBtn");
+                    var btnn = document.getElementById("prevBtn");
+                    console.log(btnn.value)
+
+                    if(e.target.value > 10 ){
+                        upper_warn.style.display = "block";
+                        btnn.style.pointerEvents = "none"
+                        btn.disabled = true
+                    } else if(e.target.value < 10 && e.target.value >= 1){
+                        upper_warn.style.display = "none";
+                        btn.disabled = false
+                        btnn.style.pointerEvents = "auto"
+                    } else if(e.target.value < 1 &&  e.target.value !== ""){
+                        upper_warn.style.display = "block";
+                        btn.disabled = true
+                        btnn.style.pointerEvents = "none"
+                    } else {
+                        btn.disabled = false
+                  }});
+                  function myFunction() {
+                      var x = document.getElementById("scale_upper_limit").value;
+                      var y = document.getElementById("scale_lower_limit").value = -x;
+                      limit = x
+                      console.log(orient, head_name, limit, spacing, scolor, rcolor, fcolor,  ltext,rtext, time)
+                  }
+                  function myName() {
+                      head_name = document.getElementById("head").value;
+                  }
+                  function mySpacing() {
+                      space = document.getElementById("spacing_unit").value;
+                      var btnn = document.getElementById("prevBtn");
+
+
+                      if(space >= 1 && space <= 5 || space === ""){
+                        spacing = document.getElementById("spacing_unit").value;
+                        btnn.style.pointerEvents = "auto"
+                        document.getElementById("spacing-warn").style.display = "none"
+                      }else {
+                        btnn.style.pointerEvents = "none"
+                        document.getElementById("spacing-warn").style.display = "flex"
+                      }
+                  }
+                  function myScolor() {
+                      scolor = document.getElementById("scolor").value;
+                  }
+                  function myRcolor() {
+                      rcolor = document.getElementById("rcolor").value;
+                  }
+                  function myFcolor() {
+                      fcolor = document.getElementById("fcolor").value;
+                  }
+                  function myLtext() {
+                      ltext = document.getElementById("lefttext").value;
+                  }
+                  function myRtext() {
+                      rtext = document.getElementById("righttext").value;
+                  }
+                  function myTime() {
+                      time = document.getElementById("time").value;
+                  }
+                  function myNumScales() {
+                      no_of_scales = document.getElementById("no_of_scales").value;
+                      var x = document.getElementById("snackbar");
+                      x.innerHTML = `Successfully updated stapel scale`;
+                  }
+
+                  var e = document.getElementById("orientation");
+                    function onChange() {
+                      orient = e.value
+                    }
+                    e.onchange = onChange;
+                    onChange();
+
+                 function preview(){
+                      if (head_name === "undefined" || orient === "Choose..." || limit === "undefined" || spacing === "undefined" || scolor === "undefined" || rcolor === "undefined" || ltext === "undefined" || rtext === "undefined" || time === "undefined" ){
+                        alert("Fields can't be empty")
+                        return document.getElementById("modalContent").style.display = "none"
+                      }
+
+                      var scale_bg = document.getElementById("horizontal")
+                      var orientation = document.getElementById("orientation")
+                      var vert = document.getElementById("vert-div")
+                      var sca_vert = document.getElementById("labels-vert")
+
+                      scale_bg.style.background = scolor;
+                      scale_bg.style.padding = "20px 20px";
+                      var lab_hor= document.getElementById("lab-hor");
+                      var modal= document.getElementById("modal-body");
+                      var value = e.value;
+
+                      if (value ==="vertical" ){
+                        scale_bg.style.flexDirection = "column";
+                        scale_bg.style.width = "100px";
+                        scale_bg.style.margin = "auto";
+                        modal.style.display = "flex";
+                        modal.style.justifyContent = "center";
+                        modal.style.flexDirection = "row";
+                        lab_hor.style.display = "flex";
+                        lab_hor.style.flexDirection = "column";
+                        lab_hor.style.justifyContent = "space-between";
+                      } else {
+                        scale_bg.style.flexDirection = "row";
+                        lab_hor.style.flexDirection = "row";
+                        modal.style.flexDirection = "column";
+                        scale_bg.style.width = "unset";
+                      }
+
+                  document.getElementById("exampleModalLongTitle").innerHTML=head_name;
+                  document.getElementById("left").innerHTML = ltext;
+                  document.getElementById("right").innerHTML=rtext;
+                  // document.getElementById("ghost").style.display="block";
+                  $("#red").attr('class', $("#orientation").val());
+                  em=$("#orientation").val();
+                  $('#'+em).empty();
+                  n = $("#scale_upper_limit").val();
+                  //alert('#'+rt+" "+$("#bgcolor").val());
+                  $('#red').css({"backgroundColor": $("#scolor").val()});
+                  var name = "numbers";
+                  ram(name, n);
+                 }
+
+                  function ram(star, num){
+                      var ans = [];
+                      ans = []
+                      document.getElementById("horizontal").innerHTML = "";
+                      var u = document.getElementById("scale_upper_limit").value;
+                      var v = document.getElementById("scale_lower_limit").value
+                      var spacing_unit = document.getElementById("spacing_unit").value
+
+
+                      function range(start, end) {
+                        for (let i = start; i <= end; i++) {
+                            if (i % spacing_unit == 0 && i != 0){
+                            ans.push(i);
+                        }
+                        }
+                        return ans;
+                      }
+                      console.log(range(v, u))
+
+                      for (let i = 0; i < ans.length; i++) {
+                      console.log(ans[i])
+                      const para = document.createElement("span");
+                      para.id=i
+
+                      document.getElementById("horizontal").appendChild(para);
+                      if (star === "numbers"){
+                           document.getElementById(i).innerHTML = ans[i];
+                           document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                       }
+                     document.getElementById(i).style.color = $("#fcolor").val();
+                  }
+                  }
+
+</script>

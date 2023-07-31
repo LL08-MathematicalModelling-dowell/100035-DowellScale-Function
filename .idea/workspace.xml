@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f66c4300-9d5f-4031-a10e-2f4b532d08a2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/EvaluationModule/calculate_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/EvaluationModule/calculate_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/EvaluationModule/normality.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/EvaluationModule/normality.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/EvaluationModule/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/EvaluationModule/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/nps/templates/nps/single_scale.html" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/nps/templates/nps/single_scale.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/nps/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/nps/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,7 +214,15 @@
       <workItem from="1684341762458" duration="4544000" />
       <workItem from="1684482940696" duration="4033000" />
       <workItem from="1684568359010" duration="502000" />
-      <workItem from="1684913395252" duration="1829000" />
+      <workItem from="1684913395252" duration="3209000" />
+      <workItem from="1684935330631" duration="1697000" />
+      <workItem from="1685084962294" duration="2085000" />
+      <workItem from="1685303983771" duration="13678000" />
+      <workItem from="1685729667116" duration="285000" />
+      <workItem from="1685771892027" duration="7000" />
+      <workItem from="1685771912102" duration="3046000" />
+      <workItem from="1686288323392" duration="421000" />
+      <workItem from="1686585047436" duration="2247000" />
     </task>
     <servers />
   </component>
