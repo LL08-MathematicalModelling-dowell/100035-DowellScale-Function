@@ -44,6 +44,7 @@ def settings_api_view_create(request):
         field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "scale_color": scale_color,
                                       "number_of_scales": number_of_scales,
+                                      "left" : "0%", "right" : "100%",
                                       "time": time, "name": name, "scale-category": "percent scale", "user": user,
                                       "product_names": product_names, "product_count": product_count,
                                       "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
