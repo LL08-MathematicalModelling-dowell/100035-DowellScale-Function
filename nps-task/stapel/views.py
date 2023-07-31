@@ -43,9 +43,9 @@ def settings_api_view_create(request):
 
             rand_num = random.randrange(1, 10000)
             name = response['name']
-            template_name = f"{name.replace(' ', '')}{rand_num}"
-            custom_emoji_format = {}
-            image_label_format = {}
+            template_name = response.get('template_name', f"{name.replace(' ', '')}{rand_num}")
+            custom_emoji_format={}
+            image_label_format={}
 
             eventID = get_event_id()
             fomat = response.get('fomat')
