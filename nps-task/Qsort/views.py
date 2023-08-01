@@ -1,4 +1,5 @@
 import json
+import random
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -12,51 +13,31 @@ from rest_framework.response import Response
 # from ..EvaluationModule.calculate_function import *
 from .eventID import *
 from .dowellconnection import dowellconnection
-from random import shuffle
 
 
-def dowellshufling_function(statements):
-    shuffle(statements)
+def dowellshuffling_function(statements):
+    random.shuffle(statements)
     return statements
-
 
 @api_view(['GET', 'POST', 'PUT'])
 def qsort_analysis(request):
     if request.method == 'POST':
-        # Extract the payload from the request
+        # Extract the statements from the payload
         payload = request.data
+        print(payload)
         statements = payload["statements"]
-        scale_color = payload["scale_color"]
-        time_restriction = payload.get("time", None)
-        num_of_statements = payload["num_of_statements"]
+
+        # Sort the statements based on the sorting order (ascending or descending)
         sort_order = payload["sort_order"]
-
-        if num_of_statements < 60 or num_of_statements > 140:
-            return Response({"Error": "The number of statements should be strictly between 60 and 140."},
-                            status=status.HTTP_400_BAD_REQUEST)
-        if len(statements) != num_of_statements:
-            return Response(
-                {"Error": "The number of statements provided does not match the declared number of statements."},
-                status=status.HTTP_400_BAD_REQUEST)
-
-        # Sort the statements
         if sort_order.lower() == "ascending":
             sorted_statements = sorted(statements, key=lambda x: list(x.values())[0])
         elif sort_order.lower() == "descending":
             sorted_statements = sorted(statements, key=lambda x: list(x.values())[0], reverse=True)
-        elif sort_order.lower() == "random":
-            sorted_statements = dowellshufling_function(statements)
-        elif sort_order.lower() == "alphabetical":
-            sorted_statements = sorted(statements)
-        elif sort_order.lower() == "custom":
-            custom_order = payload["custom_order"]
-            sorted_statements = sorted(statements, key=lambda x: custom_order.index(list(x.keys())[0]))
         else:
-            return Response({
-                                "Error": "Invalid sort order. It should be 'ascending', 'descending', 'random', 'alphabetical' or 'custom'."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            raise ValueError("Invalid sort order. It should be 'ascending' or 'descending'.")
 
-        # Calculate the number of categories
+        # Calculate the number of statements and categories
+        num_statements = len(statements)
         num_categories = 5  # Number of categories in a 5-point QSort scale
 
         # Determine the category index and label for each statement
@@ -143,20 +124,36 @@ def qsort_analysis(request):
 @api_view(['GET', 'POST', 'PUT'])
 def save_data(request):
     if request.method == 'POST':
-        # Extract the statements from the payload
         payload = request.data
         print(payload)
+
+        num_statements = len(payload['statements'])
+        if num_statements < 60 or num_statements > 140:
+            return JsonResponse({"Error": "Number of statements must be between 60 and 140"}, status=status.HTTP_400_BAD_REQUEST)
+
+        sort_order = payload['sort_order']
+        if sort_order not in ['random', 'alphabetical', 'custom']:
+            return JsonResponse({"Error": "Invalid sort order"}, status=status.HTTP_400_BAD_REQUEST)
+
+        statements = payload['statements']
+        if sort_order == 'random':
+            statements = dowellshuffling_function(statements)
+        elif sort_order == 'alphabetical':
+            statements.sort()
+        elif sort_order == 'custom':
+            # Here you might want to have a separate key for ID mapping if custom sorting is needed
+            statements.sort(key=lambda x: x['id'])
 
         eventID = get_event_id()
 
         field_add = {
             "event_id": eventID,
             "product_name": payload["product_name"],
-            "sort_order": payload["sort_order"],
+            "sort_order": sort_order,
             "scalecolor": payload["scalecolor"],
             "fontstyle": payload["fontstyle"],
             "fontcolor": payload["fontcolor"],
-            "statements": payload["statements"]
+            "statements": statements
         }
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
@@ -165,47 +162,40 @@ def save_data(request):
         print(x)
         data_dict = json.loads(x)
 
-        # Access the value of the "inserted_id" key
         inserted_id = data_dict["inserted_id"]
         show_response = {
             "Scale_id": inserted_id,
             "event_id": eventID['event_id'],
             "product_name": payload["product_name"],
-            "sort_order": payload["sort_order"],
+            "sort_order": sort_order,
             "settings": {
                 "scalecolor": payload["scalecolor"],
                 "fontstyle": payload["fontstyle"],
                 "fontcolor": payload["fontcolor"],
-                "statements": payload["statements"]
+                "statements": statements
             }
         }
-
-        # result = json.loads(x)
 
         return JsonResponse({"Response": show_response}, status=status.HTTP_200_OK)
 
     if request.method == 'GET':
-        # Extract the statements from the payload
         payload = request.data
         print(payload)
 
-        field_add = { "_id": payload["id"] }
+        field_add = {"_id": payload["id"]}
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                              field_add, "nil")
 
         print(x)
 
-        # result = json.loads(x)
-
-        return JsonResponse({"Success":x, "data": field_add}, status=status.HTTP_200_OK)
+        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
-        # Extract the statements from the payload
         payload = request.data
         print(payload)
 
-        field_add = { "scale_id": payload["id"] }
+        field_add = {"scale_id": payload["id"]}
 
         update_field = {
             "sort_order": payload["sort_order"],
@@ -219,8 +209,6 @@ def save_data(request):
 
         print(x)
 
-        # result = json.loads(x)
-
-        return JsonResponse({"Success":x, "data": field_add}, status=status.HTTP_200_OK)
+        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
 
 
