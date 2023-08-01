@@ -62,7 +62,8 @@ def settings_api_view_create(request):
                              field_add, "nil")
 
         user_json = json.loads(x)
-        details = {"scale_id": user_json['inserted_id'], "event_id": event_id, "user": user}
+        details = {
+            "scale_id": user_json['inserted_id'], "event_id": event_id, "user": user}
         user_details = dowellconnection("dowelle_scale", "bangalore", "dowell_scale", "users", "users", "1098", "ABCDE",
                                         "insert", details, "nil")
         return Response({"success": x, "data": field_add})
@@ -93,7 +94,8 @@ def settings_api_view_create(request):
         for key in response:
             if key in scale_data:
                 scale_data[key] = response[key]
-        scale_data['date_updated'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        scale_data['date_updated'] = datetime.datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S")
         update_field = {"$set": scale_data}
         x = dowellconnection("dowell_scale", "bangalore", "dowell_scale", "scale", "scale", "1093", "ABCDE",
                              "update", field_add, update_field)
@@ -192,7 +194,8 @@ def npslite_home_admin(request):
         all_scales = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                       "fetch", field_add, "nil")
         data = json.loads(all_scales)
-        context["npslite_all"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
+        context["npslite_all"] = sorted(
+            data["data"], key=lambda d: d['_id'], reverse=True)
     except:
         print("No scales found")
     return render(request, 'lite/nps-lite.html', context)
@@ -277,7 +280,8 @@ def dowell_npslite_scale_settings(request):
             print("This is what is saved", x)
             # User details
             user_json = json.loads(x)
-            details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+            details = {
+                "scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
             user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                             "ABCDE", "insert", details, "nil")
             print("+++++++++++++", user_details)
@@ -313,7 +317,8 @@ def dowell_npslite_scale(request, tname):
         # resp = response.objects.all()
         # return HttpResponse(resp)
         context["brand_name"] = names_values_dict['brand_name']
-        context["product_name"] = names_values_dict['product_name'].split('/')[0]
+        context["product_name"] = names_values_dict['product_name'].split(
+            '/')[0]
         context["scale_name"] = tname
     except:
         f_path = request.get_full_path()
@@ -367,7 +372,8 @@ def dowell_npslite_scale(request, tname):
     if request.method == 'POST':
         category = request.POST['scoretag']
         eventID = get_event_id()
-        category = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'category': category}
+        category = {
+            "instance_id": f"{current_url}/{context['no_of_scales']}", 'category': category}
         if len(data['data']) != 0:
             if data["data"][0]["scale_data"]["scale_id"] == "63b7ccac0175aa060a42b554":
                 category = {"instance_id": f"Default", 'category': category}
@@ -383,7 +389,8 @@ def dowell_npslite_scale(request, tname):
                 print("Nps Lite Scale Response---->", x)
                 # User details
                 user_json = json.loads(x)
-                details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+                details = {
+                    "scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
                 user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                                 "ABCDE", "insert", details, "nil")
                 context['score'] = "show"
