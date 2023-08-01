@@ -982,8 +982,9 @@ def new_nps_create(request):
 
 
 @api_view(['POST', 'GET', 'PUT'])
-def error_response(request, message):
-    return Response({"error": message}, status=status.HTTP_403_FORBIDDEN)
+def error_response(request, message, status):
+    print("This is my status ", status)
+    return Response({"error": message}, status=status)
 
 
 def redirect_view(request):
@@ -991,49 +992,47 @@ def redirect_view(request):
     scale_type = request.GET.get('type')
 
     if scale_type == "" or scaletype == "":
-        return error_response(request, "scale_type and type should not be null!")
+        return error_response(request, "scale_type and type should not be null!", status.HTTP_400_BAD_REQUEST)
     try:
         request_data = json.loads(request.body)
         if "api_key" in request_data:
             api_key = request_data.get('api_key')
+            api_resp = processApikey(api_key)
+            if api_resp['success'] is True:
+                credit_count = api_resp['total_credits']
+                if credit_count >= 0:
+                    if "nps_lite" in scaletype and "settings" in scale_type:
+                        return nps_lite.settings_api_view_create(request)
+                    elif "nps_lite" in scaletype and "response" in scale_type:
+                        return nps_lite.submit_response_view(request)
+                    elif "stapel" in scaletype and "settings" in scale_type:
+                        return stapel.settings_api_view_create(request)
+                    elif "stapel" in scaletype and "response" in scale_type:
+                        return stapel.stapel_response_view_submit(request)
+                    elif "likert" in scaletype and "settings" in scale_type:
+                        return likert.settings_api_view_create(request)
+                    elif "likert" in scaletype and "response" in scale_type:
+                        return likert.submit_response_view(request)
+                    elif "percent_sum" in scaletype and "settings" in scale_type:
+                        return percent_sum.settings_api_view_create(request)
+                    elif "percent_sum" in scaletype and "response" in scale_type:
+                        return percent_sum.percent_sum_response_submit(request)
+                    elif "nps" in scaletype and "settings" in scale_type:
+                        return new_nps_create(request)
+                    elif "nps" in scaletype and "response" in scale_type:
+                        return nps_response_view_submit(request)
+                    elif "percent" in scaletype and "settings" in scale_type:
+                        return percent.settings_api_view_create(request)
+                    elif "percent" in scaletype and "response" in scale_type:
+                        return percent.percent_response_view_submit(request)
+                    else:
+                        return error_response(request, "Scale will be available soon.", status.HTTP_404_NOT_FOUND)
+                else:
+                    return error_response(request, {"success": False, "msg": error_message, "total credits": api_resp['total_credits']}, status.HTTP_400_BAD_REQUEST)
+            elif api_resp['success'] is False:
+                error_message = api_resp['message']
+                return error_response(request, {"success": False, "msg": error_message, "total credits": api_resp['total_credits']}, status.HTTP_200_OK)
         else:
-            return error_response(request, "api_key must be provided!")
-
-        api_resp = processApikey(api_key)
-
-        if api_resp['success'] is False:
-            error_message = api_resp['message']
-            return error_response(request, error_message)
-
-        elif api_resp['message'] == "Credits was successfully consumed":
-            if "nps" in scaletype and "settings" in scale_type:
-                return new_nps_create(request)
-            elif "nps" in scaletype and "response" in scale_type:
-                return nps_response_view_submit(request)
-            elif "stapel" in scaletype and "settings" in scale_type:
-                return stapel.settings_api_view_create(request)
-            elif "stapel" in scaletype and "response" in scale_type:
-                return stapel.stapel_response_view_submit(request)
-            elif "likert" in scaletype and "settings" in scale_type:
-                return likert.settings_api_view_create(request)
-            elif "likert" in scaletype and "response" in scale_type:
-                return likert.submit_response_view(request)
-            elif "percent_sum" in scaletype and "settings" in scale_type:
-                return percent_sum.settings_api_view_create(request)
-            elif "percent_sum" in scaletype and "response" in scale_type:
-                return percent_sum.percent_sum_response_submit(request)
-            elif "nps_lite" in scaletype and "settings" in scale_type:
-                return nps_lite.settings_api_view_create(request)
-            elif "nps_lite" in scaletype and "response" in scale_type:
-                return nps_lite.submit_response_view(request)
-            elif "percent" in scaletype and "settings" in scale_type:
-                return percent.settings_api_view_create(request)
-            elif "percent" in scaletype and "response" in scale_type:
-                return percent.percent_response_view_submit(request)
-            else:
-                return error_response(request, "Scale will be available soon.")
-        else:
-            error_message = api_resp['message']
-            return Response({"error": error_message}, status=status.HTTP_403_FORBIDDEN, )
+            return error_response(request, {"success": False, "msg": "Provide a valid API key"},  status.HTTP_403_FORBIDDEN)
     except Exception as e:
-        return error_response(request, e)
+        return error_response(request, e, status.HTTP_400_BAD_REQUEST)
