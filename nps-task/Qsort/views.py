@@ -12,29 +12,51 @@ from rest_framework.response import Response
 # from ..EvaluationModule.calculate_function import *
 from .eventID import *
 from .dowellconnection import dowellconnection
+from random import shuffle
 
 
-# Create your views here.
+def dowellshufling_function(statements):
+    shuffle(statements)
+    return statements
+
 
 @api_view(['GET', 'POST', 'PUT'])
 def qsort_analysis(request):
     if request.method == 'POST':
-        # Extract the statements from the payload
+        # Extract the payload from the request
         payload = request.data
-        print(payload)
         statements = payload["statements"]
-
-        # Sort the statements based on the sorting order (ascending or descending)
+        scale_color = payload["scale_color"]
+        time_restriction = payload.get("time", None)
+        num_of_statements = payload["num_of_statements"]
         sort_order = payload["sort_order"]
+
+        if num_of_statements < 60 or num_of_statements > 140:
+            return Response({"Error": "The number of statements should be strictly between 60 and 140."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if len(statements) != num_of_statements:
+            return Response(
+                {"Error": "The number of statements provided does not match the declared number of statements."},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        # Sort the statements
         if sort_order.lower() == "ascending":
             sorted_statements = sorted(statements, key=lambda x: list(x.values())[0])
         elif sort_order.lower() == "descending":
             sorted_statements = sorted(statements, key=lambda x: list(x.values())[0], reverse=True)
+        elif sort_order.lower() == "random":
+            sorted_statements = dowellshufling_function(statements)
+        elif sort_order.lower() == "alphabetical":
+            sorted_statements = sorted(statements)
+        elif sort_order.lower() == "custom":
+            custom_order = payload["custom_order"]
+            sorted_statements = sorted(statements, key=lambda x: custom_order.index(list(x.keys())[0]))
         else:
-            raise ValueError("Invalid sort order. It should be 'ascending' or 'descending'.")
+            return Response({
+                                "Error": "Invalid sort order. It should be 'ascending', 'descending', 'random', 'alphabetical' or 'custom'."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        # Calculate the number of statements and categories
-        num_statements = len(statements)
+        # Calculate the number of categories
         num_categories = 5  # Number of categories in a 5-point QSort scale
 
         # Determine the category index and label for each statement

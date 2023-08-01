@@ -5,21 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="868b820d-f752-432a-9da3-f3bacec6f10c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/nps-task/Qsort/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nps-task/Qsort/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nps-task/Qsort/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nps-task/Qsort/migrations/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nps-task/Qsort/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nps-task/Qsort/templates/Qsort/editor_reports.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nps-task/Qsort/tests.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nps-task/Qsort/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nps-task/Qsort/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/EvaluationModule/calculate_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/EvaluationModule/calculate_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/EvaluationModule/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/EvaluationModule/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/EvaluationModule/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/EvaluationModule/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/Qsort/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/Qsort/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +45,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/dowell/100035-DowellScale-Function&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/dowell/100035-DowellScale-Function/nps-task/Qsort&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -68,6 +55,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\dowell\100035-DowellScale-Function\nps-task\Qsort" />
+    </key>
+  </component>
   <component name="RunManager" selected="Python.views">
     <configuration name="calculate_function" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="100035-DowellScale-Function" />
@@ -257,6 +249,11 @@
       <workItem from="1689603978421" duration="802000" />
       <workItem from="1689674630369" duration="3926000" />
       <workItem from="1690043457029" duration="3970000" />
+      <workItem from="1690143494346" duration="7098000" />
+      <workItem from="1690305721118" duration="3772000" />
+      <workItem from="1690363850819" duration="3095000" />
+      <workItem from="1690531194786" duration="956000" />
+      <workItem from="1690871263539" duration="311000" />
     </task>
     <servers />
   </component>
