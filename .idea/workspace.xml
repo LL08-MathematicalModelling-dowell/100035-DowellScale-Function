@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="868b820d-f752-432a-9da3-f3bacec6f10c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/Qsort/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/Qsort/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,7 +252,7 @@
       <workItem from="1690305721118" duration="3772000" />
       <workItem from="1690363850819" duration="3095000" />
       <workItem from="1690531194786" duration="956000" />
-      <workItem from="1690871263539" duration="311000" />
+      <workItem from="1690871263539" duration="6119000" />
     </task>
     <servers />
   </component>
