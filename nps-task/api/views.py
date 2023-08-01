@@ -10,7 +10,9 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 import stapel.views as stapel
 import likert.views as likert
-import percent_sum.views as percent
+import percent_sum.views as percent_sum
+import percent.views as percent
+import npslite.views as nps_lite
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
@@ -403,7 +405,7 @@ def calculate_total_score(request, doc_no=None, product_name=None):
                                          "1094", "ABCDE", "fetch", field_add, "nil")
         data = json.loads(response_data)["data"]
         all_scales = [x for x in data if x['score'][0]
-        ['instance_id'].split("/")[0] == doc_no]
+                      ['instance_id'].split("/")[0] == doc_no]
         all_scores = []
         nps_scales = 0
         nps_score = 0
@@ -439,7 +441,8 @@ def nps_response_view_submit(request):
                     scale_id = x['scale_id']
                     score = x['score']
                     category = find_category(score)
-                    success = response_submit_loop(response, scale_id, instance_id, user, category, score)
+                    success = response_submit_loop(
+                        response, scale_id, instance_id, user, category, score)
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
@@ -456,7 +459,8 @@ def nps_response_view_submit(request):
         try:
             if "scale_id" in response:
                 id = response['scale_id']
-                field_add = {"scale_data.scale_id": id,"scale_data.scale_type": "nps scale"}
+                field_add = {"scale_data.scale_id": id,
+                             "scale_data.scale_type": "nps scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
@@ -466,7 +470,7 @@ def nps_response_view_submit(request):
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
         except:
-            return Response({"error":"Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 def response_submit_loop(response, scale_id, instance_id, user, category, score):
@@ -752,7 +756,8 @@ def new_nps_create(request):
             user = response['user']
             left = response['left']
             center = response['center']
-            fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
+            fontstyle = response.get(
+                'fontstyle', "Arial, Helvetica, sans-serif")
             right = response['right']
             text = f"{left}+{center}+{right}"
             rand_num = random.randrange(1, 10000)
@@ -786,7 +791,8 @@ def new_nps_create(request):
                         # Handle unsupported or unknown image formats
                         return
 
-                    image_path = f'images/{key}.{image_format}'  # Define a unique path for each image
+                    # Define a unique path for each image
+                    image_path = f'images/{key}.{image_format}'
                     default_storage.save(image_path, image_bytes)
                     image_label_format[key] = image_path
 
@@ -830,15 +836,15 @@ def new_nps_create(request):
                                              "insert", field_add, "nil")
 
             # Should be inserted in a thread
-            details = {"scale_id": json.loads(response_data)['inserted_id'], "event_id": event_ID, "username": username}
+            details = {"scale_id": json.loads(
+                response_data)['inserted_id'], "event_id": event_ID, "username": username}
             user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                             "ABCDE",
                                             "insert", details, "nil")
 
             return Response({"success": response_data, "data": field_add}, status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "PUT":
         try:
@@ -869,9 +875,11 @@ def new_nps_create(request):
             roundcolor = response.get('roundcolor', settings["roundcolor"])
             fontcolor = response.get('fontcolor', settings["fontcolor"])
             allow_resp = response.get('allow_resp', settings["allow_resp"])
-            show_total_score = response.get('show_total_score', settings["show_total_score"])
+            show_total_score = response.get(
+                'show_total_score', settings["show_total_score"])
             fomat = response.get('fomat', settings["fomat"])
-            no_of_scales = int(response.get('no_of_scales', settings["no_of_scales"]))
+            no_of_scales = int(response.get(
+                'no_of_scales', settings["no_of_scales"]))
             fontstyle = response.get('fontstyle', settings["fontstyle"])
             event_ID = get_event_id()
 
@@ -880,9 +888,11 @@ def new_nps_create(request):
             if no_of_scales > 100 or no_of_scales < 1:
                 return Response({"no_of_scales": "Out of range"}, status=status.HTTP_400_BAD_REQUEST)
             if fomat == "emoji":
-                custom_emoji_format = response.get('custom_emoji_format', settings["custom_emoji_format"])
+                custom_emoji_format = response.get(
+                    'custom_emoji_format', settings["custom_emoji_format"])
             elif fomat == "image":
-                image_label_format = response.get('image_label_format', settings["image_label_format"])
+                image_label_format = response.get(
+                    'image_label_format', settings["image_label_format"])
 
                 def save_image(key, image_data):
                     try:
@@ -898,7 +908,8 @@ def new_nps_create(request):
                         # Handle unsupported or unknown image formats
                         return
 
-                    image_path = f'images/{key}.{image_format}'  # Define a unique path for each image
+                    # Define a unique path for each image
+                    image_path = f'images/{key}.{image_format}'
                     default_storage.save(image_path, image_bytes)
                     image_label_format[key] = image_path
 
@@ -943,7 +954,7 @@ def new_nps_create(request):
                                              "update", field_add, update_field)
             return Response({"success": response_data, "data": update_field})
         except Exception as e:
-            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
         try:
             response = request.data
@@ -954,7 +965,8 @@ def new_nps_create(request):
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
 
-            field_add = {"_id": scale_id,"settings.scale-category": "nps scale"}
+            field_add = {"_id": scale_id,
+                         "settings.scale-category": "nps scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -964,11 +976,12 @@ def new_nps_create(request):
             settings = settings_json['data']['settings']
             return Response({"success": settings})
         except Exception as e:
-            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response({"error": "method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-@api_view(['POST','GET','PUT'])
+
+@api_view(['POST', 'GET', 'PUT'])
 def error_response(request, message):
     return Response({"error": message}, status=status.HTTP_403_FORBIDDEN)
 
@@ -992,7 +1005,7 @@ def redirect_view(request):
             error_message = api_resp['message']
             return error_response(request, error_message)
 
-        elif api_resp['message'] == "The count is decremented":
+        elif api_resp['message'] == "Credits was successfully consumed":
             if "nps" in scaletype and "settings" in scale_type:
                 return new_nps_create(request)
             elif "nps" in scaletype and "response" in scale_type:
@@ -1006,18 +1019,21 @@ def redirect_view(request):
             elif "likert" in scaletype and "response" in scale_type:
                 return likert.submit_response_view(request)
             elif "percent_sum" in scaletype and "settings" in scale_type:
-                return percent.settings_api_view_create(request)
+                return percent_sum.settings_api_view_create(request)
             elif "percent_sum" in scaletype and "response" in scale_type:
-                return percent.percent_sum_response_submit(request)
+                return percent_sum.percent_sum_response_submit(request)
             elif "nps_lite" in scaletype and "settings" in scale_type:
-                return percent.settings_api_view_create(request)
+                return nps_lite.settings_api_view_create(request)
             elif "nps_lite" in scaletype and "response" in scale_type:
-                return percent.percent_sum_response_submit(request)
+                return nps_lite.submit_response_view(request)
+            elif "percent" in scaletype and "settings" in scale_type:
+                return percent.settings_api_view_create(request)
+            elif "percent" in scaletype and "response" in scale_type:
+                return percent.percent_response_view_submit(request)
             else:
                 return error_response(request, "Scale will be available soon.")
-        elif api_resp['message'] == "Limit exceeded" or api_resp['message'] == "API key is inactive":
+        else:
             error_message = api_resp['message']
             return Response({"error": error_message}, status=status.HTTP_403_FORBIDDEN, )
     except Exception as e:
         return error_response(request, e)
-
