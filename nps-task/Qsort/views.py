@@ -19,6 +19,16 @@ def dowellshuffling_function(statements):
     random.shuffle(statements)
     return statements
 
+def move_last_to_start(d):
+    if not d:
+        return d
+
+    last_key, last_value = list(d.items())[-1]
+    new_dict = {last_key: last_value}
+    new_dict.update(d)
+    return new_dict
+
+
 @api_view(['GET', 'POST', 'PUT'])
 def qsort_analysis(request):
     if request.method == 'POST':
@@ -206,6 +216,67 @@ def save_data(request):
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                              field_add, update_field)
+
+        print(x)
+
+
+        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
+
+@api_view(['POST', 'GET'])
+def assign_statements(request):
+    if request.method == 'POST':
+        payload = request.data
+        # Function to assign statements to piles and calculate scores
+        def assign_to_piles(statements, piles):
+            # Adjust validation to ensure at least one statement per pile
+            if len(statements) < len(piles):
+                raise ValueError("Invalid number of statements for piles")
+
+            scores = []
+            pile_size = len(statements) // len(piles)  # Calculate pile size
+            for i, statement in enumerate(statements):
+                pile_index = i // pile_size  # Determine the pile for the statement
+                if pile_index >= len(piles):  # Handle remaining statements when they don't distribute evenly
+                    pile_index = len(piles) - 1
+                score = piles[pile_index]
+                scores.append(score)
+            return scores
+
+        # Iterate through groups (disagree, neutral, agree) and calculate scores
+        results = {}
+        for group, group_data in payload.items():
+            if group in ["disagree", "neutral", "agree"]:
+                statements = group_data['statements']
+                piles = group_data['pile_range']
+                scores = assign_to_piles(statements, piles)
+                results[group.capitalize()] = {'statements': statements, 'scores': scores}
+
+        # Other payload information
+        user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
+
+        eventID = get_event_id()
+        user_info['event_id'] = eventID
+        user_info['results'] = results
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
+                             user_info, "nil")
+
+        print(x)
+        data_dict = json.loads(x)
+        inserted_id = data_dict["inserted_id"]
+        user_info['user_id'] = inserted_id
+
+        results = move_last_to_start(user_info)
+        return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
+
+    if request.method == 'GET':
+        payload = request.data
+        print(payload)
+
+        field_add = {"_id": payload["id"]}
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                             field_add, "nil")
 
         print(x)
 
