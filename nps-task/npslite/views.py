@@ -77,7 +77,7 @@ def settings_api_view_create(request):
                                  field_add, "nil")
             return Response({"data": json.loads(x)})
         else:
-            field_add = {"scale_category": "npslite scale"}
+            field_add = {"settings.scale-category": "npslite scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
             return Response({"data": json.loads(x)})
