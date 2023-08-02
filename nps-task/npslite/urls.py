@@ -12,4 +12,5 @@ urlpatterns = [
     path('api/nps-lite-settings', settings_api_view_create, name="npslite_create_scale_settings_api"),
     path('api/nps-lite-response', submit_response_view, name="npslite_nps_response_submit_api"),
     path('api/nps-lite-responses/<str:id>', npslite_response_view, name="npslite_scale_settings_api"),
+
 ]
