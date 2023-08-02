@@ -54,7 +54,7 @@ def settings_api_view_create(request):
         elif shuffling == 'Ascending Alphabetically':
             products = sorted(products, key=lambda x: x['name'])
         elif shuffling == 'Programmer\'s Choice':
-            # Your code to sort products here
+            
             pass
         elif shuffling == 'Using ID Number':
             products = sorted(products, key=lambda x: int(x['ID'].replace('-', ''), 16))
@@ -64,7 +64,7 @@ def settings_api_view_create(request):
             for i, product in enumerate(products):
                 product['rank'] = i + 1
         elif units == 'Tied Ranking':
-            # Your code to assign tied ranks here
+            
             pass
 
         settings = {
@@ -140,7 +140,7 @@ def settings_api_view_create(request):
             elif shuffling == 'Ascending Alphabetically':
                 settings['products'] = sorted(settings['products'], key=lambda x: x['name'])
             elif shuffling == 'Programmer\'s Choice':
-                # Your code to sort products here
+                
                 pass
             elif shuffling == 'Using ID Number':
                 settings['products'] = sorted(settings['products'], key=lambda x: int(x['id'].replace('-', ''), 16))
@@ -152,7 +152,6 @@ def settings_api_view_create(request):
                 for i, product in enumerate(settings['products']):
                     product['rank'] = i + 1
             elif units == 'Tied Ranking':
-                # Your code to assign tied ranks here
                 pass
 
         settings["scale-category"] = "ranking scale"
