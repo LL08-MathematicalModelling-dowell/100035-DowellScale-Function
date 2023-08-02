@@ -22,12 +22,25 @@ def settings_api_view_create(request):
             user = response['username']
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-        time = response['time']
-        if time == "":
-            time = 0
-        rand_num = random.randrange(1, 10000)
-        name = response['name']
-        template_name = response.get('template_name', f"{name.replace(' ', '')}{rand_num}")
+
+        try:
+            time = response['time']
+            if time == "":
+                time = 0
+            name = response['scale_name']
+            number_of_scales = response['no_of_scale']
+            orientation = response['orientation']
+            scale_color = response['scale_color']
+            product_count = response['product_count']
+            product_names = response['product_names']
+            user = response['user']
+        except KeyError as error:
+            return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
+        if len(product_names) != int(product_count):
+            return Response({"error": "Product count and number of product names count should be same"},
+                                status=status.HTTP_400_BAD_REQUEST)
+        if len(product_names) != len(set(product_names)):
+            return Response({"error": "Product names must be unique"}, status=status.HTTP_400_BAD_REQUEST)
         eventID = get_event_id()
         field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "scale_color": scale_color,
