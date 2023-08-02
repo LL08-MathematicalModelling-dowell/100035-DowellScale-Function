@@ -22,6 +22,7 @@ def settings_api_view_create(request):
             user = response['username']
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+
         try:
             time = response['time']
             if time == "":

@@ -28,6 +28,7 @@ def settings_api_view_create(request):
                 name = response['scale_name']
                 number_of_scales = response['no_of_scale']
                 orientation = response['orientation']
+
                 font_color = response['font_color']
                 round_color = response['round_color']
                 fomat = response['fomat']
@@ -153,36 +154,18 @@ def submit_response_view(request):
             scale_settings = json.loads(scale)
             if scale_settings['data'][0]['settings'].get('scale-category') != 'likert scale':
                 return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
-
-            if scale_settings['data'][0]['settings'].get('label_type') == "text":
-                if response not in scale_settings['data'][0]['settings'].get('label_input'):
-                    return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
-
-            if scale_settings['data'][0]['settings'].get('label_type') == "emoji":
-                upper_boundary = scale_settings['data'][0]['settings'].get(
-                    'label_selection')
-                if type(response) != int or 0 < response > upper_boundary - 1:
-                    return Response({"error": "Emoji response must be an integer within label selection range."}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Check if response already exists for this event
-            existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                                 "scale_reports", "1095", "ABCDE", "fetch", {"event_id": event_id}, "nil")
-            existing_response = json.loads(existing_response)
-            if isinstance(existing_response, dict) and existing_response['data']:
-                return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Insert new response into database
-            response = {
-                "event_id": event_id,
-                "username": username,
-                "scale_id": scale_id,
-                "response": response,
-                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            }
-            response_id = dowellconnection("dowellscale", "bangalore", "dowellscale",
-                                           "scale_reports", "scale_reports", "1094", "ABCDE", "insert", response, "nil")
-
-            return Response({"success": True, "response_id": response_id})
+            
+            if "document_responses" in response_data:
+                document_responses = response_data["document_responses"]
+                all_results = []
+                for single_response in document_responses:
+                    response = single_response["response"]                    
+                    success = response_submit_loop(scale_settings, event_id, username, scale_id, response)
+                    all_results.append(success.data)
+                return Response({"data": all_results}, status=status.HTTP_200_OK)
+            else:
+                scale_id = response_data["scale_id"]
+                return response_submit_loop(scale_settings, event_id, username, scale_id, response)   
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
@@ -201,6 +184,7 @@ def submit_response_view(request):
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
         except:
+
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
 def response_submit_loop(scale_settings, event_id, username, scale_id, response):
