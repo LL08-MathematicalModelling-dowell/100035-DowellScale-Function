@@ -132,7 +132,7 @@ def qsort_analysis(request):
         
 
 @api_view(['GET', 'POST', 'PUT'])
-def save_data(request):
+def CreateScale(request):
     if request.method == 'POST':
         payload = request.data
         print(payload)
@@ -222,23 +222,30 @@ def save_data(request):
 
         return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
 
-@api_view(['POST', 'GET'])
-def assign_statements(request):
+@api_view(['POST'])
+def ResponseAPI(request):
     if request.method == 'POST':
         payload = request.data
+
+        # Define fixed pile ranges
+        pile_ranges = {
+            "disagree": [-5, -4, -3, -2, -1],
+            "neutral": [0],
+            "agree": [1, 2, 3, 4, 5]
+        }
+
         # Function to assign statements to piles and calculate scores
-        def assign_to_piles(statements, piles):
-            # Adjust validation to ensure at least one statement per pile
-            if len(statements) < len(piles):
+        def assign_to_piles(statements, pile_range):
+            if len(statements) < len(pile_range):
                 raise ValueError("Invalid number of statements for piles")
 
             scores = []
-            pile_size = len(statements) // len(piles)  # Calculate pile size
+            pile_size = len(statements) // len(pile_range)
             for i, statement in enumerate(statements):
-                pile_index = i // pile_size  # Determine the pile for the statement
-                if pile_index >= len(piles):  # Handle remaining statements when they don't distribute evenly
-                    pile_index = len(piles) - 1
-                score = piles[pile_index]
+                pile_index = i // pile_size
+                if pile_index >= len(pile_range):
+                    pile_index = len(pile_range) - 1
+                score = pile_range[pile_index]
                 scores.append(score)
             return scores
 
@@ -247,39 +254,33 @@ def assign_statements(request):
         for group, group_data in payload.items():
             if group in ["disagree", "neutral", "agree"]:
                 statements = group_data['statements']
-                piles = group_data['pile_range']
-                scores = assign_to_piles(statements, piles)
+                scores = assign_to_piles(statements, pile_ranges[group])
                 results[group.capitalize()] = {'statements': statements, 'scores': scores}
 
         # Other payload information
         user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
 
-        eventID = get_event_id()
-        user_info['event_id'] = eventID
+        field_add = {"scale_id": payload["scale_id"]}
+        update_field = {"data": results}
+
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                             field_add, update_field)
+
+
+
         user_info['results'] = results
 
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-                             user_info, "nil")
-
-        print(x)
         data_dict = json.loads(x)
-        inserted_id = data_dict["inserted_id"]
-        user_info['user_id'] = inserted_id
+        print(data_dict)
+        if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
 
-        results = move_last_to_start(user_info)
-        return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
+            results = move_last_to_start(user_info)
+            return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({"Error": "Invalid Dowell Response"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method == 'GET':
-        payload = request.data
-        print(payload)
 
-        field_add = {"_id": payload["id"]}
-
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                             field_add, "nil")
-
-        print(x)
-
-        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
+# save_data = CreateScale
+# assign_statements = ResponseAPI
 
 
