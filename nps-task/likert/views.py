@@ -29,6 +29,7 @@ def settings_api_view_create(request):
                 number_of_scales = response['no_of_scale']
                 orientation = response['orientation']
 <<<<<<< HEAD
+<<<<<<< HEAD
                 font_color = response['fontcolor']
                 round_color = response['roundcolor']
 =======
@@ -36,6 +37,10 @@ def settings_api_view_create(request):
                 font_color = response['font_color']
                 round_color = response['round_color']
 >>>>>>> 6d7692f87124351f6f8e9a961a3e9b4cecfc5c09
+=======
+                font_color = response['fontcolor']
+                round_color = response['roundcolor']
+>>>>>>> 32b4a3e6f59d3664346b03ba3df043ee2b69429f
                 fomat = response['fomat']
                 if fomat == "text":
                     label_selection = response['label_scale_selection']
@@ -61,7 +66,10 @@ def settings_api_view_create(request):
                                         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                     }
                         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 32b4a3e6f59d3664346b03ba3df043ee2b69429f
 
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                                  field_add, "nil")
