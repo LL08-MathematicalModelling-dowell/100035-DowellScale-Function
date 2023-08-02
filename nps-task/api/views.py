@@ -748,7 +748,6 @@ def scale_response_api_view(request):
 @api_view(['POST', 'PUT', 'GET'])
 def new_nps_create(request):
     global image_label_format
-
     if request.method == 'POST':
         try:
             response = request.data
@@ -763,7 +762,7 @@ def new_nps_create(request):
             rand_num = random.randrange(1, 10000)
             name = response['name']
             time = response.get('time', "")
-            template_name = f"{name.replace(' ', '')}{rand_num}"
+            template_name = response.get('template_name', f"{response['name'].replace(' ', '')}{rand_num}")
             fomat = response.get('fomat')
             no_of_scales = int(response['no_of_scales'])
             custom_emoji_format = {}
@@ -797,11 +796,11 @@ def new_nps_create(request):
                     image_label_format[key] = image_path
 
                 with ThreadPoolExecutor() as executor:
-                    futures = [executor.submit(save_image, key, image_data) for key, image_data in
-                               image_label_format.items()]
-                    # Wait for all image saving tasks to complete
-                    for future in futures:
-                        future.result()
+                        futures = [executor.submit(save_image, key, image_data) for key, image_data in
+                                image_label_format.items()]
+                        # Wait for all image saving tasks to complete
+                        for future in futures:
+                            future.result()
 
             event_ID = get_event_id()
             field_add = {
@@ -825,26 +824,27 @@ def new_nps_create(request):
                     "right": right,
                     "custom_emoji_format": custom_emoji_format,
                     "center": center,
-                    "allow_resp": response['allow_resp'],
+                    "allow_resp": response.get('allow_resp', True),
                     "scale-category": "nps scale",
-                    "show_total_score": response['show_total_score'],
+                    "show_total_score": response.get('show_total_score', True),
                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
             }
-            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                             "ABCDE",
-                                             "insert", field_add, "nil")
-
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            "insert", field_add, "nil")
             # Should be inserted in a thread
-            details = {"scale_id": json.loads(
-                response_data)['inserted_id'], "event_id": event_ID, "username": username}
-            user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                            "ABCDE",
-                                            "insert", details, "nil")
+            details = {"scale_id": json.loads(response_data)['inserted_id'], "event_id": event_ID, "username": username}
+            
 
+            user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                        "ABCDE",
+                                        "insert", details, "nil")
             return Response({"success": response_data, "data": field_add}, status=status.HTTP_201_CREATED)
+        
+    
         except Exception as e:
-            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
     elif request.method == "PUT":
         try:

@@ -26,12 +26,14 @@ def settings_api_view_create(request):
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            question = response['question']
             orientation = response['orientation']
             scalecolor = response['scalecolor']
             fontcolor = response['fontcolor']
+            fontstyle = response['fontstyle']
             time = response['time']
-            template_name = response['template_name']
+            rand_num = random.randrange(1, 10000)
+            template_name = response.get('template_name', f"{response['name'].replace(' ', '')}{rand_num}")
+            fomat = response.get('fomat')
             name = response['name']
             center = response['center']
             left = response['left']
@@ -39,16 +41,21 @@ def settings_api_view_create(request):
             no_of_scales = response['no_of_scales']
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
-
+        
+        custom_emoji_format={}
+        if fomat == "emoji":
+                custom_emoji_format = response.get('custom_emoji_format', {})
         event_id = str(datetime.datetime.now().timestamp()).replace(".", "")
         field_add = {
             "event_id": event_id,
-            "question": question,
             "orientation": orientation,
             "scalecolor": scalecolor,
             "fontcolor": fontcolor,
+            "fontstyle" : fontstyle,
             "time": time,
             "template_name": template_name,
+            "fomat": fomat,
+            "custom_emoji_format": custom_emoji_format,
             "name": name,
             "center": center,
             "left": left,

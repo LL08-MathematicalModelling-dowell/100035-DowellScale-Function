@@ -43,9 +43,9 @@ def settings_api_view_create(request):
 
             rand_num = random.randrange(1, 10000)
             name = response['name']
-            template_name = f"{name.replace(' ', '')}{rand_num}"
-            custom_emoji_format = {}
-            image_label_format = {}
+            template_name = response.get('template_name', f"{name.replace(' ', '')}{rand_num}")
+            custom_emoji_format={}
+            image_label_format={}
 
             eventID = get_event_id()
             fomat = response.get('fomat')
@@ -260,7 +260,7 @@ def stapel_response_view_submit(request):
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
                 scale_id = response['scale_id']
-                score = response['score']
+                score = response.get('score', '0')
                 instance_id = response['instance_id']
                 return response_submit_loop(response, scale_id, instance_id, user, score)
         except Exception as e:
