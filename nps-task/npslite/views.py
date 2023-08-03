@@ -45,9 +45,9 @@ def settings_api_view_create(request):
         custom_emoji_format={}
         if fomat == "emoji":
                 custom_emoji_format = response.get('custom_emoji_format', {})
-        event_id = str(datetime.datetime.now().timestamp()).replace(".", "")
+        eventID = get_event_id()
         field_add = {
-            "event_id": event_id,
+            "event_id": eventID,
             "orientation": orientation,
             "scalecolor": scalecolor,
             "fontcolor": fontcolor,
@@ -66,12 +66,12 @@ def settings_api_view_create(request):
         }
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-                             field_add, "nil")
+                                field_add, "nil")
 
         user_json = json.loads(x)
         details = {
-            "scale_id": user_json['inserted_id'], "event_id": event_id, "user": user}
-        user_details = dowellconnection("dowelle_scale", "bangalore", "dowell_scale", "users", "users", "1098", "ABCDE",
+            "scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
                                         "insert", details, "nil")
         return Response({"success": x, "data": field_add})
 
@@ -175,7 +175,6 @@ def response_submit_loop(event_id, user, scale_id, response):
 @api_view(['GET'])
 def npslite_response_view(request, id=None):
     if request.method == 'GET':
-
         response = request.data
         scale_id = response['scale_id']
         try:
@@ -190,6 +189,17 @@ def npslite_response_view(request, id=None):
             return Response({"payload": response})
         except:
             return Response(status=status.HTTP_404_NOT_FOUND, data={"error": response_data})
+        
+@api_view(['GET', ])
+def scale_response_api_view(request):
+    try:
+        field_add = {"scale_data.scale_type": "npslite scale", }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                             "1094", "ABCDE", "fetch", field_add, "nil")
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        return Response(json.loads(x))
 
 
 def npslite_home_admin(request):

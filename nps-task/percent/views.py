@@ -209,6 +209,17 @@ def single_scale_response_api_view(request, id=None):
         if settings.get('scale-category') != 'percent scale':
             return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"payload": scale_data['data']})
+    
+@api_view(['GET', ])
+def scale_response_api_view(request):
+    try:
+        field_add = {"scale_data.scale_type": "percent scale", }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                             "1094", "ABCDE", "fetch", field_add, "nil")
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        return Response(json.loads(x))
 
 
 

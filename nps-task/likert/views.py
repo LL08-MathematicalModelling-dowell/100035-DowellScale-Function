@@ -31,8 +31,11 @@ def settings_api_view_create(request):
                 font_color = response['fontcolor']
                 round_color = response['roundcolor']
                 fomat = response['fomat']
+                user = response['user']
                 if fomat == "text":
                     label_selection = response['label_scale_selection']
+                if fomat == "emoji":
+                    custom_emoji_format = response.get('custom_emoji_format', {})
                 label_input = response['label_scale_input']
             except KeyError as error:
                 return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
@@ -51,7 +54,7 @@ def settings_api_view_create(request):
                          "settings": {  "orientation": orientation,"font_color": font_color, "number_of_scales": number_of_scales,
                                         "time": time, "name": name, "scale-category": "likert scale", "user": user,
                                         "round_color" : round_color, "fomat" : fomat, "label_selection" : label_selection,
-                                        "label_input" : label_input,
+                                        "label_input" : label_input, "user" : user, "custom_emoji_format" : custom_emoji_format,
                                         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                     }
                         }
@@ -227,7 +230,17 @@ def get_response_view(request, id=None):
     if request.method == 'GET':
         response = scale_data['data'][0]
         return Response({"payload": response})
-
+    
+@api_view(['GET', ])
+def scale_response_api_view(request):
+    try:
+        field_add = {"scale_data.scale_type": "likert scale", }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                             "1094", "ABCDE", "fetch", field_add, "nil")
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        return Response(json.loads(x))
 
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
