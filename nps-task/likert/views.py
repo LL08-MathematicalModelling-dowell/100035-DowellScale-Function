@@ -26,7 +26,7 @@ def settings_api_view_create(request):
                 if time == "":
                     time = 0
                 name = response['scale_name']
-                number_of_scales = response['no_of_scale']
+                number_of_scales = response['no_of_scales']
                 orientation = response['orientation']
                 font_color = response['font_color']
                 round_color = response['round_color']
