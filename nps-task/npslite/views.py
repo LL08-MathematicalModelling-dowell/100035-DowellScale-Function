@@ -117,8 +117,9 @@ def submit_response_view(request):
     try:
         user = response_data['user']
         scale_id = response_data['scale_id']
-        event_id = response_data['event_id']
-        response = response_data['response']
+        score = response_data['score']
+        brand_name = response_data['brand_name']
+        product_name = response_data['product_name']
     except KeyError as e:
         return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -141,33 +142,27 @@ def submit_response_view(request):
         document_responses = response_data["document_responses"]
         all_results = []
         for single_response in document_responses:
-            response = single_response["response"]
-            success = response_submit_loop(event_id, user, scale_id, response)
+            score = single_response["score"]
+            success = response_submit_loop(user, scale_id, score, brand_name, product_name)
             all_results.append(success.data)
         return Response({"data": all_results}, status=status.HTTP_200_OK)
     else:
         scale_id = response_data["scale_id"]
-        return response_submit_loop(event_id, user, scale_id, response)
+        return response_submit_loop(user, scale_id, score, brand_name, product_name)
 
 
-def response_submit_loop(event_id, user, scale_id, response):
-    # Check if response already exists for this event
-    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                         "ABCDE", "fetch", {"event_id": event_id}, "nil")
-    existing_response = json.loads(existing_response)
-    if isinstance(existing_response, dict) and existing_response['data']:
-        return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
+def response_submit_loop(user, scale_id, score, brand_name, product_name):
+    event_id = get_event_id()
     # Insert new response into database
     field_add = {
         "event_id": event_id,
         "user": user,
         "scale_id": scale_id,
-        "response": response,
+        "score": score,
+        "brand_data": {"brand_name": brand_name, "product_name": product_name},
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
-    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                   "ABCDE", "fetch", field_add, "nil")
+    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", field_add, "nil")
 
     return Response({"success": True, "response_id": response_id})
 

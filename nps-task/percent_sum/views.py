@@ -134,7 +134,8 @@ def percent_sum_response_submit(request):
             try:
                 username = response_data['username']
                 scale_id = response_data['scale_id']
-                event_id = response_data['event_id']
+                brand_name = response_data['brand_name']
+                product_name = response_data['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -158,13 +159,13 @@ def percent_sum_response_submit(request):
                 document_responses = response_data["document_responses"]
                 all_results = []
                 for single_response in document_responses:
-                    responses = single_response["responses"]
-                    success = response_submit_loop(responses, scale_id, scale, event_id, username)
+                    scores = single_response["scores"]
+                    success = response_submit_loop(scores, scale_id, scale, username, brand_name, product_name)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
-                responses = response_data['responses']
-                return response_submit_loop(responses, scale_id, scale, event_id, username)
+                scores = response_data['scores']
+                return response_submit_loop(scores, scale_id, scale, username, brand_name, product_name)
 
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -185,47 +186,37 @@ def percent_sum_response_submit(request):
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
-def response_submit_loop(responses, scale_id, scale, event_id, username):
+def response_submit_loop(scores, scale_id, scale, username, brand_name, product_name):
+    event_id = get_event_id()
     # Check if all required responses are present
     expected_responses = scale['data'][0]['settings']['ProductCount']
-    if int(expected_responses) != len(responses):
+    if int(expected_responses) != len(scores):
         return Response({"error": "Incorrect number of responses."}, status=status.HTTP_400_BAD_REQUEST)
 
     # Check if all responses are valid numbers between 0 and 100
-    for response in responses:
+    for response in scores:
         if not isinstance(response, (int, float)) or response < 0 or response > 100:
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
     # Calculate total score
-    percent_sum = sum(responses)
+    percent_sum = sum(scores)
 
     # Check if total score is greater than 100
     if percent_sum > 100:
         return Response({"error": "Total score cannot exceed 100."}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Check if response already exists for this event
-    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                            "scale_reports",
-                                            "1095", "ABCDE", "fetch", {"event_id": event_id}, "nil")
-
-    existing_response = json.loads(existing_response)
-
-    if isinstance(existing_response, dict) and existing_response['data']:
-        return Response(
-            {"error": "Response already exists.", "percent_sum": existing_response['data'][0]['percent_sum']},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     # Insert new response into database
     response = {
         "event_id": event_id,
         "username": username,
         "scale_id": scale_id,
-        "responses": responses,
+        "scores": scores,
         "percent_sum": percent_sum,
+        "brand_data": {"brand_name": brand_name, "product_name": product_name},
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                    "1095",
+                                    "1094",
                                     "ABCDE", "insert", response, "nil")
 
     return Response({"success": True, "response_id": response_id})

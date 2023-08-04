@@ -136,7 +136,8 @@ def submit_response_view(request):
             try:
                 username = response_data['username']
                 scale_id = response_data['scale_id']
-                event_id = response_data["event_id"]
+                brand_name = response_data['brand_name']
+                product_name = response_data['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -161,13 +162,13 @@ def submit_response_view(request):
                 document_responses = response_data["document_responses"]
                 all_results = []
                 for single_response in document_responses:
-                    response = single_response["response"]                    
-                    success = response_submit_loop(scale_settings, event_id, username, scale_id, response)
+                    score = single_response["score"]                    
+                    success = response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
-                scale_id = response_data["scale_id"]
-                return response_submit_loop(scale_settings, event_id, username, scale_id, response)   
+                score = response_data["score"]
+                return response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name)   
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
@@ -186,31 +187,25 @@ def submit_response_view(request):
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
         except:
-
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
-def response_submit_loop(scale_settings, event_id, username, scale_id, response):
+def response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name):
+    event_id = get_event_id()
     if scale_settings['data'][0]['settings'].get('fomat') == "text":
-        if response not in scale_settings['data'][0]['settings'].get('label_input'):
+        if score not in scale_settings['data'][0]['settings'].get('label_input'):
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
     if scale_settings['data'][0]['settings'].get('fomat') == "emoji":
         upper_boundary = scale_settings['data'][0]['settings'].get('label_selection')
-        if type(response) != int or 0 < response > upper_boundary - 1:
+        if type(score) != int or 0 < score > upper_boundary - 1:
             return Response({"error": "Emoji response must be an integer within label selection range."}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Check if response already exists for this event
-    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1095", "ABCDE", "fetch", {"event_id": event_id}, "nil")
-    existing_response = json.loads(existing_response)
-    if isinstance(existing_response, dict) and existing_response['data']:
-        return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
     # Insert new response into database
     response = {
         "event_id": event_id,
         "username": username,
         "scale_id": scale_id,
-        "response": response,
+        "brand_data": {"brand_name": brand_name, "product_name": product_name},
+        "score": score,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", response, "nil")
