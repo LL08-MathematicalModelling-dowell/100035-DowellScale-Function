@@ -15,6 +15,10 @@ from dowellnps_scale_function.settings import public_url
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
     if request.method == 'POST':
+        custom_emoji_format = {}
+        label_selection = {}
+
+
         try:
             response = request.data
             try:
@@ -32,8 +36,9 @@ def settings_api_view_create(request):
                 round_color = response['round_color']
                 fomat = response['fomat']
                 user = response['user']
+                print("+++++fomat====", fomat)
                 if fomat == "text":
-                    label_selection = response['label_scale_selection']
+                    label_selection = response.get('label_scale_selection', {})
                 if fomat == "emoji":
                     custom_emoji_format = response.get('custom_emoji_format', {})
                 label_input = response['label_scale_input']
@@ -58,7 +63,6 @@ def settings_api_view_create(request):
                                         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                     }
                         }
-
 
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                                  field_add, "nil")
@@ -163,23 +167,13 @@ def submit_response_view(request):
                 document_responses = response_data["document_responses"]
                 all_results = []
                 for single_response in document_responses:
-<<<<<<< HEAD
-                    response = single_response["response"]
-                    success = response_submit_loop(scale_settings, event_id, username, scale_id, response)
-                    all_results.append(success.data)
-                return Response({"data": all_results}, status=status.HTTP_200_OK)
-            else:
-                scale_id = response_data["scale_id"]
-                return response_submit_loop(scale_settings, event_id, username, scale_id, response)
-=======
-                    score = single_response["score"]                    
+                    score = single_response["score"]
                     success = response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
                 score = response_data["score"]
-                return response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name)   
->>>>>>> 2703e45f180501b6b9ac32fecc31c53fc0ac1db9
+                return response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
@@ -236,7 +230,7 @@ def get_response_view(request, id=None):
     if request.method == 'GET':
         response = scale_data['data'][0]
         return Response({"payload": response})
-    
+
 @api_view(['GET', ])
 def scale_response_api_view(request):
     try:
