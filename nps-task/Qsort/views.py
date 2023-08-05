@@ -28,121 +28,13 @@ def move_last_to_start(d):
     new_dict.update(d)
     return new_dict
 
-
-@api_view(['GET', 'POST', 'PUT'])
-def qsort_analysis(request):
-    if request.method == 'POST':
-        # Extract the statements from the payload
-        payload = request.data
-        print(payload)
-        statements = payload["statements"]
-
-        # Sort the statements based on the sorting order (ascending or descending)
-        sort_order = payload["sort_order"]
-        if sort_order.lower() == "ascending":
-            sorted_statements = sorted(statements, key=lambda x: list(x.values())[0])
-        elif sort_order.lower() == "descending":
-            sorted_statements = sorted(statements, key=lambda x: list(x.values())[0], reverse=True)
-        else:
-            raise ValueError("Invalid sort order. It should be 'ascending' or 'descending'.")
-
-        # Calculate the number of statements and categories
-        num_statements = len(statements)
-        num_categories = 5  # Number of categories in a 5-point QSort scale
-
-        # Determine the category index and label for each statement
-        categories = {}
-        category_labels = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
-        for idx, statement in enumerate(sorted_statements):
-            normalized_score = (list(statement.values())[0] / 10) * (num_categories - 1)
-            category_index = round(normalized_score)
-            categories[list(statement.keys())[0]] = {
-                "category_index": category_index,
-                "category_label": category_labels[category_index]
-            }
-
-        eventID = get_event_id()
-
-        field_add = {
-            "event_id": eventID,
-            "product_name": payload["product_name"],
-            "sort_order": payload["sort_order"],
-            "scalecolor": payload["scalecolor"],
-            "fontstyle": payload["fontstyle"],
-            "fontcolor": payload["fontcolor"],
-            "statements": payload["statements"],
-            "categories": categories
-        }
-
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-                             field_add, "nil")
-        data_dict = json.loads(x)
-
-        inserted_id = data_dict["inserted_id"]
-        show_response = {
-            "Scale_id": inserted_id,
-            "event_id": eventID['event_id'],
-            "product_name": payload["product_name"],
-            "sort_order": payload["sort_order"],
-            "settings": {
-                "scalecolor": payload["scalecolor"],
-                "fontstyle": payload["fontstyle"],
-                "fontcolor": payload["fontcolor"],
-                "statements": payload["statements"],
-                "categories": categories
-            }
-        }
-
-        return JsonResponse({"Response":show_response}, status=status.HTTP_200_OK)
-
-
-    elif request.method == 'PUT':
-        payload = request.data
-        print(payload)
-
-        field_add = {"scale_id": payload["id"]}
-
-        update_field = {
-            "sort_order": payload["sort_order"],
-            "scalecolor": payload["scalecolor"],
-            "fontstyle": payload["fontstyle"],
-            "fontcolor": payload["fontcolor"]
-        }
-
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                             field_add, update_field)
-
-        print(x)
-
-        # result = json.loads(x)
-
-        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
-    elif request.method == 'GET':
-        payload = request.data
-        field_add = {"_id": payload["id"]}
-
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                             field_add, "nil")
-
-        print(x)
-
-        # result = json.loads(x)
-
-        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
-        
-
 @api_view(['GET', 'POST', 'PUT'])
 def CreateScale(request):
     if request.method == 'POST':
         payload = request.data
         print(payload)
-
-        num_statements = len(payload['statements'])
-        if num_statements < 60 or num_statements > 140:
-            return JsonResponse({"Error": "Number of statements must be between 60 and 140"}, status=status.HTTP_400_BAD_REQUEST)
-
         sort_order = payload['sort_order']
-        if sort_order not in ['random', 'alphabetical', 'custom']:
+        if sort_order not in ['random', 'alphabetical', 'custom', 'custom_descending']:
             return JsonResponse({"Error": "Invalid sort order"}, status=status.HTTP_400_BAD_REQUEST)
 
         statements = payload['statements']
@@ -153,6 +45,8 @@ def CreateScale(request):
         elif sort_order == 'custom':
             # Here you might want to have a separate key for ID mapping if custom sorting is needed
             statements.sort(key=lambda x: x['id'])
+        elif sort_order == 'custom_descending':
+            statements.sort(key=lambda x: x['id'], reverse=True)
 
         eventID = get_event_id()
 
@@ -242,7 +136,7 @@ def ResponseAPI(request):
             scores = []
             pile_size = len(statements) // len(pile_range)
             for i, statement in enumerate(statements):
-                pile_index = i // pile_size
+                pile_index = statement['card'] // pile_size  # change to use card number
                 if pile_index >= len(pile_range):
                     pile_index = len(pile_range) - 1
                 score = pile_range[pile_index]
@@ -266,8 +160,6 @@ def ResponseAPI(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                              field_add, update_field)
 
-
-
         user_info['results'] = results
 
         data_dict = json.loads(x)
@@ -278,6 +170,7 @@ def ResponseAPI(request):
             return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
         else:
             return JsonResponse({"Error": "Invalid Dowell Response"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 # save_data = CreateScale
