@@ -15,6 +15,10 @@ from dowellnps_scale_function.settings import public_url
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
     if request.method == 'POST':
+        custom_emoji_format = {}
+        label_selection = {}
+
+
         try:
             response = request.data
             try:
@@ -28,20 +32,23 @@ def settings_api_view_create(request):
                 name = response['scale_name']
                 number_of_scales = response['no_of_scales']
                 orientation = response['orientation']
-
                 font_color = response['font_color']
                 round_color = response['round_color']
                 fomat = response['fomat']
-                if label_type == "text":
-                    label_selection = response['label_scale_selection']
+                user = response['user']
+                print("+++++fomat====", fomat)
+                if fomat == "text":
+                    label_selection = response.get('label_scale_selection', {})
+                if fomat == "emoji":
+                    custom_emoji_format = response.get('custom_emoji_format', {})
                 label_input = response['label_scale_input']
             except KeyError as error:
                 return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
 
-            if label_type != "text" and label_type != "emoji":
+            if fomat != "text" and fomat != "emoji":
                 return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
 
-            if label_type == "text":
+            if fomat == "text":
                 if 2 < label_selection > 9 or label_selection == 6:
                     return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"}, status=status.HTTP_400_BAD_REQUEST)
                 if len(label_input) != label_selection:
@@ -49,13 +56,13 @@ def settings_api_view_create(request):
 
             eventID = get_event_id()
             field_add = {"event_id": eventID,
-                         "settings": {"orientation": orientation, "font_color": font_color, "number_of_scales": number_of_scales,
-                                      "time": time, "name": name, "scale-category": "likert scale", "user": user,
-                                      "round_color": round_color, "fomat": fomat, "label_selection": label_selection,
-                                      "label_input": label_input,
-                                      "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                                      }
-                         }
+                         "settings": {  "orientation": orientation,"font_color": font_color, "number_of_scales": number_of_scales,
+                                        "time": time, "name": name, "scale-category": "likert scale", "user": user,
+                                        "round_color" : round_color, "fomat" : fomat, "label_selection" : label_selection,
+                                        "label_input" : label_input, "user" : user, "custom_emoji_format" : custom_emoji_format,
+                                        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                    }
+                        }
 
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                                  field_add, "nil")
@@ -95,9 +102,9 @@ def settings_api_view_create(request):
             response = request.data
             if "scale_id" not in response:
                 return Response({"error": "scale_id missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
-            if response["label_type"] != "text" and response["label_type"] != "emoji":
+            if response["fomat"] != "text" and response["fomat"] != "emoji":
                 return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
-            if response["label_type"] == "text" or "label_input" in response:
+            if response["fomat"] == "text" or "label_input" in response:
                 label_selection = response["label_scale_selection"]
                 label_input = response["label_scale_input"]
                 if 2 < label_selection > 9 or label_selection == 6:
@@ -134,7 +141,8 @@ def submit_response_view(request):
             try:
                 username = response_data['username']
                 scale_id = response_data['scale_id']
-                event_id = response_data["event_id"]
+                brand_name = response_data['brand_name']
+                product_name = response_data['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -154,18 +162,18 @@ def submit_response_view(request):
             scale_settings = json.loads(scale)
             if scale_settings['data'][0]['settings'].get('scale-category') != 'likert scale':
                 return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             if "document_responses" in response_data:
                 document_responses = response_data["document_responses"]
                 all_results = []
                 for single_response in document_responses:
-                    response = single_response["response"]                    
-                    success = response_submit_loop(scale_settings, event_id, username, scale_id, response)
+                    score = single_response["score"]
+                    success = response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
-                scale_id = response_data["scale_id"]
-                return response_submit_loop(scale_settings, event_id, username, scale_id, response)   
+                score = response_data["score"]
+                return response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
@@ -184,31 +192,25 @@ def submit_response_view(request):
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
         except:
-
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
-def response_submit_loop(scale_settings, event_id, username, scale_id, response):
-    if scale_settings['data'][0]['settings'].get('label_type') == "text":
-        if response not in scale_settings['data'][0]['settings'].get('label_input'):
+def response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name):
+    event_id = get_event_id()
+    if scale_settings['data'][0]['settings'].get('fomat') == "text":
+        if score not in scale_settings['data'][0]['settings'].get('label_input'):
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if scale_settings['data'][0]['settings'].get('label_type') == "emoji":
+    if scale_settings['data'][0]['settings'].get('fomat') == "emoji":
         upper_boundary = scale_settings['data'][0]['settings'].get('label_selection')
-        if type(response) != int or 0 < response > upper_boundary - 1:
+        if type(score) != int or 0 < score > upper_boundary - 1:
             return Response({"error": "Emoji response must be an integer within label selection range."}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Check if response already exists for this event
-    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1095", "ABCDE", "fetch", {"event_id": event_id}, "nil")
-    existing_response = json.loads(existing_response)
-    if isinstance(existing_response, dict) and existing_response['data']:
-        return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
     # Insert new response into database
     response = {
         "event_id": event_id,
         "username": username,
         "scale_id": scale_id,
-        "response": response,
+        "brand_data": {"brand_name": brand_name, "product_name": product_name},
+        "score": score,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", response, "nil")
@@ -229,6 +231,16 @@ def get_response_view(request, id=None):
         response = scale_data['data'][0]
         return Response({"payload": response})
 
+@api_view(['GET', ])
+def scale_response_api_view(request):
+    try:
+        field_add = {"scale_data.scale_type": "likert scale", }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                             "1094", "ABCDE", "fetch", field_add, "nil")
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        return Response(json.loads(x))
 
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
