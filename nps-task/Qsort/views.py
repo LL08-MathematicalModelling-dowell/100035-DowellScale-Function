@@ -61,10 +61,13 @@ def CreateScale(request):
             "event_id": eventID,
             "product_name": payload["product_name"],
             "sort_order": sort_order,
+            "statements": statements,
+            "settings": {
+                "scaletype": "qsort",
             "scalecolor": payload["scalecolor"],
             "fontstyle": payload["fontstyle"],
             "fontcolor": payload["fontcolor"],
-            "statements": statements
+            }
         }
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
@@ -93,11 +96,17 @@ def CreateScale(request):
         if 'scale_id' not in payload:
             return JsonResponse({"Error": "Missing required field: scale_id"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            field_add = {"_id": payload["id"]}
+            field_add = {"_id": payload["scale_id"]}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
-            if not x:  # You might need to modify this condition based on how your connection function handles non-existing scales
-                return JsonResponse({"Error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
+            x = json.loads(x)
+            if x["error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
+                z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                     "fetch",
+                                     {"settings.scaletype": "qsort"}, "nil")
+
+                z = json.loads(z)
+                return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
         return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
@@ -146,9 +155,8 @@ def ResponseAPI(request):
                 raise ValueError("Invalid number of statements for piles")
 
             scores = []
-            pile_size = len(statements) // len(pile_range)
             for i, statement in enumerate(statements):
-                pile_index = statement['card'] // pile_size  # change to use card number
+                pile_index = i // (len(statements) // len(pile_range))
                 if pile_index >= len(pile_range):
                     pile_index = len(pile_range) - 1
                 score = pile_range[pile_index]
@@ -186,18 +194,19 @@ def ResponseAPI(request):
     if request.method == 'GET':
         payload = request.data
         if 'scale_id' not in payload:
-            return JsonResponse({"Error": "Missing required field: scale-id"}, status=status.HTTP_400_BAD_REQUEST)
-
-        field_add = {"scale_id": payload["scale_id"]}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                                field_add, "nil")
-        if not x:
-            return JsonResponse({"Error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        data_dict = json.loads(x)
-        print(data_dict)
-        if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
-            return JsonResponse({"Success": data_dict['data']}, status=status.HTTP_200_OK)
+            return JsonResponse({"Error": "Missing required field: scale_id"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return JsonResponse({"Error": "Invalid Dowell Response"}, status=status.HTTP_400_BAD_REQUEST)
+            field_add = {"_id": payload["scale_id"]}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                                 field_add, "nil")
+            x = json.loads(x)
+            if x[
+                "error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
+                z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                     "fetch",
+                                     {"settings.scaletype": "qsort"}, "nil")
+
+                z = json.loads(z)
+                return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
+        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
 
