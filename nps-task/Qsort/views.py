@@ -191,7 +191,7 @@ def ResponseAPI(request):
         field_add = {"scale_id": payload["scale_id"]}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                 field_add, "nil")
-        if not x:  # You might need to modify this condition based on how your connection function handles non-existing scales
+        if not x:
             return JsonResponse({"Error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
 
         data_dict = json.loads(x)
