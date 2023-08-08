@@ -28,11 +28,18 @@ def move_last_to_start(d):
     new_dict.update(d)
     return new_dict
 
+
 @api_view(['GET', 'POST', 'PUT'])
 def CreateScale(request):
+    global field_add,x
+    required_fields = ['sort_order', 'statements', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor', 'user', 'name' ]
+
     if request.method == 'POST':
         payload = request.data
-        print(payload)
+        for field in required_fields:
+            if field not in payload:
+                return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
+
         sort_order = payload['sort_order']
         if sort_order not in ['random', 'alphabetical', 'custom', 'custom_descending']:
             return JsonResponse({"Error": "Invalid sort order"}, status=status.HTTP_400_BAD_REQUEST)
@@ -42,11 +49,11 @@ def CreateScale(request):
             statements = dowellshuffling_function(statements)
         elif sort_order == 'alphabetical':
             statements.sort()
-        elif sort_order == 'custom':
-            # Here you might want to have a separate key for ID mapping if custom sorting is needed
-            statements.sort(key=lambda x: x['id'])
-        elif sort_order == 'custom_descending':
-            statements.sort(key=lambda x: x['id'], reverse=True)
+        elif sort_order in ['custom', 'custom_descending']:
+            if not all(isinstance(i, dict) for i in statements):
+                return JsonResponse({"Error": "Statements must be dictionaries for custom sort orders"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            statements.sort(key=lambda x: x['id'], reverse=sort_order == 'custom_descending')
 
         eventID = get_event_id()
 
@@ -63,7 +70,6 @@ def CreateScale(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                              field_add, "nil")
 
-        print(x)
         data_dict = json.loads(x)
 
         inserted_id = data_dict["inserted_id"]
@@ -80,24 +86,26 @@ def CreateScale(request):
             }
         }
 
-        return JsonResponse({"Response": show_response}, status=status.HTTP_200_OK)
+        return JsonResponse({"Response": show_response}, status=status.HTTP_201_CREATED)
 
     if request.method == 'GET':
         payload = request.data
-        print(payload)
-
-        field_add = {"_id": payload["id"]}
-
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                             field_add, "nil")
-
-        print(x)
-
+        if 'scale_id' not in payload:
+            return JsonResponse({"Error": "Missing required field: scale_id"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            field_add = {"_id": payload["id"]}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                                 field_add, "nil")
+            if not x:  # You might need to modify this condition based on how your connection function handles non-existing scales
+                return JsonResponse({"Error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
         return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
+        fields = ['sort_order', 'scale_id', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
         payload = request.data
-        print(payload)
+        for field in fields:
+            if field not in payload:
+                return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
 
         field_add = {"scale_id": payload["id"]}
 
@@ -111,15 +119,19 @@ def CreateScale(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                              field_add, update_field)
 
-        print(x)
+        return JsonResponse({"Success": "Settings were successfully updated", "data": field_add},
+                            status=status.HTTP_200_OK)
 
 
-        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
-
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def ResponseAPI(request):
+    required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
+
     if request.method == 'POST':
         payload = request.data
+        for field in required_fields:
+            if field not in payload:
+                return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Define fixed pile ranges
         pile_ranges = {
@@ -171,9 +183,21 @@ def ResponseAPI(request):
         else:
             return JsonResponse({"Error": "Invalid Dowell Response"}, status=status.HTTP_400_BAD_REQUEST)
 
+    if request.method == 'GET':
+        payload = request.data
+        if 'scale_id' not in payload:
+            return JsonResponse({"Error": "Missing required field: scale-id"}, status=status.HTTP_400_BAD_REQUEST)
 
+        field_add = {"scale_id": payload["scale_id"]}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                                field_add, "nil")
+        if not x:  # You might need to modify this condition based on how your connection function handles non-existing scales
+            return JsonResponse({"Error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
 
-# save_data = CreateScale
-# assign_statements = ResponseAPI
-
+        data_dict = json.loads(x)
+        print(data_dict)
+        if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
+            return JsonResponse({"Success": data_dict['data']}, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({"Error": "Invalid Dowell Response"}, status=status.HTTP_400_BAD_REQUEST)
 
