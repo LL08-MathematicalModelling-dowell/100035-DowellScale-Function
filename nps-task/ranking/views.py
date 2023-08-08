@@ -32,7 +32,7 @@ def settings_api_view_create(request):
             products = data['products']
             product_arrangement = data['product_arrangement']
             orientation = data['orientation']
-            color = data['color']
+            color = data.get('color', '')
             time = data.get('time', 0)
             ranking_method_stages = data['ranking_method_stages']
             ranking_method_things = data['ranking_method_things']
@@ -176,7 +176,7 @@ def settings_api_view_create(request):
         update_field = {"settings": settings}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
             field_add, update_field)
-        return Response({"success": "Settings updated successfully.", "data": json.load(x)['data'][0]['settings'], "scale_id": scale_id}, status=status.HTTP_200_OK)
+        return Response({"success": "Settings updated successfully.", "data": x, "scale_id": scale_id}, status=status.HTTP_200_OK)
         
 
 
