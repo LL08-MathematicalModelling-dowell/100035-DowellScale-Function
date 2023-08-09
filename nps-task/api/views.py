@@ -3,10 +3,11 @@ import random
 import base64
 import datetime
 import json
+import re
+
 from .api_key import processApikey
 from concurrent import futures
 from django.http import JsonResponse
-
 from django.shortcuts import redirect
 import stapel.views as stapel
 import likert.views as likert
@@ -52,9 +53,6 @@ def total_score_fun(id):
                                      "1094", "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response_data)
     existing_responses = data["data"]
-
-    all_scores = []
-    instance_ids = []
 
     total_score = sum(int(i['score'][0]['score']) for i in data['data'])
     all_scores = [i['score'] for i in data['data']]
@@ -405,7 +403,7 @@ def calculate_total_score(request, doc_no=None, product_name=None):
                                          "1094", "ABCDE", "fetch", field_add, "nil")
         data = json.loads(response_data)["data"]
         all_scales = [x for x in data if x['score'][0]
-                      ['instance_id'].split("/")[0] == doc_no]
+        ['instance_id'].split("/")[0] == doc_no]
         all_scores = []
         nps_scales = 0
         nps_score = 0
@@ -420,6 +418,12 @@ def calculate_total_score(request, doc_no=None, product_name=None):
         return Response({"error": "Please try again"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response({"All_scores": all_scores, f"Total_score for document {doc_no}": nps_score},
                     status=status.HTTP_200_OK)
+
+
+def is_emoji(character):
+    # Use a regular expression to check if the character is an emoji
+    emoji_pattern = re.compile("[\U00010000-\U0010ffff]", flags=re.UNICODE)
+    return bool(emoji_pattern.match(character))
 
 
 # SUMBIT SCALE RESPONSE
@@ -440,17 +444,15 @@ def nps_response_view_submit(request):
                 for x in document_responses:
                     scale_id = x['scale_id']
                     score = x['score']
-                    category = find_category(score)
                     success = response_submit_loop(
-                        response, scale_id, instance_id, user, category, score)
+                        response, scale_id, instance_id, user, score)
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
                 scale_id = response['scale_id']
                 score = response['score']
-                category = find_category(score)
                 instance_id = response['instance_id']
-                return response_submit_loop(response, scale_id, instance_id, user, category, score)
+                return response_submit_loop(response, scale_id, instance_id, user, score)
 
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -473,17 +475,42 @@ def nps_response_view_submit(request):
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def response_submit_loop(response, scale_id, instance_id, user, category, score):
+def find_key_by_emoji(emoji_to_find, emoji_dict):
+    for key, emoji in emoji_dict.items():
+        if emoji == emoji_to_find:
+            return key
+    return None
+
+
+def response_submit_loop(response, scale_id, instance_id, user, score):
     field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
     data = json.loads(default_scale)
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"})
-
     settings = data['data']['settings']
     number_of_scale = settings['no_of_scales']
     scale_id = data['data']['_id']
+    if settings['fomat'] == 'emoji':
+        try:
+            if is_emoji(score):
+                saved_emojis = settings["custom_emoji_format"]
+                score = find_key_by_emoji(score, saved_emojis)
+                if score is None:
+                    return Response({"Error": "Provide an valid emoji from the scale!"})
+            else:
+                return Response({"Error": "Provide an emoji as the score value!"})
+        except:
+            return Response({"Error": "Provide an emoji as the score value!"})
+    else:
+        if is_emoji(f"{score}"):
+            return Response({"Error": "Provide a valid value rating from the scale as the score value!"})
+        elif 0 < int(score) > 10:
+            return Response({"Error": "Score can only be 0 - 10!"})
+
+    category = find_category(score)
+
     overall_category, _, _, _, _, existing_responses = total_score_fun(
         scale_id)
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
@@ -494,11 +521,14 @@ def response_submit_loop(response, scale_id, instance_id, user, category, score)
         b = [l['score'][0]['score'] for l in existing_responses if
              l['score'][0]['instance_id'].split("/")[0] == f"{instance_id}"]
         category = find_category(b[0])
+
         return Response({"error": "Scale Response Exists!", "current_score": b[0], "Category": category},
                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
     event_id = get_event_id()
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
                   "score": score, "category": category}
+
+    print("This is my score data", score_data)
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
@@ -575,174 +605,6 @@ def scale_response_api_view(request):
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return Response(json.loads(x))
-
-
-# All APIS below here are for LIKERT Scales
-# CREATE SCALE SETTINGS
-"""
-@api_view(['POST',])
-def likert_settings_api_view_create(request):
-    if request.method == 'POST':
-        response = request.data
-        try:
-            user = response['username']
-        except:
-            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-
-        rand_num = random.randrange(1, 10000)
-        name = response['name']
-        template_name = f"{name.replace(' ', '')}{rand_num}"
-        scales = [response.get('scale_choice 0', "None"),
-                  response.get('scale_choice 1', "None"),
-                  response.get('scale_choice 2', "None"),
-                  response.get('scale_choice 3', "None"),
-                  response.get('scale_choice 4', "None"),
-                  response.get('scale_choice 5', "None"),
-                  response.get('scale_choice 6', "None"),
-                  response.get('scale_choice 7', "None"),
-                  response.get('scale_choice 8', "None")
-                  ]
-
-        eventID = event_url
-
-        field_add = {"event_id": eventID,
-                     "settings": {"orientation": response['orientation'],
-                                  "labelscale": response['labelscale'],
-                                  "roundcolor": response['roundcolor'],
-                                  "fontcolor": response['fontcolor'],
-                                  "labeltype": response['labeltype'],
-                                  "time": response['time'],
-                                  "template_name": template_name,
-                                  "name": response['name'],
-                                  "scale-category": "likert scale",
-                                  "number_of_scales": response['no_of_scales'],
-                                  "scales": scales}}
-
-        print(field_add)
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-                             field_add, "nil")
-
-        user_json = json.loads(x)
-        details = {"scale_id": user_json['inserted_id'],
-                   "event_id": eventID, "username": user}
-        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
-                                        "insert", details, "nil")
-        urls = []
-        for i in range(1, response['no_of_scales'] + 1):
-            url = f"{public_url}/likert/likert-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-            urls.append(url)
-        return Response({"success": x, "payload": field_add, "scale_urls": urls})
-    return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
-
-# SUMBIT SCALE RESPONSE
-
-
-@api_view(['POST',])
-def nps_response_view_submit(request):
-    if request.method == 'POST':
-        print("Ambrose")
-
-        response = request.data
-        try:
-            user = response['username']
-        except:
-            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-
-        id = response['id']
-        field_add = {"_id": id}
-        default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                   "fetch", field_add, "nil")
-        data = json.loads(default)
-        x = data['data'][0]['settings']
-        number_of_scale = x['no_of_scales']
-
-        eventID = get_event_id()
-        score = {
-            "instance_id": f"{response['instance_id']}/{number_of_scale}", 'score': response['score']}
-
-        if int(response['instance_id']) > int(number_of_scale):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        field_add = {"event_id": eventID, "scale_data": {"scale_id": id, "scale_type": "nps scale"},
-                     "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
-                     "score": [score]}
-        z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-                             "ABCDE", "insert", field_add, "nil")
-        user_json = json.loads(z)
-        details = {"scale_id": user_json['inserted_id'],
-                   "event_id": eventID, "username": user}
-        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
-                                        "insert", details, "nil")
-        return Response({"success": z, "payload": field_add, "url": f"{public_url}/nps-scale1/{x['template_name']}?brand_name=your_brand&product_name=product_name/{response['instance_id']}"})
-    return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# GET ALL SCALES
-@api_view(['GET',])
-def scale_settings_api_view(request):
-    try:
-        field_add = {}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                             field_add, "nil")
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        return Response(json.loads(x))
-
-# GET SINGLE SCALE
-
-
-@api_view(['GET',])
-def single_scale_settings_api_view(request, id=None):
-    try:
-        field_add = {"_id": id}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                             "fetch", field_add, "nil")
-        settings_json = json.loads(x)
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        settings = settings_json['data'][0]['settings']
-        no_of_scales = settings['no_of_scales']
-        template_name = settings['template_name']
-        urls = []
-        for i in range(1, no_of_scales + 1):
-            url = f"{public_url}/nps-scale1/{template_name}?brand_name=your_brand&product_name=product_name/{i}"
-            urls.append(url)
-        return Response({"payload": json.loads(x), "urls": urls})
-
-# GET SINGLE SCALE RESPONSE
-
-
-@api_view(['GET',])
-def single_scale_response_api_view(request, id=None):
-    try:
-        field_add = {"_id": id}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                             "1094", "ABCDE", "fetch", field_add, "nil")
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        return Response({"payload": json.loads(x)})
-
-# GET ALL SCALES RESPONSES
-
-
-@api_view(['GET',])
-def scale_response_api_view(request):
-    try:
-        field_add = {"settings.scale-category": "likert scale"}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                             "1094", "ABCDE", "fetch", field_add, "nil")
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        return Response(json.loads(x))
-"""
 
 
 @api_view(['POST', 'PUT', 'GET'])
@@ -988,7 +850,6 @@ def error_response(request, message, status):
 
 
 def redirect_view(request):
-
     scaletype = request.GET.get('scale_type')
     scale_type = request.GET.get('type')
 
@@ -999,8 +860,6 @@ def redirect_view(request):
         if "api_key" in request_data:
             api_key = request_data.get('api_key')
             api_resp = processApikey(api_key)
-            print("++++++++++++++++++=Ambrose", api_resp)
-
             if api_resp['success'] is True:
                 credit_count = api_resp['total_credits']
                 if credit_count >= 0:
@@ -1031,11 +890,15 @@ def redirect_view(request):
                     else:
                         return error_response(request, "Scale will be available soon.", status.HTTP_404_NOT_FOUND)
                 else:
-                    return error_response(request, {"success": False, "msg": error_message, "total credits": api_resp['total_credits']}, status.HTTP_400_BAD_REQUEST)
+                    error_message = api_resp['message']
+                    return error_response(request, {"success": False, "msg": error_message,
+                                                    "total credits": api_resp['total_credits']},
+                                          status.HTTP_400_BAD_REQUEST)
             elif api_resp['success'] is False:
                 error_message = api_resp['message']
                 return error_response(request, {"success": False, "msg": error_message}, status.HTTP_200_OK)
         else:
-            return error_response(request, {"success": False, "msg": "Provide a valid API key"},  status.HTTP_403_FORBIDDEN)
+            return error_response(request, {"success": False, "msg": "Provide a valid API key"},
+                                  status.HTTP_403_FORBIDDEN)
     except Exception as e:
         return error_response(request, e, status.HTTP_400_BAD_REQUEST)
