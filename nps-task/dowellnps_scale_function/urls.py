@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('evaluation/', include('EvaluationModule.urls')),
     path('apiconf/', include('APIconf.urls')),
+    path('qsort/', include('Qsort.urls')),
     path('paired-comparison/', include('paired_comparison.urls')),
 ]
 
