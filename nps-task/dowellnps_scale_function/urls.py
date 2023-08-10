@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('evaluation/', include('EvaluationModule.urls')),
     path('apiconf/', include('APIconf.urls')),
+    path('paired-comparison/', include('paired_comparison.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
