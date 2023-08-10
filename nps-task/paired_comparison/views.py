@@ -126,7 +126,7 @@ def settings_api_view_create(request):
                 if key in response:
                     settings[key] = response[key]
             settings["name"] = name
-            settings["scale-category"] = "likert scale"
+            settings["scale-category"] = "paired-comparison scale"
             settings["date_updated"] = datetime.datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S")
             update_field = {"settings": settings}
