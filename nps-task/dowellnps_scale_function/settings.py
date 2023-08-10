@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'login',
     'EvaluationModule',
     'percent_sum',
+    'paired_comparison',
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',
 ]
