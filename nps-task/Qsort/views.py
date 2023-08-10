@@ -151,16 +151,27 @@ def ResponseAPI(request):
 
         # Function to assign statements to piles and calculate scores
         def assign_to_piles(statements, pile_range):
-            if len(statements) < len(pile_range):
+            if len(statements) != sum([2 if score in [-5, 5] else 3 if score in [-4, 4] else 4 if score in [-3,
+                                                                                                            3] else 5 if score in [
+                -2, 2] else 6 if score in [-1, 1] else 7 for score in pile_range]):
                 raise ValueError("Invalid number of statements for piles")
 
+            distribution = {
+                -5: 2, -4: 3, -3: 4, -2: 5, -1: 6,
+                0: 7,
+                1: 6, 2: 5, 3: 4, 4: 3, 5: 2
+            }
+
             scores = []
-            for i, statement in enumerate(statements):
-                pile_index = i // (len(statements) // len(pile_range))
-                if pile_index >= len(pile_range):
-                    pile_index = len(pile_range) - 1
-                score = pile_range[pile_index]
-                scores.append(score)
+            count = 0
+            for score in pile_range:
+                for _ in range(distribution[score]):
+                    scores.append(score)
+                    count += 1
+
+            if count != len(statements):
+                raise ValueError("Mismatch in statement count and score distribution")
+
             return scores
 
         # Iterate through groups (disagree, neutral, agree) and calculate scores
