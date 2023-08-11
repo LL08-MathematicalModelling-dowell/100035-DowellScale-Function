@@ -196,13 +196,15 @@ def response_submit_api_view(request):
         
             #return Response({"products": products})
 
-        field_add = {"settings.scale-category": "ranking scale", "_id": scale_id, "products": response}
-        up = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert", field_add, "nil")
         event_id = get_event_id()
-        scale_data = {"scale_id": scale_id, "scale_type": "ranking scale"}
-        username = username
-        field_add = {"settings.scale-category": "ranking scale", "event_id": event_id, "scale_data": scale_data, "username": username, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", field_add, "nil")
+        scale_data = {"settings.scale-category": "ranking scale", 
+                      "_id": scale_id, 
+                      "event_id": event_id,
+                      "username": username, 
+                      "settings.products": response,
+                      "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                      }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", scale_data, "nil")
         # Insert user details in users collection
         details = {"scale_id": scale_id, "event_id": event_id, "username": username}
         dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "insert", details, "nil")
@@ -213,7 +215,7 @@ def response_submit_api_view(request):
 
 @api_view(['GET'])
 def get_scale_api_response(request):
-    scale_id = request.GET.get('scale_id', None)
+    scale_id = request.data.get('scale_id', None)
     if scale_id is None:
         #return all ranking scale response
         field_add = {"settings.scale-category": "ranking scale"}
@@ -227,6 +229,16 @@ def get_scale_api_response(request):
         field_add = {"_id": scale_id}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
         settings = json.loads(x)['data'][0]['settings']
+
+        # ranks = [product['rank'] for product in response]
+        # if settings['ranking_method_stages'] == "Unique Ranking":
+        #     if len(set(ranks)) != len(ranks):
+        #         return Response({"error": "Ranking is not unique."}, status=status.HTTP_400_BAD_REQUEST)
+        #     else:
+        #         pass
+            
+        # elif settings['ranking_method_stages'] == 'Tied Ranking':
+        #     pass
         return Response({"data": settings}, status=status.HTTP_200_OK)
     
     return Response({"error": "Invalid request method."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
