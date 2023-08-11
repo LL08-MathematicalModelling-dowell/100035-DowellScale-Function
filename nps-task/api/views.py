@@ -687,9 +687,9 @@ def new_nps_create(request):
                     "right": right,
                     "custom_emoji_format": custom_emoji_format,
                     "center": center,
-                    "allow_resp": response['allow_resp'],
+                    "allow_resp": response.get('allow_resp', True),
                     "scale-category": "nps scale",
-                    "show_total_score": response['show_total_score'],
+                    "show_total_score": response.get('show_total_score', True),
                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
             }
