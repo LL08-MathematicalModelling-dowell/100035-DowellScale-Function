@@ -28,6 +28,8 @@ DEBUG = False
 
 if DEBUG != True:
     public_url = "https://100035.pythonanywhere.com"
+else:
+    public_url = "http://127.0.0.1:8000/"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -52,6 +54,8 @@ INSTALLED_APPS = [
     'login',
     'EvaluationModule',
     'percent_sum',
+    'Qsort',
+    'paired_comparison',
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',
 ]

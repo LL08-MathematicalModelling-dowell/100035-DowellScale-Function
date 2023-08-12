@@ -3,6 +3,8 @@ import random
 import base64
 import datetime
 import json
+import re
+
 from django.shortcuts import render, redirect
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -44,8 +46,8 @@ def settings_api_view_create(request):
             rand_num = random.randrange(1, 10000)
             name = response['name']
             template_name = response.get('template_name', f"{name.replace(' ', '')}{rand_num}")
-            custom_emoji_format={}
-            image_label_format={}
+            custom_emoji_format = {}
+            image_label_format = {}
 
             eventID = get_event_id()
             fomat = response.get('fomat')
@@ -98,6 +100,7 @@ def settings_api_view_create(request):
                              "right": response['right'],
                              "scale": scale,
                              "scale-category": "stapel scale",
+                             "allow_resp": response.get('allow_resp', True),
                              "no_of_scales": no_of_scales,
                              "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                          }
@@ -136,6 +139,7 @@ def settings_api_view_create(request):
                 time = 0
             orientation = response.get('orientation', settings["orientation"])
             scalecolor = response.get('scalecolor', settings["scalecolor"])
+            allow_resp = response.get('allow_resp', settings["allow_resp"])
             roundcolor = response.get('roundcolor', settings["roundcolor"])
             fontcolor = response.get('fontcolor', settings["fontcolor"])
             spacing_unit = response.get('spacing_unit', settings["spacing_unit"] or 1)
@@ -160,6 +164,7 @@ def settings_api_view_create(request):
                                          "left": left,
                                          "right": right,
                                          "scale": scale,
+                                         "allow_resp": allow_resp,
                                          "scale-category": "stapel scale",
                                          "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                          }
@@ -197,7 +202,6 @@ def settings_api_view_create(request):
                     for future in futures:
                         future.result()
 
-
             elif response.get('fomat') == "emoji":
                 custom_emoji_format = settings.get('custom_emoji_format', {})
                 update_field["settings"]["fomat"] = "emoji"
@@ -212,7 +216,6 @@ def settings_api_view_create(request):
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
     elif request.method == 'GET':
         try:
             response = request.data
@@ -223,7 +226,7 @@ def settings_api_view_create(request):
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
 
-            field_add = {"_id": scale_id,"settings.scale-category": "stapel scale"}
+            field_add = {"_id": scale_id, "settings.scale-category": "stapel scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -233,12 +236,11 @@ def settings_api_view_create(request):
             settings = settings_json['data']['settings']
             return Response({"success": settings})
         except Exception as e:
-            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # SUMBIT SCALE RESPONSE
-@api_view(['POST','GET' ])
+@api_view(['POST', 'GET'])
 def stapel_response_view_submit(request):
     if request.method == 'POST':
         try:
@@ -281,7 +283,21 @@ def stapel_response_view_submit(request):
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
         except:
-            return Response({"error":"Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+def is_emoji(character):
+    # Use a regular expression to check if the character is an emoji
+    emoji_pattern = re.compile("[\U00010000-\U0010ffff]", flags=re.UNICODE)
+    return bool(emoji_pattern.match(character))
+
+
+def find_key_by_emoji(emoji_to_find, emoji_dict):
+    for key, emoji in emoji_dict.items():
+        if emoji == emoji_to_find:
+            return key
+    return None
+
 
 def response_submit_loop(response, scale_id, instance_id, user, score):
     field_add = {"_id": scale_id, "settings.scale-category": "stapel scale"}
@@ -294,8 +310,24 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
     x = data['data'][0]['settings']
     number_of_scale = x['no_of_scales']
 
-    if score not in x['scale']:
-        return Response({"error": "Invalid Selection.", "Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
+
+    if x['fomat'] == 'emoji':
+        try:
+            if is_emoji(score):
+                print("Hello Ambrose")
+                saved_emojis = x["custom_emoji_format"]
+                score = find_key_by_emoji(score, saved_emojis)
+                if score is None:
+                    return Response({"Error": "Provide an valid emoji from the scale!"})
+            else:
+                return Response({"Error": "Provide an emoji as the score value!"})
+        except:
+            return Response({"Error": "Provide an emoji as the score value!"})
+    else:
+        if is_emoji(f"{score}"):
+            return Response({"Error": "Provide a valid value rating from the scale as the score value!"})
+        elif score not in x['scale']:
+            return Response({"error": "Invalid Selection.", "Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
 
     # find existing scale reports
     field_add = {"scale_data.scale_id": scale_id}
@@ -329,6 +361,8 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
                                     "insert", details, "nil")
 
     return Response({"success": z, "payload": field_add, "total score": total_score})
+
+
 # GET ALL SCALES
 @api_view(['GET', ])
 def scale_settings_api_view(request):
