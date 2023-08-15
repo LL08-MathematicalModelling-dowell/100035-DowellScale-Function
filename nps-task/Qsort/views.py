@@ -141,11 +141,22 @@ def ResponseAPI(request):
     total_statements = sum(
         [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]])
 
-    if not total_statements in range(47, 141):
+    if not total_statements in range(60, 141):
         return JsonResponse({"Error": "Invalid number of total statements. Must be between 47 and 140 inclusive."},
                             status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'POST':
+        # Check for continuous card numbers
+        all_cards = []
+        for group in ["disagree", "neutral", "agree"]:
+            if group in payload:
+                all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
+        all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
+
+        if all_cards != list(range(1, total_statements + 1)):
+            return JsonResponse({"Error": "Card numbers are not continuous or missing."},
+                                status=status.HTTP_400_BAD_REQUEST)
+
         payload = request.data
         for field in required_fields:
             if field not in payload:
@@ -163,37 +174,48 @@ def ResponseAPI(request):
             total_statements = len(statements)
             distribution = {}
 
-            # Base ratio for score distribution
-            base_ratio = {
+            # Calculate base ratios for each score
+            base_ratios = {
                 -5: 2 / 47, -4: 3 / 47, -3: 4 / 47, -2: 5 / 47, -1: 6 / 47,
                 0: 7 / 47,
                 1: 6 / 47, 2: 5 / 47, 3: 4 / 47, 4: 3 / 47, 5: 2 / 47
             }
 
-            # Calculate required score assignments based on the base ratio
+            # Pro-rata distribution based on the number of actual statements
             for score in pile_range:
-                distribution[score] = round(base_ratio[score] * total_statements)
+                distribution[score] = round(base_ratios[score] * total_statements)
 
-            # Adjust for discrepancies due to rounding or statements not fitting perfectly into the base ratio
+            # Adjust for any discrepancies due to rounding
             discrepancy = total_statements - sum(distribution.values())
+            adjusting_scores = sorted(pile_range, key=lambda x: abs(x))
 
-            # Distribute discrepancies across the range, modifying the ratio slightly
             while discrepancy != 0:
-                for score in sorted(pile_range, key=lambda x: abs(x)):
-                    if discrepancy == 0:
-                        break
+                for score in adjusting_scores:
                     if discrepancy > 0:
                         distribution[score] += 1
                         discrepancy -= 1
-                    else:
+                    elif discrepancy < 0:
                         distribution[score] -= 1
                         discrepancy += 1
+                    if discrepancy == 0:
+                        break
 
-            scores = []
+            # Create a copy of the statements and sort them by their card number
+            sorted_statements = sorted(statements,
+                                       key=lambda x: str(x['card']).split('-')[1] if '-' in str(x['card']) else x[
+                                           'card'])
+            print(statements)
+            # Assign scores to statements based on their card numbers, but maintain the original order for output
+            scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in statements]
+
             for score in pile_range:
-                scores.extend([score] * distribution[score])
+                for _ in range(distribution[score]):
+                    statement = sorted_statements.pop(0)
+                    index = next((i for i, s in enumerate(scored_statements) if s['card'] == statement['card']), None)
+                    if index is not None:
+                        scored_statements[index]['score'] = score
 
-            return scores
+            return scored_statements
 
         # Iterate through groups (disagree, neutral, agree) and calculate scores
         results = {}
@@ -202,7 +224,7 @@ def ResponseAPI(request):
                 statements = group_data['statements']
                 print(statements)
                 scores = assign_to_piles(statements, pile_ranges[group])
-                results[group.capitalize()] = {'statements': statements, 'scores': scores}
+                results[group.capitalize()] = scores
 
         # Other payload information
         user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
