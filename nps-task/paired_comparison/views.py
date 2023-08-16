@@ -173,6 +173,14 @@ def submit_response_view(request):
             if scale_settings['data'][0]['settings'].get('scale-category') != 'paired-comparison scale':
                 return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
             
+            field_add = {"username": username, "scale_id": scale_id}
+            previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
+                                    field_add, "nil")
+            previous_response = json.loads(previous_response)
+            previous_response = previous_response.get('data')            
+            if len(previous_response) > 0 :
+                return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
+            
             if "document_responses" in response_data:
                 document_responses = response_data["document_responses"]
                 all_results = []
@@ -188,6 +196,8 @@ def submit_response_view(request):
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 def response_submit_loop(scale_settings, username, scale_id, products_ranking, brand_name, product_name):
+    if len(products_ranking) != scale_settings["data"][0]["settings"]["total_pairs"]:
+        return Response({"error": "Scale Responses incomplete"}, status=status.HTTP_400_BAD_REQUEST)
     event_id = get_event_id()
     item_list = scale_settings["data"][0]["settings"]["item_list"]
     scores_map = Counter(products_ranking)
@@ -204,6 +214,10 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
     if expected_scores_list != scores_list:
         return Response({"error": "Scale Responses inconsistent"}, status=status.HTTP_400_BAD_REQUEST)
     ranking = list(scores_map.keys())
+    ranking_dict = {}
+    for product in products_ranking:
+        ranking_dict[f"pair_{len(ranking_dict)+1}"] = product
+
     # Insert new response into database
     response = {
         "event_id": event_id,
@@ -214,8 +228,14 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", response, "nil")
-
-    return Response({"success": True, "response_id": response_id})
+    response_id = json.loads(response_id)
+    return Response({
+        "success": True, 
+        "data": {
+            "event_id": event_id,
+            "response_id": response_id["inserted_id"],
+            "product_ranking": ranking_dict,
+        }})
 
 # GET SINGLE SCALE RESPONSE
 @api_view(['GET',])
@@ -229,8 +249,10 @@ def single_scale_response_api_view(request, id=None):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        settings = scale_data['data'][0]
-        return Response({"payload": settings})
+        settings = scale_data['data']
+        if len(settings) > 0:
+            return Response({"payload": settings[0]})
+        return Response({"error": "Response not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 
