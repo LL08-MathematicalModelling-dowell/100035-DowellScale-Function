@@ -13,7 +13,11 @@ import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
-import uuid
+from itertools import count
+import random
+
+
+
 
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -105,25 +109,74 @@ def settings_api_view_create(request):
             "insert", user_details, "nil")
         return Response({"success": "Settings created successfully.", "data": settings, "scale_id": scale_id}, status=status.HTTP_201_CREATED)
     
+
     elif request.method == 'GET':
         data = request.data
+        id_generator = count(start=1)
         if "scale_id" in data:
             scale_id = data['scale_id']
             field_add = {"_id": scale_id}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                "fetch", field_add, "nil")
+                                "fetch", field_add, "nil")
             settings = json.loads(x)['data'][0]['settings']
+
+            product_arrangement = settings.get('product_arrangement')
+            if product_arrangement == 'Using ID numbers':
+                product_list = settings.get('products', [])
+                product_dict = {}  
+                for index, product in enumerate(product_list, start=next(id_generator)):
+                    if isinstance(product, str):
+                        product = product  
+                    elif isinstance(product, dict) and 'id' not in product:
+                        product['id'] = index  
+                        product = product['name']  
+                    product_dict[str(index)] = product
+                settings['products'] = product_dict 
+            elif product_arrangement == 'Alphabetically ordered':
+                product_list = settings.get('products', [])
+                product_list.sort()
+            elif product_arrangement == 'Shuffled (Randomly)':
+                product_list = settings.get('products', [])
+                random.shuffle(product_list)
+            elif product_arrangement == "Programmer's Choice":
+                pass
+
             return Response({"data": settings})
         else:
             field_add = {"settings.scale-category": "ranking scale"}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-            field_add, "nil")
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                "fetch", field_add, "nil")
             settings_list = []
             for item in json.loads(x)['data']:
-                settings_list.append(item['settings'])
+                try:
+                    settings = item['settings']
+                    product_arrangement = settings.get('product_arrangement')
+                    if product_arrangement == 'Using ID numbers':
+                        product_list = settings.get('products', [])
+                        product_dict = {}  
+                        for index, product in enumerate(product_list, start=next(id_generator)):
+                            if isinstance(product, str):
+                                product = product  
+                            elif isinstance(product, dict) and 'id' not in product:
+                                product['id'] = index  
+                                product = product['name']  
+                            product_dict[str(index)] = product  
+                        settings['products'] = product_dict  
+                    elif product_arrangement == 'Alphabetically ordered':
+                        product_list = settings.get('products', [])
+                        product_list.sort()
+                    elif product_arrangement == 'Shuffled (Randomly)':
+                        product_list = settings.get('products', [])
+                        random.shuffle(product_list)
+                    elif product_arrangement == "Programmer's Choice":
+                        pass
+                    settings_list.append(settings)
+                except Exception as e:
+                    print(e)
             return Response({"data": settings_list}, status=status.HTTP_200_OK)
-            
-        
+
+
+
     elif request.method == "PUT":
         data = request.data
         if "scale_id" not in data:
@@ -172,7 +225,7 @@ def response_submit_api_view(request):
                                      "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(scale)
             if data['data'] is None:
-                return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
             return Response({"data": data['data']}, status=status.HTTP_200_OK)
         else:
             # Return all ranking scale responses
@@ -181,10 +234,10 @@ def response_submit_api_view(request):
                                  field_add, "nil")
             settings_list = []
             for item in json.loads(x)['data']:
-                item['settings']['scale_id'] = item['_id']
-                settings_list.append(item['settings'])
-            
-            # Sort based on product_arrangement
+                item['scale_id'] = item['_id']
+                # Sort based on product_arrangement
+                settings_list.append(item) 
+
             sorted_settings_list = sort_settings_list(settings_list)
             return Response({"data": sorted_settings_list}, status=status.HTTP_200_OK)
 
@@ -253,17 +306,21 @@ def response_submit_api_view(request):
 def sort_settings_list(settings_list):
     sorted_settings_list = []
     try:
-            
         for settings in settings_list:
-            product_arrangement = settings.get('product_arrangement')
+            product_arrangement = settings["settings"].get('product_arrangement')
             if product_arrangement == "Using ID numbers":
-                sorted_products = sorted(settings['products'], key=lambda x: x[int('id')])
+                product_dict = settings.get('products', {})
+                sorted_products = sorted(product_dict.items(), key=lambda x: int(x[0]))
+                sorted_products = {k: v for k, v in sorted_products}
                 settings['products'] = sorted_products
             elif product_arrangement == "Alphabetically ordered":
-                sorted_products = sorted(settings['products'], key=lambda x: x['name'])
+                product_dict = settings.get('products', {})
+                sorted_products = sorted(product_dict, key=lambda x: x['name'])
                 settings['products'] = sorted_products
             elif product_arrangement == "Shuffled (Randomly)":
-                random.shuffle(settings['products'])
+                product_list = settings.get('products', [])
+                random.shuffle(product_list)
+                settings['products'] = product_list
             elif product_arrangement == "Programmer's Choice":
                 pass  # Do nothing for Programmer's Choice
             sorted_settings_list.append(settings)
