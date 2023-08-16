@@ -134,9 +134,29 @@ def CreateScale(request):
 
 @api_view(['POST', 'GET'])
 def ResponseAPI(request):
+    payload = request.data
     required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
+    print(sum(
+        [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]]))
+    total_statements = sum(
+        [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]])
+
+    if not total_statements in range(60, 141):
+        return JsonResponse({"Error": "Invalid number of total statements. Must be between 47 and 140 inclusive."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'POST':
+        # Check for continuous card numbers
+        all_cards = []
+        for group in ["disagree", "neutral", "agree"]:
+            if group in payload:
+                all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
+        all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
+
+        if all_cards != list(range(1, total_statements + 1)):
+            return JsonResponse({"Error": "Card numbers are not continuous or missing."},
+                                status=status.HTTP_400_BAD_REQUEST)
+
         payload = request.data
         for field in required_fields:
             if field not in payload:
@@ -149,38 +169,62 @@ def ResponseAPI(request):
             "agree": [1, 2, 3, 4, 5]
         }
 
-        # Function to assign statements to piles and calculate scores
+        # Function to dynamically distribute scores
         def assign_to_piles(statements, pile_range):
-            if len(statements) != sum([2 if score in [-5, 5] else 3 if score in [-4, 4] else 4 if score in [-3,
-                                                                                                            3] else 5 if score in [
-                -2, 2] else 6 if score in [-1, 1] else 7 for score in pile_range]):
-                raise ValueError("Invalid number of statements for piles")
+            total_statements = len(statements)
+            distribution = {}
 
-            distribution = {
-                -5: 2, -4: 3, -3: 4, -2: 5, -1: 6,
-                0: 7,
-                1: 6, 2: 5, 3: 4, 4: 3, 5: 2
+            # Calculate base ratios for each score
+            base_ratios = {
+                -5: 2 / 47, -4: 3 / 47, -3: 4 / 47, -2: 5 / 47, -1: 6 / 47,
+                0: 7 / 47,
+                1: 6 / 47, 2: 5 / 47, 3: 4 / 47, 4: 3 / 47, 5: 2 / 47
             }
 
-            scores = []
-            count = 0
+            # Pro-rata distribution based on the number of actual statements
+            for score in pile_range:
+                distribution[score] = round(base_ratios[score] * total_statements)
+
+            # Adjust for any discrepancies due to rounding
+            discrepancy = total_statements - sum(distribution.values())
+            adjusting_scores = sorted(pile_range, key=lambda x: abs(x))
+
+            while discrepancy != 0:
+                for score in adjusting_scores:
+                    if discrepancy > 0:
+                        distribution[score] += 1
+                        discrepancy -= 1
+                    elif discrepancy < 0:
+                        distribution[score] -= 1
+                        discrepancy += 1
+                    if discrepancy == 0:
+                        break
+
+            # Create a copy of the statements and sort them by their card number
+            sorted_statements = sorted(statements,
+                                       key=lambda x: str(x['card']).split('-')[1] if '-' in str(x['card']) else x[
+                                           'card'])
+            print(statements)
+            # Assign scores to statements based on their card numbers, but maintain the original order for output
+            scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in statements]
+
             for score in pile_range:
                 for _ in range(distribution[score]):
-                    scores.append(score)
-                    count += 1
+                    statement = sorted_statements.pop(0)
+                    index = next((i for i, s in enumerate(scored_statements) if s['card'] == statement['card']), None)
+                    if index is not None:
+                        scored_statements[index]['score'] = score
 
-            if count != len(statements):
-                raise ValueError("Mismatch in statement count and score distribution")
-
-            return scores
+            return scored_statements
 
         # Iterate through groups (disagree, neutral, agree) and calculate scores
         results = {}
         for group, group_data in payload.items():
             if group in ["disagree", "neutral", "agree"]:
                 statements = group_data['statements']
+                print(statements)
                 scores = assign_to_piles(statements, pile_ranges[group])
-                results[group.capitalize()] = {'statements': statements, 'scores': scores}
+                results[group.capitalize()] = scores
 
         # Other payload information
         user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
