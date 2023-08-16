@@ -18,7 +18,6 @@ def settings_api_view_create(request):
         custom_emoji_format = {}
         label_selection = {}
 
-
         try:
             response = request.data
             try:
@@ -50,19 +49,24 @@ def settings_api_view_create(request):
 
             if fomat == "text":
                 if 2 < label_selection > 9 or label_selection == 6:
-                    return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"},
+                                    status=status.HTTP_400_BAD_REQUEST)
                 if len(label_input) != label_selection:
-                    return Response({"error": "Label selection and number of label input count should be same"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": "Label selection and number of label input count should be same"},
+                                    status=status.HTTP_400_BAD_REQUEST)
 
             eventID = get_event_id()
             field_add = {"event_id": eventID,
-                         "settings": {  "orientation": orientation,"font_color": font_color, "number_of_scales": number_of_scales,
-                                        "time": time, "name": name, "scale-category": "likert scale", "user": user,
-                                        "round_color" : round_color, "fomat" : fomat, "label_selection" : label_selection,
-                                        "label_input" : label_input, "user" : user, "custom_emoji_format" : custom_emoji_format,
-                                        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                                    }
-                        }
+                         "settings": {"orientation": orientation, "font_color": font_color,
+                                      "number_of_scales": number_of_scales,
+                                      "time": time, "name": name, "scale-category": "likert scale", "user": user,
+                                      "round_color": round_color, "fomat": fomat, "label_selection": label_selection,
+                                      "label_input": label_input, "user": user,
+                                      "custom_emoji_format": custom_emoji_format,
+                                      "allow_resp": response.get('allow_resp', True),
+                                      "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                      }
+                         }
 
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                                  field_add, "nil")
@@ -70,7 +74,8 @@ def settings_api_view_create(request):
             user_json = json.loads(x)
             details = {
                 "scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
-            user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
+            user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                            "ABCDE",
                                             "insert", details, "nil")
             return Response({"success": x, "data": field_add})
         except Exception as e:
@@ -108,9 +113,11 @@ def settings_api_view_create(request):
                 label_selection = response["label_scale_selection"]
                 label_input = response["label_scale_input"]
                 if 2 < label_selection > 9 or label_selection == 6:
-                    return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"},
+                                    status=status.HTTP_400_BAD_REQUEST)
                 if len(label_input) != label_selection:
-                    return Response({"error": "Label selection and number of label input count should be same"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": "Label selection and number of label input count should be same"},
+                                    status=status.HTTP_400_BAD_REQUEST)
             id = response['scale_id']
             field_add = {"_id": id, }
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -146,34 +153,30 @@ def submit_response_view(request):
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Check if user is authorized to submit response
-            user = dowellconnection("dowellscale", "bangalore", "dowellscale", "users",
-                                    "users", "1098", "ABCDE", "fetch", {"username": username}, "nil")
-            if not user:
-                return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+                # Check if scale exists
+            field_add = {"_id": scale_id, "settings.scale-category": "npslite scale"}
+            default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                             "ABCDE",
+                                             "fetch", field_add, "nil")
+            data = json.loads(default_scale)
+            settings = data['data']['settings']
 
-            # Check if scale exists
-            scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
-                                     "scale", "scale", "1093", "ABCDE", "fetch", {"_id": scale_id}, "nil")
-            if not scale:
-                return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
-
-            # Check if scale is of type "likert scale"
-            scale_settings = json.loads(scale)
-            if scale_settings['data'][0]['settings'].get('scale-category') != 'likert scale':
-                return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+            if data['data'] is None:
+                return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            elif settings['allow_resp'] == False:
+                return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
 
             if "document_responses" in response_data:
                 document_responses = response_data["document_responses"]
                 all_results = []
                 for single_response in document_responses:
                     score = single_response["score"]
-                    success = response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name)
+                    success = response_submit_loop(data, username, scale_id, score, brand_name, product_name)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
                 score = response_data["score"]
-                return response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name)
+                return response_submit_loop(data, username, scale_id, score, brand_name, product_name)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
@@ -194,6 +197,7 @@ def submit_response_view(request):
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
+
 def response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name):
     event_id = get_event_id()
     if scale_settings['data'][0]['settings'].get('fomat') == "text":
@@ -203,7 +207,8 @@ def response_submit_loop(scale_settings, username, scale_id, score, brand_name, 
     if scale_settings['data'][0]['settings'].get('fomat') == "emoji":
         upper_boundary = scale_settings['data'][0]['settings'].get('label_selection')
         if type(score) != int or 0 < score > upper_boundary - 1:
-            return Response({"error": "Emoji response must be an integer within label selection range."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Emoji response must be an integer within label selection range."},
+                            status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
     response = {
         "event_id": event_id,
@@ -213,9 +218,11 @@ def response_submit_loop(scale_settings, username, scale_id, score, brand_name, 
         "score": score,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
-    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", response, "nil")
+    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+                                   "ABCDE", "insert", response, "nil")
 
     return Response({"success": True, "response_id": response_id})
+
 
 @api_view(['GET'])
 def get_response_view(request, id=None):
@@ -231,6 +238,7 @@ def get_response_view(request, id=None):
         response = scale_data['data'][0]
         return Response({"payload": response})
 
+
 @api_view(['GET', ])
 def scale_response_api_view(request):
     try:
@@ -241,6 +249,7 @@ def scale_response_api_view(request):
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
         return Response(json.loads(x))
+
 
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
@@ -278,8 +287,12 @@ def dowell_scale_admin(request):
             if time == "":
                 time = 0
             try:
-                field_add = {"event_id": eventID, "settings": {"orientation": orientation, "roundcolor": roundcolor, "fontcolor": fontcolor, "labelscale": labelscale,
-                                                               "number_of_scales": number_of_scales, "time": time, "template_name": template_name, "name": name, "scales": scales, "labeltype": labeltype, "scale-category": "likert scale"}}
+                field_add = {"event_id": eventID,
+                             "settings": {"orientation": orientation, "roundcolor": roundcolor, "fontcolor": fontcolor,
+                                          "labelscale": labelscale,
+                                          "number_of_scales": number_of_scales, "time": time,
+                                          "template_name": template_name, "name": name, "scales": scales,
+                                          "labeltype": labeltype, "scale-category": "likert scale"}}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale",
                                      "scale", "scale", "1093", "ABCDE", "insert", field_add, "nil")
                 print("This is what is saved", x)
@@ -289,7 +302,8 @@ def dowell_scale_admin(request):
                 details = {
                     "scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
                 user_details = dowellconnection(
-                    "dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "insert", details, "nil")
+                    "dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "insert", details,
+                    "nil")
                 print("+++++++++++++", user_details)
                 return redirect(f"{public_url}/likert/likert-scale1/{template_name}")
             except:
@@ -326,7 +340,7 @@ def dowell_scale1(request, tname1):
         names_values_dict = dict(x.split('=') for x in s.split('&'))
         xy = x[1].replace('&', ',')
         y = xy.replace('=', ':')
-        z = '{'+y+'}'
+        z = '{' + y + '}'
         pls = ls.split("/")
         tname = pls[1]
         context["brand_name"] = names_values_dict['brand_name']
@@ -391,8 +405,11 @@ def dowell_scale1(request, tname1):
             "instance_id": f"{current_url}/{context['no_of_scales']}", 'score': score}
         if existing_scale == False:
             try:
-                field_add = {"event_id": eventID, "scale_data": {"scale_id": context["scale_id"], "scale_type": "likert scale"}, "brand_data": {
-                    "brand_name": context["brand_name"], "product_name": context["product_name"]}, "score": [score]}
+                field_add = {"event_id": eventID,
+                             "scale_data": {"scale_id": context["scale_id"], "scale_type": "likert scale"},
+                             "brand_data": {
+                                 "brand_name": context["brand_name"], "product_name": context["product_name"]},
+                             "score": [score]}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                      "scale_reports", "1094", "ABCDE", "insert", field_add, "nil")
 
@@ -401,7 +418,8 @@ def dowell_scale1(request, tname1):
                 details = {
                     "scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
                 user_details = dowellconnection(
-                    "dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "insert", details, "nil")
+                    "dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "insert", details,
+                    "nil")
                 context["score"] = "show"
                 return redirect(f"{url}")
             except:
@@ -466,7 +484,8 @@ def default_scale_admin(request):
     context = {}
     context["public_url"] = public_url
     context['user'] = 'admin'
-    context["left"] = "border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:300px;overflow-y: scroll;"
+    context[
+        "left"] = "border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);height:300px;overflow-y: scroll;"
     context["hist"] = "Scale History"
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"

@@ -44,7 +44,7 @@ def settings_api_view_create(request):
                 raise Exception("Check scale limits and spacing_unit")
 
             rand_num = random.randrange(1, 10000)
-            name = response['name']
+            name = response.get('name', "")
             template_name = response.get('template_name', f"{name.replace(' ', '')}{rand_num}")
             custom_emoji_format = {}
             image_label_format = {}
@@ -132,7 +132,7 @@ def settings_api_view_create(request):
             scale_upper_limit = int(response.get('scale_upper_limit', settings["scale_upper_limit"]))
             right = response.get('right', settings["right"])
             text = f"{left}+{right}"
-            name = settings["name"]
+            name = response.get('name', settings["name"])
             time = response.get('time', settings["time"])
             template_name = settings["template_name"]
             if time == "":
@@ -304,10 +304,12 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
     default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                "fetch", field_add, "nil")
     data = json.loads(default)
+    x = data['data'][0]['settings']
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"})
+    elif x['allow_resp'] == False:
+        return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
 
-    x = data['data'][0]['settings']
     number_of_scale = x['no_of_scales']
 
 

@@ -61,6 +61,7 @@ def settings_api_view_create(request):
             "left": left,
             "right": right,
             "scale-category": "npslite scale",
+            "allow_resp": response.get('allow_resp', True),
             "no_of_scales": no_of_scales,
             "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
@@ -123,19 +124,20 @@ def submit_response_view(request):
     except KeyError as e:
         return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Check if user is authorized to submit response
-    user_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                 "ABCDE", "insert", {"user": user}, "nil")
-    if not user_data:
-        return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-    # Check if scale exists
-    scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                             {"_id": scale_id}, "nil")
-    if not scale:
-        return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
+     # Check if scale exists
+    field_add = {"_id": scale_id, "settings.scale-category": "npslite scale"}
+    default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                     "fetch", field_add, "nil")
+    data = json.loads(default_scale)
+    settings = data['data']['settings']
+
+    if data['data'] is None:
+        return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+    elif settings['allow_resp'] == False:
+        return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
 
     # Check if scale is of type "npslite scale"
-    scale_settings = json.loads(scale)
+    scale_settings = json.loads(default_scale)
     if scale_settings['data'][0]['scale-category'] != 'npslite scale':
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
     if "document_responses" in response_data:

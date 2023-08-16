@@ -39,7 +39,8 @@ def settings_api_view_create(request):
             except KeyError as error:
                 return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
             if 2 < product_count > 10:
-                return Response({"error": "Product count should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Product count should be between 2 to 10"},
+                                status=status.HTTP_400_BAD_REQUEST)
             if len(product_names) != int(product_count):
                 return Response({"error": "Product count and number of product names count should be same"},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -51,6 +52,8 @@ def settings_api_view_create(request):
                          "settings": {"orientation": orientation, "scale_color": scale_color,
                                       "number_of_scales": number_of_scales,
                                       "time": time, "name": name, "scale-category": "percent_sum scale", "user": user,
+                                      "allow_resp": response.get('allow_resp', True),
+
                                       "product_names": product_names, "product_count": product_count,
                                       "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                       }
@@ -99,7 +102,8 @@ def settings_api_view_create(request):
                 product_count = response['product_count']
                 product_names = response['product_names']
                 if 2 < product_count > 10:
-                    return Response({"error": "Product count should be between 2 to 10"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": "Product count should be between 2 to 10"},
+                                    status=status.HTTP_400_BAD_REQUEST)
                 if len(product_names) != int(product_count):
                     return Response({"error": "Product count and number of product names count should be same"},
                                     status=status.HTTP_400_BAD_REQUEST)
@@ -123,10 +127,10 @@ def settings_api_view_create(request):
                                  field_add, update_field)
             return Response({"success": "Successfully Updated ", "data": settings})
         except Exception as e:
-            return Response({"Error": "Invalid fields!","Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST','GET'])
+@api_view(['POST', 'GET'])
 def percent_sum_response_submit(request):
     if request.method == "POST":
         try:
@@ -139,33 +143,30 @@ def percent_sum_response_submit(request):
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Check if user is authorized to submit response
-            user = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "fetch",
-                                    {"username": username}, "nil")
-            if not user:
-                return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-
             # Check if scale exists
-            scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                                     {"_id": scale_id}, "nil")
-            if not scale:
-                return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
+            field_add = {"_id": scale_id, "settings.scale-category": "npslite scale"}
+            default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                             "ABCDE",
+                                             "fetch", field_add, "nil")
+            data = json.loads(default_scale)
+            settings = data['data']['settings']
 
-            # Check if scale is of type "percent_sum scale"
-            scale = json.loads(scale)
-            if scale['data'][0]['settings'].get('scale-category') != 'percent_sum scale':
-                return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+            if data['data'] is None:
+                return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            elif settings['allow_resp'] == False:
+                return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
+
             if "document_responses" in response_data:
                 document_responses = response_data["document_responses"]
                 all_results = []
                 for single_response in document_responses:
                     scores = single_response["scores"]
-                    success = response_submit_loop(scores, scale_id, scale, username, brand_name, product_name)
+                    success = response_submit_loop(scores, scale_id, data, username, brand_name, product_name)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
                 scores = response_data['scores']
-                return response_submit_loop(scores, scale_id, scale, username, brand_name, product_name)
+                return response_submit_loop(scores, scale_id, data, username, brand_name, product_name)
 
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -185,6 +186,7 @@ def percent_sum_response_submit(request):
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 def response_submit_loop(scores, scale_id, scale, username, brand_name, product_name):
     event_id = get_event_id()
@@ -216,10 +218,11 @@ def response_submit_loop(scores, scale_id, scale, username, brand_name, product_
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                    "1094",
-                                    "ABCDE", "insert", response, "nil")
+                                   "1094",
+                                   "ABCDE", "insert", response, "nil")
 
     return Response({"success": True, "response_id": response_id})
+
 
 @api_view(['GET'])
 def percent_sum_respnses(request, id=None):
@@ -238,7 +241,8 @@ def percent_sum_respnses(request, id=None):
         no_of_products = settings['ProductCount']
         product_names = settings['productnames']
         return Response({"payload": scale_data['data']})
-    
+
+
 @api_view(['GET', ])
 def scale_response_api_view(request):
     try:
