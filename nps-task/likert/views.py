@@ -35,7 +35,6 @@ def settings_api_view_create(request):
                 round_color = response['round_color']
                 fomat = response['fomat']
                 user = response['user']
-                print("+++++fomat====", fomat)
                 if fomat == "text":
                     label_selection = response.get('label_scale_selection', {})
                 if fomat == "emoji":
@@ -58,7 +57,7 @@ def settings_api_view_create(request):
             eventID = get_event_id()
             field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "font_color": font_color,
-                                      "number_of_scales": number_of_scales,
+                                      "no_of_scales": number_of_scales,
                                       "time": time, "name": name, "scale-category": "likert scale", "user": user,
                                       "round_color": round_color, "fomat": fomat, "label_selection": label_selection,
                                       "label_input": label_input, "user": user,
@@ -147,36 +146,25 @@ def submit_response_view(request):
             response_data = request.data
             try:
                 username = response_data['username']
-                scale_id = response_data['scale_id']
                 brand_name = response_data['brand_name']
                 product_name = response_data['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
-
-                # Check if scale exists
-            field_add = {"_id": scale_id, "settings.scale-category": "npslite scale"}
-            default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                             "ABCDE",
-                                             "fetch", field_add, "nil")
-            data = json.loads(default_scale)
-            settings = data['data']['settings']
-
-            if data['data'] is None:
-                return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
-            elif settings['allow_resp'] == False:
-                return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
-
             if "document_responses" in response_data:
                 document_responses = response_data["document_responses"]
                 all_results = []
+                instance_id = response_data['instance_id']
                 for single_response in document_responses:
                     score = single_response["score"]
-                    success = response_submit_loop(data, username, scale_id, score, brand_name, product_name)
+                    scale_id = single_response['scale_id']
+                    success = response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
+                scale_id = response_data['scale_id']
                 score = response_data["score"]
-                return response_submit_loop(data, username, scale_id, score, brand_name, product_name)
+                instance_id = response_data['instance_id']
+                return response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
@@ -190,7 +178,6 @@ def submit_response_view(request):
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
                 data = json.loads(response_data)
-                print(data)
                 return Response({"data": json.loads(response_data)})
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
@@ -198,30 +185,55 @@ def submit_response_view(request):
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def response_submit_loop(scale_settings, username, scale_id, score, brand_name, product_name):
+def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id):
+    field_add = {"_id": scale_id, "settings.scale-category": "likert scale"}
+    default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                     "ABCDE",
+                                     "find", field_add, "nil")
+    data = json.loads(default_scale)
+    settings = data['data']['settings']
+
+    if data['data'] is None:
+        return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+    elif settings['allow_resp'] == False:
+        return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    number_of_scale = settings['no_of_scales']
+    scale_id = data['data']['_id']
+
     event_id = get_event_id()
-    if scale_settings['data'][0]['settings'].get('fomat') == "text":
-        if score not in scale_settings['data'][0]['settings'].get('label_input'):
+    if data['data']['settings'].get('fomat') == "text":
+        if score not in data['data']['settings'].get('label_input'):
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if scale_settings['data'][0]['settings'].get('fomat') == "emoji":
-        upper_boundary = scale_settings['data'][0]['settings'].get('label_selection')
+    if data['data']['settings'].get('fomat') == "emoji":
+        upper_boundary = data['data']['settings'].get('label_selection')
         if type(score) != int or 0 < score > upper_boundary - 1:
             return Response({"error": "Emoji response must be an integer within label selection range."},
                             status=status.HTTP_400_BAD_REQUEST)
+
+    score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
+                  "score": score}
+    if int(instance_id) > int(number_of_scale):
+        return Response({"Error":"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
     response = {
         "event_id": event_id,
         "username": username,
-        "scale_id": scale_id,
+        "scale_data": {"scale_id": scale_id, "scale_type": "likert scale"},
         "brand_data": {"brand_name": brand_name, "product_name": product_name},
-        "score": score,
+        "score": score_data,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                                    "ABCDE", "insert", response, "nil")
 
-    return Response({"success": True, "response_id": response_id})
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "insert",
+                                    {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
+                                     "username": username}, "nil")
+
+    return Response({"success": response_id, "payload": response})
 
 
 @api_view(['GET'])
@@ -255,7 +267,6 @@ def dowell_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
         return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/likert/likert-admin/settings/")
-    # # print("+++++++++++++", request.session.get('user_name'))
     context = {}
     context["public_url"] = public_url
     scales = {}
@@ -295,7 +306,6 @@ def dowell_scale_admin(request):
                                           "labeltype": labeltype, "scale-category": "likert scale"}}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale",
                                      "scale", "scale", "1093", "ABCDE", "insert", field_add, "nil")
-                print("This is what is saved", x)
 
                 # User details
                 user_json = json.loads(x)
@@ -304,7 +314,6 @@ def dowell_scale_admin(request):
                 user_details = dowellconnection(
                     "dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "insert", details,
                     "nil")
-                print("+++++++++++++", user_details)
                 return redirect(f"{public_url}/likert/likert-scale1/{template_name}")
             except:
                 context["Error"] = "Error Occurred while save the custom pl contact admin"
@@ -315,7 +324,6 @@ def dowell_likert(request):
     if request.method == "POST":
         scale_selected = request.POST['likert']
         scoretag = request.POST.get('scoretag', 'None')
-        # print(scoretag)
         context = {"context": scale_selected}
         context["public_url"] = public_url
         return render(request, 'likert/default.html', context=context)
@@ -328,7 +336,6 @@ def dowell_scale1(request, tname1):
     user = request.session.get('user_name')
     if user == None:
         return redirect(f"https://100014.pythonanywhere.com/?redirect_url={{public_url}}/likert/likert-admin/default/")
-    # # print("+++++++++++++", request.session.get('user_name'))
     context = {}
     context["public_url"] = public_url
     brand_name = request.GET.get('brand_name', None)
@@ -436,7 +443,6 @@ def brand_product_preview(request):
     default = dowellconnection("dowellscale", "bangalore", "dowellscale",
                                "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
     data = json.loads(default)
-    print(data)
     x = data['data'][0]['settings']
     context["defaults"] = x
     number_of_scale = x['number_of_scales']
@@ -454,12 +460,10 @@ def brand_product_preview(request):
     x = data["data"]
     for i in x:
         b = i['score'][0]['instance_id'].split("/")[0]
-        print(b)
         context['existing_scales'].append(b)
 
     name = url.replace("'", "")
     context['template_url'] = f"{public_url}{name}?brand_name=your_brand&product_name=your_product"
-    print(context['template_url'])
     # context['template_url']= f"http://127.0.0.1:8000/{name}?brand_name=your_brand&product_name=your_product"
     return render(request, 'likert/preview_page.html', context)
 
@@ -479,7 +483,6 @@ def default_scale_admin(request):
     user = request.session.get('user_name')
     if user == None:
         return redirect(f"https://100014.pythonanywhere.com/?redirect_url={public_url}/likert/likert-admin/default/")
-    # # print("++++++++++ USER DETAILS", user)
     username = request.session["user_name"]
     context = {}
     context["public_url"] = public_url

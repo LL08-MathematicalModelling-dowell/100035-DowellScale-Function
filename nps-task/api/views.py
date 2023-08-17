@@ -536,7 +536,8 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
                  "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
-                 "score": [score_data]}
+                 "score": score_data, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                 }
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                          "ABCDE", "insert", field_add, "nil")
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
