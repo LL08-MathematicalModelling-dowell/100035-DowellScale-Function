@@ -142,7 +142,7 @@ def ResponseAPI(request):
         [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]])
 
     if not total_statements in range(60, 141):
-        return JsonResponse({"Error": "Invalid number of total statements. Must be between 47 and 140 inclusive."},
+        return JsonResponse({"Error": "Invalid number of total statements. Must be between 60 and 140 inclusive."},
                             status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'POST':
