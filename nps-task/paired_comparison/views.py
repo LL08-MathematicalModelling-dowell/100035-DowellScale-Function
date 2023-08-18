@@ -6,6 +6,7 @@ from rest_framework import status
 import datetime
 from nps.eventID import get_event_id
 from collections import Counter
+from utils import generate_pairs, arrange_ranking, segment_ranking, find_inconsistent_pair
 
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
@@ -33,13 +34,7 @@ def settings_api_view_create(request):
             return Response({"error": "2 or more items needed for paired comparison scale."}, status=status.HTTP_400_BAD_REQUEST)
         paired_items = []
         if item_count > 2:
-            i = 0
-            while 0 <= i < item_count:
-                j = i + 1
-                while i < j < item_count:
-                    paired_items.append([item_list[i], item_list[j]])
-                    j += 1
-                i += 1
+            paired_items = generate_pairs(item_count, item_list)
         if item_count == 2:
             paired_items.append(item_list)
         total_pairs = len(paired_items)
@@ -106,13 +101,7 @@ def settings_api_view_create(request):
                     return Response({"error": "2 or more items needed for paired comparison scale."}, status=status.HTTP_400_BAD_REQUEST)
                 paired_items = []
                 if item_count > 2:
-                    i = 0
-                    while 0 <= i < item_count:
-                        j = i + 1
-                        while i < j < item_count:
-                            paired_items.append([item_list[i], item_list[j]])
-                            j += 1
-                        i += 1
+                    paired_items = generate_pairs(item_count, item_list)
                 if item_count == 2:
                     paired_items.append(item_list)
                 total_pairs = len(paired_items)
@@ -200,19 +189,22 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
         return Response({"error": "Scale Responses incomplete"}, status=status.HTTP_400_BAD_REQUEST)
     event_id = get_event_id()
     item_list = scale_settings["data"][0]["settings"]["item_list"]
+    paired_items = scale_settings["data"][0]["settings"]["paired_items"]
+    arranged_ranking = arrange_ranking(paired_items, products_ranking)
+    segmented_ranking = segment_ranking(arranged_ranking)
+    is_consistent = find_inconsistent_pair(segmented_ranking, item_list)
+    if is_consistent  != True:
+        return Response({
+                "error": "Scale Responses inconsistent",
+                "segmented_ranking": segmented_ranking,
+                "location_faulty_pair": is_consistent
+            }, status=status.HTTP_400_BAD_REQUEST)
     scores_map = Counter(products_ranking)
     for product in item_list:
         if product not in scores_map:
             scores_map[product] = 0 
     scores_map = sorted(scores_map.items(), key=lambda x:x[1], reverse=True)
     scores_map = dict(scores_map)
-    scores_list = list(scores_map.values())
-    expected_scores_list = []
-    for n in range(len(item_list)):
-        expected_scores_list.append(n)
-    expected_scores_list.sort(reverse=True)
-    if expected_scores_list != scores_list:
-        return Response({"error": "Scale Responses inconsistent"}, status=status.HTTP_400_BAD_REQUEST)
     ranking = list(scores_map.keys())
     ranking_dict = {}
     for product in products_ranking:
