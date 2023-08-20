@@ -81,6 +81,7 @@ def CreateScale(request):
             "event_id": eventID['event_id'],
             "product_name": payload["product_name"],
             "sort_order": sort_order,
+            "Number of statements": len(statements),
             "settings": {
                 "scalecolor": payload["scalecolor"],
                 "fontstyle": payload["fontstyle"],
