@@ -6,7 +6,7 @@ from rest_framework import status
 import datetime
 from nps.eventID import get_event_id
 from collections import Counter
-from utils import generate_pairs, arrange_ranking, segment_ranking, find_inconsistent_pair
+from .utils import generate_pairs, arrange_ranking, segment_ranking, find_inconsistent_pair
 
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
@@ -190,6 +190,9 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
     event_id = get_event_id()
     item_list = scale_settings["data"][0]["settings"]["item_list"]
     paired_items = scale_settings["data"][0]["settings"]["paired_items"]
+    for i in range(len(paired_items)):
+        if products_ranking[i] not in paired_items[i]:
+            return Response({"error": f"Product selected in position {i} is not in the pair"}, status=status.HTTP_400_BAD_REQUEST)
     arranged_ranking = arrange_ranking(paired_items, products_ranking)
     segmented_ranking = segment_ranking(arranged_ranking)
     is_consistent = find_inconsistent_pair(segmented_ranking, item_list)
