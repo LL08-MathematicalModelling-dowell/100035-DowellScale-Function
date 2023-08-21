@@ -36,7 +36,9 @@ def CreateScale(request):
 
     if request.method == 'POST':
         payload = request.data
+
         for field in required_fields:
+            print(f"Checking for {field}")
             if field not in payload:
                 return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -64,9 +66,9 @@ def CreateScale(request):
             "statements": statements,
             "settings": {
                 "scaletype": "qsort",
-            "scalecolor": payload["scalecolor"],
-            "fontstyle": payload["fontstyle"],
-            "fontcolor": payload["fontcolor"],
+                "scalecolor": payload["scalecolor"],
+                "fontstyle": payload["fontstyle"],
+                "fontcolor": payload["fontcolor"],
             }
         }
 
@@ -77,7 +79,7 @@ def CreateScale(request):
 
         inserted_id = data_dict["inserted_id"]
         show_response = {
-            "Scale_id": inserted_id,
+            "scale_id": inserted_id,
             "event_id": eventID['event_id'],
             "product_name": payload["product_name"],
             "sort_order": sort_order,
@@ -95,20 +97,28 @@ def CreateScale(request):
     if request.method == 'GET':
         payload = request.data
         if 'scale_id' not in payload:
-            return JsonResponse({"Error": "Missing required field: scale_id"}, status=status.HTTP_400_BAD_REQUEST)
+            z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                 "fetch",
+                                 {"settings.scaletype": "qsort"}, "nil")
+
+            z = json.loads(z)
+            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
         else:
             field_add = {"_id": payload["scale_id"]}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
             x = json.loads(x)
-            if x["error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
-                z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                     "fetch",
-                                     {"settings.scaletype": "qsort"}, "nil")
+            print(x)
+            try:
+                if x["error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
+                    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                         "fetch",
+                                         {"settings.scaletype": "qsort"}, "nil")
 
-                z = json.loads(z)
-                return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
-        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
+                    z = json.loads(z)
+                    return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
+            except:
+                return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
         fields = ['sort_order', 'scale_id', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
@@ -136,133 +146,152 @@ def CreateScale(request):
 @api_view(['POST', 'GET'])
 def ResponseAPI(request):
     payload = request.data
-    required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
-    print(sum(
-        [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]]))
-    total_statements = sum(
-        [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]])
-
-    if not total_statements in range(60, 141):
-        return JsonResponse({"Error": "Invalid number of total statements. Must be between 60 and 140 inclusive."},
-                            status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'POST':
-        # Check for continuous card numbers
-        all_cards = []
-        for group in ["disagree", "neutral", "agree"]:
-            if group in payload:
-                all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
-        all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
+        field_add = {"_id": payload["scale_id"]}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                             field_add, "nil")
+        x = json.loads(x)
 
-        if all_cards != list(range(1, total_statements + 1)):
-            return JsonResponse({"Error": "Card numbers are not continuous or missing."},
-                                status=status.HTTP_400_BAD_REQUEST)
+        try:
+            if x["error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
+                return JsonResponse({"Error": "Scale does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
+            print(sum(
+                [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]]))
+            total_statements = sum(
+                [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]])
 
-        payload = request.data
-        for field in required_fields:
-            if field not in payload:
-                return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
+            if not total_statements in range(60, 141):
+                return JsonResponse({"Error": "Invalid number of total statements. Must be between 60 and 140 inclusive."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            # Check for continuous card numbers
+            all_cards = []
+            for group in ["disagree", "neutral", "agree"]:
+                if group in payload:
+                    all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
+            all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
 
-        # Define fixed pile ranges
-        pile_ranges = {
-            "disagree": [-5, -4, -3, -2, -1],
-            "neutral": [0],
-            "agree": [1, 2, 3, 4, 5]
-        }
+            if all_cards != list(range(1, total_statements + 1)):
+                return JsonResponse({"Error": "Card numbers are not continuous or missing."},
+                                    status=status.HTTP_400_BAD_REQUEST)
 
-        # Function to dynamically distribute scores
-        def assign_to_piles(statements, pile_range):
-            total_statements = len(statements)
-            distribution = {}
+            payload = request.data
+            for field in required_fields:
+                if field not in payload:
+                    return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Calculate base ratios for each score
-            base_ratios = {
-                -5: 2 / 47, -4: 3 / 47, -3: 4 / 47, -2: 5 / 47, -1: 6 / 47,
-                0: 7 / 47,
-                1: 6 / 47, 2: 5 / 47, 3: 4 / 47, 4: 3 / 47, 5: 2 / 47
+            # Define fixed pile ranges
+            pile_ranges = {
+                "disagree": [-5, -4, -3, -2, -1],
+                "neutral": [0],
+                "agree": [1, 2, 3, 4, 5]
             }
 
-            # Pro-rata distribution based on the number of actual statements
-            for score in pile_range:
-                distribution[score] = round(base_ratios[score] * total_statements)
+            # Function to dynamically distribute scores
+            def assign_to_piles(statements, pile_range):
+                total_statements = len(statements)
+                distribution = {}
 
-            # Adjust for any discrepancies due to rounding
-            discrepancy = total_statements - sum(distribution.values())
-            adjusting_scores = sorted(pile_range, key=lambda x: abs(x))
+                # Calculate base ratios for each score
+                base_ratios = {
+                    -5: 2 / 47, -4: 3 / 47, -3: 4 / 47, -2: 5 / 47, -1: 6 / 47,
+                    0: 7 / 47,
+                    1: 6 / 47, 2: 5 / 47, 3: 4 / 47, 4: 3 / 47, 5: 2 / 47
+                }
 
-            while discrepancy != 0:
-                for score in adjusting_scores:
-                    if discrepancy > 0:
-                        distribution[score] += 1
-                        discrepancy -= 1
-                    elif discrepancy < 0:
-                        distribution[score] -= 1
-                        discrepancy += 1
-                    if discrepancy == 0:
-                        break
+                # Pro-rata distribution based on the number of actual statements
+                for score in pile_range:
+                    distribution[score] = round(base_ratios[score] * total_statements)
 
-            # Create a copy of the statements and sort them by their card number
-            sorted_statements = sorted(statements,
-                                       key=lambda x: str(x['card']).split('-')[1] if '-' in str(x['card']) else x[
-                                           'card'])
-            print(statements)
-            # Assign scores to statements based on their card numbers, but maintain the original order for output
-            scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in statements]
+                # Adjust for any discrepancies due to rounding
+                discrepancy = total_statements - sum(distribution.values())
+                adjusting_scores = sorted(pile_range, key=lambda x: abs(x))
 
-            for score in pile_range:
-                for _ in range(distribution[score]):
-                    statement = sorted_statements.pop(0)
-                    index = next((i for i, s in enumerate(scored_statements) if s['card'] == statement['card']), None)
-                    if index is not None:
-                        scored_statements[index]['score'] = score
+                while discrepancy != 0:
+                    for score in adjusting_scores:
+                        if discrepancy > 0:
+                            distribution[score] += 1
+                            discrepancy -= 1
+                        elif discrepancy < 0:
+                            distribution[score] -= 1
+                            discrepancy += 1
+                        if discrepancy == 0:
+                            break
 
-            return scored_statements
-
-        # Iterate through groups (disagree, neutral, agree) and calculate scores
-        results = {}
-        for group, group_data in payload.items():
-            if group in ["disagree", "neutral", "agree"]:
-                statements = group_data['statements']
+                # Create a copy of the statements and sort them by their card number
+                sorted_statements = sorted(statements,
+                                           key=lambda x: str(x['card']).split('-')[1] if '-' in str(x['card']) else x[
+                                               'card'])
                 print(statements)
-                scores = assign_to_piles(statements, pile_ranges[group])
-                results[group.capitalize()] = scores
+                # Assign scores to statements based on their card numbers, but maintain the original order for output
+                scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in statements]
 
-        # Other payload information
-        user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
+                for score in pile_range:
+                    for _ in range(distribution[score]):
+                        statement = sorted_statements.pop(0)
+                        index = next((i for i, s in enumerate(scored_statements) if s['card'] == statement['card']), None)
+                        if index is not None:
+                            scored_statements[index]['score'] = score
 
-        field_add = {"scale_id": payload["scale_id"]}
-        update_field = {"data": results}
+                return scored_statements
 
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                             field_add, update_field)
+            # Iterate through groups (disagree, neutral, agree) and calculate scores
+            results = {}
+            for group, group_data in payload.items():
+                if group in ["disagree", "neutral", "agree"]:
+                    statements = group_data['statements']
+                    scores = assign_to_piles(statements, pile_ranges[group])
+                    results[group.capitalize()] = scores
 
-        user_info['results'] = results
+            # Other payload information
+            user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
+            user_info['results'] = results
 
-        data_dict = json.loads(x)
-        print(data_dict)
-        if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
+            field_add = {"scale_id": payload["scale_id"]}
+            print(field_add, "=====================")
+            update_field = {"data": user_info}
+            print(update_field, "=====================")
 
-            results = move_last_to_start(user_info)
-            return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
-        else:
-            return JsonResponse({"Error": "Invalid Dowell Response"}, status=status.HTTP_400_BAD_REQUEST)
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                                 field_add, update_field)
+
+
+            data_dict = json.loads(x)
+            print(data_dict, "-=098o78675476890-9877+++++++++++++++++++++")
+            if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
+
+                results = move_last_to_start(user_info)
+                return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
+            else:
+                return JsonResponse({"Error": "Invalid Dowell Response"}, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         payload = request.data
         if 'scale_id' not in payload:
-            return JsonResponse({"Error": "Missing required field: scale_id"}, status=status.HTTP_400_BAD_REQUEST)
+            z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                 "fetch",
+                                 {"settings.scaletype": "qsort"}, "nil")
+
+            z = json.loads(z)
+            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
         else:
             field_add = {"_id": payload["scale_id"]}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
             x = json.loads(x)
-            if x[
-                "error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
-                z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                     "fetch",
-                                     {"settings.scaletype": "qsort"}, "nil")
 
-                z = json.loads(z)
-                return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
-        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
+            try:
+                # You might need to modify this condition based on how your connection function handles non-existing
+                # scales
+                if x["error"]:
+                    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                         "fetch",
+                                         {"settings.scaletype": "qsort"}, "nil")
+
+                    z = json.loads(z)
+                    return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
+            except:
+                return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
 
