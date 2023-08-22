@@ -152,12 +152,20 @@ def ResponseAPI(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find",
                              field_add, "nil")
         x = json.loads(x)
-        print(x)
 
         try:
             if x["error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
                 return JsonResponse({"Error": "Scale does not exist"}, status=status.HTTP_400_BAD_REQUEST)
         except:
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                 "1094", "ABCDE", "find",
+                                 field_add, "nil")
+            x = json.loads(x)
+            print(x, "&&&&&&&&&&&&&&&&&&&&&&")
+            if x["isSuccess"] == 'True':
+                return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["responses"]},
+                                    status=status.HTTP_200_OK)
+            else:
             # try:
             #     if x["data"][0]["statements"]:
             #         return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["statements"]},
@@ -254,29 +262,37 @@ def ResponseAPI(request):
                 # Other payload information
                 user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
                 user_info['results'] = results
-                user_info['resp'] = "complete"
 
-                field_add = {"scale_id": payload["scale_id"]}
-                print(field_add, "=====================")
-                print(user_info, "+++++++++++++++++++++++++++++++")
-                update = user_info["results"]
-                print(update, "=====================___________________________")
-                update_field = {"statements": update}
+                event = get_event_id()
+                add = {
+                    "event_id": event,
+                    "_id": payload["scale_id"],
+                    "results": results,
+                    "user": payload["user"],
+                    "name": payload["name"],
+                    "product_name": payload["product_name"],
+                    "scale_type": "Qsort",
+                    "scalecolor": payload["scalecolor"],
+                    "fontstyle": payload["fontstyle"],
+                    "fontcolor": payload["fontcolor"]
 
-                print(update_field, "=====================")
+                }
 
-                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                                     field_add, update_field)
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                     "1094", "ABCDE", "insert",
+                                     add, "nil")
 
+                x = json.loads(x)
 
-                data_dict = json.loads(x)
-                print(data_dict, "-=098o78675476890-9877+++++++++++++++++++++")
+                data_dict = x
                 if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
 
                     results = move_last_to_start(user_info)
                     return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
+                elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][0:6] == 'E11000':
+                    return JsonResponse({"Error": "Response Already Exists"}, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    return JsonResponse({"Error": "Invalid Dowell Response"}, status=status.HTTP_400_BAD_REQUEST)
+                    return JsonResponse({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         payload = request.data
