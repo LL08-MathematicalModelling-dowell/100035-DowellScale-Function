@@ -31,6 +31,7 @@ def settings_api_view_create(request):
                 name = response['scale_name']
                 number_of_scales = response['no_of_scales']
                 orientation = response['orientation']
+                instance_id = response.get('instance_id', "Arial, Helvetica, sans-serif")
                 font_color = response['font_color']
                 round_color = response['round_color']
                 fomat = response['fomat']
@@ -57,7 +58,7 @@ def settings_api_view_create(request):
             eventID = get_event_id()
             field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "font_color": font_color,
-                                      "no_of_scales": number_of_scales,
+                                      "no_of_scales": number_of_scales,"instance_id":instance_id,
                                       "time": time, "name": name, "scale-category": "likert scale", "user": user,
                                       "round_color": round_color, "fomat": fomat, "label_selection": label_selection,
                                       "label_input": label_input, "user": user,
@@ -185,6 +186,7 @@ def submit_response_view(request):
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id):
     field_add = {"_id": scale_id, "settings.scale-category": "likert scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
@@ -219,7 +221,6 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
     # Insert new response into database
     response = {
         "event_id": event_id,
-        "username": username,
         "scale_data": {"scale_id": scale_id, "scale_type": "likert scale"},
         "brand_data": {"brand_name": brand_name, "product_name": product_name},
         "score": score_data,

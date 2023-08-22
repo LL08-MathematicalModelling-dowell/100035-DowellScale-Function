@@ -126,43 +126,50 @@ def percent_response_view_submit(request):
             response_data = request.data
             try:
                 username = response_data['username']
-                scale_id = response_data['scale_id']
                 brand_name = response_data['brand_name']
                 product_name = response_data['product_name']
+                instance_id = response_data['instance_id']
+
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Check if scale exists
-            field_add = {"_id": scale_id, "settings.scale-category": "npslite scale"}
-            default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                             "ABCDE",
-                                             "fetch", field_add, "nil")
-            data = json.loads(default_scale)
-            settings = data['data']['settings']
-
-            if data['data'] is None:
-                return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
-            elif settings['allow_resp'] == False:
-                return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
             if "document_responses" in response_data:
                 document_responses = response_data["document_responses"]
                 all_results = []
                 for single_response in document_responses:
-                    scores = single_response["scores"]
-                    success = response_submit_loop(scores, scale_id, data, username, brand_name, product_name)
+                    scale_id = single_response['scale_id']
+                    scores = single_response["score"]
+                    success = response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
-                scores = response_data['scores']
-                return response_submit_loop(scores, scale_id, data, username, brand_name, product_name)
+                scores = response_data['score']
+                scale_id = response_data['scale_id']
+                return response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def response_submit_loop(scores, scale_id, scale, username, brand_name, product_name):
+def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id):
     event_id = get_event_id()
+
+    # Check if scale exists
+    field_add = {"_id": scale_id, "settings.scale-category": "percent scale"}
+    default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                     "ABCDE",
+                                     "fetch", field_add, "nil")
+    data = json.loads(default_scale)
+    settings = data['data']['settings']
+
+    if data['data'] is None:
+        return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+    elif settings['allow_resp'] == False:
+        return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    number_of_scale = settings['no_of_scales']
+
     # Check if all required responses are present
-    expected_responses = scale['data'][0]['settings']['product_count']
+    expected_responses = data['data'][0]['settings']['product_count']
     if int(expected_responses) != len(scores):
         return Response({"error": "Incorrect number of responses."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -171,12 +178,16 @@ def response_submit_loop(scores, scale_id, scale, username, brand_name, product_
         if not isinstance(response, (int, float)) or response < 0 or response > 100:
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
+    score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
+                  "score": scores}
+
+    if int(instance_id) > int(number_of_scale):
+        return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
     response = {
         "event_id": event_id,
-        "username": username,
-        "scale_id": scale_id,
-        "responses": scores,
+        "scale_data": {"scale_id": scale_id, "scale_type": "percent scale"},
+        "score":score_data,
         "brand_data": {"brand_name": brand_name, "product_name": product_name},
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
@@ -184,7 +195,6 @@ def response_submit_loop(scores, scale_id, scale, username, brand_name, product_
                                    "ABCDE", "insert", response, "nil")
 
     return Response({"success": True, "response_id": response_id})
-
 
 # GET SINGLE SCALE RESPONSE
 @api_view(['GET', ])

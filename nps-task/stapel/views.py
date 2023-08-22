@@ -36,7 +36,6 @@ def settings_api_view_create(request):
             no_of_scales = response.get('no_of_scales', 1)
             spacing_unit = int(response['spacing_unit'])
             scale_lower_limit = int(response['scale_upper_limit'])
-            scale = []
             scale = [i for i in range(-scale_lower_limit, int(response['scale_upper_limit']) + 1) if
                      i % response['spacing_unit'] == 0 and i != 0]
             if int(response['scale_upper_limit']) > 10 or int(
@@ -92,6 +91,7 @@ def settings_api_view_create(request):
                              "fontcolor": response['fontcolor'],
                              "fomat": fomat,
                              "time": time,
+                             "fontstyle": response.get('fontstyle', "Arial, Helvetica, sans-serif"),
                              "image_label_format": image_label_format,
                              "custom_emoji_format": custom_emoji_format,
                              "template_name": template_name,
@@ -142,11 +142,16 @@ def settings_api_view_create(request):
             allow_resp = response.get('allow_resp', settings["allow_resp"])
             roundcolor = response.get('roundcolor', settings["roundcolor"])
             fontcolor = response.get('fontcolor', settings["fontcolor"])
+            fontstyle = response.get('fontstyle', settings["fontstyle"])
             spacing_unit = response.get('spacing_unit', settings["spacing_unit"] or 1)
             scale_lower_limit = int(response.get('scale_upper_limit'))
 
             scale = [i for i in range(-scale_lower_limit, scale_upper_limit + 1) if
                      i % int(spacing_unit) == 0 and i != 0]
+
+            if int(response['scale_upper_limit']) > 10 or int(
+                    response['scale_upper_limit']) < 0 or spacing_unit > 5 or spacing_unit < 1:
+                raise Exception("Check scale limits and spacing_unit")
 
             update_field = {"settings": {"orientation": orientation,
                                          "scale_upper_limit": scale_upper_limit,
@@ -162,6 +167,7 @@ def settings_api_view_create(request):
                                          "name": name,
                                          "text": text,
                                          "left": left,
+                                         "fontstyle": fontstyle,
                                          "right": right,
                                          "scale": scale,
                                          "allow_resp": allow_resp,
@@ -312,7 +318,6 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
 
     number_of_scale = x['no_of_scales']
 
-
     if x['fomat'] == 'emoji':
         try:
             if is_emoji(score):
@@ -349,8 +354,7 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
     score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score}
 
     if int(instance_id) > int(number_of_scale):
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
+        return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     field_add = {"event_id": eventID, "scale_data": {"scale_id": scale_id, "scale_type": "stapel scale"},
                  "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
                  "score": [score]}
