@@ -152,147 +152,154 @@ def ResponseAPI(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find",
                              field_add, "nil")
         x = json.loads(x)
+        try:
+            type = x["data"]["settings"]["scaletype"]
+        except:
+            type = "nil"
+
 
         try:
             if x["error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
                 return JsonResponse({"Error": "Scale does not exist"}, status=status.HTTP_400_BAD_REQUEST)
         except:
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                 "1094", "ABCDE", "find",
-                                 field_add, "nil")
-            x = json.loads(x)
-            print(x, "&&&&&&&&&&&&&&&&&&&&&&")
-            if x["isSuccess"] == 'True':
-                return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["responses"]},
-                                    status=status.HTTP_200_OK)
+            if type != "qsort":
+                return JsonResponse({"Error": "Scale is not a qsort"}, status=status.HTTP_400_BAD_REQUEST)
             else:
-            # try:
-            #     if x["data"][0]["statements"]:
-            #         return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["statements"]},
-            #                             status=status.HTTP_200_OK)
-            # except:
-                required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
-                print(sum(
-                    [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]]))
-                total_statements = sum(
-                    [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]])
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                     "1094", "ABCDE", "find",
+                                     field_add, "nil")
+                x = json.loads(x)
+                if x["isSuccess"] == 'True':
+                    return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["responses"]},
+                                        status=status.HTTP_200_OK)
+                else:
+                # try:
+                #     if x["data"][0]["statements"]:
+                #         return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["statements"]},
+                #                             status=status.HTTP_200_OK)
+                # except:
+                    required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
+                    print(sum(
+                        [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]]))
+                    total_statements = sum(
+                        [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]])
 
-                if not total_statements in range(60, 141):
-                    return JsonResponse({"Error": "Invalid number of total statements. Must be between 60 and 140 inclusive."},
-                                        status=status.HTTP_400_BAD_REQUEST)
-                # Check for continuous card numbers
-                all_cards = []
-                for group in ["disagree", "neutral", "agree"]:
-                    if group in payload:
-                        all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
-                all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
+                    if not total_statements in range(60, 141):
+                        return JsonResponse({"Error": "Invalid number of total statements. Must be between 60 and 140 inclusive."},
+                                            status=status.HTTP_400_BAD_REQUEST)
+                    # Check for continuous card numbers
+                    all_cards = []
+                    for group in ["disagree", "neutral", "agree"]:
+                        if group in payload:
+                            all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
+                    all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
 
-                if all_cards != list(range(1, total_statements + 1)):
-                    return JsonResponse({"Error": "Card numbers are not continuous or missing."},
-                                        status=status.HTTP_400_BAD_REQUEST)
+                    if all_cards != list(range(1, total_statements + 1)):
+                        return JsonResponse({"Error": "Card numbers are not continuous or missing."},
+                                            status=status.HTTP_400_BAD_REQUEST)
 
-                payload = request.data
-                for field in required_fields:
-                    if field not in payload:
-                        return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
+                    payload = request.data
+                    for field in required_fields:
+                        if field not in payload:
+                            return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
 
-                # Define fixed pile ranges
-                pile_ranges = {
-                    "disagree": [-5, -4, -3, -2, -1],
-                    "neutral": [0],
-                    "agree": [1, 2, 3, 4, 5]
-                }
-
-                # Function to dynamically distribute scores
-                def assign_to_piles(statements, pile_range):
-                    total_statements = len(statements)
-                    distribution = {}
-
-                    # Calculate base ratios for each score
-                    base_ratios = {
-                        -5: 2 / 47, -4: 3 / 47, -3: 4 / 47, -2: 5 / 47, -1: 6 / 47,
-                        0: 7 / 47,
-                        1: 6 / 47, 2: 5 / 47, 3: 4 / 47, 4: 3 / 47, 5: 2 / 47
+                    # Define fixed pile ranges
+                    pile_ranges = {
+                        "disagree": [-5, -4, -3, -2, -1],
+                        "neutral": [0],
+                        "agree": [1, 2, 3, 4, 5]
                     }
 
-                    # Pro-rata distribution based on the number of actual statements
-                    for score in pile_range:
-                        distribution[score] = round(base_ratios[score] * total_statements)
+                    # Function to dynamically distribute scores
+                    def assign_to_piles(statements, pile_range):
+                        total_statements = len(statements)
+                        distribution = {}
 
-                    # Adjust for any discrepancies due to rounding
-                    discrepancy = total_statements - sum(distribution.values())
-                    adjusting_scores = sorted(pile_range, key=lambda x: abs(x))
+                        # Calculate base ratios for each score
+                        base_ratios = {
+                            -5: 2 / 47, -4: 3 / 47, -3: 4 / 47, -2: 5 / 47, -1: 6 / 47,
+                            0: 7 / 47,
+                            1: 6 / 47, 2: 5 / 47, 3: 4 / 47, 4: 3 / 47, 5: 2 / 47
+                        }
 
-                    while discrepancy != 0:
-                        for score in adjusting_scores:
-                            if discrepancy > 0:
-                                distribution[score] += 1
-                                discrepancy -= 1
-                            elif discrepancy < 0:
-                                distribution[score] -= 1
-                                discrepancy += 1
-                            if discrepancy == 0:
-                                break
+                        # Pro-rata distribution based on the number of actual statements
+                        for score in pile_range:
+                            distribution[score] = round(base_ratios[score] * total_statements)
 
-                    # Create a copy of the statements and sort them by their card number
-                    sorted_statements = sorted(statements,
-                                               key=lambda x: str(x['card']).split('-')[1] if '-' in str(x['card']) else x[
-                                                   'card'])
-                    print(statements)
-                    # Assign scores to statements based on their card numbers, but maintain the original order for output
-                    scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in statements]
+                        # Adjust for any discrepancies due to rounding
+                        discrepancy = total_statements - sum(distribution.values())
+                        adjusting_scores = sorted(pile_range, key=lambda x: abs(x))
 
-                    for score in pile_range:
-                        for _ in range(distribution[score]):
-                            statement = sorted_statements.pop(0)
-                            index = next((i for i, s in enumerate(scored_statements) if s['card'] == statement['card']), None)
-                            if index is not None:
-                                scored_statements[index]['score'] = score
+                        while discrepancy != 0:
+                            for score in adjusting_scores:
+                                if discrepancy > 0:
+                                    distribution[score] += 1
+                                    discrepancy -= 1
+                                elif discrepancy < 0:
+                                    distribution[score] -= 1
+                                    discrepancy += 1
+                                if discrepancy == 0:
+                                    break
 
-                    return scored_statements
+                        # Create a copy of the statements and sort them by their card number
+                        sorted_statements = sorted(statements,
+                                                   key=lambda x: str(x['card']).split('-')[1] if '-' in str(x['card']) else x[
+                                                       'card'])
+                        print(statements)
+                        # Assign scores to statements based on their card numbers, but maintain the original order for output
+                        scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in statements]
 
-                # Iterate through groups (disagree, neutral, agree) and calculate scores
-                results = {}
-                for group, group_data in payload.items():
-                    if group in ["disagree", "neutral", "agree"]:
-                        statements = group_data['statements']
-                        scores = assign_to_piles(statements, pile_ranges[group])
-                        results[group.capitalize()] = scores
+                        for score in pile_range:
+                            for _ in range(distribution[score]):
+                                statement = sorted_statements.pop(0)
+                                index = next((i for i, s in enumerate(scored_statements) if s['card'] == statement['card']), None)
+                                if index is not None:
+                                    scored_statements[index]['score'] = score
 
-                # Other payload information
-                user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
-                user_info['results'] = results
+                        return scored_statements
 
-                event = get_event_id()
-                add = {
-                    "event_id": event,
-                    "_id": payload["scale_id"],
-                    "results": results,
-                    "user": payload["user"],
-                    "name": payload["name"],
-                    "product_name": payload["product_name"],
-                    "scale_type": "Qsort",
-                    "scalecolor": payload["scalecolor"],
-                    "fontstyle": payload["fontstyle"],
-                    "fontcolor": payload["fontcolor"]
+                    # Iterate through groups (disagree, neutral, agree) and calculate scores
+                    results = {}
+                    for group, group_data in payload.items():
+                        if group in ["disagree", "neutral", "agree"]:
+                            statements = group_data['statements']
+                            scores = assign_to_piles(statements, pile_ranges[group])
+                            results[group.capitalize()] = scores
 
-                }
+                    # Other payload information
+                    user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
+                    user_info['results'] = results
 
-                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                     "1094", "ABCDE", "insert",
-                                     add, "nil")
+                    event = get_event_id()
+                    add = {
+                        "event_id": event,
+                        "_id": payload["scale_id"],
+                        "results": results,
+                        "user": payload["user"],
+                        "name": payload["name"],
+                        "product_name": payload["product_name"],
+                        "scale_type": "Qsort",
+                        "scalecolor": payload["scalecolor"],
+                        "fontstyle": payload["fontstyle"],
+                        "fontcolor": payload["fontcolor"]
 
-                x = json.loads(x)
+                    }
 
-                data_dict = x
-                if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
+                    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                         "1094", "ABCDE", "insert",
+                                         add, "nil")
 
-                    results = move_last_to_start(user_info)
-                    return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
-                elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][0:6] == 'E11000':
-                    return JsonResponse({"Error": "Response Already Exists"}, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    return JsonResponse({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+                    x = json.loads(x)
+
+                    data_dict = x
+                    if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
+
+                        results = move_last_to_start(user_info)
+                        return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
+                    elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][0:6] == 'E11000':
+                        return JsonResponse({"Error": "Response Already Exists"}, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return JsonResponse({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         payload = request.data
