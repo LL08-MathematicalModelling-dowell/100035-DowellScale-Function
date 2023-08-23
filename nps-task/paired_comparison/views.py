@@ -217,7 +217,7 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
     response = {
         "event_id": event_id,
         "username": username,
-        "scale_id": scale_id,
+        "scale_data": {"scale_id": scale_id, "scale_type": "paired-comparison scale"},
         "brand_data": {"brand_name": brand_name, "product_name": product_name},
         "ranking": ranking,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -250,4 +250,14 @@ def single_scale_response_api_view(request, id=None):
         return Response({"error": "Response not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-
+@api_view(['GET', ])
+def scale_response_api_view(request):
+    try:
+        field_add = {"scale_data.scale_type": "paired-comparison scale", }
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                             "1094", "ABCDE", "fetch", field_add, "nil")
+        print(json.loads(x))
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        return Response(json.loads(x))
