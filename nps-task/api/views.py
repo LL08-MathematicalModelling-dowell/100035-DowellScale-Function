@@ -54,10 +54,15 @@ def total_score_fun(id):
     data = json.loads(response_data)
     existing_responses = data["data"]
 
-    total_score = sum(int(i['score'][0]['score']) for i in data['data'])
+
+
+    total_score = sum(int(i['score']['score']) for i in data['data'])
+
     all_scores = [i['score'] for i in data['data']]
-    instance_ids = [int(i['score'][0]['instance_id'].split("/")[0])
+
+    instance_ids = [int(i['score']['instance_id'].split("/")[0])
                     for i in data['data']]
+
 
     if total_score == 0 or len(all_scores) == 0:
         overall_category = "No response provided"
@@ -65,7 +70,6 @@ def total_score_fun(id):
     else:
         overall_category = total_score / len(all_scores)
         category = find_category(overall_category)
-
     return overall_category, category, all_scores, instance_ids, total_score, existing_responses
 
 
@@ -440,12 +444,13 @@ def nps_response_view_submit(request):
             if 'document_responses' in response:
                 document_responses = response['document_responses']
                 instance_id = response['instance_id']
+                process_id = response['process_id']
                 resp = []
                 for x in document_responses:
                     scale_id = x['scale_id']
                     score = x['score']
                     success = response_submit_loop(
-                        response, scale_id, instance_id, user, score)
+                        response, scale_id, instance_id, user, score,process_id)
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
@@ -482,7 +487,7 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
     return None
 
 
-def response_submit_loop(response, scale_id, instance_id, user, score):
+def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None):
     field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
@@ -521,8 +526,8 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
                                     {"scale_id": scale_id, "username": user, "instance_id": instance_id}, "nil")
     user_dets = json.loads(user_details)
     if len(user_dets['data']) >= 1:
-        b = [l['score'][0]['score'] for l in existing_responses if
-             l['score'][0]['instance_id'].split("/")[0] == f"{instance_id}"]
+        b = [l['score']['score'] for l in existing_responses if
+             l['score']['instance_id'].split("/")[0] == f"{instance_id}"]
         category = find_category(b[0])
 
         return Response({"error": "Scale Response Exists!", "current_score": b[0], "Category": category},
@@ -534,17 +539,24 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
     print("This is my score data", score_data)
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
-    field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
-                 "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
-                 "score": score_data, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                 }
+
+    if process_id:
+        field_add = {"event_id": event_id, "process_id": process_id,"scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
+                     "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
+                     "score": score_data, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                     }
+    else:
+        field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
+                     "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
+                     "score": score_data, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                     }
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                          "ABCDE", "insert", field_add, "nil")
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "insert",
                                     {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
                                      "username": user}, "nil")
-    return Response({"success": z, "score": score_data, "payload": field_add, "Category": category})
+    return Response({"success": z, "payload": field_add})
 
 
 # GET ALL SCALES
