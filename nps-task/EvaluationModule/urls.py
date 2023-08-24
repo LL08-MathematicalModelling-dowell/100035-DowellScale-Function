@@ -11,4 +11,8 @@ urlpatterns = [
     # Rest endpoints
     path('scale/reports/api/<str:username>/<str:scale_category>', by_username_api, name="by_username"),
     path('target/', Target_API, name="target"),
+    path('evaluation-api/', evaluation_api, name="evaluation"),
+
+    # new evaluation module process id function
+    path('scale/reports/<str:process_id>/<str:doc_no>', evaluation_editor_process_id, name="evaluation_process_id"),
 ]
