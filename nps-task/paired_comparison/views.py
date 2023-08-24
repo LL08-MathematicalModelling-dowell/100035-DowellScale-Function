@@ -131,7 +131,6 @@ def settings_api_view_create(request):
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-            
 @api_view(['POST', 'GET'])
 def submit_response_view(request):
     if request.method == "POST":
