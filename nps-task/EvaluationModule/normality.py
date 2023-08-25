@@ -16,6 +16,8 @@ def Normality_api(process_id):
     headers = {'content-type': 'application/json'}
     response = requests.post(url, json=data, headers=headers)
 
+    print(f"\n\nresponse: {response}\n\n")
+
     response_data = response.json()
 
     print(f"\n\nresponse_data: {response_data}\n\n")

@@ -327,6 +327,7 @@ def evaluation_api(request):
     if request.method != 'POST':
         return JsonResponse({"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    response_ = {}
     payload = request.data
     process_id = payload.get('process_id')
     doc_no = payload.get('doc_no')
@@ -334,7 +335,6 @@ def evaluation_api(request):
     if not (process_id and doc_no):
         return JsonResponse({"error": "Required fields: process_id, doc_no."}, status=status.HTTP_400_BAD_REQUEST)
 
-    random_number = generate_random_number()
     context = {}
     field_add = {"process_id": process_id}
 
@@ -344,49 +344,61 @@ def evaluation_api(request):
             data_future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports",
                                           "scale_reports", "1094", "ABCDE", "fetch", field_add, "nil")
             r = json.loads(data_future.result())
+            print(r, "r+++++++++++++++")
             data = r.get("data", [])
     except Exception as e:
         return JsonResponse({"error": f"Error fetching data from dowellconnection: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    all_scales = [x for x in data if x['score']['instance_id'].split("/")[0] == doc_no]
+    # all_scales = [x for x in data if x['score']['instance_id'].split("/")[0] == doc_no]
+    # print(all_scales, "all_scales")
+    all_scales = []
+    for i in data:
+        print(f".{i['score']['instance_id'].split('/')[0]}.\n.{doc_no}.")
+        if int(i['score']['instance_id'].split("/")[0]) == int(doc_no):
+            print(i, "i")
+            all_scales.append(i)
+
+    print(all_scales, "all_scales")
+    print(doc_no, "doc_no")
     calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"].get("scale_type") == "nps scale"]
 
     # Process the fetched data
     if data:
         scores = process_data(data, doc_no)
-        context.update({
+        print(scores, "scores")
+        response_ = {
             "nps_scales": len(scores.get("nps scale", [])),
             "nps_score": sum(scores.get("nps scale", [])),
             "nps_total_score": len(scores.get("nps scale", [])) * 10,
             "stapel_scales": len(scores.get("stapel scale", [])),
             "stapel_scores": scores.get("stapel scale"),
             "score_series": scores.get("nps scale")
-        })
+        }
 
-    try:
-        # Execute stattricks_api API call
-        with ThreadPoolExecutor() as executor:
-            response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3, {"list1": calculate_score})
-            response_json = response_json_future.result()
-            context.update(response_json)
-    except Exception as e:
-        return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        print(response_, "response_")
 
-    context.update({
-        "poison_case_results": response_json.get("poison case results", {}),
-        "normal_case_results": response_json.get("normal case results", {})
-    })
+    # try:
+    print(calculate_score, "calculate_score")
 
-    try:
-        # Execute Normality_api API call
-        with ThreadPoolExecutor() as executor:
-            normality_future = executor.submit(Normality_api, random_number)
-            normality = normality_future.result()
-            context.update(normality)
-    except Exception as e:
-        return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # Execute stattricks_api API call
+    with ThreadPoolExecutor() as executor:
+        response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
+        response_json = response_json_future.result()
+        print(response_json_future.result(), "response_json______________________")
+        response_["stattrick"] = response_json
+    # except Exception as e:
+    #     return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return JsonResponse(context, status=status.HTTP_200_OK)
+    # try:
+    # Execute Normality_api API call
+    with ThreadPoolExecutor() as executor:
+        normality_future = executor.submit(Normality_api, 78451221)
+        normality = normality_future.result()
+        response_["normality"] = normality
+    # except Exception as e:
+    #     return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return JsonResponse(response_, status=status.HTTP_200_OK)
 
 
 
