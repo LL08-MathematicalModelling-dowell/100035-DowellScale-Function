@@ -8,8 +8,8 @@ import requests
 
 
 # dowell API
-url = 'http://100002.pythonanywhere.com/'
-def dowellconnection(cluster,platform,database,collection,document,team_member_ID,function_ID,command,field=None,update_field=None):
+url = 'http://uxlivinglab.pythonanywhere.com/'
+def dowellconnection(cluster,platform,database,collection,document,team_member_ID,function_ID,command,field,update_field):
     data={
       "cluster": cluster,
       "platform": platform,
@@ -18,9 +18,9 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
       "document": document,
       "team_member_ID": team_member_ID,
       "function_ID": function_ID,
-      "command": "fetch",
-      "field": {"eventId": "FB1010000000166564637454228642"},
-      "update_field":{"template_name":"umarjaved"}
+      "command": command,
+      "field": field,
+      "update_field":update_field
        }
     headers = {'content-type': 'application/json'}
     try :
@@ -104,7 +104,7 @@ def process_data(data, doc_no):
     collects all the elements from data where the last segment (after the last '/')
     of the instance_id from the first score equals doc_no
     """
-    all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[-1] == doc_no]
+    all_scales = [x for x in data if x['score']['instance_id'].split("/")[-1] == doc_no]
 
     scores = defaultdict(list)
     for x in all_scales:
