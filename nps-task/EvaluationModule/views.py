@@ -15,6 +15,7 @@ process the Normality API and get the responses of both the APIs, and finally re
 """
 def evaluation_editor(request, product_name, doc_no):
     random_number = generate_random_number()
+    print(f"\n\nrandom_number: {random_number}\n\n")
     context = {}
 
     # Fetch data from cache if available
@@ -342,7 +343,11 @@ def evaluation_api(request):
         with ThreadPoolExecutor() as executor:
             data_future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                           "1094", "ABCDE", "fetch", field_add, "nil")
-            data = json.loads(data_future.result())["data"]
+
+            r = data_future.result()
+            print(r)
+            data = r["data"]
+            # data = json.loads(data_future.result())["data"]
 
         all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[0] == doc_no]
         calculate_score = [x['score'][0]['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
