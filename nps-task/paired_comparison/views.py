@@ -134,7 +134,6 @@ def settings_api_view_create(request):
 @api_view(['POST', 'GET'])
 def submit_response_view(request):
     if request.method == "POST":
-        print("----start------")
         try:
             response_data = request.data
             try:
@@ -144,7 +143,6 @@ def submit_response_view(request):
                 product_name = response_data['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
-            print("-----variables retrieved---------") 
             # Check if user is authorized to submit response
             user = dowellconnection("dowellscale", "bangalore", "dowellscale", "users",
                                     "users", "1098", "ABCDE", "fetch", {"username": username}, "nil")
@@ -159,7 +157,6 @@ def submit_response_view(request):
 
             # Check if scale is of type "paired-comparison scale"
             scale_settings = json.loads(scale)
-            print("---------scale settings retrieved----------")
             if scale_settings['data'][0]['settings'].get('scale-category') != 'paired-comparison scale':
                 return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
             
@@ -170,10 +167,8 @@ def submit_response_view(request):
             previous_response = previous_response.get('data')            
             if len(previous_response) > 0 :
                 return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
-            print("---------input validation complete------------")
             
             if "document_responses" in response_data:
-                print("-----------multiple responses-----------")
                 document_responses = response_data["document_responses"]
                 all_results = []
                 for single_response in document_responses:
@@ -183,7 +178,6 @@ def submit_response_view(request):
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
                 products_ranking = response_data["products_ranking"]
-                print("------single response-------")
                 return response_submit_loop(scale_settings, username, scale_id, products_ranking, brand_name, product_name)
         except Exception as e:
             print(f"error: {e}")
@@ -192,7 +186,6 @@ def submit_response_view(request):
 def response_submit_loop(scale_settings, username, scale_id, products_ranking, brand_name, product_name):
     if len(products_ranking) != scale_settings["data"][0]["settings"]["total_pairs"]:
         return Response({"error": "Scale Responses incomplete"}, status=status.HTTP_400_BAD_REQUEST)
-    print("------------second input validation------------")
     event_id = get_event_id()
     item_list = scale_settings["data"][0]["settings"]["item_list"]
     paired_items = scale_settings["data"][0]["settings"]["paired_items"]
@@ -208,7 +201,6 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
                 "segmented_ranking": segmented_ranking,
                 "location_faulty_pair": is_consistent
             }, status=status.HTTP_400_BAD_REQUEST)
-    print("------------consistency check complete----------")
     scores_map = Counter(products_ranking)
     for product in item_list:
         if product not in scores_map:
@@ -219,7 +211,6 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
     ranking_dict = {}
     for product in products_ranking:
         ranking_dict[f"pair_{len(ranking_dict)+1}"] = product
-    print("----------------inserting response into db-----------")
     # Insert new response into database
     response = {
         "event_id": event_id,
@@ -231,7 +222,6 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
     }
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", response, "nil")
     response_id = json.loads(response_id)
-    print("------------------response inserted-----------------")
     return Response({
         "success": True, 
         "data": {
@@ -264,7 +254,6 @@ def scale_response_api_view(request):
         field_add = {"scale_data.scale_type": "paired-comparison scale", }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                              "1094", "ABCDE", "fetch", field_add, "nil")
-        print(json.loads(x))
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':

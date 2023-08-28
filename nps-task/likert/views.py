@@ -10,6 +10,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
+from .utils import assign_statement
 
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -202,6 +203,7 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
 
     number_of_scale = settings['no_of_scales']
     scale_id = data['data']['_id']
+    label_selection = settings['label_selection']
 
     event_id = get_event_id()
     if data['data']['settings'].get('fomat') == "text":
@@ -209,10 +211,7 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
     if data['data']['settings'].get('fomat') == "emoji":
-        upper_boundary = data['data']['settings'].get('label_selection')
-        if type(score) != int or 0 < score > upper_boundary - 1:
-            return Response({"error": "Emoji response must be an integer within label selection range."},
-                            status=status.HTTP_400_BAD_REQUEST)
+        score = assign_statement(label_selection, score)
 
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
                   "score": score}
