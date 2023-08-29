@@ -195,18 +195,6 @@ def response_submit_api_view(request):
 
     elif request.method == 'POST':
         data = request.data
-
-        # Check if scale exists
-        scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                                {"_id": scale_id}, "nil")
-        if not scale:
-            return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Check if scale is of type "npslite scale"
-        scale_settings = json.loads(scale)
-        if scale_settings['data'][0]['scale-category'] != 'ranking scale':
-            return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
-
         if "document_responses" in data:
             document_response = data['document_responses']
             try:
@@ -221,13 +209,13 @@ def response_submit_api_view(request):
                 scale_id = rsp['scale_id']
                 response = {
                     "brand_name": brand_name,
-                    "product_name": rsp['product_name'],
+                    "product_name": product_name,
                     "num_of_stages": rsp['num_of_stages'],
-                    "num_of_substages": num_of_substages,
+                    "num_of_substages": rsp['num_of_substages'],
                     "rankings": rsp['rankings']
                 }
                 result = response_submit_loop(username, scale_id, event_id, response)
-                results.append(result)
+                results.append(result.data)
             return Response(results, status=status.HTTP_200_OK)
         else:
             try:
@@ -235,10 +223,10 @@ def response_submit_api_view(request):
                 event_id = data['event_id']
                 username = data['username']
                 rankings = data['rankings']
-                brand_name = data['brand_name'],
-                product_name = data['product_name'],
-                num_of_stages = data['num_of_stages'],
-                num_of_substages = data['num_of_substages'],
+                brand_name = data['brand_name']
+                product_name = data['product_name']
+                num_of_stages = data['num_of_stages']
+                num_of_substages = data['num_of_substages']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
             response = {
@@ -256,10 +244,10 @@ def response_submit_loop(username, scale_id, event_id, response):
     # Check if response already exists for this event
     existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                             "ABCDE", "fetch", {"event_id": event_id}, "nil")
-    existing_response = json.loads(existing_response)
-    if isinstance(existing_response, dict) and existing_response['data']:
-        return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
+    # existing_response = json.loads(existing_response)
+    # if isinstance(existing_response, dict) and existing_response['data']:
+    #     return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
+    
     # Check if scale exists
     field_add = {"_id": scale_id}
     scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
@@ -267,7 +255,8 @@ def response_submit_loop(username, scale_id, event_id, response):
     scale = json.loads(scale)
     if scale['data'] is None:
         return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-    
+    if scale['data'][0]['settings']['scale_category'] != 'ranking scale':
+        return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
     scale_data = {
                     "scale-category": "ranking scale",
                     "scale_id": scale_id,
