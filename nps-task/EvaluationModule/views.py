@@ -324,88 +324,79 @@ def Target_API(request):
 
 @api_view(['POST'])
 def evaluation_api(request):
-    if request.method == 'POST':
-        payload = request.data
-        process_id = payload['process_id']
-        doc_no = payload['doc_no']
-        random_number = generate_random_number()
-        context = {}
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        # Fetch data from cache if available
-        cache_key = f"evaluation_editor_{process_id}_{doc_no}"
-        cached_data = cache.get(cache_key)
-        if cached_data:
-            return render(request, 'EvaluationModule/editor_reports.html', cached_data)
+    payload = request.data
+    process_id = payload.get('process_id')
+    doc_no = payload.get('doc_no')
 
-        field_add = {"process_id": process_id}
+    if not (process_id and doc_no):
+        return JsonResponse({"error": "Required fields: process_id, doc_no."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Execute dowellconnection API call using ThreadPoolExecutor
+    field_add = {"process_id": f"{process_id}"}
+
+
+    try:
+        # Execute dowellconnection API call
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                         "scale_reports",
+                                         "1094", "ABCDE", "fetch", field_add, "nil")
+            print(response_data, "response_data")
+            r = json.loads(response_data)
+            print(r, "r+++++++++++++++")
+            data = r.get("data", [])
+    except Exception as e:
+        return JsonResponse({"error": f"Error fetching data from dowellconnection: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    all_scales = []
+    for i in data:
+        print(f".{i['score']['instance_id'].split('/')[0]}.\n.{doc_no}.")
+        if int(i['score']['instance_id'].split("/")[0]) == int(doc_no):
+            all_scales.append(i)
+
+    calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"].get("scale_type") == "nps scale"]
+
+    # Process the fetched data
+    if data:
+        scores = process_data(data, doc_no)
+        print(scores, "scores")
+        response_ = {
+            "nps_scales": len(scores.get("nps scale", [])),
+            "nps_score": sum(scores.get("nps scale", [])),
+            "nps_total_score": len(scores.get("nps scale", [])) * 10,
+            "stapel_scales": len(scores.get("stapel scale", [])),
+            "stapel_scores": scores.get("stapel scale"),
+            "score_series": scores.get("nps scale")
+        }
+        print(response_, "response_")
+    else:
+        return JsonResponse({"error": "No data found for the given process_id in Dowell response."}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        # Execute stattricks_api API call
         with ThreadPoolExecutor() as executor:
-            data_future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                          "1094", "ABCDE", "fetch", field_add, "nil")
-
-            r = data_future.result()
-            print(r)
-            data = r["data"]
-            # data = json.loads(data_future.result())["data"]
-
-        all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[0] == doc_no]
-        calculate_score = [x['score'][0]['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
-        # print(f"\n\ndata: {calculate_score}\n\n")
-        # print(f"\n\nall_scales: {all_scales}\n\n")
-
-        if len(data) != 0:
-            scores = process_data(data, doc_no)
-            nps_scales = len(scores["nps scale"])
-            nps_score = sum(scores["nps scale"])
-            stapel_scales = len(scores["stapel scale"])
-            stapel_score = scores["stapel scale"]
-
-            context.update({
-                "nps_scales": nps_scales,
-                "nps_score": nps_score,
-                "nps_total_score": nps_scales * 10,
-                "stapel_scales": stapel_scales,
-                "stapel_scores": stapel_score,
-                "score_series": scores["nps scale"]
-            })
-
-        # Execute stattricks_api API call using ThreadPoolExecutor
-        with ThreadPoolExecutor() as executor:
-            response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3, {"list1": calculate_score})
+            response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
             response_json = response_json_future.result()
-            context.update(response_json)
+            print(response_json, "response_json______________________")
+            if "Process Id already in use. Please enter a different Process Id & try again" in response_json:
+                return JsonResponse({"error": "Process Id already in use. Please enter a different Process Id & try again."}, status=status.HTTP_400_BAD_REQUEST)
+            response_["stattrick"] = response_json
+    except Exception as e:
+        return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        poison_case_results = response_json.get("poison case results", {})
-        normal_case_results = response_json.get("normal case results", {})
-        context.update({
-            "poison_case_results": poison_case_results,
-            "normal_case_results": normal_case_results
-        })
-
-        # Execute Normality_api API call using ThreadPoolExecutor
+    try:
+        # Execute Normality_api API call
         with ThreadPoolExecutor() as executor:
-            normality_future = executor.submit(Normality_api, random_number)
+            normality_future = executor.submit(Normality_api, process_id)
             normality = normality_future.result()
-            context.update(normality)
+            response_["normality"] = normality
+    except Exception as e:
+        return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        normality_data = normality.get('list1') if normality else None
-        context.update({
-            "n_title": normality.get('title'),
-            "n_process_id": normality.get('process_id'),
-            "n_bins": normality.get('bins'),
-            "n_allowed_error": normality.get('allowed_error'),
-            "n_series_count": normality.get('series_count'),
-            "n_list1": normality_data
-        })
+    return JsonResponse(response_, status=status.HTTP_200_OK)
 
-        # Cache the data for future requests
-        cache.set(cache_key, context)
-        print(f"stattricks_api: {response_json}\n")
-        print(f"Normality_api: {normality}")
-
-
-        return JsonResponse(context, status=status.HTTP_200_OK)
 
 
 def evaluation_editor_process_id(request, process_id, doc_no):
