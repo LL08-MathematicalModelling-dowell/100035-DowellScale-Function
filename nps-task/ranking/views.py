@@ -195,53 +195,78 @@ def response_submit_api_view(request):
 
     elif request.method == 'POST':
         data = request.data
-        if  "document_responses" in data:
-            results = {}
-            for rsp in data['document_responses']:
-                try:
-                    username = rsp.get('username')
-                    scale_id = rsp.get('scale_id')
-                    event_id = get_event_id()
-                    response = {
-                        "rankings" : rsp.get('rankings'),
-                        "num_of_stages" : rsp.get('num_of_stages'),
-                        "num_of_substages" : rsp.get('num_of_substages'),
-                        "product_name" : rsp.get('product_name'),
-                        "brand_name" : rsp.get('brand_name')
-                    }  
-                except KeyError as error:
-                    return Response({"error": f"{error.args[0]} missing or misspelled"}, status=status.HTTP_400_BAD_REQUEST)
-                result = validate_and_submit(username, scale_id, event_id, response)
-                results[response['product_name']] = result.data
-                
+
+        # Check if scale exists
+        scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                                {"_id": scale_id}, "nil")
+        if not scale:
+            return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if scale is of type "npslite scale"
+        scale_settings = json.loads(scale)
+        if scale_settings['data'][0]['scale-category'] != 'ranking scale':
+            return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if "document_responses" in data:
+            document_response = data['document_responses']
+            try:
+                username = data['username']
+                event_id = data['event_id']
+                brand_name = data['brand_name'],
+                product_name = data['product_name']
+            except KeyError as e:
+                return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
+            results = []
+            for rsp in document_response:
+                scale_id = rsp['scale_id']
+                response = {
+                    "brand_name": brand_name,
+                    "product_name": rsp['product_name'],
+                    "num_of_stages": rsp['num_of_stages'],
+                    "num_of_substages": num_of_substages,
+                    "rankings": rsp['rankings']
+                }
+                result = response_submit_loop(username, scale_id, event_id, response)
+                results.append(result)
             return Response(results, status=status.HTTP_200_OK)
         else:
             try:
-                user = data.get('user')
-                username = data.get('username')
-                scale_id = data.get('scale_id')
-                event_id = get_event_id()
-                response = {
-                    "rankings" : data.get('rankings'),
-                    "num_of_stages" : data.get('num_of_stages'),
-                    "num_of_substages" : data.get('num_of_substages'),
-                    "product_name" : data.get('product_name'),
-                    "brand_name" : data.get('brand_name')
-                }
-            except KeyError as error:
-                return Response({"error": f"{error.args[0]} missing or misspelled"}, status=status.HTTP_400_BAD_REQUEST)
-            
-            result = validate_and_submit(username, scale_id, event_id, response)
+                scale_id = data['scale_id']
+                event_id = data['event_id']
+                username = data['username']
+                rankings = data['rankings']
+                brand_name = data['brand_name'],
+                product_name = data['product_name'],
+                num_of_stages = data['num_of_stages'],
+                num_of_substages = data['num_of_substages'],
+            except KeyError as e:
+                return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
+            response = {
+                "brand_name": brand_name,
+                "product_name": product_name,
+                "num_of_stages": num_of_stages,
+                "num_of_substages": num_of_substages,
+                "rankings": rankings
+            }
+            result = response_submit_loop(username, scale_id, event_id, response)
             return Response(result.data, status=status.HTTP_200_OK)
+        
 
-
-def validate_and_submit(username, scale_id, event_id, response):
+def response_submit_loop(username, scale_id, event_id, response):
     # Check if response already exists for this event
     existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                         "ABCDE", "fetch", {"event_id": event_id}, "nil")
+                                            "ABCDE", "fetch", {"event_id": event_id}, "nil")
     existing_response = json.loads(existing_response)
     if isinstance(existing_response, dict) and existing_response['data']:
         return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if scale exists
+    field_add = {"_id": scale_id}
+    scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
+                            "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
+    scale = json.loads(scale)
+    if scale['data'] is None:
+        return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
     
     scale_data = {
                     "scale-category": "ranking scale",
@@ -251,17 +276,9 @@ def validate_and_submit(username, scale_id, event_id, response):
                     "response": response,
                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
-    
-    # Check if scale exists
-    field_add = {"_id": scale_id}
-    scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
-                            "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
-    data = json.loads(scale)
-    if data['data'] is None:
-        return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-    # Check if response is valid
+
     try:
-        settings = data['data'][0]['settings']
+        settings = scale['data'][0]['settings']
         stages = settings['stages']
         # check if "stage_name" is unoque or not for every rankings
         stage_names = []
