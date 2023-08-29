@@ -336,14 +336,17 @@ def evaluation_api(request):
         return JsonResponse({"error": "Required fields: process_id, doc_no."}, status=status.HTTP_400_BAD_REQUEST)
 
     context = {}
-    field_add = {"process_id": process_id}
+    print(f"...........{process_id}............")
+    field_add = {"process_id": f"{process_id}"}
+
 
     try:
         # Execute dowellconnection API call
-        with ThreadPoolExecutor() as executor:
-            data_future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                          "scale_reports", "1094", "ABCDE", "fetch", field_add, "nil")
-            r = json.loads(data_future.result())
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                         "scale_reports",
+                                         "1094", "ABCDE", "fetch", field_add, "nil")
+            print(response_data, "response_data")
+            r = json.loads(response_data)
             print(r, "r+++++++++++++++")
             data = r.get("data", [])
     except Exception as e:
