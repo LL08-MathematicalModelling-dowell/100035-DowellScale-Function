@@ -19,6 +19,7 @@ def dowellshuffling_function(statements):
     random.shuffle(statements)
     return statements
 
+
 def move_last_to_start(d):
     if not d:
         return d
@@ -31,8 +32,9 @@ def move_last_to_start(d):
 
 @api_view(['GET', 'POST', 'PUT'])
 def CreateScale(request):
-    global field_add,x
-    required_fields = ['sort_order', 'statements', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor', 'user', 'name' ]
+    global field_add, x
+    required_fields = ['sort_order', 'statements', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor', 'user',
+                       'name']
 
     if request.method == 'POST':
         payload = request.data
@@ -102,7 +104,8 @@ def CreateScale(request):
                                  {"settings.scaletype": "qsort"}, "nil")
 
             z = json.loads(z)
-            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
+            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
+                                status=status.HTTP_200_OK)
         else:
             field_add = {"_id": payload["scale_id"]}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
@@ -110,7 +113,8 @@ def CreateScale(request):
             x = json.loads(x)
             print(x)
             try:
-                if x["error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
+                if x[
+                    "error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
                     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                          "fetch",
                                          {"settings.scaletype": "qsort"}, "nil")
@@ -157,9 +161,9 @@ def ResponseAPI(request):
         except:
             type = "nil"
 
-
         try:
-            if x["error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
+            if x[
+                "error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
                 return JsonResponse({"Error": "Scale does not exist"}, status=status.HTTP_400_BAD_REQUEST)
         except:
             if type != "qsort":
@@ -173,20 +177,24 @@ def ResponseAPI(request):
                     return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["responses"]},
                                         status=status.HTTP_200_OK)
                 else:
-                # try:
-                #     if x["data"][0]["statements"]:
-                #         return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["statements"]},
-                #                             status=status.HTTP_200_OK)
-                # except:
-                    required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
+                    # try:
+                    #     if x["data"][0]["statements"]:
+                    #         return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["statements"]},
+                    #                             status=status.HTTP_200_OK)
+                    # except:
+                    required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor',
+                                       'fontstyle', 'fontcolor']
                     print(sum(
-                        [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]]))
+                        [len(data["statements"]) for key, data in payload.items() if
+                         key in ["disagree", "neutral", "agree"]]))
                     total_statements = sum(
-                        [len(data["statements"]) for key, data in payload.items() if key in ["disagree", "neutral", "agree"]])
+                        [len(data["statements"]) for key, data in payload.items() if
+                         key in ["disagree", "neutral", "agree"]])
 
                     if not total_statements in range(60, 141):
-                        return JsonResponse({"Error": "Invalid number of total statements. Must be between 60 and 140 inclusive."},
-                                            status=status.HTTP_400_BAD_REQUEST)
+                        return JsonResponse(
+                            {"Error": "Invalid number of total statements. Must be between 60 and 140 inclusive."},
+                            status=status.HTTP_400_BAD_REQUEST)
                     # Check for continuous card numbers
                     all_cards = []
                     for group in ["disagree", "neutral", "agree"]:
@@ -201,7 +209,8 @@ def ResponseAPI(request):
                     payload = request.data
                     for field in required_fields:
                         if field not in payload:
-                            return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
+                            return JsonResponse({"Error": f"Missing required field: {field}"},
+                                                status=status.HTTP_400_BAD_REQUEST)
 
                     # Define fixed pile ranges
                     pile_ranges = {
@@ -243,16 +252,20 @@ def ResponseAPI(request):
 
                         # Create a copy of the statements and sort them by their card number
                         sorted_statements = sorted(statements,
-                                                   key=lambda x: str(x['card']).split('-')[1] if '-' in str(x['card']) else x[
+                                                   key=lambda x: str(x['card']).split('-')[1] if '-' in str(
+                                                       x['card']) else x[
                                                        'card'])
                         print(statements)
                         # Assign scores to statements based on their card numbers, but maintain the original order for output
-                        scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in statements]
+                        scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in
+                                             statements]
 
                         for score in pile_range:
                             for _ in range(distribution[score]):
                                 statement = sorted_statements.pop(0)
-                                index = next((i for i, s in enumerate(scored_statements) if s['card'] == statement['card']), None)
+                                index = next(
+                                    (i for i, s in enumerate(scored_statements) if s['card'] == statement['card']),
+                                    None)
                                 if index is not None:
                                     scored_statements[index]['score'] = score
 
@@ -267,7 +280,8 @@ def ResponseAPI(request):
                             results[group.capitalize()] = scores
 
                     # Other payload information
-                    user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
+                    user_info = {key: value for key, value in payload.items() if
+                                 key not in ["disagree", "neutral", "agree"]}
                     user_info['results'] = results
 
                     event = get_event_id()
@@ -296,7 +310,8 @@ def ResponseAPI(request):
 
                         results = move_last_to_start(user_info)
                         return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
-                    elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][0:6] == 'E11000':
+                    elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][
+                                                                                                  0:6] == 'E11000':
                         return JsonResponse({"Error": "Response Already Exists"}, status=status.HTTP_400_BAD_REQUEST)
                     else:
                         return JsonResponse({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
@@ -309,7 +324,8 @@ def ResponseAPI(request):
                                  {"settings.scaletype": "qsort"}, "nil")
 
             z = json.loads(z)
-            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
+            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
+                                status=status.HTTP_200_OK)
         else:
             field_add = {"_id": payload["scale_id"]}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
@@ -326,6 +342,6 @@ def ResponseAPI(request):
 
                     z = json.loads(z)
                     return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
+
             except:
                 return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
-

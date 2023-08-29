@@ -374,8 +374,9 @@ def evaluation_api(request):
             "stapel_scores": scores.get("stapel scale"),
             "score_series": scores.get("nps scale")
         }
-
         print(response_, "response_")
+    else:
+        return JsonResponse({"error": "No data found for the given process_id in Dowell response."}, status=status.HTTP_404_NOT_FOUND)
 
     # try:
     print(calculate_score, "calculate_score")
@@ -384,7 +385,9 @@ def evaluation_api(request):
     with ThreadPoolExecutor() as executor:
         response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
         response_json = response_json_future.result()
-        print(response_json_future.result(), "response_json______________________")
+        print(response_json, "response_json______________________")
+        if "Process Id already in use. Please enter a different Process Id & try again" in response_json:
+            return JsonResponse({"error": "Process Id already in use. Please enter a different Process Id & try again."}, status=status.HTTP_400_BAD_REQUEST)
         response_["stattrick"] = response_json
     # except Exception as e:
     #     return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -392,7 +395,7 @@ def evaluation_api(request):
     # try:
     # Execute Normality_api API call
     with ThreadPoolExecutor() as executor:
-        normality_future = executor.submit(Normality_api, 78451221)
+        normality_future = executor.submit(Normality_api, process_id)
         normality = normality_future.result()
         response_["normality"] = normality
     # except Exception as e:
