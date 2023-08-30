@@ -215,7 +215,11 @@ def response_submit_api_view(request):
                     "rankings": rsp['rankings']
                 }
                 result = response_submit_loop(username, scale_id, event_id, response)
-                results.append(result.data)
+                result = result.data
+                result.update({"rankings": rsp['rankings']})
+                results.append(result)
+            eventId = get_event_id()
+            results.append({"event_id": eventId})
             return Response(results, status=status.HTTP_200_OK)
         else:
             try:
@@ -237,8 +241,12 @@ def response_submit_api_view(request):
                 "rankings": rankings
             }
             result = response_submit_loop(username, scale_id, event_id, response)
-            return Response(result.data, status=status.HTTP_200_OK)
-        
+            result = [result.data]
+            eventId = get_event_id()
+            result.append({"rankings": rankings})
+            result.append({"event_id": eventId})
+            return Response(result, status=status.HTTP_200_OK)
+      
 
 def response_submit_loop(username, scale_id, event_id, response):
     # Check if response already exists for this event
@@ -247,7 +255,7 @@ def response_submit_loop(username, scale_id, event_id, response):
     # existing_response = json.loads(existing_response)
     # if isinstance(existing_response, dict) and existing_response['data']:
     #     return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Check if scale exists
     field_add = {"_id": scale_id}
     scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
