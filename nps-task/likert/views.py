@@ -154,10 +154,13 @@ def submit_response_view(request):
                 document_responses = response_data["document_responses"]
                 all_results = []
                 instance_id = response_data['instance_id']
+                process_id = response["process_id"]
+                if not isinstance(process_id, str):
+                    return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 for single_response in document_responses:
                     score = single_response["score"]
                     scale_id = single_response['scale_id']
-                    success = response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id)
+                    success = response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
@@ -186,7 +189,7 @@ def submit_response_view(request):
 
 
 
-def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id):
+def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None):
     field_add = {"_id": scale_id, "settings.scale-category": "likert scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
@@ -216,13 +219,24 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
     if int(instance_id) > int(number_of_scale):
         return Response({"Error":"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
-    response = {
-        "event_id": event_id,
-        "scale_data": {"scale_id": scale_id, "scale_type": "likert scale"},
-        "brand_data": {"brand_name": brand_name, "product_name": product_name},
-        "score": score_data,
-        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
+
+    if process_id:
+        response = {
+            "event_id": event_id,
+            "process_id": process_id,
+            "scale_data": {"scale_id": scale_id, "scale_type": "likert scale"},
+            "brand_data": {"brand_name": brand_name, "product_name": product_name},
+            "score": score_data,
+            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+    else:
+        response = {
+            "event_id": event_id,
+            "scale_data": {"scale_id": scale_id, "scale_type": "likert scale"},
+            "brand_data": {"brand_name": brand_name, "product_name": product_name},
+            "score": score_data,
+            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                                    "ABCDE", "insert", response, "nil")
 

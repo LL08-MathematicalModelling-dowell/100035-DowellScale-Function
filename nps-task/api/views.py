@@ -457,10 +457,13 @@ def nps_response_view_submit(request):
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
+                process_id = response['process_id']
+                if not isinstance(process_id, str):
+                    return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 scale_id = response['scale_id']
                 score = response['score']
                 instance_id = response['instance_id']
-                return response_submit_loop(response, scale_id, instance_id, user, score)
+                return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
 
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
