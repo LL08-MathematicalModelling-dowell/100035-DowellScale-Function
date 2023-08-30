@@ -73,7 +73,26 @@ def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues)
 
     response = requests.post(url, json=payload)
 
+    print(f"\n\nResponse status code: {response.status_code}\n\n")
+    print(f"\n\nResponse headers: {response.headers}\n\n")
+    print(f"\n\nResponse content: {response.text}\n\n")
+
+
     return response.json()
+
+
+# Statricks API GET
+def stattricks_api_get(process_id):
+    url = "https://100004.pythonanywhere.com/processapi"
+
+    payload = {
+        "Process_id": process_id
+    }
+
+    response = requests.get(url, json=payload)
+
+    return response.json()
+
 
 
 """
