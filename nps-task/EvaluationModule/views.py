@@ -13,6 +13,8 @@ This module takes random number, attaches it to the product name and doc_no and 
 Evaluation API with process id as the process id is the random number. It then uses the same random number to
 process the Normality API and get the responses of both the APIs, and finally renders the data to the template.
 """
+
+
 def evaluation_editor(request, product_name, doc_no):
     random_number = generate_random_number()
     print(f"\n\nrandom_number: {random_number}\n\n")
@@ -86,7 +88,6 @@ def evaluation_editor(request, product_name, doc_no):
     cache.set(cache_key, context)
     print(f"stattricks_api: {response_json}\n")
     print(f"Normality_api: {normality}")
-
 
     return render(request, 'EvaluationModule/editor_reports.html', context)
 
@@ -334,7 +335,7 @@ def evaluation_api(request):
     if not (process_id and doc_no):
         return JsonResponse({"error": "Required fields: process_id, doc_no."}, status=status.HTTP_400_BAD_REQUEST)
 
-    field_add = {"process_id": f"{process_id}"}
+    field_add = {"process_id": process_id}
 
 
     try:
@@ -356,7 +357,18 @@ def evaluation_api(request):
         if int(i['score']['instance_id'].split("/")[0]) == int(doc_no):
             all_scales.append(i)
 
-    calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"].get("scale_type") == "nps scale"]
+    print(all_scales, "*&^%*(&)")
+
+    # calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
+    calculate_score = []
+    for x in all_scales:
+        print(x["scale_data"]["scale_type"])
+        print(x["scale_data"].get("scale_type"))
+        print(x['score']['score'])
+        print(x['score'])
+        if x["scale_data"]["scale_type"] == "nps scale":
+            print(x['score']['score'])
+            calculate_score.append(x['score']['score'])
 
     # Process the fetched data
     if data:
@@ -374,17 +386,20 @@ def evaluation_api(request):
     else:
         return JsonResponse({"error": "No data found for the given process_id in Dowell response."}, status=status.HTTP_404_NOT_FOUND)
 
-    try:
-        # Execute stattricks_api API call
-        with ThreadPoolExecutor() as executor:
-            response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
-            response_json = response_json_future.result()
-            print(response_json, "response_json______________________")
-            if "Process Id already in use. Please enter a different Process Id & try again" in response_json:
-                return JsonResponse({"error": "Process Id already in use. Please enter a different Process Id & try again."}, status=status.HTTP_400_BAD_REQUEST)
-            response_["stattrick"] = response_json
-    except Exception as e:
-        return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    print(calculate_score, "((((((((((((((((((()))))))))")
+    # try:
+    # Execute stattricks_api API call
+    with ThreadPoolExecutor() as executor:
+        response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
+        response_json = response_json_future.result()
+        print(response_json, "response_json______________________")
+        if "Process Id already in use. Please enter a different Process Id & try again" in response_json:
+            get_response = stattricks_api_get(process_id)
+            print(get_response, "get_response")
+            response_json = {"error": "Process Id already in use. Please enter a different Process Id & try again.", "data":get_response}
+        response_["stattrick"] = response_json
+    # except Exception as e:
+    #     return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     try:
         # Execute Normality_api API call
