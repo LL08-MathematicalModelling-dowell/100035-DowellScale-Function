@@ -30,6 +30,8 @@ def settings_api_view_create(request):
                 time = 0
             name = response['scale_name']
             number_of_scales = response['no_of_scale']
+            fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
+            fontcolor = response.get('fontcolor', "black")
             orientation = response['orientation']
             scale_color = response['scale_color']
             product_count = response['product_count']
@@ -44,8 +46,8 @@ def settings_api_view_create(request):
             return Response({"error": "Product names must be unique"}, status=status.HTTP_400_BAD_REQUEST)
         eventID = get_event_id()
         field_add = {"event_id": eventID,
-                     "settings": {"orientation": orientation, "scale_color": scale_color,
-                                  "number_of_scales": number_of_scales,
+                     "settings": {"orientation": orientation, "scale_color": scale_color,"fontstyle": fontstyle,
+                                  "number_of_scales": number_of_scales,"fontcolor": fontcolor,
                                   "left": "0%", "right": "100%",
                                   "time": time, "name": name, "scale-category": "percent scale", "user": user,
                                   "product_names": product_names, "product_count": product_count,

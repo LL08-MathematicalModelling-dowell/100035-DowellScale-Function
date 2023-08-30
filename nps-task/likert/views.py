@@ -17,8 +17,6 @@ from .utils import assign_statement
 def settings_api_view_create(request):
     if request.method == 'POST':
         custom_emoji_format = {}
-        label_selection = {}
-
         try:
             response = request.data
             try:
@@ -32,13 +30,13 @@ def settings_api_view_create(request):
                 name = response['scale_name']
                 number_of_scales = response['no_of_scales']
                 orientation = response['orientation']
-                instance_id = response.get('instance_id', "Arial, Helvetica, sans-serif")
+                instance_id = response.get('instance_id')
+                fontstyle = response["fontstyle"]
                 font_color = response['font_color']
                 round_color = response['round_color']
                 fomat = response['fomat']
                 user = response['user']
-                if fomat == "text":
-                    label_selection = response.get('label_scale_selection', {})
+                label_selection = response['label_scale_selection']
                 if fomat == "emoji":
                     custom_emoji_format = response.get('custom_emoji_format', {})
                 label_input = response['label_scale_input']
@@ -48,13 +46,12 @@ def settings_api_view_create(request):
             if fomat != "text" and fomat != "emoji":
                 return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
 
-            if fomat == "text":
-                if 2 < label_selection > 9 or label_selection == 6:
-                    return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"},
-                                    status=status.HTTP_400_BAD_REQUEST)
-                if len(label_input) != label_selection:
-                    return Response({"error": "Label selection and number of label input count should be same"},
-                                    status=status.HTTP_400_BAD_REQUEST)
+            if 2 < label_selection > 9 or label_selection == 6:
+                return Response({"error": "Label selection should be between 2 to 5 and 7 to 9"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if len(label_input) != label_selection:
+                return Response({"error": "Label selection and number of label input count should be same"},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             eventID = get_event_id()
             field_add = {"event_id": eventID,
@@ -62,6 +59,7 @@ def settings_api_view_create(request):
                                       "no_of_scales": number_of_scales,"instance_id":instance_id,
                                       "time": time, "name": name, "scale-category": "likert scale", "user": user,
                                       "round_color": round_color, "fomat": fomat, "label_selection": label_selection,
+                                      "fontstyle": fontstyle, 
                                       "label_input": label_input, "user": user,
                                       "custom_emoji_format": custom_emoji_format,
                                       "allow_resp": response.get('allow_resp', True),
@@ -110,7 +108,7 @@ def settings_api_view_create(request):
                 return Response({"error": "scale_id missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
             if response["fomat"] != "text" and response["fomat"] != "emoji":
                 return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
-            if response["fomat"] == "text" or "label_input" in response:
+            if "label_input" in response:
                 label_selection = response["label_scale_selection"]
                 label_input = response["label_scale_input"]
                 if 2 < label_selection > 9 or label_selection == 6:
