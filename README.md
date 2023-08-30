@@ -5,7 +5,7 @@
    - Example:
        ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/39786d26-fd9e-4962-afe4-8e5f2b7a6e21)
    - API documentation:
-        https://documenter.getpostman.com/view/27724787/2s93mBvJ51
+        [https://documenter.getpostman.com/view/27724787/2s93mBvJ51](https://documenter.getpostman.com/view/27726703/2s9Y5bQ1hk)
 
 - ## NPSLite scale
    - Description: This is a basic NPS scale with only 3 inputs, a negative option, a neutral option and a positive option.
