@@ -396,7 +396,7 @@ def evaluation_api(request):
         if "Process Id already in use. Please enter a different Process Id & try again" in response_json:
             get_response = stattricks_api_get(process_id)
             print(get_response, "get_response")
-            response_json = {"error": "Process Id already in use. Please enter a different Process Id & try again.", "data":get_response}
+            response_json = get_response
         response_["stattrick"] = response_json
     # except Exception as e:
     #     return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
