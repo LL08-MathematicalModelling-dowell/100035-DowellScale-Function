@@ -17,9 +17,6 @@ from itertools import count
 import random
 
 
-
-
-
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
     if request.method == 'POST':
@@ -32,57 +29,56 @@ def settings_api_view_create(request):
         try:
             username = data['username']
             scalename = data['scalename']
-            num_stages = data['num_stages']
-            num_substages = data['num_substages']
-            products = data['products']
-            product_arrangement = data['product_arrangement']
+            stages = data['stages']
+            stages_arrangement = data['stages_arrangement']
             orientation = data['orientation']
             scalecolor = data.get('scalecolor', '')
             fontcolor = data.get('fontcolor', '')
             fontstyle = data.get('fontstyle', '')
             time = data.get('time', 0)
             ranking_method_stages = data['ranking_method_stages']
-            ranking_method_things = data.get('ranking_method_things', False)
+            start_with_zero = data.get('start_with_zero', False)
             reference = data['reference']
             display_ranks = data['display_ranks']
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelled"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not products:
-            return Response({"error": "The 'products' list cannot be empty."},
+        if not stages:
+            return Response({"error": "The 'stages' list cannot be empty."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if product_arrangement == 'Alphabetically ordered':
-            products.sort()
-        elif product_arrangement == 'Shuffled (Randomly)':
-            random.shuffle(products)
-        elif product_arrangement == 'Using ID numbers':
-            # if only choosing this option, sort products by ID numbers
+        if stages_arrangement == 'Alphabetically ordered':
+            stages.sort()
+        elif stages_arrangement == 'Shuffled (Randomly)':
+            random.shuffle(stages)
+        elif stages_arrangement == 'Using ID numbers':
+            # if only choosing this option, sort stages by ID numbers
             response = {}
-            for i, product in enumerate(products):
-                if 'id' not in product:
-                    response[i] = product
-            products = dict(sorted(response.items()))
-        elif product_arrangement == 'Programmer\'s Choice':
+            if isinstance(stages, dict):
+                for key, value in stages.items():
+                    if not str(key).isdigit():
+                        key = int(key)
+                    response[int(key)] = value
+            elif isinstance(stages, list):
+                for i, product in enumerate(stages):
+                    response [i] = product
+            stages = dict(sorted(response.items()))
+        elif stages_arrangement == 'Programmer\'s Choice':
             pass
       
-
-
         event_id = get_event_id()
         settings = {
             "scalename": scalename,
             "scale_category": "ranking scale",
-            "num_stages": num_stages,
-            "num_substages": num_substages,
-            "products": products,
-            "product_arrangement": product_arrangement,
+            "stages": stages,
+            "stages_arrangement": stages_arrangement,
             "orientation": orientation,
             "scalecolor": scalecolor,
             "fontcolor" : fontcolor,
             "fontstyle": fontstyle,
             "time": time,
             "ranking_method_stages": ranking_method_stages,
-            "ranking_method_things": ranking_method_things,
+            "start_with_zero": start_with_zero,
             "reference": reference,
             "display_ranks": display_ranks,
             "event_id": event_id,
@@ -100,46 +96,22 @@ def settings_api_view_create(request):
 
         scale_id = str((json.loads(x)['inserted_id']))
 
-        user_details = {
-            "scale_id": scale_id,
-            "event_id": event_id,
-            "username": username
-        }
-        dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
-            "insert", user_details, "nil")
+        user_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                 "ABCDE", "insert", {"user": user}, "nil")
+        if not user_data:
+            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+
         return Response({"success": "Settings created successfully.", "data": settings, "scale_id": scale_id}, status=status.HTTP_201_CREATED)
     
 
     elif request.method == 'GET':
         data = request.data
-        id_generator = count(start=1)
         if "scale_id" in data:
             scale_id = data['scale_id']
             field_add = {"_id": scale_id}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                 "fetch", field_add, "nil")
             settings = json.loads(x)['data'][0]['settings']
-
-            product_arrangement = settings.get('product_arrangement')
-            if product_arrangement == 'Using ID numbers':
-                product_list = settings.get('products', [])
-                product_dict = {}  
-                for index, product in enumerate(product_list, start=next(id_generator)):
-                    if isinstance(product, str):
-                        product = product  
-                    elif isinstance(product, dict) and 'id' not in product:
-                        product['id'] = index  
-                        product = product['name']  
-                    product_dict[str(index)] = product
-                settings['products'] = product_dict 
-            elif product_arrangement == 'Alphabetically ordered':
-                product_list = settings.get('products', [])
-                product_list.sort()
-            elif product_arrangement == 'Shuffled (Randomly)':
-                product_list = settings.get('products', [])
-                random.shuffle(product_list)
-            elif product_arrangement == "Programmer's Choice":
-                pass
 
             return Response({"data": settings})
         else:
@@ -150,31 +122,10 @@ def settings_api_view_create(request):
             for item in json.loads(x)['data']:
                 try:
                     settings = item['settings']
-                    product_arrangement = settings.get('product_arrangement')
-                    if product_arrangement == 'Using ID numbers':
-                        product_list = settings.get('products', [])
-                        product_dict = {}  
-                        for index, product in enumerate(product_list, start=next(id_generator)):
-                            if isinstance(product, str):
-                                product = product  
-                            elif isinstance(product, dict) and 'id' not in product:
-                                product['id'] = index  
-                                product = product['name']  
-                            product_dict[str(index)] = product  
-                        settings['products'] = product_dict  
-                    elif product_arrangement == 'Alphabetically ordered':
-                        product_list = settings.get('products', [])
-                        product_list.sort()
-                    elif product_arrangement == 'Shuffled (Randomly)':
-                        product_list = settings.get('products', [])
-                        random.shuffle(product_list)
-                    elif product_arrangement == "Programmer's Choice":
-                        pass
                     settings_list.append(settings)
                 except Exception as e:
                     print(e)
             return Response({"data": settings_list}, status=status.HTTP_200_OK)
-
 
 
     elif request.method == "PUT":
@@ -191,19 +142,19 @@ def settings_api_view_create(request):
             if key in data:
                 settings[key] = data[key]
 
-        products = settings['products']
-        if settings['product_arrangement'] == 'Alphabetically ordered':
-            products.sort()
-        elif settings['product_arrangement'] == 'Shuffled (Randomly)':
-            random.shuffle(products)
-        elif settings['product_arrangement'] == 'Using ID numbers':
-            # if only choosing this option, sort products by ID numbers
+        stages = settings['stages']
+        if settings['stages_arrangement'] == 'Alphabetically ordered':
+            stages.sort()
+        elif settings['stages_arrangement'] == 'Shuffled (Randomly)':
+            random.shuffle(stages)
+        elif settings['stages_arrangement'] == 'Using ID numbers':
+            # if only choosing this option, sort stages by ID numbers
             response = {}
-            for i, product in enumerate(products):
+            for i, product in enumerate(stages):
                 if 'id' not in product:
                     response[i] = product
-            products = dict(sorted(response.items()))
-        elif settings['product_arrangement'] == 'Programmer\'s Choice':
+            stages = dict(sorted(response.items()))
+        elif settings['stages_arrangement'] == 'Programmer\'s Choice':
             pass
         settings["scale-category"] = "ranking scale"
         settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -235,101 +186,135 @@ def response_submit_api_view(request):
             settings_list = []
             for item in json.loads(x)['data']:
                 item['scale_id'] = item['_id']
-                # Sort based on product_arrangement
+                # Sort based on stages_arrangement
                 settings_list.append(item) 
 
-            sorted_settings_list = sort_settings_list(settings_list)
+            sorted_settings_list = settings_list
             return Response({"data": sorted_settings_list}, status=status.HTTP_200_OK)
 
 
     elif request.method == 'POST':
-        try:
-            scale_id = request.data['scale_id']
-            response = request.data['response']
-            username = request.data['username']
-
-            # Check if scale exists
-            field_add = {"_id": scale_id}
-            scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
-                                     "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
-            data = json.loads(scale)
-            if data['data'] is None:
-                return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Check if response is valid
-            products = data['data'][0]['settings']['products']
-            product_names = products
-            for product in response:
-                if product['name'] not in product_names:
-                    return Response({"error": f"Invalid product name: {product['name']}"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Check if ranking is valid and unique
-            settings = data['data'][0]['settings']
-            num_products = len(products)
-            ranks = [product['rank'] for product in response]
-            if settings['ranking_method_stages'] == "Unique Ranking":
-                if len(set(ranks)) != len(ranks):
-                    return Response({"error": "Ranking is not unique."}, status=status.HTTP_400_BAD_REQUEST)
-                if not all(1 <= rank <= num_products for rank in ranks):
-                    return Response({"error": "Invalid rank value."}, status=status.HTTP_400_BAD_REQUEST)
-
-            elif settings['ranking_method_stages'] == 'Tied Ranking':
-                if not all(1 <= rank <= num_products for rank in ranks):
-                    return Response({"error": "Invalid rank value."}, status=status.HTTP_400_BAD_REQUEST)
-
-            settings["scale-category"] = "ranking scale"
-            settings["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            settings["products"] = response
-            event_id = get_event_id()
-            scale_data = {
-                "scale_id": scale_id,
-                "event_id": event_id,
-                "username": username,
-                "settings": settings,
-                
+        data = request.data
+        if "document_responses" in data:
+            document_response = data['document_responses']
+            try:
+                username = data['username']
+                event_id = data['event_id']
+                brand_name = data['brand_name'],
+                product_name = data['product_name']
+            except KeyError as e:
+                return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
+            results = []
+            for rsp in document_response:
+                scale_id = rsp['scale_id']
+                response = {
+                    "brand_name": brand_name,
+                    "product_name": product_name,
+                    "num_of_stages": rsp['num_of_stages'],
+                    "num_of_substages": rsp['num_of_substages'],
+                    "rankings": rsp['rankings']
+                }
+                result = response_submit_loop(username, scale_id, event_id, response)
+                result = result.data
+                result.update({"rankings": rsp['rankings']})
+                results.append(result)
+            eventId = get_event_id()
+            results.append({"event_id": eventId})
+            return Response(results, status=status.HTTP_200_OK)
+        else:
+            try:
+                scale_id = data['scale_id']
+                event_id = data['event_id']
+                username = data['username']
+                rankings = data['rankings']
+                brand_name = data['brand_name']
+                product_name = data['product_name']
+                num_of_stages = data['num_of_stages']
+                num_of_substages = data['num_of_substages']
+            except KeyError as e:
+                return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
+            response = {
+                "brand_name": brand_name,
+                "product_name": product_name,
+                "num_of_stages": num_of_stages,
+                "num_of_substages": num_of_substages,
+                "rankings": rankings
             }
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert", scale_data, "nil")
-            dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-                                 "ABCDE", "insert", scale_data, "nil")
-            
-            # Insert user details in users collection
-            details = {"scale_id": scale_id, "event_id": event_id, "username": username}
-            dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "insert",
-                             details, "nil")
-            return Response({"success": "Ranking submitted successfully.", "data": x}, status=status.HTTP_200_OK)
+            result = response_submit_loop(username, scale_id, event_id, response)
+            result = [result.data]
+            eventId = get_event_id()
+            result.append({"rankings": rankings})
+            result.append({"event_id": eventId})
+            return Response(result, status=status.HTTP_200_OK)
+      
 
-        except Exception as e:
-            print(e)
-            return Response({"error": "Invalid Input."}, status=status.HTTP_400_BAD_REQUEST)
+def response_submit_loop(username, scale_id, event_id, response):
+    # Check if response already exists for this event
+    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                            "ABCDE", "fetch", {"event_id": event_id}, "nil")
+    # existing_response = json.loads(existing_response)
+    # if isinstance(existing_response, dict) and existing_response['data']:
+    #     return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Check if scale exists
+    field_add = {"_id": scale_id}
+    scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
+                            "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
+    scale = json.loads(scale)
+    if scale['data'] is None:
+        return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+    if scale['data'][0]['settings']['scale_category'] != 'ranking scale':
+        return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
+    scale_data = {
+                    "scale-category": "ranking scale",
+                    "scale_id": scale_id,
+                    "event_id": event_id,
+                    "username": username,
+                    "response": response,
+                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
 
-def sort_settings_list(settings_list):
-    sorted_settings_list = []
     try:
-        for settings in settings_list:
-            product_arrangement = settings["settings"].get('product_arrangement')
-            if product_arrangement == "Using ID numbers":
-                product_dict = settings.get('products', {})
-                sorted_products = sorted(product_dict.items(), key=lambda x: int(x[0]))
-                sorted_products = {k: v for k, v in sorted_products}
-                settings['products'] = sorted_products
-            elif product_arrangement == "Alphabetically ordered":
-                product_dict = settings.get('products', {})
-                sorted_products = sorted(product_dict, key=lambda x: x['name'])
-                settings['products'] = sorted_products
-            elif product_arrangement == "Shuffled (Randomly)":
-                product_list = settings.get('products', [])
-                random.shuffle(product_list)
-                settings['products'] = product_list
-            elif product_arrangement == "Programmer's Choice":
-                pass  # Do nothing for Programmer's Choice
-            sorted_settings_list.append(settings)
+        settings = scale['data'][0]['settings']
+        stages = settings['stages']
+        # check if "stage_name" is unoque or not for every rankings
+        stage_names = []
+        for rank in response['rankings']:
+            stage_name = rank['stage_name']
+            if stage_name not in  stage_names:
+                stage_names.append(stage_name)
+            else:
+                return Response({"error": f"Stage name [{stage_name}] given more than one time."}, status=status.HTTP_400_BAD_REQUEST)
+        if response['num_of_stages'] != len(response['rankings']):
+            return Response({"error": "Number of rankings does not match number of stages."}, status=status.HTTP_400_BAD_REQUEST)
+        if settings['ranking_method_stages'] == "Unique Ranking":
+            for stage in response['rankings']:
+                if not all(key in stage for key in ['stage_name', 'stage_rankings']):
+                    return Response({"error": "Invalid response data format."}, status=status.HTTP_400_BAD_REQUEST)
+                ranks = [product['rank'] for product in stage['stage_rankings']]
+                if len(ranks) != len(set(ranks)):
+                    return Response({"error": f"Ranking is not unique for stage name. {stage['stage_name']}."}, status=status.HTTP_400_BAD_REQUEST)
+                if settings['start_with_zero']:
+                    if not all(0 <= rank <= len(ranks) for rank in ranks):
+                        return Response({"error": f"Invalid rank value.{stage['stage_name']}"}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    if not all(1 <= rank <= len(ranks) for rank in ranks):
+                        return Response({"error": f"Invalid rank value.{stage['stage_name']}"}, status=status.HTTP_400_BAD_REQUEST)
+        elif settings['ranking_method_stages'] == "Tied Ranking":
+            for stage in response['rankings']:
+                if not all(key in stage for key in ['stage_name', 'stage_rankings']):
+                    return Response({"error": "Invalid response data format."}, status=status.HTTP_400_BAD_REQUEST)
+                ranks = [product['rank'] for product in stage['stage_rankings']]
+                if not all(1 <= rank <= len(ranks) for rank in ranks):
+                    return Response({"error": f"Invalid rank value.{stage['stage_name']}"}, status=status.HTTP_400_BAD_REQUEST)
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert", scale_data, "nil")
+        response_id = json.loads(x)
+        return Response({"Success": True, "response_id": response_id['inserted_id']})
+            
     except Exception as e:
         print(e)
-    return sorted_settings_list
-
-
-
+        return Response({"Success" : False, "Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 def dowell_scale_admin(request):
     user = request.session.get('user_name')
