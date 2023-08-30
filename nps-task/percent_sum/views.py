@@ -30,6 +30,8 @@ def settings_api_view_create(request):
                 if time == "":
                     time = 0
                 name = response['scale_name']
+                fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
+                fontcolor = response.get('fontcolor', "black")
                 number_of_scales = response['no_of_scale']
                 orientation = response['orientation']
                 scale_color = response['scale_color']
@@ -49,8 +51,8 @@ def settings_api_view_create(request):
 
             eventID = get_event_id()
             field_add = {"event_id": eventID,
-                         "settings": {"orientation": orientation, "scale_color": scale_color,
-                                      "number_of_scales": number_of_scales,
+                         "settings": {"orientation": orientation, "scale_color": scale_color,"fontstyle": fontstyle,
+                                      "number_of_scales": number_of_scales,"fontcolor": fontcolor,
                                       "time": time, "name": name, "scale-category": "percent_sum scale", "user": user,
                                       "allow_resp": response.get('allow_resp', True),
 
