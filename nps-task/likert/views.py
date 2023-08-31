@@ -123,7 +123,7 @@ def settings_api_view_create(request):
                                  "fetch", field_add, "nil")
             settings_json = json.loads(x)
             settings = settings_json['data'][0]['settings']
-            name = settings["name"]
+            name = response.get('scale_id', settings["name"])
             for key in settings.keys():
                 if key in response:
                     settings[key] = response[key]
