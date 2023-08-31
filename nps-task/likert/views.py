@@ -126,11 +126,10 @@ def settings_api_view_create(request):
             for key in settings.keys():
                 if key in response:
                     settings[key] = response[key]
+            settings['name'] = response.get('scale_name', settings["name"])
             settings["scale-category"] = "likert scale"
             settings["date_updated"] = datetime.datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S")
-            settings['name'] = response.get('scale_name', settings["name"])
-
             update_field = {"settings": settings}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                  field_add, update_field)
@@ -154,7 +153,7 @@ def submit_response_view(request):
                 document_responses = response_data["document_responses"]
                 all_results = []
                 instance_id = response_data['instance_id']
-                process_id = response["process_id"]
+                process_id = response_data["process_id"]
                 if not isinstance(process_id, str):
                     return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 for single_response in document_responses:
@@ -164,7 +163,7 @@ def submit_response_view(request):
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
-                process_id = response["process_id"]
+                process_id = response_data["process_id"]
                 if not isinstance(process_id, str):
                     return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 scale_id = response_data['scale_id']
