@@ -141,10 +141,9 @@ def settings_api_view_create(request):
         for key in settings.keys():
             if key in data:
                 settings[key] = data[key]
-
         stages = settings['stages']
         if settings['stages_arrangement'] == 'Alphabetically ordered':
-            stages.sort()
+            list(stages).sort()
         elif settings['stages_arrangement'] == 'Shuffled (Randomly)':
             random.shuffle(stages)
         elif settings['stages_arrangement'] == 'Using ID numbers':
@@ -162,7 +161,7 @@ def settings_api_view_create(request):
         update_field = {"settings": settings}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
             field_add, update_field)
-        return Response({"success": "Settings updated successfully.", "data": x, "scale_id": scale_id}, status=status.HTTP_200_OK)
+        return Response({"success": "Settings updated successfully.", "data": settings, "scale_id": scale_id}, status=status.HTTP_200_OK)
     return Response({"error": "Invalid request method."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @api_view(['GET', 'POST'])
