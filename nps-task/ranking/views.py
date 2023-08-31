@@ -241,7 +241,7 @@ def response_submit_api_view(request):
             result = response_submit_loop(username, scale_id, event_id, response)
             result = [result.data]
             result.append({"rankings": rankings})
-            result.append({"event_id": eventId})
+            result.append({"event_id": event_id})
             return Response(result, status=status.HTTP_200_OK)
       
 
