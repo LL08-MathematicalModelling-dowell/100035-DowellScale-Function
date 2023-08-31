@@ -123,14 +123,14 @@ def settings_api_view_create(request):
                                  "fetch", field_add, "nil")
             settings_json = json.loads(x)
             settings = settings_json['data'][0]['settings']
-            name = response.get('scale_id', settings["name"])
             for key in settings.keys():
                 if key in response:
                     settings[key] = response[key]
-            settings["name"] = name
             settings["scale-category"] = "likert scale"
             settings["date_updated"] = datetime.datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S")
+            settings['name'] = response.get('scale_name', settings["name"])
+
             update_field = {"settings": settings}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                  field_add, update_field)
