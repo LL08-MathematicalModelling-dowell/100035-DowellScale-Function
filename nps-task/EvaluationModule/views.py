@@ -359,14 +359,19 @@ def evaluation_api(request):
 
     print(all_scales, "*&^%*(&)")
 
+    if all_scales == []:
+        return JsonResponse({"error": "No data found for the given doc_no."}, status=status.HTTP_404_NOT_FOUND)
+
     # calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
     calculate_score = []
+    scale_type = ""
     for x in all_scales:
         print(x["scale_data"]["scale_type"])
         print(x["scale_data"].get("scale_type"))
         print(x['score']['score'])
         print(x['score'])
         if x["scale_data"]["scale_type"] == "nps scale":
+            scale_type = "nps scale"
             print(x['score']['score'])
             calculate_score.append(x['score']['score'])
 
@@ -375,12 +380,11 @@ def evaluation_api(request):
         scores = process_data(data, doc_no)
         print(scores, "scores")
         response_ = {
-            "nps_scales": len(scores.get("nps scale", [])),
+            "scale_category": scale_type,
+            "no_of_scales": len(scores.get("nps scale", [])),
             "nps_score": sum(scores.get("nps scale", [])),
             "nps_total_score": len(scores.get("nps scale", [])) * 10,
-            "stapel_scales": len(scores.get("stapel scale", [])),
-            "stapel_scores": scores.get("stapel scale"),
-            "score_series": scores.get("nps scale")
+            "score_list": scores.get("nps scale")
         }
         print(response_, "response_")
     else:
@@ -388,6 +392,20 @@ def evaluation_api(request):
 
     print(calculate_score, "((((((((((((((((((()))))))))")
     # try:
+    # except Exception as e:
+    #     return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    try:
+        # Execute Normality_api API call
+        with ThreadPoolExecutor() as executor:
+            normality_future = executor.submit(Normality_api, process_id)
+            normality = normality_future.result()
+            normality.pop("process_id")
+            normality.pop("title")
+            response_["normality_analysis"] = normality
+    except Exception as e:
+        return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     # Execute stattricks_api API call
     with ThreadPoolExecutor() as executor:
         response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
@@ -397,19 +415,14 @@ def evaluation_api(request):
             get_response = stattricks_api_get(process_id)
             print(get_response, "get_response")
             response_json = get_response
-        response_["stattrick"] = response_json
-    # except Exception as e:
-    #     return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    try:
-        # Execute Normality_api API call
-        with ThreadPoolExecutor() as executor:
-            normality_future = executor.submit(Normality_api, process_id)
-            normality = normality_future.result()
-            response_["normality"] = normality
-    except Exception as e:
-        return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        try:
+            response_json.pop("msg")
+            response_json.pop("_id")
+            response_json.pop("Process_id")
+            response_json.pop("title")
+        except:
+            pass
+        response_["central_tendencies"] = response_json
     return JsonResponse(response_, status=status.HTTP_200_OK)
 
 
