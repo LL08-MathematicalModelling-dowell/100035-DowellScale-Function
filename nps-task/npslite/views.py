@@ -164,7 +164,7 @@ def submit_response_view(request):
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
-def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id):
+def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None):
     field_add = {"_id": scale_id, "settings.scale-category": "npslite scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
