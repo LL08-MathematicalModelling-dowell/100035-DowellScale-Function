@@ -194,11 +194,11 @@ def response_submit_api_view(request):
 
     elif request.method == 'POST':
         data = request.data
+        event_id = get_event_id()
         if "document_responses" in data:
             document_response = data['document_responses']
             try:
                 username = data['username']
-                event_id = data['event_id']
                 brand_name = data['brand_name'],
                 product_name = data['product_name']
             except KeyError as e:
@@ -223,7 +223,6 @@ def response_submit_api_view(request):
         else:
             try:
                 scale_id = data['scale_id']
-                event_id = data['event_id']
                 username = data['username']
                 rankings = data['rankings']
                 brand_name = data['brand_name']
@@ -241,7 +240,6 @@ def response_submit_api_view(request):
             }
             result = response_submit_loop(username, scale_id, event_id, response)
             result = [result.data]
-            eventId = get_event_id()
             result.append({"rankings": rankings})
             result.append({"event_id": eventId})
             return Response(result, status=status.HTTP_200_OK)
