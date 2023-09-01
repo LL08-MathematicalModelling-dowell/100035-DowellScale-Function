@@ -123,7 +123,12 @@ def process_data(data, doc_no):
     collects all the elements from data where the last segment (after the last '/')
     of the instance_id from the first score equals doc_no
     """
-    all_scales = [x for x in data if int(x['score']['instance_id'].split("/")[-1]) == int(doc_no)]
+    all_scales = []
+    if doc_no is None:
+        for i in data:
+            all_scales.append(i)
+    else:
+        all_scales = [x for x in data if int(x['score']['instance_id'].split("/")[-1]) == int(doc_no)]
     print(f"\n\nall_scales: {all_scales}.................\n\n")
 
     scores = defaultdict(list)
