@@ -361,6 +361,8 @@ def evaluation_api(request):
 
     if all_scales == []:
         return JsonResponse({"error": "No data found for the given doc_no."}, status=status.HTTP_404_NOT_FOUND)
+    elif len(all_scales) < 5:
+        return JsonResponse({"error": "Not enough scores found for the given info."}, status=status.HTTP_404_NOT_FOUND)
 
     # calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
     calculate_score = []
@@ -375,6 +377,8 @@ def evaluation_api(request):
             print(x['score']['score'])
             calculate_score.append(x['score']['score'])
 
+    # find the largest score among the score list of calculate scores
+    largest = max(calculate_score)
     # Process the fetched data
     if data:
         scores = process_data(data, doc_no)
@@ -384,6 +388,7 @@ def evaluation_api(request):
             "no_of_scales": len(scores.get("nps scale", [])),
             "nps_score": sum(scores.get("nps scale", [])),
             "nps_total_score": len(scores.get("nps scale", [])) * 10,
+            "max_total_score": largest,
             "score_list": scores.get("nps scale")
         }
         print(response_, "response_")
