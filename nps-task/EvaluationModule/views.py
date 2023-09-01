@@ -330,10 +330,13 @@ def evaluation_api(request):
 
     payload = request.data
     process_id = payload.get('process_id')
-    doc_no = payload.get('doc_no')
+    try:
+        doc_no = payload.get('doc_no')
+    except:
+        doc_no = None
 
-    if not (process_id and doc_no):
-        return JsonResponse({"error": "Required fields: process_id, doc_no."}, status=status.HTTP_400_BAD_REQUEST)
+    if not process_id:
+        return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
 
     field_add = {"process_id": process_id}
 
@@ -352,16 +355,20 @@ def evaluation_api(request):
 
 
     all_scales = []
-    for i in data:
-        print(f".{i['score']['instance_id'].split('/')[0]}.\n.{doc_no}.")
-        if int(i['score']['instance_id'].split("/")[0]) == int(doc_no):
+    if doc_no is None:
+        for i in data:
             all_scales.append(i)
+    else:
+        for i in data:
+            print(f".{i['score']['instance_id'].split('/')[0]}.\n.{doc_no}.")
+            if int(i['score']['instance_id'].split("/")[0]) == int(doc_no):
+                all_scales.append(i)
 
     print(all_scales, "*&^%*(&)")
 
     if all_scales == []:
         return JsonResponse({"error": "No data found for the given doc_no."}, status=status.HTTP_404_NOT_FOUND)
-    elif len(all_scales) < 5:
+    elif len(all_scales) < 3:
         return JsonResponse({"error": "Not enough scores found for the given info."}, status=status.HTTP_404_NOT_FOUND)
 
     # calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
