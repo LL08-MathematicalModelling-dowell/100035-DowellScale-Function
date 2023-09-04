@@ -255,6 +255,10 @@ def stapel_response_view_submit(request):
                 user = response['username']
             except KeyError:
                 return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            process_id = response["process_id"]
+            if not isinstance(process_id, str):
+                return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
 
             if 'document_responses' in response:
                 document_responses = response['document_responses']
@@ -263,14 +267,14 @@ def stapel_response_view_submit(request):
                 for x in document_responses:
                     scale_id = x['scale_id']
                     score = x['score']
-                    success = response_submit_loop(response, scale_id, instance_id, user, score)
+                    success = response_submit_loop(response, scale_id, instance_id, user, score, process_id)
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
                 scale_id = response['scale_id']
                 score = response.get('score', '0')
                 instance_id = response['instance_id']
-                return response_submit_loop(response, scale_id, instance_id, user, score)
+                return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -305,7 +309,7 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
     return None
 
 
-def response_submit_loop(response, scale_id, instance_id, user, score):
+def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None):
     field_add = {"_id": scale_id, "settings.scale-category": "stapel scale"}
     default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                "fetch", field_add, "nil")
@@ -321,7 +325,6 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
     if x['fomat'] == 'emoji':
         try:
             if is_emoji(score):
-                print("Hello Ambrose")
                 saved_emojis = x["custom_emoji_format"]
                 score = find_key_by_emoji(score, saved_emojis)
                 if score is None:
@@ -358,6 +361,8 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
     field_add = {"event_id": eventID, "scale_data": {"scale_id": scale_id, "scale_type": "stapel scale"},
                  "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
                  "score": [score]}
+    if process_id:
+        field_add["process_id"] = process_id
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                          "ABCDE", "insert", field_add, "nil")
     user_json = json.loads(z)
