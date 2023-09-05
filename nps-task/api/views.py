@@ -547,24 +547,27 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     print("This is my score data", score_data)
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
+    # Common dictionary elements
+    common_data = {
+        "event_id": event_id,
+        "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
+        "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
+        "score": score_data,
+        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
 
+    # Conditionally add "process_id" if it exists
     if process_id:
-        field_add = {"event_id": event_id, "process_id": process_id,"scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
-                     "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
-                     "score": score_data, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                     }
-    else:
-        field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
-                     "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
-                     "score": score_data, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                     }
+        common_data["process_id"] = process_id
+    if document_data:
+        common_data["document_data"] = document_data
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-                         "ABCDE", "insert", field_add, "nil")
+                         "ABCDE", "insert", common_data, "nil")
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "insert",
                                     {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
                                      "username": user}, "nil")
-    return Response({"success": z, "payload": field_add})
+    return Response({"success": z, "payload": common_data})
 
 
 # GET ALL SCALES
