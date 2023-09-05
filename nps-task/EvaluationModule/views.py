@@ -325,6 +325,7 @@ def Target_API(request):
 
 @api_view(['POST'])
 def evaluation_api(request):
+    global field_add
     if request.method != 'POST':
         return JsonResponse({"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -335,10 +336,18 @@ def evaluation_api(request):
     except:
         doc_no = None
 
+    try:
+        scale_id = payload.get('scale_id')
+    except:
+        scale_id = None
+
     if not process_id:
         return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
 
     field_add = {"process_id": process_id}
+
+    if doc_no and scale_id:
+        return JsonResponse({"error": "Only one of doc_no or scale_id can be provided."}, status=status.HTTP_400_BAD_REQUEST)
 
 
     try:
@@ -355,19 +364,32 @@ def evaluation_api(request):
 
 
     all_scales = []
-    if doc_no is None:
-        for i in data:
-            all_scales.append(i)
-    else:
+    if doc_no:
         for i in data:
             print(f".{i['score']['instance_id'].split('/')[0]}.\n.{doc_no}.")
             if int(i['score']['instance_id'].split("/")[0]) == int(doc_no):
                 all_scales.append(i)
+    elif scale_id:
+        for i in data:
+            if i['_id'] == scale_id:
+                try:
+                    for z in i['score']:
+                        if z['instance_id'] >= 3:
+                            all_scales.append(i)
+                        else:
+                            return JsonResponse({"error": "Not enough scores found for this scale."})
+                except Exception as e:
+                    print(e)
+                    print(i, "**************************")
+
+    else:
+        for i in data:
+            all_scales.append(i)
 
     print(all_scales, "*&^%*(&)")
 
     if all_scales == []:
-        return JsonResponse({"error": "No data found for the given doc_no."}, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse({"error": "No data found for the given data."}, status=status.HTTP_404_NOT_FOUND)
     elif len(all_scales) < 3:
         return JsonResponse({"error": "Not enough scores found for the given info."}, status=status.HTTP_404_NOT_FOUND)
 
