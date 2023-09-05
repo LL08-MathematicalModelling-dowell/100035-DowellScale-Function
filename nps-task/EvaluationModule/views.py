@@ -324,30 +324,36 @@ def Target_API(request):
 
 
 @api_view(['POST'])
-def evaluation_api(request):
+def evaluation_api(request, report_type=None):
     global field_add
     if request.method != 'POST':
         return JsonResponse({"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     payload = request.data
     process_id = payload.get('process_id')
-    try:
-        doc_no = payload.get('doc_no')
-    except:
-        doc_no = None
-
-    try:
-        scale_id = payload.get('scale_id')
-    except:
-        scale_id = None
 
     if not process_id:
         return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
 
     field_add = {"process_id": process_id}
 
-    if doc_no and scale_id:
-        return JsonResponse({"error": "Only one of doc_no or scale_id can be provided."}, status=status.HTTP_400_BAD_REQUEST)
+    if not process_id:
+        return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if report_type == 'scale_id' and not payload.get('scale_id'):
+        return JsonResponse({"error": "Required fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'scale_id' and not payload.get('scale_id') and payload.get('doc_no'):
+        return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'doc_no' and not payload.get('doc_no'):
+        return JsonResponse({"error": "Required fields: doc_no."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'doc_no' and not payload.get('doc_no') and payload.get('scale_id'):
+        return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: doc_no."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'process_id' and payload.get('scale_id') and payload.get('doc_no'):
+        return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need other parameters"}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'process_id' and payload.get('scale_id'):
+        return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'scale_id'."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'process_id' and payload.get('doc_no'):
+        return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'doc_no'."}, status=status.HTTP_400_BAD_REQUEST)
 
 
     try:
@@ -364,14 +370,14 @@ def evaluation_api(request):
 
 
     all_scales = []
-    if doc_no:
+    if payload.get('doc_no'):
         for i in data:
-            print(f".{i['score']['instance_id'].split('/')[0]}.\n.{doc_no}.")
-            if int(i['score']['instance_id'].split("/")[0]) == int(doc_no):
+            print(f".{i['score']['instance_id'].split('/')[0]}.\n.{payload.get('doc_no')}.")
+            if int(i['score']['instance_id'].split("/")[0]) == int(payload.get('doc_no')):
                 all_scales.append(i)
-    elif scale_id:
+    elif payload.get('scale_id'):
         for i in data:
-            if i['_id'] == scale_id:
+            if i['_id'] == payload.get('scale_id'):
                 try:
                     for z in i['score']:
                         if z['instance_id'] >= 3:
@@ -410,7 +416,7 @@ def evaluation_api(request):
     largest = max(calculate_score)
     # Process the fetched data
     if data:
-        scores = process_data(data, doc_no)
+        scores = process_data(data, payload.get('doc_no'))
         print(scores, "scores")
         response_ = {
             "scale_category": scale_type,
