@@ -452,19 +452,21 @@ def nps_response_view_submit(request):
                 for x in document_responses:
                     scale_id = x['scale_id']
                     score = x['score']
+                    document_data = {"details": {"action": response.get('action', ""), "authorized": response.get('authorized',""), "cluster": response.get('cluster', ""), "collection": response.get('collection',""), "command": response.get('command',""), "database": response.get('database', ""), "document": response.get('document', ""), "document_flag":response.get('document_flag',""), "document_right": response.get('document_right', ""), "field": response.get('field',""), "flag": response.get('flag', ""), "function_ID": response.get('function_ID', ""),"metadata_id": response.get('metadata_id', ""), "process_id": response['process_id'], "role": response.get('role', ""), "team_member_ID": response.get('team_member_ID', ""), "update_field": {"content": response.get('content', ""), "document_name": response.get('document_name', ""), "page": response.get('page', "")}, "user_type": response.get('user_type', ""), "id": response['_id']}, "product_name": response.get('product_name', "")}
                     success = response_submit_loop(
-                        response, scale_id, instance_id, user, score,process_id)
+                        response, scale_id, instance_id, user, score,process_id, document_data)
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
-                process_id = response['process_id']
-                if not isinstance(process_id, str):
-                    return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 scale_id = response['scale_id']
                 score = response['score']
                 instance_id = response['instance_id']
-                return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
-
+                if "process_id" in response:
+                    process_id = response['process_id']
+                    if not isinstance(process_id, str):
+                        return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+                    return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
+                return response_submit_loop(response, scale_id, instance_id, user, score)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
@@ -493,7 +495,7 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
     return None
 
 
-def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None):
+def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None):
     field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
@@ -566,8 +568,6 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
 
 
 # GET ALL SCALES
-
-
 @api_view(['GET', ])
 def scale_settings_api_view(request):
     try:
