@@ -324,10 +324,25 @@ def Target_API(request):
 
 
 @api_view(['POST'])
-def evaluation_api(request, report_type=None):
+def evaluation_api(request):
     global field_add
     if request.method != 'POST':
         return JsonResponse({"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    report_type = request.GET.get('report_type', None)
+
+    print(f"report_type: {report_type}...")
+    if not report_type:
+        return JsonResponse({"error": "report_type parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if report_type == 'process':
+        report_type = 'process_id'
+    elif report_type == 'document':
+        report_type = 'doc_no'
+    elif report_type == 'scale':
+        report_type = 'scale_id'
+    else:
+        return JsonResponse({"error": "Invalid report_type provided."}, status=status.HTTP_400_BAD_REQUEST)
 
     payload = request.data
     process_id = payload.get('process_id')

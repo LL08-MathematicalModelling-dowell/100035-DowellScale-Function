@@ -13,9 +13,8 @@ urlpatterns = [
     path('target/', Target_API, name="target"),
 
     # Evaluation API
-    path('evaluation-api/process_id/', evaluation_api, {'report_type': 'process_id'}, name="evaluation_api_process"),
-    path('evaluation-api/doc_no/', evaluation_api, {'report_type': 'doc_no'}, name="evaluation_api_doc_no"),
-    path('evaluation-api/scale_id/', evaluation_api, {'report_type': 'scale_id'}, name="evaluation_api_scale_id"),
+    path('evaluation-api/', evaluation_api, name="evaluation_api"),
+
 
     # new evaluation module process id function
     path('scale/reports/<str:process_id>/<str:doc_no>', evaluation_editor_process_id, name="evaluation_process_id"),
