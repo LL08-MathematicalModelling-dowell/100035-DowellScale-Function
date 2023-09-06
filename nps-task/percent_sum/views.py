@@ -154,6 +154,31 @@ def percent_sum_response_submit(request):
                 for single_response in document_responses:
                     scale_id = single_response['scale_id']
                     scores = single_response["score"]
+                    response = single_response["score"]
+                    response['_id'] = scale_id
+                    document_data = {"details": {"action": response.get('action', ""), 
+                                             "authorized": response.get('authorized',""), 
+                                             "cluster": response.get('cluster', ""), 
+                                             "collection": response.get('collection',""), 
+                                             "command": response.get('command',""), 
+                                             "database": response.get('database', ""), 
+                                             "document": response.get('document', ""), 
+                                             "document_flag":response.get('document_flag',""), 
+                                             "document_right": response.get('document_right', ""), 
+                                             "field": response.get('field',""), 
+                                             "flag": response.get('flag', ""), 
+                                             "function_ID": response.get('function_ID', ""),
+                                             "metadata_id": response.get('metadata_id', ""), 
+                                             "process_id": response['process_id'], 
+                                             "role": response.get('role', ""), 
+                                             "team_member_ID": response.get('team_member_ID', ""), 
+                                             "product_name": response.get('product_name', ""),
+                                             "update_field": {"content": response.get('content', ""), 
+                                                              "document_name": response.get('document_name', ""), 
+                                                              "page": response.get('page', "")}, 
+                                                              "user_type": response.get('user_type', ""), 
+                                                              "id": response['_id']} 
+                                             }
                     success = response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
@@ -181,7 +206,7 @@ def percent_sum_response_submit(request):
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None):
+def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None, document_data=None):
     field_add = {"username": username, "scale_data.scale_id": scale_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                             field_add, "nil")
