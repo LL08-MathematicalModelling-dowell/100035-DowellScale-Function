@@ -155,8 +155,15 @@ def percent_response_view_submit(request):
 
 
 def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None):
+    field_add = {"username": username, "scale_id": scale_id}
+    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
+                            field_add, "nil")
+    previous_response = json.loads(previous_response)
+    print(previous_response)
+    previous_response = previous_response.get('data')            
+    if len(previous_response) > 0 :
+        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
     event_id = get_event_id()
-
     # Check if scale exists
     field_add = {"_id": scale_id, "settings.scale-category": "percent scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
@@ -188,24 +195,16 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
+    response = {
+    "username": username,
+    "event_id": event_id,
+    "scale_data": {"scale_id": scale_id, "scale_type": "percent scale"},
+    "score":score_data,
+    "brand_data": {"brand_name": brand_name, "product_name": product_name},
+    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
     if process_id:
-            response = {
-            "event_id": event_id,
-            "process_id": process_id,
-            "scale_data": {"scale_id": scale_id, "scale_type": "percent scale"},
-            "score":score_data,
-            "brand_data": {"brand_name": brand_name, "product_name": product_name},
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-    else:
-        response = {
-        "event_id": event_id,
-        "scale_data": {"scale_id": scale_id, "scale_type": "percent scale"},
-        "score":score_data,
-        "brand_data": {"brand_name": brand_name, "product_name": product_name},
-        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-
+            response["process_id"] = process_id
 
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                                    "ABCDE", "insert", response, "nil")
