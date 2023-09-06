@@ -133,6 +133,9 @@ def percent_response_view_submit(request):
 
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
+            process_id = response_data["process_id"]
+            if not isinstance(process_id, str):
+                return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)           
 
             if "document_responses" in response_data:
                 document_responses = response_data["document_responses"]
@@ -140,18 +143,18 @@ def percent_response_view_submit(request):
                 for single_response in document_responses:
                     scale_id = single_response['scale_id']
                     scores = single_response["score"]
-                    success = response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id)
+                    success = response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
                 scores = response_data['score']
                 scale_id = response_data['scale_id']
-                return response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id)
+                return response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id):
+def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None):
     event_id = get_event_id()
 
     # Check if scale exists
@@ -185,13 +188,25 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
-    response = {
+    if process_id:
+            response = {
+            "event_id": event_id,
+            "process_id": process_id,
+            "scale_data": {"scale_id": scale_id, "scale_type": "percent scale"},
+            "score":score_data,
+            "brand_data": {"brand_name": brand_name, "product_name": product_name},
+            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+    else:
+        response = {
         "event_id": event_id,
         "scale_data": {"scale_id": scale_id, "scale_type": "percent scale"},
         "score":score_data,
         "brand_data": {"brand_name": brand_name, "product_name": product_name},
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
+        }
+
+
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                                    "ABCDE", "insert", response, "nil")
 

@@ -255,6 +255,10 @@ def stapel_response_view_submit(request):
                 user = response['username']
             except KeyError:
                 return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            process_id = response["process_id"]
+            if not isinstance(process_id, str):
+                return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
 
             process_id = response["process_id"]
             if not isinstance(process_id, str):
