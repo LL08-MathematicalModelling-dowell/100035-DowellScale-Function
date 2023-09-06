@@ -279,15 +279,6 @@ def response_submit_api_view(request):
 
 def response_submit_loop(username, scale_id, responses, instance_id=None, process_id=None, document_data=None):
     # # Check if response already exists for this event
-    # existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-    #                                         "ABCDE", "fetch", {"event_id": event_id}, "nil")
-    # existing_response = json.loads(existing_response)
-    
-    # if isinstance(existing_response, dict) and existing_response['data']:
-    #     return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
-    # if existing_response['data'][0]['username'] == username:
-    #     return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
     field_add = {"username": username, "scale_id": scale_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                             field_add, "nil")
