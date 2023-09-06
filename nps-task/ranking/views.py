@@ -170,9 +170,10 @@ def response_submit_api_view(request):
         scale_id = request.data.get('scale_id')
         if scale_id:
             # Retrieve specific response by scale_id
-            field_add = {"_id": scale_id}
-            scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
-                                     "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
+            field_add = {"_id": scale_id, "scale_data.scale_type": "ranking scale"}
+            scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                 "scale_reports",
+                                                 "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(scale)
             if data['data'] is None:
                 return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
@@ -193,99 +194,135 @@ def response_submit_api_view(request):
 
 
     elif request.method == 'POST':
-        data = request.data
-        event_id = get_event_id()
-        if "document_responses" in data:
-            document_response = data['document_responses']
+        response = request.data
+        if "document_responses" in response:
+            document_response = response['document_responses']
+            instance_id = response['instance_id']
+            process_id = response['process_id']
+            if not isinstance(process_id, str):
+                return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
             try:
-                username = data['username']
-                brand_name = data['brand_name'],
-                product_name = data['product_name']
+                username = response['username']
+                brand_name = response['brand_name'],
+                product_name = response['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
             results = []
             for rsp in document_response:
                 scale_id = rsp['scale_id']
-                response = {
+                response['_id'] = scale_id
+                document_data = {"details": {"action": response.get('action', ""), 
+                                             "authorized": response.get('authorized',""), 
+                                             "cluster": response.get('cluster', ""), 
+                                             "collection": response.get('collection',""), 
+                                             "command": response.get('command',""), 
+                                             "database": response.get('database', ""), 
+                                             "document": response.get('document', ""), 
+                                             "document_flag":response.get('document_flag',""), 
+                                             "document_right": response.get('document_right', ""), 
+                                             "field": response.get('field',""), 
+                                             "flag": response.get('flag', ""), 
+                                             "function_ID": response.get('function_ID', ""),
+                                             "metadata_id": response.get('metadata_id', ""), 
+                                             "process_id": response['process_id'], 
+                                             "role": response.get('role', ""), 
+                                             "team_member_ID": response.get('team_member_ID', ""), 
+                                             "product_name": response.get('product_name', ""),
+                                             "update_field": {"content": response.get('content', ""), 
+                                                              "document_name": response.get('document_name', ""), 
+                                                              "page": response.get('page', "")}, 
+                                                              "user_type": response.get('user_type', ""), 
+                                                              "id": response['_id']} 
+                                             }
+                responses = {
                     "brand_name": brand_name,
                     "product_name": product_name,
                     "num_of_stages": rsp['num_of_stages'],
                     "num_of_substages": rsp['num_of_substages'],
                     "rankings": rsp['rankings']
                 }
-                result = response_submit_loop(username, scale_id, event_id, response)
+                result = response_submit_loop(username, scale_id, responses, instance_id, process_id, document_data)
                 result = result.data
-                result.update({"rankings": rsp['rankings']})
                 results.append(result)
-            eventId = get_event_id()
-            results.append({"event_id": eventId})
-            return Response(results, status=status.HTTP_200_OK)
+                if result.get('error', None):
+                    return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            return Response(results)
         else:
+            instance_id = response['instance_id']
             try:
-                scale_id = data['scale_id']
-                username = data['username']
-                rankings = data['rankings']
-                brand_name = data['brand_name']
-                product_name = data['product_name']
-                num_of_stages = data['num_of_stages']
-                num_of_substages = data['num_of_substages']
+                scale_id = response['scale_id']
+                username = response['username']
+                rankings = response['rankings']
+                brand_name = response['brand_name']
+                product_name = response['product_name']
+                num_of_stages = response['num_of_stages']
+                num_of_substages = response['num_of_substages']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
-            response = {
+            responses = {
                 "brand_name": brand_name,
                 "product_name": product_name,
                 "num_of_stages": num_of_stages,
                 "num_of_substages": num_of_substages,
                 "rankings": rankings
             }
-            result = response_submit_loop(username, scale_id, event_id, response)
-            result = [result.data]
-            result.append({"rankings": rankings})
-            result.append({"event_id": event_id})
-            return Response(result, status=status.HTTP_200_OK)
+            if "process_id" in response:
+                process_id = response['process_id']
+                if not isinstance(process_id, str):
+                    return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+                return response_submit_loop(username, scale_id, responses, instance_id, process_id)
+            
+            result = response_submit_loop(username, scale_id, responses)
+            result = result.data
+            return Response(result)
       
 
-def response_submit_loop(username, scale_id, event_id, response):
-    # Check if response already exists for this event
-    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                            "ABCDE", "fetch", {"event_id": event_id}, "nil")
+def response_submit_loop(username, scale_id, responses, instance_id=None, process_id=None, document_data=None):
+    # # Check if response already exists for this event
+    # existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+    #                                         "ABCDE", "fetch", {"event_id": event_id}, "nil")
     # existing_response = json.loads(existing_response)
+    
     # if isinstance(existing_response, dict) and existing_response['data']:
     #     return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
+    # if existing_response['data'][0]['username'] == username:
+    #     return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+    field_add = {"username": username, "scale_id": scale_id}
+    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
+                            field_add, "nil")
+    previous_response = json.loads(previous_response)
+    previous_response = previous_response.get('data')
+    if len(previous_response) > 0 :
+        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
 
     # Check if scale exists
-    field_add = {"_id": scale_id}
+    event_id = get_event_id()
+    field_add = {"_id": scale_id, "settings.scale_category": "ranking scale"}
     scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
                             "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
     scale = json.loads(scale)
-    if scale['data'] is None:
+    if not scale['data']:
         return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
     if scale['data'][0]['settings']['scale_category'] != 'ranking scale':
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
-    scale_data = {
-                    "scale-category": "ranking scale",
-                    "scale_id": scale_id,
-                    "event_id": event_id,
-                    "username": username,
-                    "response": response,
-                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                }
-
+    
     try:
         settings = scale['data'][0]['settings']
         stages = settings['stages']
         # check if "stage_name" is unoque or not for every rankings
         stage_names = []
-        for rank in response['rankings']:
+
+        for rank in responses['rankings']:
             stage_name = rank['stage_name']
             if stage_name not in  stage_names:
                 stage_names.append(stage_name)
             else:
                 return Response({"error": f"Stage name [{stage_name}] given more than one time."}, status=status.HTTP_400_BAD_REQUEST)
-        if response['num_of_stages'] != len(response['rankings']):
+        if responses['num_of_stages'] != len(responses['rankings']):
             return Response({"error": "Number of rankings does not match number of stages."}, status=status.HTTP_400_BAD_REQUEST)
         if settings['ranking_method_stages'] == "Unique Ranking":
-            for stage in response['rankings']:
+            for stage in responses['rankings']:
                 if not all(key in stage for key in ['stage_name', 'stage_rankings']):
                     return Response({"error": "Invalid response data format."}, status=status.HTTP_400_BAD_REQUEST)
                 ranks = [product['rank'] for product in stage['stage_rankings']]
@@ -298,15 +335,34 @@ def response_submit_loop(username, scale_id, event_id, response):
                     if not all(1 <= rank <= len(ranks) for rank in ranks):
                         return Response({"error": f"Invalid rank value.{stage['stage_name']}"}, status=status.HTTP_400_BAD_REQUEST)
         elif settings['ranking_method_stages'] == "Tied Ranking":
-            for stage in response['rankings']:
+            for stage in responses['rankings']:
                 if not all(key in stage for key in ['stage_name', 'stage_rankings']):
                     return Response({"error": "Invalid response data format."}, status=status.HTTP_400_BAD_REQUEST)
                 ranks = [product['rank'] for product in stage['stage_rankings']]
                 if not all(1 <= rank <= len(ranks) for rank in ranks):
                     return Response({"error": f"Invalid rank value.{stage['stage_name']}"}, status=status.HTTP_400_BAD_REQUEST)
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert", scale_data, "nil")
-        response_id = json.loads(x)
-        return Response({"Success": True, "response_id": response_id['inserted_id']})
+        
+
+        if process_id:
+            field_add = {"event_id": event_id, "process_id": process_id,"scale_data": {"scale_id": scale_id, "scale_type": "ranking scale"},
+                        "brand_data": {"brand_name": responses["brand_name"], "product_name": responses["product_name"]},
+                        "rankings": responses['rankings'], "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+        else:
+            field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "ranking scale"},
+                        "brand_data": {"brand_name": responses["brand_name"], "product_name": responses["product_name"]},
+                        "rankings": responses['rankings'], "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+        
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+                            "ABCDE", "insert", field_add, "nil")
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                        "ABCDE", "insert",
+                                        {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
+                                        "username": username}, "nil")
+        response_id = json.loads(x)['inserted_id']
+        return Response({"success": True, "response_id": response_id,  "payload": field_add})
+        
             
     except Exception as e:
         print(e)

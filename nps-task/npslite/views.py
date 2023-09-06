@@ -140,24 +140,61 @@ def submit_response_view(request):
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
     if "document_responses" in response_data:
         document_responses = response_data["document_responses"]
+        instance_id = response['instance_id']
+        process_id = response['process_id']
+        if not isinstance(process_id, str):
+            return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
         all_results = []
         for single_response in document_responses:
             response = single_response["response"]
-            success = response_submit_loop(event_id, user, scale_id, response)
+            document_data = {"details": {"action": response.get('action', ""), 
+                                            "authorized": response.get('authorized',""), 
+                                            "cluster": response.get('cluster', ""), 
+                                            "collection": response.get('collection',""), 
+                                            "command": response.get('command',""), 
+                                            "database": response.get('database', ""), 
+                                            "document": response.get('document', ""), 
+                                            "document_flag":response.get('document_flag',""), 
+                                            "document_right": response.get('document_right', ""), 
+                                            "field": response.get('field',""), 
+                                            "flag": response.get('flag', ""), 
+                                            "function_ID": response.get('function_ID', ""),
+                                            "metadata_id": response.get('metadata_id', ""), 
+                                            "process_id": response['process_id'], 
+                                            "role": response.get('role', ""), 
+                                            "team_member_ID": response.get('team_member_ID', ""), 
+                                            "product_name": response.get('product_name', ""),
+                                            "update_field": {"content": response.get('content', ""), 
+                                                            "document_name": response.get('document_name', ""), 
+                                                            "page": response.get('page', "")}, 
+                                                            "user_type": response.get('user_type', ""), 
+                                                            "id": response['_id']} 
+                                            }
+            success = response_submit_loop(event_id, user, scale_id, response, instance_id, process_id, document_data)
             all_results.append(success.data)
         return Response({"data": all_results}, status=status.HTTP_200_OK)
     else:
         scale_id = response_data["scale_id"]
-        return response_submit_loop(event_id, user, scale_id, response)
+        instance_id = response_data['instance_id']
+        if "process_id" in response_data:
+                process_id = response_data['process_id']
+                if not isinstance(process_id, str):
+                    return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+                return response_submit_loop(user, scale_id, response_data, instance_id, process_id)
+            
+        return response_submit_loop(event_id, user, scale_id, response_data)
 
 
-def response_submit_loop(event_id, user, scale_id, response):
-    # Check if response already exists for this event
-    existing_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                         "ABCDE", "fetch", {"event_id": event_id}, "nil")
-    existing_response = json.loads(existing_response)
-    if isinstance(existing_response, dict) and existing_response['data']:
-        return Response({"error": "Response already exists."}, status=status.HTTP_400_BAD_REQUEST)
+def response_submit_loop(event_id, user, scale_id, response, instance_id=None, process_id=None, document_data=None):
+    # Check if response already exists for this event    
+    field_add = {"username": user, "scale_id": scale_id}
+    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
+                            field_add, "nil")
+    previous_response = json.loads(previous_response)
+    previous_response = previous_response.get('data')
+    if len(previous_response) > 0 :
+        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
+    
 
     # Insert new response into database
     field_add = {
@@ -167,8 +204,25 @@ def response_submit_loop(event_id, user, scale_id, response):
         "response": response,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
-    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                   "ABCDE", "fetch", field_add, "nil")
+
+    if process_id:
+            field_add = {"event_id": event_id, "process_id": process_id,"scale_data": {"scale_id": scale_id, "scale_type": "npslite scale"},
+                        "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
+                        "response": response, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+    else:
+        field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "npslite scale"},
+                    "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
+                    "response": response, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    }
+    
+    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+                        "ABCDE", "insert", field_add, "nil")
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                        "ABCDE", "insert",
+                                        {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
+                                        "username": user}, "nil")
+    response_id = json.loads(x)['inserted_id']
 
     return Response({"success": True, "response_id": response_id})
 
