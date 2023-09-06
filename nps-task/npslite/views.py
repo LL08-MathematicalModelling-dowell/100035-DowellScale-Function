@@ -41,33 +41,35 @@ def settings_api_view_create(request):
             no_of_scales = response['no_of_scales']
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        custom_emoji_format={}
+
+        custom_emoji_format = {}
         if fomat == "emoji":
-                custom_emoji_format = response.get('custom_emoji_format', {})
+            custom_emoji_format = response.get('custom_emoji_format', {})
         eventID = get_event_id()
         field_add = {
             "event_id": eventID,
-            "orientation": orientation,
-            "scalecolor": scalecolor,
-            "fontcolor": fontcolor,
-            "fontstyle" : fontstyle,
-            "time": time,
-            "template_name": template_name,
-            "fomat": fomat,
-            "custom_emoji_format": custom_emoji_format,
-            "name": name,
-            "center": center,
-            "left": left,
-            "right": right,
-            "scale-category": "npslite scale",
-            "allow_resp": response.get('allow_resp', True),
-            "no_of_scales": no_of_scales,
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "settings": {
+                "orientation": orientation,
+                "scalecolor": scalecolor,
+                "fontcolor": fontcolor,
+                "fontstyle": fontstyle,
+                "time": time,
+                "template_name": template_name,
+                "fomat": fomat,
+                "custom_emoji_format": custom_emoji_format,
+                "name": name,
+                "center": center,
+                "left": left,
+                "right": right,
+                "scale-category": "npslite scale",
+                "allow_resp": response.get('allow_resp', True),
+                "no_of_scales": no_of_scales,
+                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
         }
 
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-                                field_add, "nil")
+                             field_add, "nil")
 
         user_json = json.loads(x)
         details = {
@@ -127,24 +129,26 @@ def submit_response_view(request):
                 document_responses = response_data["document_responses"]
                 all_results = []
                 instance_id = response_data['instance_id']
-                process_id = response['process_id']
+                process_id = response_data['process_id']
 
                 if not isinstance(process_id, str):
                     return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 for single_response in document_responses:
                     score = single_response["score"]
                     scale_id = single_response['scale_id']
-                    success = response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id)
+                    success = response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id,
+                                                   process_id)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
-                process_id = response['process_id']
+                process_id = response_data['process_id']
                 if not isinstance(process_id, str):
                     return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 scale_id = response_data['scale_id']
                 score = response_data["score"]
                 instance_id = response_data['instance_id']
-                return response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id)
+                return response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id,
+                                            process_id)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
@@ -164,11 +168,15 @@ def submit_response_view(request):
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
+
 def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None):
     field_add = {"_id": scale_id, "settings.scale-category": "npslite scale"}
+
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
                                      "find", field_add, "nil")
+    print("Hello Ambrose", default_scale)
+
     data = json.loads(default_scale)
     settings = data['data']['settings']
 
@@ -194,7 +202,7 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
                   "score": score}
     if int(instance_id) > int(number_of_scale):
-        return Response({"Error":"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"Error": "Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
     if process_id:
         response = {
@@ -241,7 +249,8 @@ def npslite_response_view(request, id=None):
             return Response({"payload": response})
         except:
             return Response(status=status.HTTP_404_NOT_FOUND, data={"error": response_data})
-        
+
+
 @api_view(['GET', ])
 def scale_response_api_view(request):
     try:

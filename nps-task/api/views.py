@@ -508,22 +508,6 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
     number_of_scale = settings['no_of_scales']
     scale_id = data['data']['_id']
-    if settings['fomat'] == 'emoji':
-        try:
-            if is_emoji(score):
-                saved_emojis = settings["custom_emoji_format"]
-                score = find_key_by_emoji(score, saved_emojis)
-                if score is None:
-                    return Response({"Error": "Provide an valid emoji from the scale!"})
-            else:
-                return Response({"Error": "Provide an emoji as the score value!"})
-        except:
-            return Response({"Error": "Provide an emoji as the score value!"})
-    else:
-        if is_emoji(f"{score}"):
-            return Response({"Error": "Provide a valid value rating from the scale as the score value!"})
-        elif 0 < int(score) > 10:
-            return Response({"Error": "Score can only be 0 - 10!"})
 
     category = find_category(score)
 
@@ -568,7 +552,6 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
                                     {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
                                      "username": user}, "nil")
     return Response({"success": z, "payload": common_data})
-
 
 # GET ALL SCALES
 @api_view(['GET', ])
@@ -652,7 +635,7 @@ def new_nps_create(request):
             time = response.get('time', "")
             template_name = f"{name.replace(' ', '')}{rand_num}"
             fomat = response.get('fomat')
-            no_of_scales = int(response['no_of_scales'])
+            no_of_scales = int(response.get('no_of_scales', 1))
             custom_emoji_format = {}
             image_label_format = {}
 

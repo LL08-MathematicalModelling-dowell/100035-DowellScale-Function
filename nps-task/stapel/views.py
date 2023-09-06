@@ -322,22 +322,22 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
 
     number_of_scale = x['no_of_scales']
 
-    if x['fomat'] == 'emoji':
-        try:
-            if is_emoji(score):
-                saved_emojis = x["custom_emoji_format"]
-                score = find_key_by_emoji(score, saved_emojis)
-                if score is None:
-                    return Response({"Error": "Provide an valid emoji from the scale!"})
-            else:
-                return Response({"Error": "Provide an emoji as the score value!"})
-        except:
-            return Response({"Error": "Provide an emoji as the score value!"})
-    else:
-        if is_emoji(f"{score}"):
-            return Response({"Error": "Provide a valid value rating from the scale as the score value!"})
-        elif score not in x['scale']:
-            return Response({"error": "Invalid Selection.", "Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
+    # if x['fomat'] == 'emoji':
+    #     try:
+    #         if is_emoji(score):
+    #             saved_emojis = x["custom_emoji_format"]
+    #             score = find_key_by_emoji(score, saved_emojis)
+    #             if score is None:
+    #                 return Response({"Error": "Provide an valid emoji from the scale!"})
+    #         else:
+    #             return Response({"Error": "Provide an emoji as the score value!"})
+    #     except:
+    #         return Response({"Error": "Provide an emoji as the score value!"})
+    # else:
+    #     if is_emoji(f"{score}"):
+    #         return Response({"Error": "Provide a valid value rating from the scale as the score value!"})
+    #     elif score not in x['scale']:
+    #         return Response({"error": "Invalid Selection.", "Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
 
     # find existing scale reports
     field_add = {"scale_data.scale_id": scale_id}
