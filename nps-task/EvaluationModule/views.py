@@ -377,10 +377,10 @@ def evaluation_api(request, report_type=None):
                 all_scales.append(i)
     elif payload.get('scale_id'):
         for i in data:
-            if i['_id'] == payload.get('scale_id'):
+            print(f"\n\n{i}9009090909\n\n")
+            if i['scale_data']['scale_id'] == payload.get('scale_id'):
                 try:
-                    for z in i['score']:
-                        if z['instance_id'] >= 3:
+                        if int(i['score']['instance_id'].split("/")[-1]) >= 3:
                             all_scales.append(i)
                         else:
                             return JsonResponse({"error": "Not enough scores found for this scale."})
@@ -440,6 +440,7 @@ def evaluation_api(request, report_type=None):
         with ThreadPoolExecutor() as executor:
             normality_future = executor.submit(Normality_api, process_id)
             normality = normality_future.result()
+            print(normality, "normality")
             normality.pop("process_id")
             normality.pop("title")
             response_["normality_analysis"] = normality
