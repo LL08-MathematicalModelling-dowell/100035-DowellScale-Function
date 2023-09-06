@@ -256,6 +256,10 @@ def stapel_response_view_submit(request):
             except KeyError:
                 return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
+            process_id = response["process_id"]
+            if not isinstance(process_id, str):
+                return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+
             if 'document_responses' in response:
                 document_responses = response['document_responses']
                 instance_id = response['instance_id']
@@ -263,14 +267,15 @@ def stapel_response_view_submit(request):
                 for x in document_responses:
                     scale_id = x['scale_id']
                     score = x['score']
-                    success = response_submit_loop(response, scale_id, instance_id, user, score)
+                    document_data = {"details": {"action": response.get('action', ""), "authorized": response.get('authorized',""), "cluster": response.get('cluster', ""), "collection": response.get('collection',""), "command": response.get('command',""), "database": response.get('database', ""), "document": response.get('document', ""), "document_flag":response.get('document_flag',""), "document_right": response.get('document_right', ""), "field": response.get('field',""), "flag": response.get('flag', ""), "function_ID": response.get('function_ID', ""),"metadata_id": response.get('metadata_id', ""), "process_id": response['process_id'], "role": response.get('role', ""), "team_member_ID": response.get('team_member_ID', ""), "update_field": {"content": response.get('content', ""), "document_name": response.get('document_name', ""), "page": response.get('page', "")}, "user_type": response.get('user_type', ""), "id": response['_id']}, "product_name": response.get('product_name', "")}
+                    success = response_submit_loop(response, scale_id, instance_id, user, score, process_id, document_data)
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
                 scale_id = response['scale_id']
                 score = response.get('score', '0')
                 instance_id = response['instance_id']
-                return response_submit_loop(response, scale_id, instance_id, user, score)
+                return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -305,7 +310,7 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
     return None
 
 
-def response_submit_loop(response, scale_id, instance_id, user, score):
+def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None):
     field_add = {"_id": scale_id, "settings.scale-category": "stapel scale"}
     default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                "fetch", field_add, "nil")
@@ -318,23 +323,22 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
 
     number_of_scale = x['no_of_scales']
 
-    if x['fomat'] == 'emoji':
-        try:
-            if is_emoji(score):
-                print("Hello Ambrose")
-                saved_emojis = x["custom_emoji_format"]
-                score = find_key_by_emoji(score, saved_emojis)
-                if score is None:
-                    return Response({"Error": "Provide an valid emoji from the scale!"})
-            else:
-                return Response({"Error": "Provide an emoji as the score value!"})
-        except:
-            return Response({"Error": "Provide an emoji as the score value!"})
-    else:
-        if is_emoji(f"{score}"):
-            return Response({"Error": "Provide a valid value rating from the scale as the score value!"})
-        elif score not in x['scale']:
-            return Response({"error": "Invalid Selection.", "Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
+    # if x['fomat'] == 'emoji':
+    #     try:
+    #         if is_emoji(score):
+    #             saved_emojis = x["custom_emoji_format"]
+    #             score = find_key_by_emoji(score, saved_emojis)
+    #             if score is None:
+    #                 return Response({"Error": "Provide an valid emoji from the scale!"})
+    #         else:
+    #             return Response({"Error": "Provide an emoji as the score value!"})
+    #     except:
+    #         return Response({"Error": "Provide an emoji as the score value!"})
+    # else:
+    #     if is_emoji(f"{score}"):
+    #         return Response({"Error": "Provide a valid value rating from the scale as the score value!"})
+    #     elif score not in x['scale']:
+    #         return Response({"error": "Invalid Selection.", "Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
 
     # find existing scale reports
     field_add = {"scale_data.scale_id": scale_id}
@@ -358,6 +362,11 @@ def response_submit_loop(response, scale_id, instance_id, user, score):
     field_add = {"event_id": eventID, "scale_data": {"scale_id": scale_id, "scale_type": "stapel scale"},
                  "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
                  "score": [score]}
+    if process_id:
+        field_add["process_id"] = process_id
+
+    if document_data:
+        field_add["document_data"] = document_data
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                          "ABCDE", "insert", field_add, "nil")
     user_json = json.loads(z)

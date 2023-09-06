@@ -1,6 +1,8 @@
 import random
 import datetime
 import json
+import re
+
 from rest_framework.decorators import api_view
 from django.shortcuts import render, redirect, HttpResponse
 from rest_framework.response import Response
@@ -30,7 +32,6 @@ def settings_api_view_create(request):
                 name = response['scale_name']
                 number_of_scales = response['no_of_scales']
                 orientation = response['orientation']
-                instance_id = response.get('instance_id')
                 fontstyle = response["fontstyle"]
                 font_color = response['font_color']
                 round_color = response['round_color']
@@ -56,10 +57,10 @@ def settings_api_view_create(request):
             eventID = get_event_id()
             field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "font_color": font_color,
-                                      "no_of_scales": number_of_scales,"instance_id":instance_id,
+                                      "no_of_scales": number_of_scales,
                                       "time": time, "name": name, "scale-category": "likert scale", "user": user,
                                       "round_color": round_color, "fomat": fomat, "label_selection": label_selection,
-                                      "fontstyle": fontstyle, 
+                                      "fontstyle": fontstyle,
                                       "label_input": label_input, "user": user,
                                       "custom_emoji_format": custom_emoji_format,
                                       "allow_resp": response.get('allow_resp', True),
@@ -189,7 +190,16 @@ def submit_response_view(request):
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
+def is_emoji(character):
+    # Use a regular expression to check if the character is an emoji
+    emoji_pattern = re.compile("[\U00010000-\U0010ffff]", flags=re.UNICODE)
+    return bool(emoji_pattern.match(character))
 
+def find_key_by_emoji(emoji_to_find, emoji_dict):
+    for key, emoji in emoji_dict.items():
+        if emoji == emoji_to_find:
+            return int(key)
+    return None
 
 def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None):
     field_add = {"_id": scale_id, "settings.scale-category": "likert scale"}
@@ -214,7 +224,17 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
     if data['data']['settings'].get('fomat') == "emoji":
-        score = assign_statement(label_selection, score)
+        try:
+            if is_emoji(score):
+                saved_emojis = data['data']['settings']["custom_emoji_format"]
+                score = find_key_by_emoji(score, saved_emojis)
+                score = assign_statement(label_selection, score)
+                if score is None:
+                    return Response({"Error": "Provide an valid emoji from the scale!"})
+            else:
+                score = assign_statement(label_selection, int(score))
+        except:
+            score = assign_statement(label_selection, int(score))
 
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
                   "score": score}
