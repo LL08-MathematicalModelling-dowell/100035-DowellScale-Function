@@ -441,8 +441,11 @@ def evaluation_api(request, report_type=None):
             normality_future = executor.submit(Normality_api, process_id)
             normality = normality_future.result()
             print(normality, "normality")
-            normality.pop("process_id")
-            normality.pop("title")
+            try:
+                normality.pop("process_id")
+                normality.pop("title")
+            except:
+                pass
             response_["normality_analysis"] = normality
     except Exception as e:
         return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
