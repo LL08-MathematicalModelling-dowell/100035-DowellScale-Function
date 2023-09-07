@@ -325,20 +325,50 @@ def Target_API(request):
 
 @api_view(['POST'])
 def evaluation_api(request):
+    global field_add
     if request.method != 'POST':
         return JsonResponse({"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    report_type = request.GET.get('report_type', None)
+
+    print(f"report_type: {report_type}...")
+    if not report_type:
+        return JsonResponse({"error": "report_type parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if report_type == 'process':
+        report_type = 'process_id'
+    elif report_type == 'document':
+        report_type = 'doc_no'
+    elif report_type == 'scale':
+        report_type = 'scale_id'
+    else:
+        return JsonResponse({"error": "Invalid report_type provided."}, status=status.HTTP_400_BAD_REQUEST)
+
     payload = request.data
     process_id = payload.get('process_id')
-    try:
-        doc_no = payload.get('doc_no')
-    except:
-        doc_no = None
 
     if not process_id:
         return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
 
     field_add = {"process_id": process_id}
+
+    if not process_id:
+        return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if report_type == 'scale_id' and not payload.get('scale_id'):
+        return JsonResponse({"error": "Required fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'scale_id' and not payload.get('scale_id') and payload.get('doc_no'):
+        return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'doc_no' and not payload.get('doc_no'):
+        return JsonResponse({"error": "Required fields: doc_no."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'doc_no' and not payload.get('doc_no') and payload.get('scale_id'):
+        return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: doc_no."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'process_id' and payload.get('scale_id') and payload.get('doc_no'):
+        return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need other parameters"}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'process_id' and payload.get('scale_id'):
+        return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'scale_id'."}, status=status.HTTP_400_BAD_REQUEST)
+    elif report_type == 'process_id' and payload.get('doc_no'):
+        return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'doc_no'."}, status=status.HTTP_400_BAD_REQUEST)
 
 
     try:
@@ -355,19 +385,32 @@ def evaluation_api(request):
 
 
     all_scales = []
-    if doc_no is None:
+    if payload.get('doc_no'):
         for i in data:
-            all_scales.append(i)
+            print(f".{i['score']['instance_id'].split('/')[0]}.\n.{payload.get('doc_no')}.")
+            if int(i['score']['instance_id'].split("/")[0]) == int(payload.get('doc_no')):
+                all_scales.append(i)
+    elif payload.get('scale_id'):
+        for i in data:
+            print(f"\n\n{i}9009090909\n\n")
+            if i['scale_data']['scale_id'] == payload.get('scale_id'):
+                try:
+                        if int(i['score']['instance_id'].split("/")[-1]) >= 3:
+                            all_scales.append(i)
+                        else:
+                            return JsonResponse({"error": "Not enough scores found for this scale."})
+                except Exception as e:
+                    print(e)
+                    print(i, "**************************")
+
     else:
         for i in data:
-            print(f".{i['score']['instance_id'].split('/')[0]}.\n.{doc_no}.")
-            if int(i['score']['instance_id'].split("/")[0]) == int(doc_no):
-                all_scales.append(i)
+            all_scales.append(i)
 
     print(all_scales, "*&^%*(&)")
 
     if all_scales == []:
-        return JsonResponse({"error": "No data found for the given doc_no."}, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse({"error": "No data found for the given data."}, status=status.HTTP_404_NOT_FOUND)
     elif len(all_scales) < 3:
         return JsonResponse({"error": "Not enough scores found for the given info."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -388,7 +431,7 @@ def evaluation_api(request):
     largest = max(calculate_score)
     # Process the fetched data
     if data:
-        scores = process_data(data, doc_no)
+        scores = process_data(data, payload.get('doc_no'))
         print(scores, "scores")
         response_ = {
             "scale_category": scale_type,
@@ -412,8 +455,12 @@ def evaluation_api(request):
         with ThreadPoolExecutor() as executor:
             normality_future = executor.submit(Normality_api, process_id)
             normality = normality_future.result()
-            normality.pop("process_id")
-            normality.pop("title")
+            print(normality, "normality")
+            try:
+                normality.pop("process_id")
+                normality.pop("title")
+            except:
+                pass
             response_["normality_analysis"] = normality
     except Exception as e:
         return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

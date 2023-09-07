@@ -32,7 +32,7 @@ def settings_api_view_create(request):
                 name = response['scale_name']
                 fontstyle = response.get('fontstyle', "Arial, Helvetica, sans-serif")
                 fontcolor = response.get('fontcolor', "black")
-                number_of_scales = response['no_of_scale']
+                no_of_scales = response['no_of_scale']
                 orientation = response['orientation']
                 scale_color = response['scale_color']
                 product_count = response['product_count']
@@ -52,7 +52,7 @@ def settings_api_view_create(request):
             eventID = get_event_id()
             field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "scale_color": scale_color,"fontstyle": fontstyle,
-                                      "number_of_scales": number_of_scales,"fontcolor": fontcolor,
+                                      "no_of_scales": no_of_scales,"fontcolor": fontcolor,
                                       "time": time, "name": name, "scale-category": "percent_sum scale", "user": user,
                                       "allow_resp": response.get('allow_resp', True),
 
@@ -144,7 +144,7 @@ def percent_sum_response_submit(request):
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
             
-            process_id = response['process_id']
+            process_id = response_data['process_id']
             if not isinstance(process_id, str):
                 return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -154,6 +154,31 @@ def percent_sum_response_submit(request):
                 for single_response in document_responses:
                     scale_id = single_response['scale_id']
                     scores = single_response["score"]
+                    response = single_response["score"]
+                    response['_id'] = scale_id
+                    document_data = {"details": {"action": response.get('action', ""), 
+                                             "authorized": response.get('authorized',""), 
+                                             "cluster": response.get('cluster', ""), 
+                                             "collection": response.get('collection',""), 
+                                             "command": response.get('command',""), 
+                                             "database": response.get('database', ""), 
+                                             "document": response.get('document', ""), 
+                                             "document_flag":response.get('document_flag',""), 
+                                             "document_right": response.get('document_right', ""), 
+                                             "field": response.get('field',""), 
+                                             "flag": response.get('flag', ""), 
+                                             "function_ID": response.get('function_ID', ""),
+                                             "metadata_id": response.get('metadata_id', ""), 
+                                             "process_id": response['process_id'], 
+                                             "role": response.get('role', ""), 
+                                             "team_member_ID": response.get('team_member_ID', ""), 
+                                             "product_name": response.get('product_name', ""),
+                                             "update_field": {"content": response.get('content', ""), 
+                                                              "document_name": response.get('document_name', ""), 
+                                                              "page": response.get('page', "")}, 
+                                                              "user_type": response.get('user_type', ""), 
+                                                              "id": response['_id']} 
+                                             }
                     success = response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
@@ -181,7 +206,15 @@ def percent_sum_response_submit(request):
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None):
+def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None, document_data=None):
+    field_add = {"username": username, "scale_data.scale_id": scale_id}
+    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
+                            field_add, "nil")
+    previous_response = json.loads(previous_response)
+    previous_response = previous_response.get('data')            
+    if len(previous_response) > 0 :
+        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
+
     event_id = get_event_id()
     # Check if scale exists
     field_add = {"_id": scale_id, "settings.scale-category": "percent_sum scale"}
@@ -189,16 +222,17 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
                                      "ABCDE",
                                      "fetch", field_add, "nil")
     data = json.loads(default_scale)
-    settings = data['data']['settings']
-
-    if data['data'] is None:
+    if data.get('data') is None:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
-    elif settings['allow_resp'] == False:
+    scale = data.get('data')[0]
+    settings = scale["settings"]
+    
+    if settings['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
     number_of_scale = settings['no_of_scales']
 
     # Check if all required responses are present
-    expected_responses = data['data'][0]['settings']['ProductCount']
+    expected_responses = settings['product_count']
     if int(expected_responses) != len(scores):
         return Response({"error": "Incorrect number of responses."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -219,23 +253,16 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
+    response = {
+                "username": username,
+                "event_id": event_id,
+                "scale_data": {"scale_id": scale_id, "scale_type": "percent_sum scale"},
+                "score": score_data,
+                "brand_data": {"brand_name": brand_name, "product_name": product_name},
+                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
     if process_id:
-        response = {
-            "event_id": event_id,
-            "process_id": process_id,
-            "scale_data": {"scale_id": scale_id, "scale_type": "percent_sum scale"},
-            "score": score_data,
-            "brand_data": {"brand_name": brand_name, "product_name": product_name},
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-    else: 
-        response = {
-            "event_id": event_id,
-            "scale_data": {"scale_id": scale_id, "scale_type": "percent_sum scale"},
-            "score": score_data,
-            "brand_data": {"brand_name": brand_name, "product_name": product_name},
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
+        response ["process_id"] = process_id
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                    "1094",
                                    "ABCDE", "insert", response, "nil")

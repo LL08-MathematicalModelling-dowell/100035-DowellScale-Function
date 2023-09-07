@@ -215,25 +215,17 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
     for product in products_ranking:
         ranking_dict[f"pair_{len(ranking_dict)+1}"] = product
     # Insert new response into database
+    response = {
+        "event_id": event_id,
+        "username": username,
+        "scale_data": {"scale_id": scale_id, "scale_type": "paired-comparison scale"},
+        "brand_data": {"brand_name": brand_name, "product_name": product_name},
+        "ranking": ranking,
+        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
     if process_id:
-        response = {
-            "event_id": event_id,
-            "username": username,
-            "process_id": process_id,
-            "scale_data": {"scale_id": scale_id, "scale_type": "paired-comparison scale"},
-            "brand_data": {"brand_name": brand_name, "product_name": product_name},
-            "ranking": ranking,
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-    else:
-        response = {
-            "event_id": event_id,
-            "username": username,
-            "scale_data": {"scale_id": scale_id, "scale_type": "paired-comparison scale"},
-            "brand_data": {"brand_name": brand_name, "product_name": product_name},
-            "ranking": ranking,
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
+        response["process_id"] = process_id
+
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", response, "nil")
     response_id = json.loads(response_id)
     return Response({

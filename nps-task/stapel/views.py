@@ -275,7 +275,7 @@ def stapel_response_view_submit(request):
                 scale_id = response['scale_id']
                 score = response.get('score', '0')
                 instance_id = response['instance_id']
-                return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
+                return response_submit_loop(response, scale_id, instance_id, username, score, process_id)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -310,12 +310,21 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
     return None
 
 
-def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None):
+def response_submit_loop(response, scale_id, instance_id, username, score, process_id=None):
+    field_add = {"username": username, "scale_data.scale_id": scale_id}
+    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
+                            field_add, "nil")
+    previous_response = json.loads(previous_response)
+    previous_response = previous_response.get('data') 
+    print(previous_response)           
+    if len(previous_response) > 0 :
+        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
     field_add = {"_id": scale_id, "settings.scale-category": "stapel scale"}
     default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                "fetch", field_add, "nil")
     data = json.loads(default)
     x = data['data'][0]['settings']
+    print(x)
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"})
     elif x['allow_resp'] == False:
@@ -359,7 +368,7 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
 
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
-    field_add = {"event_id": eventID, "scale_data": {"scale_id": scale_id, "scale_type": "stapel scale"},
+    field_add = {"username": username, "event_id": eventID, "scale_data": {"scale_id": scale_id, "scale_type": "stapel scale"},
                  "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
                  "score": [score]}
     if process_id:
@@ -371,7 +380,7 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
                          "ABCDE", "insert", field_add, "nil")
     user_json = json.loads(z)
     details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "instance_id": instance_id,
-               "username": user}
+               "username": username}
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
                                     "insert", details, "nil")
 

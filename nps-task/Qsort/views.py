@@ -152,7 +152,16 @@ def ResponseAPI(request):
     payload = request.data
 
     if request.method == 'POST':
-        field_add = {"_id": payload["scale_id"]}
+        scale_id = payload.get("scale_id")
+        username = payload.get("user")
+        field_add = {"user": username, "scale_id":scale_id}
+        previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
+                                field_add, "nil")
+        previous_response = json.loads(previous_response)
+        previous_response = previous_response.get('data')            
+        if len(previous_response) > 0 :
+            return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
+        field_add = {"_id": scale_id}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find",
                              field_add, "nil")
         x = json.loads(x)
@@ -287,7 +296,7 @@ def ResponseAPI(request):
                     event = get_event_id()
                     add = {
                         "event_id": event,
-                        "_id": payload["scale_id"],
+                        "scale_id": payload["scale_id"],
                         "results": results,
                         "user": payload["user"],
                         "name": payload["name"],
