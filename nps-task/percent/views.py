@@ -252,13 +252,8 @@ def single_scale_response_api_view(request, id=None):
         if settings.get('scale-category') != 'percent scale':
             return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"payload": scale_data['data']})
-<<<<<<< HEAD
 
 
-=======
-
-
->>>>>>> ranking
 @api_view(['GET', ])
 def scale_response_api_view(request):
     try:
