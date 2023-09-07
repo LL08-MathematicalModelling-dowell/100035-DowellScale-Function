@@ -275,7 +275,7 @@ def stapel_response_view_submit(request):
                 scale_id = response['scale_id']
                 score = response.get('score', '0')
                 instance_id = response['instance_id']
-                return response_submit_loop(response, scale_id, instance_id, username, score, process_id)
+                return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -309,45 +309,32 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
             return key
     return None
 
+def is_integer(score):
+    if isinstance(score, int):
+        return True
+    else:
+        try:
+            int(score)  # Try to convert the score to an integer
+            return True
+        except ValueError:
+            return False
 
-def response_submit_loop(response, scale_id, instance_id, username, score, process_id=None):
-    field_add = {"username": username, "scale_data.scale_id": scale_id}
-    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
-                            field_add, "nil")
-    previous_response = json.loads(previous_response)
-    previous_response = previous_response.get('data') 
-    print(previous_response)           
-    if len(previous_response) > 0 :
-        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
+def response_submit_loop(response, scale_id, instance_id, username, score, process_id=None, document_data=None):
+    # check if score is an integer
+    validate_score = is_integer(score)
+    if validate_score is False:
+        return Response({"Error": "Score must be an integer"})
+
     field_add = {"_id": scale_id, "settings.scale-category": "stapel scale"}
     default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                "fetch", field_add, "nil")
     data = json.loads(default)
     x = data['data'][0]['settings']
-    print(x)
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"})
     elif x['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
-
     number_of_scale = x['no_of_scales']
-
-    # if x['fomat'] == 'emoji':
-    #     try:
-    #         if is_emoji(score):
-    #             saved_emojis = x["custom_emoji_format"]
-    #             score = find_key_by_emoji(score, saved_emojis)
-    #             if score is None:
-    #                 return Response({"Error": "Provide an valid emoji from the scale!"})
-    #         else:
-    #             return Response({"Error": "Provide an emoji as the score value!"})
-    #     except:
-    #         return Response({"Error": "Provide an emoji as the score value!"})
-    # else:
-    #     if is_emoji(f"{score}"):
-    #         return Response({"Error": "Provide a valid value rating from the scale as the score value!"})
-    #     elif score not in x['scale']:
-    #         return Response({"error": "Invalid Selection.", "Options": x['scale']}, status=status.HTTP_400_BAD_REQUEST)
 
     # find existing scale reports
     field_add = {"scale_data.scale_id": scale_id}
@@ -355,13 +342,18 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
                                      "1094",
                                      "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response_data)
-    total_score = 0
 
     score_data = data.get("data", [])
-    total_score = sum(int(i['score'][0]['score']) for i in score_data)
 
-    if any(int(i['score'][0]['instance_id'].split("/")[0]) == instance_id for i in score_data):
-        return Response({"error": "Scale Response Exists!", "total score": total_score},
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "fetch",
+                                    {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
+    user_dets = json.loads(user_details)
+    if len(user_dets['data']) >= 1:
+        b = [l['score'][0]['score'] for l in score_data if
+             l['score'][0]['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0]['event_id']]
+
+        return Response({"error": "Scale Response Exists!", "current_score": b[0]},
                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
     eventID = get_event_id()
     score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score}
@@ -379,12 +371,12 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                          "ABCDE", "insert", field_add, "nil")
     user_json = json.loads(z)
-    details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "instance_id": instance_id,
+    details = {"scale_id": scale_id, "event_id": eventID, "instance_id": instance_id,
                "username": username}
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
                                     "insert", details, "nil")
 
-    return Response({"success": z, "payload": field_add, "total score": total_score})
+    return Response({"success": z, "payload": field_add})
 
 
 # GET ALL SCALES

@@ -175,7 +175,6 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
                                      "find", field_add, "nil")
-    print("Hello Ambrose", default_scale)
 
     data = json.loads(default_scale)
     settings = data['data']['settings']
