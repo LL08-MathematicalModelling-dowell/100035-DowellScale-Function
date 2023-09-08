@@ -160,7 +160,7 @@ def submit_response_view(request):
             if scale_settings['data'][0]['settings'].get('scale-category') != 'paired-comparison scale':
                 return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
             
-            field_add = {"username": username, "scale_id": scale_id}
+            field_add = {"username": username, "scale_data.scale_id": scale_id}
             previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                                     field_add, "nil")
             previous_response = json.loads(previous_response)
