@@ -334,16 +334,17 @@ def response_submit_loop(username, scale_id, responses, instance_id=None, proces
                     return Response({"error": f"Invalid rank value.{stage['stage_name']}"}, status=status.HTTP_400_BAD_REQUEST)
         
 
+        field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "ranking scale"},
+                        "brand_data": {"brand_name": responses["brand_name"], "product_name": responses["product_name"]},
+                        "rankings": responses['rankings'], "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+        
         if process_id:
-            field_add = {"event_id": event_id, "process_id": process_id,"scale_data": {"scale_id": scale_id, "scale_type": "ranking scale"},
-                        "brand_data": {"brand_name": responses["brand_name"], "product_name": responses["product_name"]},
-                        "rankings": responses['rankings'], "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        }
-        else:
-            field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "ranking scale"},
-                        "brand_data": {"brand_name": responses["brand_name"], "product_name": responses["product_name"]},
-                        "rankings": responses['rankings'], "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        }
+            field_add['process_id'] = process_id
+            
+        if document_data:
+            field_add['document_data'] = document_data
+            
         
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                             "ABCDE", "insert", field_add, "nil")
