@@ -536,6 +536,7 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Common dictionary elements
     common_data = {
+        "username": user,
         "event_id": event_id,
         "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
         "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
