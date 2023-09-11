@@ -256,8 +256,7 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
     if document_data:
         response["document_data"] = document_data
     field_add = response
-    field_add.update('username': username) 
-    print(field_add, '-------')       
+    field_add.update({'username': username})      
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                                    "ABCDE", "insert", field_add, "nil")
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
