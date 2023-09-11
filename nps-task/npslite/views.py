@@ -26,6 +26,7 @@ def settings_api_view_create(request):
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
+            username = response['username']
             orientation = response['orientation']
             scalecolor = response['scalecolor']
             fontcolor = response['fontcolor']
@@ -49,6 +50,7 @@ def settings_api_view_create(request):
         eventID = get_event_id()
         field_add = {
             "event_id": eventID,
+            "username": username,
             "settings": {
                 "orientation": orientation,
                 "scalecolor": scalecolor,
@@ -76,7 +78,7 @@ def settings_api_view_create(request):
         user_json = json.loads(x)
         field_add['scale_id'] = user_json['inserted_id']
         details = {
-            "scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+            "scale_id": user_json['inserted_id'], "event_id": eventID, "username": username}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
                                         "insert", details, "nil")
         return Response({"success": True, "data": field_add})
@@ -97,26 +99,35 @@ def settings_api_view_create(request):
 
     elif request.method == "PUT":
         response = request.data
-        if "scale_id" not in response:
-            return Response({"error": "scale_id missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            username = response['username']
+            scale_id = response['scale_id']
+        except KeyError as error:
+            return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
+        
         scale_id = response["scale_id"]
-        field_add = {"_id": scale_id}
+        field_add = {"_id": scale_id, "username": username, "settings.scale-category": "npslite scale"}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                              field_add, "nil")
-        scale_data = json.loads(x)['data'][0]['settings']
+        scale_data = json.loads(x)
+        if scale_data['data'] is None:
+            return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        settings = scale_data['data'][0]['settings']
         for key in response:
-            if key in scale_data:
-                scale_data[key] = response[key]
-        scale_data['date_updated'] = datetime.datetime.now().strftime(
+            if key in settings:
+                settings[key] = response[key]
+        settings['date_updated'] = datetime.datetime.now().strftime(
             "%Y-%m-%d %H:%M:%S")
-        update_field = {"$set": scale_data}
-        x = dowellconnection("dowell_scale", "bangalore", "dowell_scale", "scale", "scale", "1093", "ABCDE",
-                             "update", field_add, update_field)
-        return Response({"success": "Successfully Updated", "data": scale_data})
+        update_field = {"settings": settings}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", 
+                             "ABCDE", "update",
+                             field_add, update_field)
 
+        return Response({"success": "Successfully Updated", "data": settings})
+        
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
-i = 1
 
 @api_view(['POST', 'GET'])
 def submit_response_view(request):
@@ -217,7 +228,6 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
 
     data = json.loads(default_scale)
     settings = data['data']['settings']
-
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
     elif settings['allow_resp'] == False:
@@ -225,12 +235,11 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
 
     number_of_scale = settings['no_of_scales']
     scale_id = data['data']['_id']
-
+    
     event_id = get_event_id()
     if data['data']['settings'].get('fomat') == "text":
         if score not in data['data']['settings'].get('label_input'):
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
-
     if data['data']['settings'].get('fomat') == "emoji":
         upper_boundary = data['data']['settings'].get('label_selection')
         if type(score) != int or 0 < score > upper_boundary - 1:
@@ -254,8 +263,8 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
         
     if document_data:
         response["document_data"] = document_data
-    field_add = response
-    field_add.update({'username': username})      
+    field_add = {"username": username}
+    field_add.update(response)      
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                                    "ABCDE", "insert", field_add, "nil")
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
