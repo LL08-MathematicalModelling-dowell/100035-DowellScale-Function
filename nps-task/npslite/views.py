@@ -201,12 +201,11 @@ def submit_response_view(request):
 def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None, document_data=None):
 
     # Check if response already exists for this event
-    field_add = {"username": username, "scale_data.scale_id": scale_id}
+    field_add = {"username": username, "scale_data.scale_id": scale_id, "scale_data.scale_type": "npslite scale", "scale_data.instance_id": instance_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                             field_add, "nil")
     previous_response = json.loads(previous_response)
     previous_response = previous_response.get('data')
-    print("Previous response : ", previous_response, "scale_id : ", scale_id)
     if len(previous_response) > 0 :
         return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -245,7 +244,7 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
     # Insert new response into database
     response = {
             "event_id": event_id,
-            "scale_data": {"scale_id": scale_id, "scale_type": "npslite scale"},
+            "scale_data": {"scale_id": scale_id, "scale_type": "npslite scale", "instance_id": instance_id},
             "brand_data": {"brand_name": brand_name, "product_name": product_name},
             "score": score_data,
             "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
