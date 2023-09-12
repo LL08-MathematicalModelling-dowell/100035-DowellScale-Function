@@ -493,13 +493,6 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
 
 
 def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None):
-    field_add = {"username": user, "scale_data.scale_id": scale_id}
-    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
-                            field_add, "nil")
-    previous_response = json.loads(previous_response)
-    previous_response = previous_response.get('data')            
-    if len(previous_response) > 0 :
-        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
     field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
