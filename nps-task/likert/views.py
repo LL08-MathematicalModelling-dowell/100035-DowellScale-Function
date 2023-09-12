@@ -160,7 +160,9 @@ def submit_response_view(request):
                 for single_response in document_responses:
                     score = single_response["score"]
                     scale_id = single_response['scale_id']
-                    success = response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id)
+
+                    document_data = {"details": {"action": response_data.get('action', ""), "authorized": response_data.get('authorized',""), "cluster": response_data.get('cluster', ""), "collection": response_data.get('collection',""), "command": response_data.get('command',""), "database": response_data.get('database', ""), "document": response_data.get('document', ""), "document_flag":response_data.get('document_flag',""), "document_right": response_data.get('document_right', ""), "field": response_data.get('field',""), "flag": response_data.get('flag', ""), "function_ID": response_data.get('function_ID', ""),"metadata_id": response_data.get('metadata_id', ""), "process_id": response_data['process_id'], "role": response_data.get('role', ""), "team_member_ID": response_data.get('team_member_ID', ""), "update_field": {"content": response_data.get('content', ""), "document_name": response_data.get('document_name', ""), "page": response_data.get('page', "")}, "user_type": response_data.get('user_type', ""), "id": response_data['_id']}, "product_name": response_data.get('product_name', "")}
+                    success = response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id, document_data)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
@@ -201,7 +203,7 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
             return int(key)
     return None
 
-def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None):
+def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None, document_data=None):
     field_add = {"username": username, "scale_data.scale_id": scale_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                             field_add, "nil")
@@ -258,6 +260,8 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
         }
     if process_id:
         response["process_id"] = process_id
+    if document_data:
+        response["docuemnt_data"] = document_data
 
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                                    "ABCDE", "insert", response, "nil")
