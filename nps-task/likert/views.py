@@ -224,7 +224,6 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
 
     number_of_scale = settings['no_of_scales']
-    scale_id = data['data']['_id']
     label_selection = settings['label_selection']
 
     event_id = get_event_id()
