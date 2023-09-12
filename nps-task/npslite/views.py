@@ -20,11 +20,7 @@ from dowellnps_scale_function.settings import public_url
 def settings_api_view_create(request):
     if request.method == 'POST':
         response = request.data
-        try:
-            user = response['user']
-        except:
-            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-
+    
         try:
             username = response['username']
             orientation = response['orientation']

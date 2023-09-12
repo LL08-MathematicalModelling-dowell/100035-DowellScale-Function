@@ -21,10 +21,6 @@ import random
 def settings_api_view_create(request):
     if request.method == 'POST':
         data = request.data
-        try:
-            user = data['user']
-        except KeyError:
-            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             username = data['username']
