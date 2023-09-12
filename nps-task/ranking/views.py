@@ -21,10 +21,6 @@ import random
 def settings_api_view_create(request):
     if request.method == 'POST':
         data = request.data
-        try:
-            user = data['user']
-        except KeyError:
-            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             username = data['username']
@@ -279,7 +275,7 @@ def response_submit_api_view(request):
 
 def response_submit_loop(username, scale_id, responses, instance_id=None, process_id=None, document_data=None):
     # # Check if response already exists for this event
-    field_add = {"username": username, "scale_id": scale_id}
+    field_add = {"username": username, "scale_data.scale_id": scale_id, "scale_data.scale_type": "ranking scale", "scale_data.instance_id": instance_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                             field_add, "nil")
     previous_response = json.loads(previous_response)
@@ -334,16 +330,17 @@ def response_submit_loop(username, scale_id, responses, instance_id=None, proces
                     return Response({"error": f"Invalid rank value.{stage['stage_name']}"}, status=status.HTTP_400_BAD_REQUEST)
         
 
+        field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "ranking scale", "instance_id": instance_id},
+                        "brand_data": {"brand_name": responses["brand_name"], "product_name": responses["product_name"]},
+                        "rankings": responses['rankings'], "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        }
+        
         if process_id:
-            field_add = {"event_id": event_id, "process_id": process_id,"scale_data": {"scale_id": scale_id, "scale_type": "ranking scale"},
-                        "brand_data": {"brand_name": responses["brand_name"], "product_name": responses["product_name"]},
-                        "rankings": responses['rankings'], "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        }
-        else:
-            field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "ranking scale"},
-                        "brand_data": {"brand_name": responses["brand_name"], "product_name": responses["product_name"]},
-                        "rankings": responses['rankings'], "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        }
+            field_add['process_id'] = process_id
+            
+        if document_data:
+            field_add['document_data'] = document_data
+            
         
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                             "ABCDE", "insert", field_add, "nil")

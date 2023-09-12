@@ -152,16 +152,7 @@ def ResponseAPI(request):
     payload = request.data
 
     if request.method == 'POST':
-        scale_id = payload.get("scale_id")
-        username = payload.get("user")
-        field_add = {"user": username, "scale_id":scale_id}
-        previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
-                                field_add, "nil")
-        previous_response = json.loads(previous_response)
-        previous_response = previous_response.get('data')            
-        if len(previous_response) > 0 :
-            return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
-        field_add = {"_id": scale_id}
+        field_add = {"_id": payload["scale_id"]}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find",
                              field_add, "nil")
         x = json.loads(x)
@@ -221,6 +212,40 @@ def ResponseAPI(request):
                             return JsonResponse({"Error": f"Missing required field: {field}"},
                                                 status=status.HTTP_400_BAD_REQUEST)
 
+                    if "document_responses" in payload:
+                        document_response = payload['document_responses']
+                        instance_id = payload['instance_id']
+                        process_id = payload['process_id']
+                        if not isinstance(process_id, str):
+                            return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+                    for response in document_response:
+                        if not isinstance(response, dict):
+                            return Response({"error": "The document responses should be a list of dictionaries."},
+                                            status=status.HTTP_400_BAD_REQUEST)
+                        document_data = {"details": {"action": payload.get('action', ""), 
+                                             "authorized": payload.get('authorized',""), 
+                                             "cluster": payload.get('cluster', ""), 
+                                             "collection": payload.get('collection',""), 
+                                             "command": payload.get('command',""), 
+                                             "database": payload.get('database', ""), 
+                                             "document": payload.get('document', ""), 
+                                             "document_flag":payload.get('document_flag',""), 
+                                             "document_right": payload.get('document_right', ""), 
+                                             "field": payload.get('field',""), 
+                                             "flag": payload.get('flag', ""), 
+                                             "function_ID": payload.get('function_ID', ""),
+                                             "metadata_id": payload.get('metadata_id', ""), 
+                                             "process_id": payload['process_id'], 
+                                             "role": payload.get('role', ""), 
+                                             "team_member_ID": payload.get('team_member_ID', ""), 
+                                             "product_name": payload.get('product_name', ""),
+                                             "update_field": {"content": payload.get('content', ""), 
+                                                              "document_name": payload.get('document_name', ""), 
+                                                              "page": payload.get('page', "")}, 
+                                                              "user_type": payload.get('user_type', ""), 
+                                                              "id": payload['_id']} 
+                                             }
+                        
                     # Define fixed pile ranges
                     pile_ranges = {
                         "disagree": [-5, -4, -3, -2, -1],
@@ -296,7 +321,7 @@ def ResponseAPI(request):
                     event = get_event_id()
                     add = {
                         "event_id": event,
-                        "scale_id": payload["scale_id"],
+                        "_id": payload["scale_id"],
                         "results": results,
                         "user": payload["user"],
                         "name": payload["name"],
@@ -307,7 +332,13 @@ def ResponseAPI(request):
                         "fontcolor": payload["fontcolor"]
 
                     }
-
+                    
+                    if "process_id" in payload:
+                        add["process_id"] = payload["process_id"]
+                        
+                    if document_data:
+                        add["document_data"] = document_data
+                    
                     x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                          "1094", "ABCDE", "insert",
                                          add, "nil")

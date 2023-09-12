@@ -207,7 +207,7 @@ def percent_sum_response_submit(request):
 
 
 def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None, document_data=None):
-    field_add = {"username": username, "scale_data.scale_id": scale_id}
+    field_add = {"username": username, "scale_data.scale_id": scale_id, "scale_data.scale_type": "percent_sum scale", "scale_data.instance_id": instance_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                             field_add, "nil")
     previous_response = json.loads(previous_response)
@@ -256,13 +256,17 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
     response = {
                 "username": username,
                 "event_id": event_id,
-                "scale_data": {"scale_id": scale_id, "scale_type": "percent_sum scale"},
+                "scale_data": {"scale_id": scale_id, "scale_type": "percent_sum scale", "instance_id": instance_id},
                 "score": score_data,
                 "brand_data": {"brand_name": brand_name, "product_name": product_name},
                 "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
     if process_id:
         response ["process_id"] = process_id
+        
+    if document_data:
+        response["document_data"] = document_data
+        
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                    "1094",
                                    "ABCDE", "insert", response, "nil")
