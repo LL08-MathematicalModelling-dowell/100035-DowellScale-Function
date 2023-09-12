@@ -160,7 +160,7 @@ def submit_response_view(request):
             if scale_settings['data'][0]['settings'].get('scale-category') != 'paired-comparison scale':
                 return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
             
-            field_add = {"username": username, "scale_id": scale_id}
+            field_add = {"username": username, "scale_data.scale_id": scale_id}
             previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                                     field_add, "nil")
             previous_response = json.loads(previous_response)
@@ -176,7 +176,8 @@ def submit_response_view(request):
                 all_results = []
                 for single_response in document_responses:
                     products_ranking = single_response["products_ranking"]
-                    success = response_submit_loop(scale_settings, username, scale_id, products_ranking, brand_name, product_name, process_id)
+                    document_data = {"details": {"action": response_data.get('action', ""), "authorized": response_data.get('authorized',""), "cluster": response_data.get('cluster', ""), "collection": response_data.get('collection',""), "command": response_data.get('command',""), "database": response_data.get('database', ""), "document": response_data.get('document', ""), "document_flag":response_data.get('document_flag',""), "document_right": response_data.get('document_right', ""), "field": response_data.get('field',""), "flag": response_data.get('flag', ""), "function_ID": response_data.get('function_ID', ""),"metadata_id": response_data.get('metadata_id', ""), "process_id": response_data['process_id'], "role": response_data.get('role', ""), "team_member_ID": response_data.get('team_member_ID', ""), "update_field": {"content": response_data.get('content', ""), "document_name": response_data.get('document_name', ""), "page": response_data.get('page', "")}, "user_type": response_data.get('user_type', ""), "id": response_data['_id']}, "product_name": response_data.get('product_name', "")}
+                    success = response_submit_loop(scale_settings, username, scale_id, products_ranking, brand_name, product_name, process_id, document_data)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
@@ -186,7 +187,7 @@ def submit_response_view(request):
             print(f"error: {e}")
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
-def response_submit_loop(scale_settings, username, scale_id, products_ranking, brand_name, product_name, process_id=None):
+def response_submit_loop(scale_settings, username, scale_id, products_ranking, brand_name, product_name, process_id=None, document_data=None):
     if len(products_ranking) != scale_settings["data"][0]["settings"]["total_pairs"]:
         return Response({"error": "Scale Responses incomplete"}, status=status.HTTP_400_BAD_REQUEST)
     event_id = get_event_id()
@@ -225,6 +226,8 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
     }
     if process_id:
         response["process_id"] = process_id
+    if document_data:
+        response["document_data"] = document_data
 
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "insert", response, "nil")
     response_id = json.loads(response_id)
