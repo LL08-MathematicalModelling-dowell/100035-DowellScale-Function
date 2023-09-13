@@ -80,18 +80,21 @@ def settings_api_view_create(request):
         return Response({"success": True, "data": field_add})
 
     elif request.method == 'GET':
-        response = request.data
-        if "scale_id" in response:
-            scale_id = response['scale_id']
-            field_add = {"_id": scale_id}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                                 field_add, "nil")
-            return Response({"data": json.loads(x)})
+        param = request.GET
+        scale_id = param.get('scale_id', None)
+        if scale_id:
+            try:
+                field_add = {"_id": scale_id}
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                                    field_add, "nil")
+                return Response(json.loads(x)['data'], status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"error": "response does not exist"}, status=status.HTTP_404_NOT_FOUND)
         else:
             field_add = {"settings.scale-category": "npslite scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
-            return Response({"data": json.loads(x)})
+            return Response(json.loads(x)['data'], status=status.HTTP_200_OK)
 
     elif request.method == "PUT":
         response = request.data
@@ -102,7 +105,6 @@ def settings_api_view_create(request):
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
         
-        scale_id = response["scale_id"]
         field_add = {"_id": scale_id, "username": username, "settings.scale-category": "npslite scale"}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                              field_add, "nil")
@@ -147,7 +149,6 @@ def submit_response_view(request):
                     score = single_response["score"]
                     scale_id = single_response['scale_id']
                     response = response_data
-                    response['_id'] = single_response['scale_id']
                     document_data = {"details": {"action": response.get('action', ""), 
                                                 "authorized": response.get('authorized',""), 
                                                 "cluster": response.get('cluster', ""), 
@@ -189,7 +190,7 @@ def submit_response_view(request):
     elif request.method == "GET":
         response = request.data
         try:
-            if "scale_id" in response:
+            if response.get('scale_id', ''):
                 id = response['scale_id']
                 field_add = {"scale_data.scale_id": id,
                              "scale_data.scale_type": "npslite scale"}
@@ -197,9 +198,14 @@ def submit_response_view(request):
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
                 data = json.loads(response_data)
-                return Response({"data": json.loads(response_data)})
+                return Response({"data": data})
             else:
-                return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
+                field_add = {"scale_data.scale_type": "npslite scale"}
+                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                 "scale_reports",
+                                                 "1094", "ABCDE", "fetch", field_add, "nil")
+                data = json.loads(response_data)
+                return Response({"data": data})
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
