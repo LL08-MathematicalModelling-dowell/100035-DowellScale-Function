@@ -27,8 +27,6 @@ import imghdr
 
 
 def compare_event_ids(arr1, arr2):
-    print(arr1)
-    print(arr2)
     for elem in arr1:
         if elem in arr2:
             return True
@@ -480,7 +478,6 @@ def nps_response_view_submit(request):
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
                 data = json.loads(response_data)
-                print(data)
                 return Response({"data": json.loads(response_data)})
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
@@ -496,6 +493,13 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
 
 
 def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None):
+    field_add = {"username": user, "scale_data.scale_id": scale_id}
+    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
+                            field_add, "nil")
+    previous_response = json.loads(previous_response)
+    previous_response = previous_response.get('data')            
+    if len(previous_response) > 0 :
+        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
     field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
@@ -519,7 +523,7 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     user_dets = json.loads(user_details)
     if len(user_dets['data']) >= 1:
         b = [l['score']['score'] for l in existing_responses if
-             l['score']['instance_id'].split("/")[0] == f"{instance_id}"]
+             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0]['event_id']]
         category = find_category(b[0])
 
         return Response({"error": "Scale Response Exists!", "current_score": b[0], "Category": category},
@@ -528,11 +532,11 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
                   "score": score, "category": category}
 
-    print("This is my score data", score_data)
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Common dictionary elements
     common_data = {
+        "username": user,
         "event_id": event_id,
         "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
         "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
@@ -853,7 +857,6 @@ def new_nps_create(request):
 
 @api_view(['POST', 'GET', 'PUT'])
 def error_response(request, message, status):
-    print("This is my status ", status)
     return Response({"error": message}, status=status)
 
 
