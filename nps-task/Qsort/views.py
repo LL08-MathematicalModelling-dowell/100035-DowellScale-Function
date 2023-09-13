@@ -97,8 +97,9 @@ def CreateScale(request):
         return JsonResponse({"Response": show_response}, status=status.HTTP_201_CREATED)
 
     if request.method == 'GET':
-        payload = request.data
-        if 'scale_id' not in payload:
+        params = request.GET
+        scale_id = params.get("scale_id")
+        if not scale_id:
             z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "fetch",
                                  {"settings.scaletype": "qsort"}, "nil")
@@ -107,7 +108,7 @@ def CreateScale(request):
             return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
                                 status=status.HTTP_200_OK)
         else:
-            field_add = {"_id": payload["scale_id"]}
+            field_add = {"_id": scale_id}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
             x = json.loads(x)
