@@ -230,7 +230,7 @@ def response_submit_api_view(request):
                                                               "document_name": response.get('document_name', ""), 
                                                               "page": response.get('page', "")}, 
                                                               "user_type": response.get('user_type', ""), 
-                                                              "id": response['_id']} 
+                                                              "id": response.get('_id')} 
                                              }
                 responses = {
                     "brand_name": brand_name,
