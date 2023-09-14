@@ -20,6 +20,7 @@ def settings_api_view_create(request):
             orientation = response['orientation']
             scalecolor = response['scalecolor']
             fontcolor = response['fontcolor']
+            roundcolor = response['roundcolor']
             fontstyle = response['fontstyle']
             time = response['time']
             item_list = response['item list']
