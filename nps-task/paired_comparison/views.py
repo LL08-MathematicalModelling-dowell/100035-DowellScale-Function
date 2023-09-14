@@ -50,6 +50,7 @@ def settings_api_view_create(request):
             "settings" : {"orientation": orientation,
                             "scalecolor": scalecolor,
                             "fontcolor": fontcolor,
+                            "roundcolor": roundcolor,
                             "fontstyle": fontstyle,
                             "time": time,
                             "paired_items": paired_items,
