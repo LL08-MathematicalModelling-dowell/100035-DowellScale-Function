@@ -128,7 +128,7 @@ def process_data(data, doc_no):
         for i in data:
             all_scales.append(i)
     else:
-        all_scales = [x for x in data if int(x['score']['instance_id'].split("/")[-1]) == int(doc_no)]
+        all_scales = [int(x) for x in data if int(x['score']['instance_id'].split("/")[-1]) == int(doc_no)]
     print(f"\n\nall_scales: {all_scales}.................\n\n")
 
     scores = defaultdict(list)
@@ -137,7 +137,7 @@ def process_data(data, doc_no):
         print(f"\n\nscale_type: {scale_type}.................\n\n")
         score = x['score']['score']
         print(f"\n\nscore: {score}.................\n\n")
-        scores[scale_type].append(score)
+        scores[scale_type].append(int(score))
 
 
     return scores

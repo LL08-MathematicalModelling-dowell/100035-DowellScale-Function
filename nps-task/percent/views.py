@@ -67,13 +67,13 @@ def settings_api_view_create(request):
         return Response({"success": x, "data": field_add})
     elif request.method == 'GET':
         try:
-            response = request.data
-            scale_id = response.get('scale_id')
+            param = request.GET
+            scale_id = param.get('scale_id', None)
             if not scale_id:
                 field_add = {"settings.scale-category": "percent scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                                  "ABCDE", "fetch", field_add, "nil")
-                return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
+                return Response(json.loads(response_data)['data'], status=status.HTTP_200_OK)
 
             field_add = {"_id": scale_id, "settings.scale-category": "percent scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -82,8 +82,7 @@ def settings_api_view_create(request):
             if not settings_json.get('data'):
                 return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
 
-            settings = settings_json['data']['settings']
-            return Response({"success": settings})
+            return Response(settings_json['data'], status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "PUT":
@@ -144,7 +143,6 @@ def percent_response_view_submit(request):
                     scale_id = single_response['scale_id']
                     scores = single_response["score"]
                     response = single_response['score']
-                    response['_id'] = scale_id
                     document_data = {"details": {"action": response.get('action', ""), 
                                              "authorized": response.get('authorized',""), 
                                              "cluster": response.get('cluster', ""), 
