@@ -392,24 +392,83 @@ def evaluation_api(request):
             return JsonResponse({"error": f"Error fetching data from dowellconnection: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+        print(""" --------------------------------------- template --------------------------------------- """)
+        # scale_wise reports only.
+        """
+        # if we scale wise reports, we need to get the template_id from the scale_id,
+        field_add = {"template_id": payload.get('template_id'), f"custom_input_groupings.{payload.get('type_of_element')}": payload.get('element_id')}
+        response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data",
+                                         "1181", "ABCDE", "find", field_add, "nil")
+        print(response_data, "responDse_datrrrrrrrrrrrrrrrrrrrrrrr")
+        scale = response_data['data']['scale_id']
+        print(scale)
+        field_add = {"scale_data.scale_id": scale}
+        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                         "scale_reports",
+                                         "1094", "ABCDE", "find", field_add, "nil")
+        print(json.loads(response_data)['data'])
+        score = json.loads(response_data)['data']['score']['score']
+        print(score)
+
+        # get score of the scale,
+
+        """
+
+
+        print(""" --------------------------------------- template --------------------------------------- """)
+
+
         all_scales = []
         if payload.get('document_id'):
+            field_add = {"_id": payload.get('document_id'), "process_id": payload.get('process_id')}
+            response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                             "scale_reports",
+                             "1094", "ABCDE", "fetch", field_add, "nil")
+            print(response_data, "response_dataaaaaaaaaaaaaaaa0000000000")
+            data = response_data['data']
+            print(data, "data0000000000000000")
             for i in data:
-                print(f".{i['score']['instance_id'].split('/')[0]}.\n.{payload.get('document_id')}.")
-                if int(i['score']['instance_id'].split("/")[0]) == int(payload.get('document_id')):
-                    all_scales.append(i)
+                print(f"\n\n{i} in i\n\n")
+                all_scales.append(i)
+            # for i in data:
+            #     print(f".{i['score']['instance_id'].split('/')[0]}.\n.{payload.get('document_id')}.")
+            #     if int(i['score']['instance_id'].split("/")[0]) == int(payload.get('document_id')):
+            #         all_scales.append(i)
         elif payload.get('scale_id'):
             for i in data:
                 print(f"\n\n{i}9009090909\n\n")
-                if i['scale_data']['scale_id'] == payload.get('scale_id'):
-                    try:
-                            if int(i['score']['instance_id'].split("/")[-1]) >= 3:
-                                all_scales.append(i)
-                            else:
-                                return JsonResponse({"error": "Not enough scores found for this scale."})
-                    except Exception as e:
-                        print(e)
-                        print(i, "**************************")
+                field_add = {"template_id": payload.get('template_id'),
+                             f"custom_input_groupings.{payload.get('type_of_element')}": payload.get('element_id')}
+                response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "custom_data",
+                                                 "custom_data",
+                                                 "1181", "ABCDE", "find", field_add, "nil")
+                print(response_data, "responDse_datrrrrrrrrrrrrrrrrrrrrrrr")
+                scale = response_data['data']['scale_id']
+                print(scale)
+                field_add = {"scale_data.scale_id": scale}
+                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                 "scale_reports",
+                                                 "1094", "ABCDE", "find", field_add, "nil")
+                print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
+                all_scales.append(json.loads(response_data)['data'])
+                # score = json.loads(response_data)['data']['score']['score']
+                # print(score)
+                field_add = {"_id": json.loads(response_data)['data']['_id']}
+                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                 "scale_reports",
+                                                 "1094", "ABCDE", "find", field_add, "nil")
+                print(json.loads(response_data)['data'], "############")
+
+
+                # if i['scale_data']['scale_id'] == payload.get('scale_id'):
+                #     try:
+                #             if int(i['score']['instance_id'].split("/")[-1]) >= 3:
+                #                 all_scales.append(i)
+                #             else:
+                #                 return JsonResponse({"error": "Not enough scores found for this scale."})
+                #     except Exception as e:
+                #         print(e)
+                #         print(i, "**************************")
 
         else:
             for i in data:
@@ -474,22 +533,25 @@ def evaluation_api(request):
             return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Execute stattricks_api API call
-        with ThreadPoolExecutor() as executor:
-            response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
-            response_json = response_json_future.result()
-            print(response_json, "response_json______________________")
-            if "Process Id already in use. Please enter a different Process Id & try again" in response_json:
-                get_response = stattricks_api_get(process_id)
-                print(get_response, "get_response")
-                response_json = get_response
-            try:
-                response_json.pop("msg")
-                response_json.pop("_id")
-                response_json.pop("Process_id")
-                response_json.pop("title")
-            except:
-                pass
-            response_["central_tendencies"] = response_json
+        try:
+            with ThreadPoolExecutor() as executor:
+                response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
+                response_json = response_json_future.result()
+                print(response_json, "response_json______________________")
+                if "Process Id already in use. Please enter a different Process Id & try again" in response_json:
+                    get_response = stattricks_api_get(process_id)
+                    print(get_response, "get_response")
+                    response_json = get_response
+                try:
+                    response_json.pop("msg")
+                    response_json.pop("_id")
+                    response_json.pop("Process_id")
+                    response_json.pop("title")
+                except:
+                    pass
+                response_["central_tendencies"] = response_json
+        except Exception as e:
+            return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return JsonResponse(response_, status=status.HTTP_200_OK)
 
 
