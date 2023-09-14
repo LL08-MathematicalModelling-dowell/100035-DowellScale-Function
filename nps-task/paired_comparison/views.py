@@ -20,6 +20,7 @@ def settings_api_view_create(request):
             orientation = response['orientation']
             scalecolor = response['scalecolor']
             fontcolor = response['fontcolor']
+            roundcolor = response['roundcolor']
             fontstyle = response['fontstyle']
             time = response['time']
             item_list = response['item list']
@@ -30,7 +31,7 @@ def settings_api_view_create(request):
             user = response["user"]
         else:
             user = True        
-        if item_count == len(item_list):
+        if item_count != len(item_list):
             return Response({"error": "item count does not match length of item list"}, status=status.HTTP_400_BAD_REQUEST)
         if item_count < 2:
             return Response({"error": "2 or more items needed for paired comparison scale."}, status=status.HTTP_400_BAD_REQUEST)
@@ -49,6 +50,7 @@ def settings_api_view_create(request):
             "settings" : {"orientation": orientation,
                             "scalecolor": scalecolor,
                             "fontcolor": fontcolor,
+                            "roundcolor": roundcolor,
                             "fontstyle": fontstyle,
                             "time": time,
                             "paired_items": paired_items,
