@@ -77,7 +77,6 @@ def settings_api_view_create(request):
             "start_with_zero": start_with_zero,
             "reference": reference,
             "display_ranks": display_ranks,
-            "event_id": event_id,
             "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "username": username
         }
@@ -93,7 +92,7 @@ def settings_api_view_create(request):
         scale_id = str((json.loads(x)['inserted_id']))
 
         user_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                 "ABCDE", "insert", {"user": user}, "nil")
+                                 "ABCDE", "insert", {"username": username}, "nil")
         if not user_data:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -101,15 +100,17 @@ def settings_api_view_create(request):
     
 
     elif request.method == 'GET':
-        data = request.data
-        if "scale_id" in data:
-            scale_id = data['scale_id']
-            field_add = {"_id": scale_id}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                "fetch", field_add, "nil")
-            settings = json.loads(x)['data'][0]['settings']
-
-            return Response({"data": settings})
+        param = request.GET
+        scale_id = param.get('scale_id', None)
+        if scale_id:
+            try:
+                field_add = {"_id": scale_id}
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                    "fetch", field_add, "nil")
+                
+                return Response(json.loads(x)['data'], status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             field_add = {"settings.scale-category": "ranking scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -117,11 +118,10 @@ def settings_api_view_create(request):
             settings_list = []
             for item in json.loads(x)['data']:
                 try:
-                    settings = item['settings']
-                    settings_list.append(settings)
+                    settings_list.append(item)
                 except Exception as e:
                     print(e)
-            return Response({"data": settings_list}, status=status.HTTP_200_OK)
+            return Response(settings_list, status=status.HTTP_200_OK)
 
 
     elif request.method == "PUT":
@@ -131,8 +131,11 @@ def settings_api_view_create(request):
 
         scale_id = data['scale_id']
         field_add = {"_id": scale_id}
-        x = dowellconnection("dowellscale","bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
-        settings = json.loads(x)['data'][0]['settings']
+        try:
+            x = dowellconnection("dowellscale","bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
+            settings = json.loads(x)['data'][0]['settings']
+        except Exception as e:
+            return Response({"error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
         for key in settings.keys():
             if key in data:
@@ -163,7 +166,7 @@ def settings_api_view_create(request):
 @api_view(['GET', 'POST'])
 def response_submit_api_view(request):
     if request.method == 'GET':
-        scale_id = request.data.get('scale_id')
+        scale_id = request.data.get('scale_id', '')
         if scale_id:
             # Retrieve specific response by scale_id
             field_add = {"_id": scale_id, "scale_data.scale_type": "ranking scale"}
@@ -206,7 +209,6 @@ def response_submit_api_view(request):
             results = []
             for rsp in document_response:
                 scale_id = rsp['scale_id']
-                response['_id'] = scale_id
                 document_data = {"details": {"action": response.get('action', ""), 
                                              "authorized": response.get('authorized',""), 
                                              "cluster": response.get('cluster', ""), 
@@ -228,7 +230,7 @@ def response_submit_api_view(request):
                                                               "document_name": response.get('document_name', ""), 
                                                               "page": response.get('page', "")}, 
                                                               "user_type": response.get('user_type', ""), 
-                                                              "id": response['_id']} 
+                                                              "id": response.get('_id')} 
                                              }
                 responses = {
                     "brand_name": brand_name,
