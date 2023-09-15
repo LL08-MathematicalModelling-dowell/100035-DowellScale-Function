@@ -160,6 +160,7 @@ def submit_response_view(request):
                 for single_response in document_responses:
                     score = single_response["score"]
                     scale_id = single_response['scale_id']
+
                     document_data = {"details": {"action": response_data.get('action', ""), "authorized": response_data.get('authorized',""), "cluster": response_data.get('cluster', ""), "collection": response_data.get('collection',""), "command": response_data.get('command',""), "database": response_data.get('database', ""), "document": response_data.get('document', ""), "document_flag":response_data.get('document_flag',""), "document_right": response_data.get('document_right', ""), "field": response_data.get('field',""), "flag": response_data.get('flag', ""), "function_ID": response_data.get('function_ID', ""),"metadata_id": response_data.get('metadata_id', ""), "process_id": response_data['process_id'], "role": response_data.get('role', ""), "team_member_ID": response_data.get('team_member_ID', ""), "update_field": {"content": response_data.get('content', ""), "document_name": response_data.get('document_name', ""), "page": response_data.get('page', "")}, "user_type": response_data.get('user_type', ""), "id": response_data['_id']}, "product_name": response_data.get('product_name', "")}
                     success = response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id, document_data)
                     all_results.append(success.data)
@@ -223,7 +224,6 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
 
     number_of_scale = settings['no_of_scales']
-    scale_id = data['data']['_id']
     label_selection = settings['label_selection']
 
     event_id = get_event_id()

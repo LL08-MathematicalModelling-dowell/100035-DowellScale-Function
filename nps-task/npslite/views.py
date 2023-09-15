@@ -20,12 +20,9 @@ from dowellnps_scale_function.settings import public_url
 def settings_api_view_create(request):
     if request.method == 'POST':
         response = request.data
-        try:
-            user = response['user']
-        except:
-            return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
+            username = response['username']
             orientation = response['orientation']
             scalecolor = response['scalecolor']
             fontcolor = response['fontcolor']
@@ -39,15 +36,19 @@ def settings_api_view_create(request):
             left = response['left']
             right = response['right']
             no_of_scales = response['no_of_scales']
+            label_selection = [center, right, left]
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
 
         custom_emoji_format = {}
+
+        print(fomat)
         if fomat == "emoji":
             custom_emoji_format = response.get('custom_emoji_format', {})
         eventID = get_event_id()
         field_add = {
             "event_id": eventID,
+            "username": username,
             "settings": {
                 "orientation": orientation,
                 "scalecolor": scalecolor,
@@ -56,6 +57,7 @@ def settings_api_view_create(request):
                 "time": time,
                 "template_name": template_name,
                 "fomat": fomat,
+                "label_selection": label_selection,
                 "custom_emoji_format": custom_emoji_format,
                 "name": name,
                 "center": center,
@@ -72,44 +74,57 @@ def settings_api_view_create(request):
                              field_add, "nil")
 
         user_json = json.loads(x)
+        field_add['scale_id'] = user_json['inserted_id']
         details = {
-            "scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+            "scale_id": user_json['inserted_id'], "event_id": eventID, "username": username}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
                                         "insert", details, "nil")
-        return Response({"success": x, "data": field_add})
+        return Response({"success": True, "data": field_add})
 
     elif request.method == 'GET':
-        response = request.data
-        if "scale_id" in response:
-            scale_id = response['scale_id']
-            field_add = {"_id": scale_id}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                                 field_add, "nil")
-            return Response({"data": json.loads(x)})
+        param = request.GET
+        scale_id = param.get('scale_id', None)
+        if scale_id:
+            try:
+                field_add = {"_id": scale_id}
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                                    field_add, "nil")
+                return Response(json.loads(x)['data'], status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"error": "response does not exist"}, status=status.HTTP_404_NOT_FOUND)
         else:
             field_add = {"settings.scale-category": "npslite scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
-            return Response({"data": json.loads(x)})
+            return Response(json.loads(x)['data'], status=status.HTTP_200_OK)
 
     elif request.method == "PUT":
         response = request.data
-        if "scale_id" not in response:
-            return Response({"error": "scale_id missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
-        scale_id = response["scale_id"]
-        field_add = {"_id": scale_id}
+
+        try:
+            username = response['username']
+            scale_id = response['scale_id']
+        except KeyError as error:
+            return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        field_add = {"_id": scale_id, "username": username, "settings.scale-category": "npslite scale"}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                              field_add, "nil")
-        scale_data = json.loads(x)['data'][0]
+        scale_data = json.loads(x)
+        if scale_data['data'] is None:
+            return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        settings = scale_data['data'][0]['settings']
         for key in response:
-            if key in scale_data:
-                scale_data[key] = response[key]
-        scale_data['date_updated'] = datetime.datetime.now().strftime(
+            if key in settings:
+                settings[key] = response[key]
+        settings['date_updated'] = datetime.datetime.now().strftime(
             "%Y-%m-%d %H:%M:%S")
-        update_field = {"$set": scale_data}
-        x = dowellconnection("dowell_scale", "bangalore", "dowell_scale", "scale", "scale", "1093", "ABCDE",
-                             "update", field_add, update_field)
-        return Response({"success": "Successfully Updated", "data": scale_data})
+        update_field = {"settings": settings}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                             "ABCDE", "update",
+                             field_add, update_field)
+
+        return Response({"success": "Successfully Updated", "data": settings})
 
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -130,14 +145,37 @@ def submit_response_view(request):
                 all_results = []
                 instance_id = response_data['instance_id']
                 process_id = response_data['process_id']
-
                 if not isinstance(process_id, str):
                     return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 for single_response in document_responses:
                     score = single_response["score"]
                     scale_id = single_response['scale_id']
+                    document_data = {"details": {"action": response_data.get('action', ""),
+                                                 "authorized": response_data.get('authorized', ""),
+                                                 "cluster": response_data.get('cluster', ""),
+                                                 "collection": response_data.get('collection', ""),
+                                                 "command": response_data.get('command', ""),
+                                                 "database": response_data.get('database', ""),
+                                                 "document": response_data.get('document', ""),
+                                                 "document_flag": response_data.get('document_flag', ""),
+                                                 "document_right": response_data.get('document_right', ""),
+                                                 "field": response_data.get('field', ""),
+                                                 "flag": response_data.get('flag', ""),
+                                                 "function_ID": response_data.get('function_ID', ""),
+                                                 "metadata_id": response_data.get('metadata_id', ""),
+                                                 "process_id": response_data['process_id'],
+                                                 "role": response_data.get('role', ""),
+                                                 "team_member_ID": response_data.get('team_member_ID', ""),
+                                                 "product_name": response_data.get('product_name', ""),
+                                                 "update_field": {"content": response_data.get('content', ""),
+                                                                  "document_name": response_data.get('document_name',
+                                                                                                     ""),
+                                                                  "page": response_data.get('page', "")},
+                                                 "user_type": response_data.get('user_type', ""),
+                                                 "id": response_data.get('_id')}
+                                     }
                     success = response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id,
-                                                   process_id)
+                                                   process_id, document_data)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
@@ -154,7 +192,7 @@ def submit_response_view(request):
     elif request.method == "GET":
         response = request.data
         try:
-            if "scale_id" in response:
+            if response.get('scale_id', ''):
                 id = response['scale_id']
                 field_add = {"scale_data.scale_id": id,
                              "scale_data.scale_type": "npslite scale"}
@@ -162,73 +200,93 @@ def submit_response_view(request):
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
                 data = json.loads(response_data)
-                return Response({"data": json.loads(response_data)})
+                return Response({"data": data})
             else:
-                return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
+                field_add = {"scale_data.scale_type": "npslite scale"}
+                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                 "scale_reports",
+                                                 "1094", "ABCDE", "fetch", field_add, "nil")
+                data = json.loads(response_data)
+                return Response({"data": data})
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None):
-    field_add = {"_id": scale_id, "settings.scale-category": "npslite scale"}
+def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None,
+                         document_data=None):
+    # Check if response already exists for this event
+    field_add = {"scale_data.scale_id": scale_id}
+    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                         "1094", "ABCDE", "fetch",
+                                         field_add, "nil")
+    previous_response = json.loads(previous_response)["data"]
 
+    # Check if scale exists
+    field_add = {"_id": scale_id, "settings.scale-category": "npslite scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
                                      "find", field_add, "nil")
 
     data = json.loads(default_scale)
-    settings = data['data']['settings']
 
+    settings = data['data']['settings']
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
     elif settings['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
 
     number_of_scale = settings['no_of_scales']
-    scale_id = data['data']['_id']
+
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "fetch",
+                                    {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
+    user_dets = json.loads(user_details)
+    if len(user_dets['data']) >= 1:
+        print(previous_response)
+        b = [l['score']['score'] for l in previous_response if
+             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0]['event_id']]
+
+        return Response({"error": "Scale Response Exists!", "current_score": b[0]},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     event_id = get_event_id()
     if data['data']['settings'].get('fomat') == "text":
-        if score not in data['data']['settings'].get('label_input'):
+        if score not in data['data']['settings'].get('label_selection'):
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
-
     if data['data']['settings'].get('fomat') == "emoji":
-        upper_boundary = data['data']['settings'].get('label_selection')
-        if type(score) != int or 0 < score > upper_boundary - 1:
+        upper_boundary = data['data']['settings'].get('custom_emoji_format')
+        if type(score) != int or 0 < score > len(upper_boundary) - 1:
             return Response({"error": "Emoji response must be an integer within label selection range."},
                             status=status.HTTP_400_BAD_REQUEST)
+
 
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
                   "score": score}
     if int(instance_id) > int(number_of_scale):
         return Response({"Error": "Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
+    response = {
+        "event_id": event_id,
+        "scale_data": {"scale_id": scale_id, "scale_type": "npslite scale", "instance_id": instance_id},
+        "brand_data": {"brand_name": brand_name, "product_name": product_name},
+        "score": score_data,
+        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
     if process_id:
-        response = {
-            "event_id": event_id,
-            "process-id": process_id,
-            "scale_data": {"scale_id": scale_id, "scale_type": "npslite scale"},
-            "brand_data": {"brand_name": brand_name, "product_name": product_name},
-            "score": score_data,
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-    else:
-        response = {
-            "event_id": event_id,
-            "scale_data": {"scale_id": scale_id, "scale_type": "npslite scale"},
-            "brand_data": {"brand_name": brand_name, "product_name": product_name},
-            "score": score_data,
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-                                   "ABCDE", "insert", response, "nil")
+        response['process_id'] = process_id
 
+    if document_data:
+        response["document_data"] = document_data
+    field_add = {"username": username}
+    field_add.update(response)
+    response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+                                   "ABCDE", "insert", field_add, "nil")
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "insert",
                                     {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
                                      "username": username}, "nil")
-
-    return Response({"success": response_id, "payload": response})
+    response['inserted_id'] = json.loads(response_id)['inserted_id']
+    return Response({"success": True, "payload": response})
 
 
 @api_view(['GET'])

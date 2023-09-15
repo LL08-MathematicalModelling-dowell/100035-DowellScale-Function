@@ -74,26 +74,22 @@ def settings_api_view_create(request):
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'GET':
-        try:
-            response = request.data
-            scale_id = response.get('scale_id')
-            if not scale_id:
-                field_add = {"settings.scale-category": "percent_sum scale"}
-                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                                 "ABCDE", "fetch", field_add, "nil")
-                return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
-
-            field_add = {"_id": scale_id, "settings.scale-category": "percent_sum scale"}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                 "find", field_add, "nil")
-            settings_json = json.loads(x)
-            if not settings_json.get('data'):
-                return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            settings = settings_json['data']['settings']
-            return Response({"success": settings})
-        except Exception as e:
-            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        param = request.GET
+        scale_id = param.get('scale_id', None)
+        if scale_id:
+            try:
+                field_add = {"_id": scale_id, "settings.scale-category": "percent_sum scale"}
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                        "find", field_add, "nil")
+                settings_json = json.loads(x)
+                return Response(settings_json['data'], status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"Error": "scale not found"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            field_add = {"settings.scale-category": "percent_sum scale"}
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                                "ABCDE", "fetch", field_add, "nil")
+            return Response(json.loads(response_data)['data'], status=status.HTTP_200_OK)
 
     elif request.method == "PUT":
         try:
@@ -155,7 +151,6 @@ def percent_sum_response_submit(request):
                     scale_id = single_response['scale_id']
                     scores = single_response["score"]
                     response = single_response["score"]
-                    response['_id'] = scale_id
                     document_data = {"details": {"action": response.get('action', ""), 
                                              "authorized": response.get('authorized',""), 
                                              "cluster": response.get('cluster', ""), 
@@ -207,7 +202,7 @@ def percent_sum_response_submit(request):
 
 
 def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None, document_data=None):
-    field_add = {"username": username, "scale_data.scale_id": scale_id}
+    field_add = {"username": username, "scale_data.scale_id": scale_id, "scale_data.scale_type": "percent_sum scale", "scale_data.instance_id": instance_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                             field_add, "nil")
     previous_response = json.loads(previous_response)
@@ -256,13 +251,17 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
     response = {
                 "username": username,
                 "event_id": event_id,
-                "scale_data": {"scale_id": scale_id, "scale_type": "percent_sum scale"},
+                "scale_data": {"scale_id": scale_id, "scale_type": "percent_sum scale", "instance_id": instance_id},
                 "score": score_data,
                 "brand_data": {"brand_name": brand_name, "product_name": product_name},
                 "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
     if process_id:
         response ["process_id"] = process_id
+        
+    if document_data:
+        response["document_data"] = document_data
+        
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                    "1094",
                                    "ABCDE", "insert", response, "nil")
