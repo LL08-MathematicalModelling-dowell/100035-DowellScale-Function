@@ -418,7 +418,8 @@ def evaluation_api(request):
 
         all_scales = []
         if payload.get('document_id'):
-            field_add = {"_id": payload.get('document_id'), "process_id": payload.get('process_id')}
+            field_add = {"document_data.details.id": payload.get('document_id'),
+                         "process_id": payload.get('process_id')}
             response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "scale_reports",
                              "scale_reports",
                              "1094", "ABCDE", "fetch", field_add, "nil")
@@ -449,8 +450,6 @@ def evaluation_api(request):
                                                  "1094", "ABCDE", "find", field_add, "nil")
                 print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
                 all_scales.append(json.loads(response_data)['data'])
-                # score = json.loads(response_data)['data']['score']['score']
-                # print(score)
                 field_add = {"_id": json.loads(response_data)['data']['_id']}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                  "scale_reports",
@@ -496,7 +495,7 @@ def evaluation_api(request):
         largest = max(calculate_score)
         # Process the fetched data
         if data:
-            scores = process_data(data, payload.get('document_id'))
+            scores = process_data(data)
             print(scores, "scores")
             response_ = {
                 "scale_category": scale_type,
