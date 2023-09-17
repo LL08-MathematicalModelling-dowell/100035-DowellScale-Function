@@ -450,11 +450,6 @@ def evaluation_api(request):
                                                  "1094", "ABCDE", "find", field_add, "nil")
                 print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
                 all_scales.append(json.loads(response_data)['data'])
-                field_add = {"_id": json.loads(response_data)['data']['_id']}
-                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                                 "scale_reports",
-                                                 "1094", "ABCDE", "find", field_add, "nil")
-                print(json.loads(response_data)['data'], "############")
 
 
                 # if i['scale_data']['scale_id'] == payload.get('scale_id'):
