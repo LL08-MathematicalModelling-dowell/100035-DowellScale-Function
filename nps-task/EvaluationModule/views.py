@@ -361,8 +361,6 @@ def evaluation_api(request):
         if not process_id:
             return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if report_type == 'scale_id' and not payload.get('scale_id'):
-            return JsonResponse({"error": "Required fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
         elif report_type == 'scale_id' and not payload.get('scale_id') and payload.get('document_id'):
             return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
         elif report_type == 'document_id' and not payload.get('document_id'):
@@ -434,7 +432,7 @@ def evaluation_api(request):
             #     print(f".{i['score']['instance_id'].split('/')[0]}.\n.{payload.get('document_id')}.")
             #     if int(i['score']['instance_id'].split("/")[0]) == int(payload.get('document_id')):
             #         all_scales.append(i)
-        elif payload.get('scale_id'):
+        elif report_type == 'scale_id':
             for i in data:
                 print(f"\n\n{i}9009090909\n\n")
                 field_add = {"template_id": payload.get('template_id'),
