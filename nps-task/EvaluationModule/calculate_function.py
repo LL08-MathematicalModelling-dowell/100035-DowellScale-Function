@@ -116,7 +116,7 @@ def fetch_data(product_name):
     scores for a particular document number and returns a dictionary where keys are scale types and values
     are lists of corresponding scores.
 """
-def process_data(data, doc_no):
+def process_data(data, doc_no=None):
     """
     This line below
     'all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[-1] == doc_no]'

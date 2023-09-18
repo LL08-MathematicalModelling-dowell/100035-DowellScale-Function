@@ -43,12 +43,20 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
 # template_id = "65016938bb53443f82509ffb"
 template_id = "6501693fd2cbd3e0c5b61acd"
 element = "t2"
+process_id = "abcdef01234567"
+field_add = {"process_id": process_id}
+response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                 "scale_reports",
+                                 "1094", "ABCDE", "find", field_add, "nil")
+print(json.loads(response_data)['data'])
+score = json.loads(response_data)['data']['score']['score']
+print(score)
 #querry the custom configuration api with template_id, type of element, element id
 field_add = {"template_id": template_id, "custom_input_groupings.TEXT_INPUT": element}
 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data",
                                  "1181", "ABCDE", "find", field_add, "nil")
 
-
+print(response_data)
 # Find scale id, querry the reports db with scale_id, document_id
 scale = json.loads(response_data)['data']['scale_id']
 print(scale)

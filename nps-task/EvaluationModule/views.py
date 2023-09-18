@@ -361,8 +361,6 @@ def evaluation_api(request):
         if not process_id:
             return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if report_type == 'scale_id' and not payload.get('scale_id'):
-            return JsonResponse({"error": "Required fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
         elif report_type == 'scale_id' and not payload.get('scale_id') and payload.get('document_id'):
             return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
         elif report_type == 'document_id' and not payload.get('document_id'):
@@ -420,7 +418,8 @@ def evaluation_api(request):
 
         all_scales = []
         if payload.get('document_id'):
-            field_add = {"_id": payload.get('document_id'), "process_id": payload.get('process_id')}
+            field_add = {"document_data.details.id": payload.get('document_id'),
+                         "process_id": payload.get('process_id')}
             response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "scale_reports",
                              "scale_reports",
                              "1094", "ABCDE", "fetch", field_add, "nil")
@@ -434,7 +433,7 @@ def evaluation_api(request):
             #     print(f".{i['score']['instance_id'].split('/')[0]}.\n.{payload.get('document_id')}.")
             #     if int(i['score']['instance_id'].split("/")[0]) == int(payload.get('document_id')):
             #         all_scales.append(i)
-        elif payload.get('scale_id'):
+        elif report_type == 'scale_id':
             for i in data:
                 print(f"\n\n{i}9009090909\n\n")
                 field_add = {"template_id": payload.get('template_id'),
@@ -451,13 +450,6 @@ def evaluation_api(request):
                                                  "1094", "ABCDE", "find", field_add, "nil")
                 print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
                 all_scales.append(json.loads(response_data)['data'])
-                # score = json.loads(response_data)['data']['score']['score']
-                # print(score)
-                field_add = {"_id": json.loads(response_data)['data']['_id']}
-                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                                 "scale_reports",
-                                                 "1094", "ABCDE", "find", field_add, "nil")
-                print(json.loads(response_data)['data'], "############")
 
 
                 # if i['scale_data']['scale_id'] == payload.get('scale_id'):
@@ -498,7 +490,7 @@ def evaluation_api(request):
         largest = max(calculate_score)
         # Process the fetched data
         if data:
-            scores = process_data(data, payload.get('document_id'))
+            scores = process_data(data)
             print(scores, "scores")
             response_ = {
                 "scale_category": scale_type,
