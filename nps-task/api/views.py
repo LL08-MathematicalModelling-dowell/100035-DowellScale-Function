@@ -14,6 +14,7 @@ import likert.views as likert
 import percent_sum.views as percent_sum
 import percent.views as percent
 import npslite.views as nps_lite
+import ranking.views as ranking
 import paired_comparison.views as paired_comparison
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
@@ -893,6 +894,10 @@ def redirect_view(request):
                         return percent.settings_api_view_create(request)
                     elif "percent" in scaletype and "response" in scale_type:
                         return percent.percent_response_view_submit(request)
+                    elif "ranking" in scaletype and "settings" in scale_type:
+                        return ranking.settings_api_view_create(request)
+                    elif "ranking" in scaletype and "response" in scale_type:
+                        return ranking.response_submit_api_view(request)
                     elif "paired-comparison" in scaletype and "settings" in scale_type:
                         return paired_comparison.settings_api_view_create(request)
                     elif "paired-comparison" in scaletype and "response" in scale_type:
