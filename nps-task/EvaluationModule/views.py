@@ -325,164 +325,229 @@ def Target_API(request):
 
 @api_view(['POST'])
 def evaluation_api(request):
-    global field_add
+    def execute_api_call(*args):
+        with ThreadPoolExecutor() as executor:
+            response_data = executor.submit(dowellconnection, *args)
+            response_data = response_data.result()
+        return json.loads(response_data)
+
     if request.method != 'POST':
         return JsonResponse({"error": "Method not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    elif request.method == 'POST':
+        global field_add
+        report_type = request.GET.get('report_type', None)
 
-    report_type = request.GET.get('report_type', None)
+        print(f"report_type: {report_type}...")
+        if not report_type:
+            return JsonResponse({"error": "report_type parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    print(f"report_type: {report_type}...")
-    if not report_type:
-        return JsonResponse({"error": "report_type parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+        if report_type == 'process':
+            report_type = 'process_id'
+        elif report_type == 'document':
+            report_type = 'document_id'
+        elif report_type == 'scale':
+            report_type = 'scale_id'
+        else:
+            return JsonResponse({"error": "Invalid report_type provided."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if report_type == 'process':
-        report_type = 'process_id'
-    elif report_type == 'document':
-        report_type = 'document_id'
-    elif report_type == 'scale':
-        report_type = 'scale_id'
-    else:
-        return JsonResponse({"error": "Invalid report_type provided."}, status=status.HTTP_400_BAD_REQUEST)
+        payload = request.data
+        process_id = payload.get('process_id')
 
-    payload = request.data
-    process_id = payload.get('process_id')
+        if not process_id:
+            return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if not process_id:
-        return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
+        field_add = {"process_id": process_id}
 
-    field_add = {"process_id": process_id}
+        if not process_id:
+            return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if not process_id:
-        return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
-
-    if report_type == 'scale_id' and not payload.get('scale_id'):
-        return JsonResponse({"error": "Required fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
-    elif report_type == 'scale_id' and not payload.get('scale_id') and payload.get('document_id'):
-        return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
-    elif report_type == 'document_id' and not payload.get('document_id'):
-        return JsonResponse({"error": "Required fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
-    elif report_type == 'document_id' and not payload.get('document_id') and payload.get('scale_id'):
-        return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
-    elif report_type == 'process_id' and payload.get('scale_id') and payload.get('document_id'):
-        return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need other parameters"}, status=status.HTTP_400_BAD_REQUEST)
-    elif report_type == 'process_id' and payload.get('scale_id'):
-        return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'scale_id'."}, status=status.HTTP_400_BAD_REQUEST)
-    elif report_type == 'process_id' and payload.get('document_id'):
-        return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-    try:
-        # Execute dowellconnection API call
-            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                         "scale_reports",
-                                         "1094", "ABCDE", "fetch", field_add, "nil")
-            print(response_data, "response_data")
-            r = json.loads(response_data)
-            print(r, "r+++++++++++++++")
-            data = r.get("data", [])
-    except Exception as e:
-        return JsonResponse({"error": f"Error fetching data from dowellconnection: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        elif report_type == 'scale_id' and not payload.get('scale_id') and payload.get('document_id'):
+            return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
+        elif report_type == 'document_id' and not payload.get('document_id'):
+            return JsonResponse({"error": "Required fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
+        elif report_type == 'document_id' and not payload.get('document_id') and payload.get('scale_id'):
+            return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
+        elif report_type == 'process_id' and payload.get('scale_id') and payload.get('document_id'):
+            return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need other parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        elif report_type == 'process_id' and payload.get('scale_id'):
+            return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'scale_id'."}, status=status.HTTP_400_BAD_REQUEST)
+        elif report_type == 'process_id' and payload.get('document_id'):
+            return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-    all_scales = []
-    if payload.get('document_id'):
-        for i in data:
-            print(f".{i['score']['instance_id'].split('/')[0]}.\n.{payload.get('document_id')}.")
-            if int(i['score']['instance_id'].split("/")[0]) == int(payload.get('document_id')):
-                all_scales.append(i)
-    elif payload.get('scale_id'):
-        for i in data:
-            print(f"\n\n{i}9009090909\n\n")
-            if i['scale_data']['scale_id'] == payload.get('scale_id'):
-                try:
-                        if int(i['score']['instance_id'].split("/")[-1]) >= 3:
-                            all_scales.append(i)
-                        else:
-                            return JsonResponse({"error": "Not enough scores found for this scale."})
-                except Exception as e:
-                    print(e)
-                    print(i, "**************************")
-
-    else:
-        for i in data:
-            all_scales.append(i)
-
-    print(all_scales, "*&^%*(&)")
-
-    if all_scales == []:
-        return JsonResponse({"error": "No data found for the given data."}, status=status.HTTP_404_NOT_FOUND)
-    elif len(all_scales) < 3:
-        return JsonResponse({"error": "Not enough scores found for the given info."}, status=status.HTTP_404_NOT_FOUND)
-
-    # calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
-    calculate_score = []
-    scale_type = ""
-    for x in all_scales:
-        print(x["scale_data"]["scale_type"])
-        print(x["scale_data"].get("scale_type"))
-        print(x['score']['score'])
-        print(x['score'])
-        if x["scale_data"]["scale_type"] == "nps scale":
-            scale_type = "nps scale"
-            print(x['score']['score'])
-            calculate_score.append(x['score']['score'])
-
-    # find the largest score among the score list of calculate scores
-    largest = max(calculate_score)
-    # Process the fetched data
-    if data:
-        scores = process_data(data, payload.get('document_id'))
-        print(scores, "scores")
-        response_ = {
-            "scale_category": scale_type,
-            "no_of_scales": len(scores.get("nps scale", [])),
-            "nps_score": sum(scores.get("nps scale", [])),
-            "nps_total_score": len(scores.get("nps scale", [])) * 10,
-            "max_total_score": largest,
-            "score_list": scores.get("nps scale")
-        }
-        print(response_, "response_")
-    else:
-        return JsonResponse({"error": "No data found for the given process_id in Dowell response."}, status=status.HTTP_404_NOT_FOUND)
-
-    print(calculate_score, "((((((((((((((((((()))))))))")
-    # try:
-    # except Exception as e:
-    #     return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    try:
-        # Execute Normality_api API call
-        with ThreadPoolExecutor() as executor:
-            normality_future = executor.submit(Normality_api, process_id)
-            normality = normality_future.result()
-            print(normality, "normality")
-            try:
-                normality.pop("process_id")
-                normality.pop("title")
-            except:
-                pass
-            response_["normality_analysis"] = normality
-    except Exception as e:
-        return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    # Execute stattricks_api API call
-    with ThreadPoolExecutor() as executor:
-        response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
-        response_json = response_json_future.result()
-        print(response_json, "response_json______________________")
-        if "Process Id already in use. Please enter a different Process Id & try again" in response_json:
-            get_response = stattricks_api_get(process_id)
-            print(get_response, "get_response")
-            response_json = get_response
         try:
-            response_json.pop("msg")
-            response_json.pop("_id")
-            response_json.pop("Process_id")
-            response_json.pop("title")
-        except:
-            pass
-        response_["central_tendencies"] = response_json
-    return JsonResponse(response_, status=status.HTTP_200_OK)
+            # Execute dowellconnection API call
+                response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                             "scale_reports",
+                                             "1094", "ABCDE", "fetch", field_add, "nil")
+                print(response_data, "response_dataaaaaaaaaaaaaaaaa")
+                # r = json.loads(response_data)
+                # print(r, "r+++++++++++++++")
+                # data = r.get("data", [])
+                data = response_data['data']
+                print(data, "data")
+        except Exception as e:
+            return JsonResponse({"error": f"Error fetching data from dowellconnection: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+        print(""" --------------------------------------- template --------------------------------------- """)
+        # scale_wise reports only.
+        """
+        # if we scale wise reports, we need to get the template_id from the scale_id,
+        field_add = {"template_id": payload.get('template_id'), f"custom_input_groupings.{payload.get('type_of_element')}": payload.get('element_id')}
+        response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data",
+                                         "1181", "ABCDE", "find", field_add, "nil")
+        print(response_data, "responDse_datrrrrrrrrrrrrrrrrrrrrrrr")
+        scale = response_data['data']['scale_id']
+        print(scale)
+        field_add = {"scale_data.scale_id": scale}
+        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                         "scale_reports",
+                                         "1094", "ABCDE", "find", field_add, "nil")
+        print(json.loads(response_data)['data'])
+        score = json.loads(response_data)['data']['score']['score']
+        print(score)
+
+        # get score of the scale,
+
+        """
+
+
+        print(""" --------------------------------------- template --------------------------------------- """)
+
+
+        all_scales = []
+        if payload.get('document_id'):
+            print(payload.get('document_id'), payload.get('process_id') )
+            field_add = {"document_data.details.id": payload.get('document_id'),
+                         "process_id": payload.get('process_id')}
+
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                 "scale_reports",
+                                 "1094", "ABCDE", "fetch", field_add, "nil")
+
+            print(response_data, "response_dataaaaaaaaaaaaaaaa0000000000")
+            data = response_data['data']
+            print(data, "data0000000000000000")
+            for i in data:
+                print(f"\n\n{i} in i\n\n")
+                all_scales.append(i)
+            # for i in data:
+            #     print(f".{i['score']['instance_id'].split('/')[0]}.\n.{payload.get('document_id')}.")
+            #     if int(i['score']['instance_id'].split("/")[0]) == int(payload.get('document_id')):
+            #         all_scales.append(i)
+        elif report_type == 'scale_id':
+            for i in data:
+                print(f"\n\n{i}9009090909\n\n")
+                field_add = {"template_id": payload.get('template_id'),
+                             f"custom_input_groupings.{payload.get('type_of_element')}": payload.get('element_id')}
+                response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "custom_data",
+                                                 "custom_data",
+                                                 "1181", "ABCDE", "find", field_add, "nil")
+                print(response_data, "responDse_datrrrrrrrrrrrrrrrrrrrrrrr")
+                scale = response_data['data']['scale_id']
+                print(scale)
+                field_add = {"scale_data.scale_id": scale}
+                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                 "scale_reports",
+                                                 "1094", "ABCDE", "find", field_add, "nil")
+                print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
+                all_scales.append(json.loads(response_data)['data'])
+
+
+                # if i['scale_data']['scale_id'] == payload.get('scale_id'):
+                #     try:
+                #             if int(i['score']['instance_id'].split("/")[-1]) >= 3:
+                #                 all_scales.append(i)
+                #             else:
+                #                 return JsonResponse({"error": "Not enough scores found for this scale."})
+                #     except Exception as e:
+                #         print(e)
+                #         print(i, "**************************")
+
+        else:
+            for i in data:
+                all_scales.append(i)
+
+        print(all_scales, "*&^%*(&)")
+
+        if all_scales == []:
+            return JsonResponse({"error": "No data found for the given data."}, status=status.HTTP_404_NOT_FOUND)
+        elif len(all_scales) < 3:
+            return JsonResponse({"error": "Not enough scores found for the given info."}, status=status.HTTP_404_NOT_FOUND)
+
+        # calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
+        calculate_score = []
+        scale_type = ""
+        for x in all_scales:
+            print(x["scale_data"]["scale_type"])
+            print(x["scale_data"].get("scale_type"))
+            print(x['score']['score'])
+            print(x['score'])
+            if x["scale_data"]["scale_type"] == "nps scale":
+                scale_type = "nps scale"
+                print(x['score']['score'])
+                calculate_score.append(x['score']['score'])
+
+        # find the largest score among the score list of calculate scores
+        largest = max(calculate_score)
+        # Process the fetched data
+        if data:
+            scores = process_data(data)
+            print(scores, "scores")
+            response_ = {
+                "scale_category": scale_type,
+                "no_of_scales": len(scores.get("nps scale", [])),
+                "nps_score": sum(scores.get("nps scale", [])),
+                "nps_total_score": len(scores.get("nps scale", [])) * 10,
+                "max_total_score": largest,
+                "score_list": scores.get("nps scale")
+            }
+            print(response_, "response_")
+        else:
+            return JsonResponse({"error": "No data found for the given process_id in Dowell response."}, status=status.HTTP_404_NOT_FOUND)
+
+        print(calculate_score, "((((((((((((((((((()))))))))")
+        # try:
+        # except Exception as e:
+        #     return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        try:
+            # Execute Normality_api API call
+            with ThreadPoolExecutor() as executor:
+                normality_future = executor.submit(Normality_api, process_id)
+                normality = normality_future.result()
+                print(normality, "normality")
+                try:
+                    normality.pop("process_id")
+                    normality.pop("title")
+                except:
+                    pass
+                response_["normality_analysis"] = normality
+        except Exception as e:
+            return JsonResponse({"error": f"Error fetching data from Normality_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Execute stattricks_api API call
+        try:
+            with ThreadPoolExecutor() as executor:
+                response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
+                response_json = response_json_future.result()
+                print(response_json, "response_json______________________")
+                if "Process Id already in use. Please enter a different Process Id & try again" in response_json:
+                    get_response = stattricks_api_get(process_id)
+                    print(get_response, "get_response")
+                    response_json = get_response
+                try:
+                    response_json.pop("msg")
+                    response_json.pop("_id")
+                    response_json.pop("Process_id")
+                    response_json.pop("title")
+                except:
+                    pass
+                response_["central_tendencies"] = response_json
+        except Exception as e:
+            return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse(response_, status=status.HTTP_200_OK)
 
 
 

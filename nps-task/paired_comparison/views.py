@@ -20,16 +20,19 @@ def settings_api_view_create(request):
             orientation = response['orientation']
             scalecolor = response['scalecolor']
             fontcolor = response['fontcolor']
+            roundcolor = response['roundcolor']
             fontstyle = response['fontstyle']
             time = response['time']
             item_list = response['item list']
+            item_count = response["item_count"]
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
         if "user" in response:
             user = response["user"]
         else:
             user = True        
-        item_count = len(item_list)
+        if item_count != len(item_list):
+            return Response({"error": "item count does not match length of item list"}, status=status.HTTP_400_BAD_REQUEST)
         if item_count < 2:
             return Response({"error": "2 or more items needed for paired comparison scale."}, status=status.HTTP_400_BAD_REQUEST)
         paired_items = []
@@ -47,6 +50,7 @@ def settings_api_view_create(request):
             "settings" : {"orientation": orientation,
                             "scalecolor": scalecolor,
                             "fontcolor": fontcolor,
+                            "roundcolor": roundcolor,
                             "fontstyle": fontstyle,
                             "time": time,
                             "paired_items": paired_items,
@@ -71,8 +75,8 @@ def settings_api_view_create(request):
         return Response({"success": x, "data": field_add})  
     elif request.method == 'GET':
         try:
-            response = request.data
-            scale_id = response.get('scale_id')
+            params = request.GET
+            scale_id = params.get("scale_id")
             if not scale_id:
                 field_add = {"settings.scale-category": "paired-comparison scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
@@ -94,9 +98,13 @@ def settings_api_view_create(request):
             response = request.data
             if "scale_id" not in response:
                 return Response({"error": "scale_id missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
-            if "item_list" in response:
-                item_list = response['item_list']
-                item_count = len(item_list)
+            if "item_list" or "item_count" in response:
+                item_list = response.get('item_list')
+                item_count = response.get('item_count')
+                if (item_list == None) or (item_count == None):
+                    return Response({"error": "item_list and item_count have to be updated together"}, status=status.HTTP_400_BAD_REQUEST)
+                if item_count != len(item_list):
+                    return Response({"error": "item count does not match length of item list"}, status=status.HTTP_400_BAD_REQUEST)
                 if item_count < 2:
                     return Response({"error": "2 or more items needed for paired comparison scale."}, status=status.HTTP_400_BAD_REQUEST)
                 paired_items = []
