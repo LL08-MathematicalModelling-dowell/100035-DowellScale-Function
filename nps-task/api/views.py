@@ -14,6 +14,7 @@ import likert.views as likert
 import percent_sum.views as percent_sum
 import percent.views as percent
 import npslite.views as nps_lite
+import paired_comparison.views as paired_comparison
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
@@ -899,6 +900,10 @@ def redirect_view(request):
                         return percent.settings_api_view_create(request)
                     elif "percent" in scaletype and "response" in scale_type:
                         return percent.percent_response_view_submit(request)
+                    elif "paired-comparison" in scaletype and "settings" in scale_type:
+                        return paired_comparison.settings_api_view_create(request)
+                    elif "paired-comparison" in scaletype and "response" in scale_type:
+                        return paired_comparison.scale_response_api_view(request)
                     else:
                         return error_response(request, "Scale will be available soon.", status.HTTP_404_NOT_FOUND)
                 else:
