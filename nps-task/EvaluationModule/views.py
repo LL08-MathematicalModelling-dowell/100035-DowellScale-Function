@@ -418,11 +418,14 @@ def evaluation_api(request):
 
         all_scales = []
         if payload.get('document_id'):
+            print(payload.get('document_id'), payload.get('process_id') )
             field_add = {"document_data.details.id": payload.get('document_id'),
                          "process_id": payload.get('process_id')}
-            response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                             "scale_reports",
-                             "1094", "ABCDE", "fetch", field_add, "nil")
+
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                 "scale_reports",
+                                 "1094", "ABCDE", "fetch", field_add, "nil")
+
             print(response_data, "response_dataaaaaaaaaaaaaaaa0000000000")
             data = response_data['data']
             print(data, "data0000000000000000")
