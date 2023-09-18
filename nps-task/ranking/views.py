@@ -25,6 +25,8 @@ def settings_api_view_create(request):
         try:
             username = data['username']
             scalename = data['scalename']
+            num_of_stages = data['num_of_stages']
+            num_of_substages = data['num_of_substages']
             stages = data['stages']
             stages_arrangement = data['stages_arrangement']
             orientation = data['orientation']
@@ -42,7 +44,9 @@ def settings_api_view_create(request):
         if not stages:
             return Response({"error": "The 'stages' list cannot be empty."},
                             status=status.HTTP_400_BAD_REQUEST)
-
+        if len(stages) != num_of_stages:
+            return Response({"error": "Number of stages does not match length of stages list."},
+                            status=status.HTTP_400_BAD_REQUEST)
         if stages_arrangement == 'Alphabetically ordered':
             stages.sort()
         elif stages_arrangement == 'Shuffled (Randomly)':
