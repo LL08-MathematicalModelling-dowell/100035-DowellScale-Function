@@ -214,7 +214,6 @@ def submit_response_view(request):
 
 def response_submit_loop(username, scale_id, score, brand_name, product_name, instance_id, process_id=None,
                          document_data=None):
-    # Check if response already exists for this event
     field_add = {"scale_data.scale_id": scale_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                          "1094", "ABCDE", "fetch",
