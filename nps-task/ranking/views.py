@@ -29,6 +29,8 @@ def settings_api_view_create(request):
             num_of_substages = data['num_of_substages']
             stages = data['stages']
             stages_arrangement = data['stages_arrangement']
+            item_count = data['item_count']
+            item_list = data['item_list']
             orientation = data['orientation']
             scalecolor = data.get('scalecolor', '')
             fontcolor = data.get('fontcolor', '')
@@ -46,6 +48,9 @@ def settings_api_view_create(request):
                             status=status.HTTP_400_BAD_REQUEST)
         if len(stages) != num_of_stages:
             return Response({"error": "Number of stages does not match length of stages list."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if item_count != len(item_list):
+            return Response({"error": "Number of items does not match length of items list."},
                             status=status.HTTP_400_BAD_REQUEST)
         if stages_arrangement == 'Alphabetically ordered':
             stages.sort()
@@ -70,8 +75,12 @@ def settings_api_view_create(request):
         settings = {
             "scalename": scalename,
             "scale_category": "ranking scale",
+            "num_of_stages": num_of_stages,
+            "num_of_substages": num_of_substages,
             "stages": stages,
             "stages_arrangement": stages_arrangement,
+            "item_count": item_count,
+            "item_list": item_list,
             "orientation": orientation,
             "scalecolor": scalecolor,
             "fontcolor" : fontcolor,
