@@ -15,6 +15,7 @@ import percent_sum.views as percent_sum
 import percent.views as percent
 import npslite.views as nps_lite
 import ranking.views as ranking
+import Qsort.views as Qsort
 import paired_comparison.views as paired_comparison
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
@@ -902,6 +903,10 @@ def redirect_view(request):
                         return paired_comparison.settings_api_view_create(request)
                     elif "paired-comparison" in scaletype and "response" in scale_type:
                         return paired_comparison.scale_response_api_view(request)
+                    elif "qsort" in scaletype and "settings" in scale_type:
+                        return Qsort.CreateScale(request)
+                    elif "qsort" in scaletype and "response" in scale_type:
+                        return Qsort.ResponseAPI(request)
                     else:
                         return error_response(request, "Scale will be available soon.", status.HTTP_404_NOT_FOUND)
                 else:
