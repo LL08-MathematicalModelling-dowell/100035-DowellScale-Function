@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +5,6 @@ import Cookies from 'universal-cookie';
 import Fallback from '../components/Fallback';
 
 const CreateSettings = () => {
-  // https://100014.pythonanywhere.com/api/userinfo/
   const navigate = useNavigate();
   const cookies = new Cookies();
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +34,6 @@ const CreateSettings = () => {
     const newInputValues = [...inputValues];
     newInputValues[index] = value;
     setInputValues(newInputValues);
-    console.log(inputValues);
   };
 
   const [formData, setFormData] = useState({
@@ -58,38 +55,6 @@ const CreateSettings = () => {
       [name]: value,
     });
 
-    // if (name === 'item_list') {
-    //   // Check if the input value starts and ends with square brackets
-    //   if (value.startsWith('[') && value.endsWith(']')) {
-    //     try {
-    //       // Try to parse the input as a JSON array
-    //       const itemListArray = JSON.parse(value);
-    //       // const charactersArray = itemListArray[0].split('');
-    //       console.log(itemListArray);
-    //       setFormData({
-    //         ...formData,
-    //         [name]: itemListArray,
-    //       });
-    //     } catch (error) {
-    //       // If parsing fails, treat it as a string
-    //       setFormData({
-    //         ...formData,
-    //         [name]: value,
-    //       });
-    //     }
-    //   } else {
-    //     // If it doesn't start and end with square brackets, treat it as a string
-    //     setFormData({
-    //       ...formData,
-    //       [name]: value,
-    //     });
-    //   }
-    // } else {
-    //   setFormData({
-    //     ...formData,
-    //     [name]: value,
-    //   });
-    // }
   };
 
   const sessionId = cookies.get('sessionid');
@@ -114,7 +79,6 @@ const CreateSettings = () => {
         requestOptions
       );
       const data = await response.json();
-      console.log(data.userinfo);
       setFormData({
         user_name: data.userinfo.username,
       });
@@ -127,13 +91,6 @@ const CreateSettings = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const itemListArray = JSON.parse(formData.item_list);
-    // const headers = { 'Content-Type': 'application/json' };
-    // const item_list = [
-    //   formData.item_list_1,
-    //   formData.item_list_2,
-    //   formData.item_list_3,
-    // ];
 
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -148,7 +105,7 @@ const CreateSettings = () => {
       roundcolor: formData.roundcolor,
       time: formData.time,
       item_count: itemCount,
-      'item list': inputValues,
+      "item list": inputValues,
     });
     console.log(raw);
 
@@ -162,27 +119,33 @@ const CreateSettings = () => {
     try {
       const data = await fetch(
         'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/',
-        // '',
         requestOptions
       );
       const result = await data.json();
       console.log(result);
 
-      // const response = JSON.parse(result);
       if (
-        !JSON.parse(result.success).isSuccess ||
-        JSON.parse(result.success).isSuccess === false
+        result.error
       ) {
-        console.log(JSON.parse(result.success).isSuccess);
-        return;
+        console.log(result.error);
+        toast.error(result.error);
+        setFormData({
+          user_name: '',
+          scale_name: '',
+          orientation: '',
+          fontcolor: '',
+          fontstyle: '',
+          scalecolor: '',
+          roundcolor: '',
+          time: 0,
+          item_list: inputValues,
+        })
+        return
       } else {
-        console.log(`${JSON.stringify(result?.data)}`);
-        toast.success(
-          `Inserted Id = ${
-            JSON.parse(result.success).inserted_id
-          } ${JSON.stringify(result?.data)}`
-        );
-        const timeout = setTimeout(() => navigate('/'), 3000);
+        console.log(`${JSON.parse(result.success).inserted_id}`);
+        
+        toast.success("Successfully Created");
+        const timeout = setTimeout(() => navigate(`/single-scale-settings/${JSON.parse(result.success).inserted_id}`), 3000);
         return () => clearTimeout(timeout);
       }
     } catch (error) {
@@ -385,38 +348,6 @@ const CreateSettings = () => {
               />
             )}
           </div>
-          {/* <div className="mb-4">
-            <label className="block font-semibold text-gray-600">
-              Item List
-            </label>
-            <input
-              type="text"
-              id="item_list_1"
-              name="item_list_1"
-              value={formData.item_list_1}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-              // required
-            />
-            <input
-              type="text"
-              id="item_list_2"
-              name="item_list_2"
-              value={formData.item_list_2}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-              // required
-            />
-            <input
-              type="text"
-              id="item_list_3"
-              name="item_list_3"
-              value={formData.item_list_3}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-              // required
-            />
-          </div> */}
           <div>
             <label htmlFor="numItems"  className="font-semibold text-gray-600 ">Number of Items:</label>
             <input
@@ -424,7 +355,7 @@ const CreateSettings = () => {
               id="numItems"
               value={itemCount}
               onChange={handleInputChange}
-              className="px-4 py-2 mt-2 border rounded-lg  focus:outline-none"
+              className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
             />
 
             <div>

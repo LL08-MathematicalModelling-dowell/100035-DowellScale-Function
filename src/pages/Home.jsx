@@ -17,7 +17,6 @@ const Home = () => {
     var requestOptions = {
       method: 'GET',
       headers: myHeaders,
-      // body: raw,
       redirect: 'follow',
     };
     try {
@@ -26,7 +25,6 @@ const Home = () => {
         requestOptions
       );
       const results = await response.json();
-      console.log(results.data.data);
       setData(results.data.data);
       setIsLoading(false);
     } catch (error) {

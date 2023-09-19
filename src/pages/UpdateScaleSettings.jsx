@@ -3,16 +3,15 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import Fallback from '../components/Fallback';
-// import Cookies from 'universal-cookie';
 
 const UpdateScaleSettings = () => {
   const { id } = useParams();
-  // const cookies = new Cookies();
-  const [data, setData] = useState([]); // Holds the list of tasks
+  const [datas, setData] = useState([]); // Holds the list of tasks
   const [isLoading, setIsLoading] = useState(true); // Indicates whether the data is being loaded
   // eslint-disable-next-line no-unused-vars
   const [itemCount, setItemCount] = useState(0);
   const [isInputVisible, setInputVisible] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [inputValues, setInputValues] = useState([]);
   const toggleInput = () => {
     setInputVisible(!isInputVisible);
@@ -20,29 +19,24 @@ const UpdateScaleSettings = () => {
 
   const handleInputChange = (e) => {
     const value = parseInt(e.target.value);
+    formData.item_count = value;
 
     // Check if the value is a positive integer
     if (!isNaN(value) && value > 0) {
+      formData.item_list = Array(value).fill('');
       setItemCount(value);
       setInputValues(Array(value).fill(''));
     } else {
       // Handle invalid input, e.g., show an error message or prevent setting state
       // For simplicity, I'm setting numItems to 0 here
       setItemCount();
+      formData.item_list = [];
       setInputValues([]);
     }
   };
 
-  const handleInputValueChange = (index, value) => {
-    const newInputValues = [...inputValues];
-    newInputValues[index] = value;
-    setInputValues(newInputValues);
-    console.log(inputValues);
-  };
-
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    // user_name: '',
     scale_name: '',
     orientation: '',
     fontcolor: '',
@@ -51,43 +45,9 @@ const UpdateScaleSettings = () => {
     roundcolor: '',
     time: 0,
     item_count: 0,
-    item_list_1: '',
-    item_list_2: '',
-    item_list_3: '',
+    item_list: [],
   });
 
-  // const sessionId = cookies.get('sessionid');
-  // useEffect(() => {
-  //   fetchuser();
-  // }, []);
-  // const fetchuser = async () => {
-  //   try {
-  //     var myHeaders = new Headers();
-  //     myHeaders.append('Content-Type', 'application/json');
-  //     var requestOptions = {
-  //       method: 'POST',
-  //       headers: myHeaders,
-  //       body: JSON.stringify({
-  //         // session_id: sessionId,
-  //         session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
-  //       }),
-  //       redirect: 'follow',
-  //     };
-  //     const response = await fetch(
-  //       `https://100014.pythonanywhere.com/api/userinfo/`,
-  //       requestOptions
-  //     );
-  //     const data = await response.json();
-  //     console.log(data.userinfo);
-  //     setFormData({
-  //       user_name: data.userinfo.username,
-  //     });
-  //     setIsLoading(false);
-  //   } catch (error) {
-  //     console.log('Error fetching user:', error.message);
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -97,38 +57,39 @@ const UpdateScaleSettings = () => {
     });
   };
 
+  const handleInputValueChange = (index, value) => {
+    const newItemList = [...formData.item_list];
+
+    newItemList[index] = value;
+    setFormData({
+      ...formData,
+      item_list: newItemList,
+    });
+  };
+
   useEffect(() => {
     fetchScalesSettings(id);
   }, [id]);
 
   const fetchScalesSettings = async (id) => {
-    console.log(id);
     try {
       let headersList = {
         Accept: '*/*',
         'Content-Type': 'application/json',
       };
-      // let bodyContent = JSON.stringify({
-      //   scale_id: id,
-      // });
       let reqOptions = {
         url: `https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/?scale_id=${id}`,
         method: 'GET',
         headers: headersList,
-        // data: bodyContent,
       };
 
       let response = await axios.request(reqOptions);
-      // );
 
       const results = response.data.success;
-      console.log(results);
       setData(results);
-      console.log(data);
       setIsLoading(false);
       setInputValues([...results.item_list]);
       setFormData({
-        // user_name: formData.user_name,
         scale_name: results.name,
         orientation: results.orientation,
         fontcolor: results.fontcolor,
@@ -139,7 +100,6 @@ const UpdateScaleSettings = () => {
         item_count: results.item_list.length,
         item_list: results.item_list,
       });
-      // setRangeValue(data.time);
     } catch (error) {
       console.log(`Error fetching scale of id ${id}:`, error.message);
       setIsLoading(false);
@@ -148,16 +108,12 @@ const UpdateScaleSettings = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const item_list = [
-      formData.item_list_1,
-      formData.item_list_2,
-      formData.item_list_3,
-    ];
 
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
     var raw = JSON.stringify({
+      scale_id: id,
       username: formData.user_name,
       scale_name: formData.scale_name,
       orientation: formData.orientation,
@@ -167,9 +123,8 @@ const UpdateScaleSettings = () => {
       roundcolor: formData.roundcolor,
       time: formData.time,
       item_count: formData.item_count,
-      'item list': item_list.join(','),
+      item_list: formData.item_list,
     });
-    console.log(raw);
 
     var requestOptions = {
       method: 'PUT',
@@ -185,21 +140,29 @@ const UpdateScaleSettings = () => {
         requestOptions
       );
       const result = await data.json();
-      console.log(result);
-      if (
-        !JSON.parse(result.success).isSuccess ||
-        JSON.parse(result.success).isSuccess === false
-      ) {
-        console.log(JSON.parse(result.success).isSuccess);
+
+      if (!result.success) {
+        toast.error(result.error);
+        setFormData({
+          scale_name: datas.name,
+          orientation: datas.orientation,
+          fontcolor: datas.fontcolor,
+          fontstyle: datas.fontstyle,
+          time: datas.time,
+          scalecolor: datas.scalecolor,
+          roundcolor: datas.roundcolor,
+          item_count: datas.item_list.length,
+          item_list: datas.item_list,
+        });
         return;
       } else {
-        console.log(`${JSON.stringify(result?.data)}`);
-        toast.success(
-          `Inserted Id = ${
-            JSON.parse(result.success).inserted_id
-          } ${JSON.stringify(result?.data)}`
+        console.log(result.success);
+        console.log(result.data);
+        toast.success(result.success);
+        const timeout = setTimeout(
+          () => navigate(`/single-scale-settings/${id}`),
+          3000
         );
-        const timeout = setTimeout(() => navigate('/'), 3000);
         return () => clearTimeout(timeout);
       }
     } catch (error) {
@@ -285,8 +248,8 @@ const UpdateScaleSettings = () => {
               Font Style
             </label>
             <select
-              id="orientation"
-              name="orientation" // Add the name attribute
+              id="fontstyle"
+              name="fontstyle" // Add the name attribute
               value={formData.fontstyle}
               onChange={handleChange}
               className="bg-gray-50 border focus:outline-none text-gray-900 text-sm rounded-lg  block w-full p-2.5 mt-4"
@@ -415,7 +378,7 @@ const UpdateScaleSettings = () => {
               className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
             />
             <div>
-              {inputValues.map((value, index) => (
+              {formData.item_list.map((value, index) => (
                 <input
                   key={index}
                   type="text"
@@ -428,43 +391,7 @@ const UpdateScaleSettings = () => {
                 />
               ))}
             </div>
-            {/* <label className="block font-semibold text-gray-600">
-              Item List
-            </label> */}
-            {/* {inputValues.map((value, index) => (
-              <input
-                key={index}
-                type="text"
-                placeholder={`paired ${index + 1}`}
-                value={value}
-                className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                onChange={handleChange}
-              />
-            ))} */}
-            {/* <input
-              type="text"
-              id="item_list_1"
-              name="item_list_1"
-              value={formData.item_list_1}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-            />
-            <input
-              type="text"
-              id="item_list_2"
-              name="item_list_2"
-              value={formData.item_list_2}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-            />
-            <input
-              type="text"
-              id="item_list_3"
-              name="item_list_3"
-              value={formData.item_list_3}
-              onChange={handleChange}
-              className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-            /> */}
+        
           </div>
         </div>
         <div className="flex mt-4 lg:justify-end">

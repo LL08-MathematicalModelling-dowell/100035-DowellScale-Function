@@ -8,7 +8,6 @@ import Navbar from './components/Navbar';
 import Fallback from './components/Fallback';
 import SingleScaleResponse from './pages/SingleScaleResponse';
 import CreateResponse from './pages/CreateResponse';
-import ScaleSettings from './pages/ScaleSettings';
 import SingleScaleSettings from './pages/SingleScaleSettings';
 import UpdateScaleSettings from './pages/UpdateScaleSettings';
 
@@ -21,7 +20,6 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/all-scale-settings" element={<ScaleSettings />} />
             <Route path="/create-scale-settings" element={<CreateSettings />} />
             <Route path="/create-scale-response" element={<CreateResponse />} />
             <Route
