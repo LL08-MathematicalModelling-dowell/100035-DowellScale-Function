@@ -484,7 +484,7 @@ def evaluation_api(request):
             if x["scale_data"]["scale_type"] == "nps scale":
                 scale_type = "nps scale"
                 print(x['score']['score'])
-                calculate_score.append(x['score']['score'])
+                calculate_score.append(int(float(x['score']['score'])))
 
         # find the largest score among the score list of calculate scores
         largest = max(calculate_score)
