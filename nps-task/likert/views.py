@@ -82,8 +82,8 @@ def settings_api_view_create(request):
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
         try:
-            response = request.data
-            scale_id = response.get('scale_id')
+            params = request.GET
+            scale_id = params.get('scale_id')
             if not scale_id:
                 field_add = {"settings.scale-category": "likert scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",

@@ -46,8 +46,8 @@ def settings_api_view_create(request):
             return Response({"error": "Product names must be unique"}, status=status.HTTP_400_BAD_REQUEST)
         eventID = get_event_id()
         field_add = {"event_id": eventID,
-                     "settings": {"orientation": orientation, "scale_color": scale_color,"fontstyle": fontstyle,
-                                  "number_of_scales": number_of_scales,"fontcolor": fontcolor,
+                     "settings": {"orientation": orientation, "scale_color": scale_color, "fontstyle": fontstyle,
+                                  "no_of_scales": number_of_scales, "fontcolor": fontcolor,
                                   "left": "0%", "right": "100%",
                                   "time": time, "name": name, "scale-category": "percent scale", "user": user,
                                   "product_names": product_names, "product_count": product_count,
@@ -134,7 +134,7 @@ def percent_response_view_submit(request):
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
             process_id = response_data["process_id"]
             if not isinstance(process_id, str):
-                return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)           
+                return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
 
             if "document_responses" in response_data:
                 document_responses = response_data["document_responses"]
@@ -143,67 +143,69 @@ def percent_response_view_submit(request):
                     scale_id = single_response['scale_id']
                     scores = single_response["score"]
                     response = single_response['score']
-                    document_data = {"details": {"action": response.get('action', ""), 
-                                             "authorized": response.get('authorized',""), 
-                                             "cluster": response.get('cluster', ""), 
-                                             "collection": response.get('collection',""), 
-                                             "command": response.get('command',""), 
-                                             "database": response.get('database', ""), 
-                                             "document": response.get('document', ""), 
-                                             "document_flag":response.get('document_flag',""), 
-                                             "document_right": response.get('document_right', ""), 
-                                             "field": response.get('field',""), 
-                                             "flag": response.get('flag', ""), 
-                                             "function_ID": response.get('function_ID', ""),
-                                             "metadata_id": response.get('metadata_id', ""), 
-                                             "process_id": response['process_id'], 
-                                             "role": response.get('role', ""), 
-                                             "team_member_ID": response.get('team_member_ID', ""), 
-                                             "product_name": response.get('product_name', ""),
-                                             "update_field": {"content": response.get('content', ""), 
-                                                              "document_name": response.get('document_name', ""), 
-                                                              "page": response.get('page', "")}, 
-                                                              "user_type": response.get('user_type', ""), 
-                                                              "id": response['_id']} 
-                                             }
-                    success = response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id, document_data)
+                    document_data = {"details": {"action": response_data.get('action', ""),
+                                                 "authorized": response_data.get('authorized', ""),
+                                                 "cluster": response_data.get('cluster', ""),
+                                                 "collection": response_data.get('collection', ""),
+                                                 "command": response_data.get('command', ""),
+                                                 "database": response_data.get('database', ""),
+                                                 "document": response_data.get('document', ""),
+                                                 "document_flag": response_data.get('document_flag', ""),
+                                                 "document_right": response_data.get('document_right', ""),
+                                                 "field": response_data.get('field', ""),
+                                                 "flag": response_data.get('flag', ""),
+                                                 "function_ID": response_data.get('function_ID', ""),
+                                                 "metadata_id": response_data.get('metadata_id', ""),
+                                                 "process_id": response_data['process_id'],
+                                                 "role": response_data.get('role', ""),
+                                                 "team_member_ID": response_data.get('team_member_ID', ""),
+                                                 "product_name": response_data.get('product_name', ""),
+                                                 "update_field": {"content": response_data.get('content', ""),
+                                                                  "document_name": response_data.get('document_name', ""),
+                                                                  "page": response_data.get('page', "")},
+                                                 "user_type": response_data.get('user_type', ""),
+                                                 "id": response_data['_id']}
+                                     }
+                    success = response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id,
+                                                   process_id, document_data)
                     all_results.append(success.data)
                 return Response({"data": all_results}, status=status.HTTP_200_OK)
             else:
                 scores = response_data['score']
                 scale_id = response_data['scale_id']
-                return response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id)
+                return response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id,
+                                            process_id)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None, document_data=None):
-    field_add = {"username": username, "scale_id": scale_id}
-    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
-                            field_add, "nil")
-    previous_response = json.loads(previous_response)
-    print(previous_response)
-    previous_response = previous_response.get('data')            
-    if len(previous_response) > 0 :
-        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
+def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None,
+                         document_data=None):
+    field_add = {"scale_data.scale_id": scale_id}
+    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                         "1094", "ABCDE", "fetch",
+                                         field_add, "nil")
+    previous_response = json.loads(previous_response)["data"]
+
+
     event_id = get_event_id()
     # Check if scale exists
     field_add = {"_id": scale_id, "settings.scale-category": "percent scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
-                                     "fetch", field_add, "nil")
+                                     "find", field_add, "nil")
     data = json.loads(default_scale)
     settings = data['data']['settings']
+
 
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
     elif settings['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
 
-    number_of_scale = settings['no_of_scales']
 
     # Check if all required responses are present
-    expected_responses = data['data'][0]['settings']['product_count']
+    expected_responses = data['data']['settings']['product_count']
     if int(expected_responses) != len(scores):
         return Response({"error": "Incorrect number of responses."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -212,6 +214,20 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
         if not isinstance(response, (int, float)) or response < 0 or response > 100:
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
+    number_of_scale = settings['no_of_scales']
+
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "fetch",
+                                    {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
+    user_dets = json.loads(user_details)
+    if len(user_dets['data']) >= 1:
+        b = [l['score']['score'] for l in previous_response if
+             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0][
+                 'event_id']]
+
+        return Response({"error": "Scale Response Exists!", "current_score": b[0]},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
                   "score": scores}
 
@@ -219,20 +235,23 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
     response = {
-    "username": username,
-    "event_id": event_id,
-    "scale_data": {"scale_id": scale_id, "scale_type": "percent scale"},
-    "score":score_data,
-    "brand_data": {"brand_name": brand_name, "product_name": product_name},
-    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "username": username,
+        "event_id": event_id,
+        "scale_data": {"scale_id": scale_id, "scale_type": "percent scale"},
+        "score": score_data,
+        "brand_data": {"brand_name": brand_name, "product_name": product_name},
+        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     if process_id:
-            response["process_id"] = process_id
+        response["process_id"] = process_id
+    if document_data:
+        response["document_data"] = document_data
 
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                                    "ABCDE", "insert", response, "nil")
 
     return Response({"success": True, "response_id": response_id})
+
 
 # GET SINGLE SCALE RESPONSE
 @api_view(['GET', ])
@@ -250,6 +269,7 @@ def single_scale_response_api_view(request, id=None):
         if settings.get('scale-category') != 'percent scale':
             return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"payload": scale_data['data']})
+
 
 @api_view(['GET', ])
 def scale_response_api_view(request):
@@ -461,7 +481,6 @@ def default_scale_admin(request):
     all_scales = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                   field_add, "nil")
     data = json.loads(all_scales)
-    # print(data)
     context["percentall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
 
     return render(request, 'percent/default.html', context)

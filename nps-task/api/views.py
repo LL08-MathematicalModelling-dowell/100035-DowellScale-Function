@@ -15,6 +15,7 @@ import percent_sum.views as percent_sum
 import percent.views as percent
 import npslite.views as nps_lite
 import ranking.views as ranking
+import paired_comparison.views as paired_comparison
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
@@ -494,13 +495,6 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
 
 
 def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None):
-    field_add = {"username": user, "scale_data.scale_id": scale_id}
-    previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
-                            field_add, "nil")
-    previous_response = json.loads(previous_response)
-    previous_response = previous_response.get('data')            
-    if len(previous_response) > 0 :
-        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
     field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
@@ -832,8 +826,9 @@ def new_nps_create(request):
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
         try:
-            response = request.data
-            scale_id = response.get('scale_id')
+            params = request.GET
+            scale_id = params.get('scale_id')
+            print(scale_id)
             if not scale_id:
                 field_add = {"settings.scale-category": "nps scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
@@ -903,6 +898,10 @@ def redirect_view(request):
                         return ranking.settings_api_view_create(request)
                     elif "ranking" in scaletype and "response" in scale_type:
                         return ranking.response_submit_api_view(request)
+                    elif "paired-comparison" in scaletype and "settings" in scale_type:
+                        return paired_comparison.settings_api_view_create(request)
+                    elif "paired-comparison" in scaletype and "response" in scale_type:
+                        return paired_comparison.scale_response_api_view(request)
                     else:
                         return error_response(request, "Scale will be available soon.", status.HTTP_404_NOT_FOUND)
                 else:
