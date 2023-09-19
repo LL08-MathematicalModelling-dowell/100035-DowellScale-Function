@@ -10,10 +10,36 @@ const UpdateScaleSettings = () => {
   // const cookies = new Cookies();
   const [data, setData] = useState([]); // Holds the list of tasks
   const [isLoading, setIsLoading] = useState(true); // Indicates whether the data is being loaded
+  // eslint-disable-next-line no-unused-vars
+  const [itemCount, setItemCount] = useState(0);
   const [isInputVisible, setInputVisible] = useState(false);
+  const [inputValues, setInputValues] = useState([]);
   const toggleInput = () => {
     setInputVisible(!isInputVisible);
   };
+
+  const handleInputChange = (e) => {
+    const value = parseInt(e.target.value);
+
+    // Check if the value is a positive integer
+    if (!isNaN(value) && value > 0) {
+      setItemCount(value);
+      setInputValues(Array(value).fill(''));
+    } else {
+      // Handle invalid input, e.g., show an error message or prevent setting state
+      // For simplicity, I'm setting numItems to 0 here
+      setItemCount();
+      setInputValues([]);
+    }
+  };
+
+  const handleInputValueChange = (index, value) => {
+    const newInputValues = [...inputValues];
+    newInputValues[index] = value;
+    setInputValues(newInputValues);
+    console.log(inputValues);
+  };
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     // user_name: '',
@@ -24,16 +50,11 @@ const UpdateScaleSettings = () => {
     scalecolor: '',
     roundcolor: '',
     time: 0,
+    item_count: 0,
     item_list_1: '',
     item_list_2: '',
     item_list_3: '',
   });
-
-  // const [rangeValue, setRangeValue] = useState(50);
-
-  // const handleRangeChange = (event) => {
-  //   setRangeValue(event.target.value);
-  // };
 
   // const sessionId = cookies.get('sessionid');
   // useEffect(() => {
@@ -105,6 +126,7 @@ const UpdateScaleSettings = () => {
       setData(results);
       console.log(data);
       setIsLoading(false);
+      setInputValues([...results.item_list]);
       setFormData({
         // user_name: formData.user_name,
         scale_name: results.name,
@@ -114,9 +136,8 @@ const UpdateScaleSettings = () => {
         time: results.time,
         scalecolor: results.scalecolor,
         roundcolor: results.roundcolor,
-        item_list_1: results.item_list[0],
-        item_list_2: results.item_list[1],
-        item_list_3: results.item_list[2],
+        item_count: results.item_list.length,
+        item_list: results.item_list,
       });
       // setRangeValue(data.time);
     } catch (error) {
@@ -145,6 +166,7 @@ const UpdateScaleSettings = () => {
       scalecolor: formData.scalecolor,
       roundcolor: formData.roundcolor,
       time: formData.time,
+      item_count: formData.item_count,
       'item list': item_list.join(','),
     });
     console.log(raw);
@@ -195,7 +217,9 @@ const UpdateScaleSettings = () => {
         onSubmit={handleSubmit}
       >
         <div className="w-full max-w-md mx-auto">
-          <h1 className="text-2xl font-bold font-arial">Update Scale Settings</h1>
+          <h1 className="text-2xl font-bold font-arial">
+            Update Scale Settings
+          </h1>
         </div>
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <div className="mb-4">
@@ -380,17 +404,50 @@ const UpdateScaleSettings = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block font-semibold text-gray-600">
-              Item List
+            <label htmlFor="numItems" className="font-semibold text-gray-600 ">
+              Number of Items:
             </label>
             <input
+              type="number"
+              id="numItems"
+              value={formData.item_count}
+              onChange={handleInputChange}
+              className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+            />
+            <div>
+              {inputValues.map((value, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  placeholder={`paired ${index + 1}`}
+                  value={value}
+                  className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                  onChange={(e) =>
+                    handleInputValueChange(index, e.target.value)
+                  }
+                />
+              ))}
+            </div>
+            {/* <label className="block font-semibold text-gray-600">
+              Item List
+            </label> */}
+            {/* {inputValues.map((value, index) => (
+              <input
+                key={index}
+                type="text"
+                placeholder={`paired ${index + 1}`}
+                value={value}
+                className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                onChange={handleChange}
+              />
+            ))} */}
+            {/* <input
               type="text"
               id="item_list_1"
               name="item_list_1"
               value={formData.item_list_1}
               onChange={handleChange}
               className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-              // required
             />
             <input
               type="text"
@@ -399,7 +456,6 @@ const UpdateScaleSettings = () => {
               value={formData.item_list_2}
               onChange={handleChange}
               className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-              // required
             />
             <input
               type="text"
@@ -408,19 +464,17 @@ const UpdateScaleSettings = () => {
               value={formData.item_list_3}
               onChange={handleChange}
               className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-              // required
-            />
+            /> */}
           </div>
-
         </div>
-          <div className="flex mt-4 lg:justify-end">
-            <button
-              type="submit"
-              className="px-8 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none "
-            >
-              Update
-            </button>
-          </div>
+        <div className="flex mt-4 lg:justify-end">
+          <button
+            type="submit"
+            className="px-8 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none "
+          >
+            Update
+          </button>
+        </div>
       </form>
     </div>
   );

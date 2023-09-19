@@ -418,12 +418,13 @@ const CreateSettings = () => {
             />
           </div> */}
           <div>
-            <label htmlFor="numItems">Number of Items:</label>
+            <label htmlFor="numItems"  className="font-semibold text-gray-600 ">Number of Items:</label>
             <input
               type="number"
               id="numItems"
               value={itemCount}
               onChange={handleInputChange}
+              className="px-4 py-2 mt-2 border rounded-lg  focus:outline-none"
             />
 
             <div>
@@ -431,8 +432,9 @@ const CreateSettings = () => {
                 <input
                   key={index}
                   type="text"
-                  placeholder={`Item ${index + 1}`}
+                  placeholder={`paired ${index + 1}`}
                   value={value}
+                  className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
                   onChange={(e) =>
                     handleInputValueChange(index, e.target.value)
                   }

@@ -50,6 +50,9 @@ const SingleScaleSettings = () => {
       setIsLoading(false);
     }
   };
+  const flexDirectionClass =
+    data.orientation === 'vertical' ? 'flex-col' : 'flex-row';
+  console.log(flexDirectionClass);
 
   if (isLoading) {
     return <Fallback />;
@@ -58,18 +61,20 @@ const SingleScaleSettings = () => {
     <div className="flex flex-col items-center justify-center mt-10">
       <div className="flex flex-col lg:flex-row border-2 border-black w-full lg:w-[50%]">
         <div className="flex flex-wrap items-center justify-center p-4 mx-auto lg:w-full">
-        <div className="w-full max-w-md mx-auto">
-          <h1 className="text-2xl font-bold text-center">{data.name}</h1>
-        </div>
+          <div className="w-full max-w-md mx-auto">
+            <h1 className="text-2xl font-bold text-center">{data.name}</h1>
+          </div>
           <div className="flex flex-row flex-wrap justify-center h-auto ">
             {
               data &&
                 data.paired_items.map((paired, index) => (
                   <div
                     key={index}
-                    className={`w-full h-40 p-4 mx-2 my-2 bg-[${data.scalecolor}] lg:w-60 border border-black`}
+                    className={`w-full h-50 p-4 mx-2 my-2 bg-[${data.scalecolor}] lg:w-60 border border-black`}
                   >
-                    <div className="flex items-center justify-center py-8">
+                    <div
+                      className={`flex ${flexDirectionClass} items-center justify-center py-8`}
+                    >
                       <div
                         className={`w-1/2 p-4 mx-2 text-center bg-[${data.roundcolor}] border border-black text-[${data.fontcolor}]`}
                       >
