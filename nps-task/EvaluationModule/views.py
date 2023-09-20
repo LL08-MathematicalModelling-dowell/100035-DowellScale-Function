@@ -381,39 +381,10 @@ def evaluation_api(request):
                                              "scale_reports",
                                              "1094", "ABCDE", "fetch", field_add, "nil")
                 print(response_data, "response_dataaaaaaaaaaaaaaaaa")
-                # r = json.loads(response_data)
-                # print(r, "r+++++++++++++++")
-                # data = r.get("data", [])
                 data = response_data['data']
                 print(data, "data")
         except Exception as e:
             return JsonResponse({"error": f"Error fetching data from dowellconnection: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-        print(""" --------------------------------------- template --------------------------------------- """)
-        # scale_wise reports only.
-        """
-        # if we scale wise reports, we need to get the template_id from the scale_id,
-        field_add = {"template_id": payload.get('template_id'), f"custom_input_groupings.{payload.get('type_of_element')}": payload.get('element_id')}
-        response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data",
-                                         "1181", "ABCDE", "find", field_add, "nil")
-        print(response_data, "responDse_datrrrrrrrrrrrrrrrrrrrrrrr")
-        scale = response_data['data']['scale_id']
-        print(scale)
-        field_add = {"scale_data.scale_id": scale}
-        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                         "scale_reports",
-                                         "1094", "ABCDE", "find", field_add, "nil")
-        print(json.loads(response_data)['data'])
-        score = json.loads(response_data)['data']['score']['score']
-        print(score)
-
-        # get score of the scale,
-
-        """
-
-
-        print(""" --------------------------------------- template --------------------------------------- """)
 
 
         all_scales = []
@@ -429,10 +400,6 @@ def evaluation_api(request):
             for i in data:
                 print(f"\n\n{i} in i\n\n")
                 all_scales.append(i)
-            # for i in data:
-            #     print(f".{i['score']['instance_id'].split('/')[0]}.\n.{payload.get('document_id')}.")
-            #     if int(i['score']['instance_id'].split("/")[0]) == int(payload.get('document_id')):
-            #         all_scales.append(i)
         elif report_type == 'scale_id':
             for i in data:
                 print(f"\n\n{i}9009090909\n\n")
@@ -451,17 +418,6 @@ def evaluation_api(request):
                 print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
                 all_scales.append(json.loads(response_data)['data'])
 
-
-                # if i['scale_data']['scale_id'] == payload.get('scale_id'):
-                #     try:
-                #             if int(i['score']['instance_id'].split("/")[-1]) >= 3:
-                #                 all_scales.append(i)
-                #             else:
-                #                 return JsonResponse({"error": "Not enough scores found for this scale."})
-                #     except Exception as e:
-                #         print(e)
-                #         print(i, "**************************")
-
         else:
             for i in data:
                 all_scales.append(i)
@@ -473,7 +429,6 @@ def evaluation_api(request):
         elif len(all_scales) < 3:
             return JsonResponse({"error": "Not enough scores found for the given info."}, status=status.HTTP_404_NOT_FOUND)
 
-        # calculate_score = [x['score']['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
         calculate_score = []
         scale_type = ""
         for x in all_scales:
@@ -505,9 +460,6 @@ def evaluation_api(request):
             return JsonResponse({"error": "No data found for the given process_id in Dowell response."}, status=status.HTTP_404_NOT_FOUND)
 
         print(calculate_score, "((((((((((((((((((()))))))))")
-        # try:
-        # except Exception as e:
-        #     return JsonResponse({"error": f"Error fetching data from stattricks_api: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         try:
             # Execute Normality_api API call
