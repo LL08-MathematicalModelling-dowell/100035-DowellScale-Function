@@ -259,7 +259,7 @@ def response_submit_api_view(request):
                     return Response(result, status=status.HTTP_400_BAD_REQUEST)
             return Response(results)
         else:
-            instance_id = response['instance_id']
+            instance_id = response.get('instance_id')
             try:
                 scale_id = response['scale_id']
                 username = response['username']
@@ -278,12 +278,12 @@ def response_submit_api_view(request):
                 "rankings": rankings
             }
             if "process_id" in response:
-                process_id = response['process_id']
+                process_id = response.get('process_id')
                 if not isinstance(process_id, str):
                     return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 return response_submit_loop(username, scale_id, responses, instance_id, process_id)
             
-            result = response_submit_loop(username, scale_id, responses)
+            result = response_submit_loop(username, scale_id, responses, instance_id)
             result = result.data
             return Response(result)
       
