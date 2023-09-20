@@ -472,12 +472,11 @@ def nps_response_view_submit(request):
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
         params = request.GET
-        scale_id = params.get("scale_id")
-        if scale_id == None:
-            return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
+        id = params.get("id")
         try:
-            field_add = {"scale_data.scale_id": scale_id,
-                            "scale_data.scale_type": "nps scale"}
+            field_add = {"scale_data.scale_type": "nps scale"}
+            if id != None:
+                field_add["_id"] = id
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                 "scale_reports",
                                                 "1094", "ABCDE", "fetch", field_add, "nil")

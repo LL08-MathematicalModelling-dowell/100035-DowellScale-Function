@@ -190,24 +190,19 @@ def submit_response_view(request):
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
-        response = request.data
+        params = request.GET
+        id = params.get("id")
         try:
-            if response.get('scale_id', ''):
-                id = response['scale_id']
-                field_add = {"scale_data.scale_id": id,
-                             "scale_data.scale_type": "npslite scale"}
-                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                                 "scale_reports",
-                                                 "1094", "ABCDE", "fetch", field_add, "nil")
-                data = json.loads(response_data)
-                return Response({"data": data})
-            else:
-                field_add = {"scale_data.scale_type": "npslite scale"}
-                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                                 "scale_reports",
-                                                 "1094", "ABCDE", "fetch", field_add, "nil")
-                data = json.loads(response_data)
-                return Response({"data": data})
+            field_add = {"scale_data.scale_type": "npslite scale"}
+            if id != None:
+                field_add["_id"] = id
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                "scale_reports",
+                                                "1094", "ABCDE", "fetch", field_add, "nil")
+            data = json.loads(response_data)
+            if data.get("data") == []:
+                return Response({"error": "Scale response not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"data": json.loads(response_data)})
         except:
             return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
