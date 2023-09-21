@@ -48,7 +48,6 @@ const UpdateScaleSettings = () => {
     item_list: [],
   });
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -108,6 +107,7 @@ const UpdateScaleSettings = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -154,10 +154,12 @@ const UpdateScaleSettings = () => {
           item_count: datas.item_list.length,
           item_list: datas.item_list,
         });
+        setIsLoading(false);
         return;
       } else {
         console.log(result.success);
         console.log(result.data);
+        setIsLoading(false);
         toast.success(result.success);
         const timeout = setTimeout(
           () => navigate(`/single-scale-settings/${id}`),
@@ -166,6 +168,7 @@ const UpdateScaleSettings = () => {
         return () => clearTimeout(timeout);
       }
     } catch (error) {
+      setIsLoading(false);
       console.log('Error', error);
     }
   };
@@ -391,7 +394,6 @@ const UpdateScaleSettings = () => {
                 />
               ))}
             </div>
-        
           </div>
         </div>
         <div className="flex mt-4 lg:justify-end">

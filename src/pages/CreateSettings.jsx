@@ -54,7 +54,6 @@ const CreateSettings = () => {
       ...formData,
       [name]: value,
     });
-
   };
 
   const sessionId = cookies.get('sessionid');
@@ -91,6 +90,7 @@ const CreateSettings = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -105,7 +105,7 @@ const CreateSettings = () => {
       roundcolor: formData.roundcolor,
       time: formData.time,
       item_count: itemCount,
-      "item list": inputValues,
+      'item list': inputValues,
     });
     console.log(raw);
 
@@ -124,9 +124,7 @@ const CreateSettings = () => {
       const result = await data.json();
       console.log(result);
 
-      if (
-        result.error
-      ) {
+      if (result.error) {
         console.log(result.error);
         toast.error(result.error);
         setFormData({
@@ -139,16 +137,24 @@ const CreateSettings = () => {
           roundcolor: '',
           time: 0,
           item_list: inputValues,
-        })
-        return
+        });
+        setIsLoading(false);
+        return;
       } else {
+        setIsLoading(false);
         console.log(`${JSON.parse(result.success).inserted_id}`);
-        
-        toast.success("Successfully Created");
-        const timeout = setTimeout(() => navigate(`/single-scale-settings/${JSON.parse(result.success).inserted_id}`), 3000);
+        toast.success('Successfully Created');
+        const timeout = setTimeout(
+          () =>
+            navigate(
+              `/single-scale-settings/${JSON.parse(result.success).inserted_id}`
+            ),
+          3000
+        );
         return () => clearTimeout(timeout);
       }
     } catch (error) {
+      setIsLoading(false);
       console.log('Error', error);
     }
   };
@@ -349,7 +355,9 @@ const CreateSettings = () => {
             )}
           </div>
           <div>
-            <label htmlFor="numItems"  className="font-semibold text-gray-600 ">Number of Items:</label>
+            <label htmlFor="numItems" className="font-semibold text-gray-600 ">
+              Number of Items:
+            </label>
             <input
               type="number"
               id="numItems"

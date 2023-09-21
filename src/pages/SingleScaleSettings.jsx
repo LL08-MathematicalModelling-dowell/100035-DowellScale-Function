@@ -72,7 +72,7 @@ const SingleScaleSettings = () => {
       <div className="w-full max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-center">{data.name}</h1>
       </div>
-      <div className="flex flex-col lg:flex-row border-2 border-black w-full lg:w-[50%]">
+      <div className="flex flex-col lg:flex-row border-2 border-black w-full lg:w-[90%]">
         <div className="flex flex-wrap items-center justify-center p-4 mx-auto lg:w-full">
           <div className="flex flex-row flex-wrap justify-center h-auto ">
             {
@@ -81,21 +81,23 @@ const SingleScaleSettings = () => {
                   <div
                     key={index}
                     style={{ backgroundColor: scaleColor }}
-                    className="w-full p-4 mx-2 my-2 border border-black rounded-lg h-50 lg:w-60"
+                    className="w-full p-4 mx-2 my-2 border border-black rounded-lg h-50 lg:h-96 lg:w-96 "
                   >
                     <div
-                      className={`flex ${flexDirectionClass} items-center justify-center py-8 ${paddingClass} rounded-lg`}
+                      className={`flex ${flexDirectionClass} items-center text-center justify-center py-8 ${paddingClass}  rounded-lg h-full `}
+                      // style={{ height: '100%' }}
                     >
                       <Pair
-                        className={`w-1/2 p-4 mx-2 text-center border border-black rounded-lg cursor-pointer  focus:outline-none `}
+                        className={`w-1/2 p-4 lg:h-48 mx-2 text-center border border-black rounded-lg cursor-pointer  focus:outline-none flex justify-center items-center`}
+                        
                       >
-                        {paired[0]}
+                       <p className='text-center'>{paired[0]}</p>
                       </Pair>
                       <Pair
-                        className="w-1/2 p-4 mx-2 text-center border border-black rounded-lg cursor-pointer"
+                        className="flex items-center justify-center w-1/2 p-4 mx-2 text-center border border-black rounded-lg cursor-pointer lg:h-48"
 
                       >
-                        {paired[1]}
+                       <p className='text-center'> {paired[1]}</p>
                       </Pair>
                     </div>
                   </div>
