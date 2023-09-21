@@ -249,6 +249,10 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
 
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                                    "ABCDE", "insert", response, "nil")
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "insert",
+                                    {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
+                                     "username": username}, "nil")
 
     return Response({"success": True, "response_id": response_id})
 

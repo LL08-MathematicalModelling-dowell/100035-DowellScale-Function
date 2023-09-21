@@ -2,7 +2,7 @@ from django.urls import path
 from .views import npslite_home, dowell_npslite_scale, dowell_npslite_scale_settings, npslite_home_admin,brand_product_error, settings_api_view_create, submit_response_view, npslite_response_view, scale_response_api_view
 
 
-app_name = 'nps_lite'
+app_name = 'nps-lite'
 urlpatterns = [
     path('nps-lite-default/', npslite_home, name='default_page'),
     path('nps-lite-default-admin/', npslite_home_admin, name='admin_default_page'),
