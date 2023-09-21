@@ -398,7 +398,7 @@ def evaluation_api(request):
                                  "1094", "ABCDE", "fetch", field_add, "nil")
 
             print(response_data, "response_dataaaaaaaaaaaaaaaa0000000000")
-            data = response_data['data']
+            data = json.loads(response_data)['data']
             print(data, "data0000000000000000")
             for i in data:
                 print(f"\n\n{i} in i\n\n")
