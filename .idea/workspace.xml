@@ -60,7 +60,29 @@
       <recent name="E:\dowell\100035-DowellScale-Function\nps-task\Qsort" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.saturazione_finance (1)">
+  <component name="RunManager" selected="Python.am">
+    <configuration name="am" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="100035-DowellScale-Function" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/nps-task/EvaluationModule" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/nps-task/EvaluationModule/am.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="calculate_function" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="100035-DowellScale-Function" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -75,28 +97,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="E:\dowell\100035-DowellScale-Function\nps-task\nps\calculate_function.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="lab4-umarjaved-241546728" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="100035-DowellScale-Function" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Downloads" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$USER_HOME$/Downloads/lab4-umarjaved-241546728.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -173,11 +173,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.am" />
         <item itemvalue="Python.saturazione_finance (1)" />
         <item itemvalue="Python.views" />
         <item itemvalue="Python.normality" />
         <item itemvalue="Python.calculate_function" />
-        <item itemvalue="Python.lab4-umarjaved-241546728" />
       </list>
     </recent_temporary>
   </component>
@@ -264,6 +264,20 @@
       <workItem from="1692563975775" duration="8265000" />
       <workItem from="1692632664133" duration="12647000" />
       <workItem from="1692802314718" duration="4709000" />
+      <workItem from="1692953711883" duration="10476000" />
+      <workItem from="1693209160739" duration="4923000" />
+      <workItem from="1693374546194" duration="8306000" />
+      <workItem from="1693471411907" duration="4436000" />
+      <workItem from="1693575202174" duration="63000" />
+      <workItem from="1693857305560" duration="9218000" />
+      <workItem from="1693983849793" duration="1939000" />
+      <workItem from="1693988604761" duration="58000" />
+      <workItem from="1693989808183" duration="1403000" />
+      <workItem from="1694075491249" duration="1471000" />
+      <workItem from="1694528560143" duration="9043000" />
+      <workItem from="1694669652457" duration="9592000" />
+      <workItem from="1694929246059" duration="18117000" />
+      <workItem from="1695241890127" duration="41000" />
     </task>
     <servers />
   </component>
@@ -296,18 +310,8 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/nps-task/EvaluationModule/views.py</url>
-          <line>155</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/100035_DowellScale_Function$am.coverage" NAME="am Coverage Results" MODIFIED="1694932795517" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/nps-task/EvaluationModule" />
     <SUITE FILE_PATH="coverage/100035_DowellScale_Function$graph.coverage" NAME="graph Coverage Results" MODIFIED="1680168804874" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
     <SUITE FILE_PATH="coverage/100035_DowellScale_Function$new.coverage" NAME="new Coverage Results" MODIFIED="1681976178619" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/nps-task/nps" />
     <SUITE FILE_PATH="coverage/100035_DowellScale_Function$saturazione_finance__1_.coverage" NAME="saturazione_finance (1) Coverage Results" MODIFIED="1692622068768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
