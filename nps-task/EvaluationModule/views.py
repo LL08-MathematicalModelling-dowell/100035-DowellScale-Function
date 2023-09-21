@@ -381,28 +381,23 @@ def evaluation_api(request):
                                              "scale_reports",
                                              "1094", "ABCDE", "fetch", field_add, "nil")
                 print(response_data, "response_dataaaaaaaaaaaaaaaaa")
-                data = response_data['data']
-                print(data, "data")
+                data_ = response_data['data']
+                print(data_, "data")
         except Exception as e:
             return JsonResponse({"error": f"Error fetching data from dowellconnection: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
         all_scales = []
         if payload.get('document_id'):
-            field_add = {"document_data.details.id": payload.get('document_id'),
-                         "process_id": payload.get('process_id')}
-            response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                             "scale_reports",
-                             "1094", "ABCDE", "fetch", field_add, "nil")
-            print(response_data, "response_dataaaaaaaaaaaaaaaa0000000000")
-            data = response_data['data']
-            print(data, "data0000000000000000")
-            for i in data:
-                print(f"\n\n{i} in i\n\n")
-                all_scales.append(i)
+            for i in data_:
+                print(i['document_data']['details']['id'], "((((((((((")
+                print(payload.get('document_id'), "))))))))))))")
+                print(i, "*************")
+                if i['document_data']['details']['id'] == payload.get('document_id'):
+                    all_scales.append(i)
+
         elif report_type == 'scale_id':
-            for i in data:
-                print(f"\n\n{i}9009090909\n\n")
+            for i in data_:
                 field_add = {"template_id": payload.get('template_id'),
                              f"custom_input_groupings.{payload.get('type_of_element')}": payload.get('element_id')}
                 response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "custom_data",
@@ -419,10 +414,9 @@ def evaluation_api(request):
                 all_scales.append(json.loads(response_data)['data'])
 
         else:
-            for i in data:
+            for i in data_:
                 all_scales.append(i)
 
-        print(all_scales, "*&^%*(&)")
 
         if all_scales == []:
             return JsonResponse({"error": "No data found for the given data."}, status=status.HTTP_404_NOT_FOUND)
@@ -444,8 +438,8 @@ def evaluation_api(request):
         # find the largest score among the score list of calculate scores
         largest = max(calculate_score)
         # Process the fetched data
-        if data:
-            scores = process_data(data)
+        if data_:
+            scores = process_data(data_)
             print(scores, "scores")
             response_ = {
                 "scale_category": scale_type,
