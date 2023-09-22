@@ -360,9 +360,6 @@ def evaluation_api(request):
 
         if not process_id:
             return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
-
-        elif report_type == 'scale_id' and not payload.get('scale_id') and payload.get('document_id'):
-            return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: scale_id."}, status=status.HTTP_400_BAD_REQUEST)
         elif report_type == 'document_id' and not payload.get('document_id'):
             return JsonResponse({"error": "Required fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
         elif report_type == 'document_id' and not payload.get('document_id') and payload.get('scale_id'):
@@ -373,6 +370,10 @@ def evaluation_api(request):
             return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'scale_id'."}, status=status.HTTP_400_BAD_REQUEST)
         elif report_type == 'process_id' and payload.get('document_id'):
             return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
+        elif report_type == 'scale_id' and payload.get('document_id'):
+            return JsonResponse({"error": "You have selected 'scale_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
+        elif report_type == 'scale_id' and not payload.get('element_id') or not payload.get('element_id') or not payload.get('type_of_element') or not payload.get('template_id'):
+            return JsonResponse({"error": "Required fields are not present. \nRequired Fields: element_id, template_id, type_of_element."}, status=status.HTTP_400_BAD_REQUEST)
 
 
         try:
@@ -453,7 +454,6 @@ def evaluation_api(request):
         else:
             return JsonResponse({"error": "No data found for the given process_id in Dowell response."}, status=status.HTTP_404_NOT_FOUND)
 
-        print(calculate_score, "((((((((((((((((((()))))))))")
 
         try:
             # Execute Normality_api API call
