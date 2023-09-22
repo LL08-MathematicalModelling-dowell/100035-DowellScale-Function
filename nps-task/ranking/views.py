@@ -29,6 +29,8 @@ def settings_api_view_create(request):
             num_of_substages = data['num_of_substages']
             stages = data['stages']
             stages_arrangement = data['stages_arrangement']
+            item_count = data['item_count']
+            item_list = data['item_list']
             orientation = data['orientation']
             scalecolor = data.get('scalecolor', '')
             fontcolor = data.get('fontcolor', '')
@@ -46,6 +48,9 @@ def settings_api_view_create(request):
                             status=status.HTTP_400_BAD_REQUEST)
         if len(stages) != num_of_stages:
             return Response({"error": "Number of stages does not match length of stages list."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if item_count != len(item_list):
+            return Response({"error": "Number of items does not match length of items list."},
                             status=status.HTTP_400_BAD_REQUEST)
         if stages_arrangement == 'Alphabetically ordered':
             stages.sort()
@@ -70,8 +75,12 @@ def settings_api_view_create(request):
         settings = {
             "scalename": scalename,
             "scale_category": "ranking scale",
+            "num_of_stages": num_of_stages,
+            "num_of_substages": num_of_substages,
             "stages": stages,
             "stages_arrangement": stages_arrangement,
+            "item_count": item_count,
+            "item_list": item_list,
             "orientation": orientation,
             "scalecolor": scalecolor,
             "fontcolor" : fontcolor,
@@ -251,7 +260,7 @@ def response_submit_api_view(request):
                     return Response(result, status=status.HTTP_400_BAD_REQUEST)
             return Response(results)
         else:
-            instance_id = response['instance_id']
+            instance_id = response.get('instance_id')
             try:
                 scale_id = response['scale_id']
                 username = response['username']
@@ -270,12 +279,12 @@ def response_submit_api_view(request):
                 "rankings": rankings
             }
             if "process_id" in response:
-                process_id = response['process_id']
+                process_id = response.get('process_id')
                 if not isinstance(process_id, str):
                     return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 return response_submit_loop(username, scale_id, responses, instance_id, process_id)
             
-            result = response_submit_loop(username, scale_id, responses)
+            result = response_submit_loop(username, scale_id, responses, instance_id)
             result = result.data
             return Response(result)
       
