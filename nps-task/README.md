@@ -45,7 +45,7 @@
 
 ## RANKING Scale
    - Description: 
-        A ranking scale is a survey question tool that measures people's preferences by asking them to rank their views on a list of related items. Ranking scale used for managing ranking scales and collecting user responses. It provides endpoints for creating new ranking scales and submitting rankings for a specific scale. The API allows users to define ranking scales with multiple stages and sub-stages, and users can submit their rankings for each stage. The API facilitates the storage and retrieval of ranking data, enabling analysis and insights based on user-generated rankings.
+        A ranking scale is a survey question tool that measures people's preferences by asking them to rank their views on a list of related items. The ranking scale is used for managing ranking scales and collecting user responses. It provides endpoints for creating new ranking scales and submitting rankings for a specific scale. The API allows users to define ranking scales with multiple stages and sub-stages, and users can submit their rankings for each stage. The API facilitates the storage and retrieval of ranking data, enabling analysis and insights based on user-generated rankings.
    - Example:
          ![image]()
     - Documentation:
@@ -54,7 +54,7 @@
 ## PERCENT scale
    - Description: 
         A percent scale is a rating scale used to measure opinions, attitudes, or behaviors. It consists of a statement or a question, followed by a series of odd numbered answer statements. Respondents choose the option that best corresponds with how they feel about the statement or question. Because respondents are presented with a range of possible answers, percent scales are great for capturing the level of agreement or their feelings regarding the topic in a more nuanced way.
-        Percent scales are most useful when you are measuring unobservable individual characteristics, or characteristics that have no concrete, objective measurement. These can be elements like attitudes, feelings, or opinions that cause variations in behavior.
+        Percent scales are most useful when measuring unobservable individual characteristics, or characteristics with no concrete, objective measurement. These can be elements like attitudes, feelings, or opinions that cause variations in behavior.
    - Example:
          ![image]()
     - Documentation:
@@ -62,8 +62,8 @@
 
 ## PAIRED_COMPARISON scale
    - Description: 
-        A Paired-comparison scales involve presenting respondents with pairs of options and having them choose the option they prefer or perceive as better. users can create and manage paired-comparison scales for various purposes. This includes designing statements or questions to compare, specifying the options to be presented in each pair, and defining the attributes to be measured or evaluated.
-        The paired_comparison API endpoint enables users to conduct comprehensive analysis and gain insights from respondents' preferences or perceptions within the given pairs
+        A Paired-comparison scale involves presenting respondents with pairs of options and having them choose the option they prefer or perceive as better. users can create and manage paired-comparison scales for various purposes. This includes designing statements or questions to compare, specifying the options to be presented in each pair, and defining the attributes to be measured or evaluated.
+        The paired_comparison API endpoint enables users to conduct a comprehensive analysis and gain insights from respondents' preferences or perceptions within the given pairs
 
    - Example:
          ![image]()
