@@ -64,7 +64,6 @@
    - Description: 
         A Paired-comparison scales involve presenting respondents with pairs of options and having them choose the option they prefer or perceive as better. users can create and manage paired-comparison scales for various purposes. This includes designing statements or questions to compare, specifying the options to be presented in each pair, and defining the attributes to be measured or evaluated.
         The paired_comparison API endpoint enables users to conduct comprehensive analysis and gain insights from respondents' preferences or perceptions within the given pairs
-
    - Example:
          ![image]()
     - Documentation:
