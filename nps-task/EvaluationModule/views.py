@@ -388,12 +388,14 @@ def evaluation_api(request):
             return JsonResponse({"error": f"Error fetching data from dowellconnection: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+        print(report_type, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+
         all_scales = []
         if payload.get('document_id'):
             for i in data_:
-                print(i['document_data']['details']['id'], "((((((((((")
-                print(payload.get('document_id'), "))))))))))))")
-                print(i, "*************")
+                # print(i['document_data']['details']['id'], "((((((((((")
+                # print(payload.get('document_id'), "))))))))))))")
+                # print(i, "*************")
                 if i['document_data']['details']['id'] == payload.get('document_id'):
                     all_scales.append(i)
 
@@ -404,14 +406,14 @@ def evaluation_api(request):
                 response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "custom_data",
                                                  "custom_data",
                                                  "1181", "ABCDE", "find", field_add, "nil")
-                print(response_data, "responDse_datrrrrrrrrrrrrrrrrrrrrrrr")
+                # print(response_data, "responDse_datrrrrrrrrrrrrrrrrrrrrrrr")
                 scale = response_data['data']['scale_id']
                 print(scale)
                 field_add = {"scale_data.scale_id": scale}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                  "scale_reports",
                                                  "1094", "ABCDE", "find", field_add, "nil")
-                print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
+                # print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
                 all_scales.append(json.loads(response_data)['data'])
 
         else:
@@ -439,8 +441,8 @@ def evaluation_api(request):
         # find the largest score among the score list of calculate scores
         largest = max(calculate_score)
         # Process the fetched data
-        if data_:
-            scores = process_data(data_)
+        if all_scales:
+            scores = process_data(all_scales)
             print(scores, "scores")
             response_ = {
                 "scale_category": scale_type,
