@@ -5,6 +5,7 @@ import { MdManageHistory } from 'react-icons/md';
 import { BsArrowLeft} from 'react-icons/bs';
 import useGetScale from '../../hooks/useGetScale';
 import Fallback from '../../components/Fallback';
+import { Button } from '../../components/button';
 
 const ScalesDetail = () => {
     const { slug } = useParams();
@@ -33,9 +34,7 @@ const ScalesDetail = () => {
                 </h2>
                 {scaleData && scaleData.map((scale)=>(
                     <>
-                        <button className='w-full bg-gray-700/20 hover:bg-gray-700/50 py-1 px-2 my-1'>
-                            {scale?.settings?.scalename || scale?.settings?.scale_name}
-                        </button>
+                        <Button width={'full'}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button>
                     </>
                 ))}
             </div>
@@ -53,7 +52,7 @@ const ScalesDetail = () => {
             </div>
         </div>
         <div className='w-full lg:w-8/12 flex items-center justify-end my-4'>
-            <button className='w-3/12 bg-primary text-white hover:bg-gray-700/50 py-1 px-2 py-2 my-1 capitalize'>create new scale</button>
+            <Button primary width={3/12}>create new scale</Button>
         </div>
     </div>
   )
