@@ -400,21 +400,30 @@ def evaluation_api(request):
                     all_scales.append(i)
 
         elif report_type == 'scale_id':
-            for i in data_:
                 field_add = {"template_id": payload.get('template_id'),
                              f"custom_input_groupings.{payload.get('type_of_element')}": payload.get('element_id')}
                 response_data = execute_api_call("dowellscale", "bangalore", "dowellscale", "custom_data",
                                                  "custom_data",
                                                  "1181", "ABCDE", "find", field_add, "nil")
                 # print(response_data, "responDse_datrrrrrrrrrrrrrrrrrrrrrrr")
-                scale = response_data['data']['scale_id']
+                scale = response_data['data']
                 print(scale)
-                field_add = {"scale_data.scale_id": scale}
-                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                                 "scale_reports",
-                                                 "1094", "ABCDE", "find", field_add, "nil")
-                # print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
-                all_scales.append(json.loads(response_data)['data'])
+                for i in scale:
+                    if i == '_id':
+                        field_add = {"scale_data.scale_id": scale['scale_id']}
+                        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                         "scale_reports",
+                                                         "1094", "ABCDE", "find", field_add, "nil")
+                        # print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
+                        all_scales.append(json.loads(response_data)['data'])
+                        break
+                    else:
+                        field_add = {"scale_data.scale_id": i['scale_id']}
+                        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                         "scale_reports",
+                                                         "1094", "ABCDE", "find", field_add, "nil")
+                        # print(json.loads(response_data)['data'], "^^^^^^^^^^^^^^^")
+                        all_scales.append(json.loads(response_data)['data'])
 
         else:
             for i in data_:
