@@ -54,8 +54,9 @@
     
 - ## PERCENT scale
    - Description: 
-        A percent scale is a rating scale used to measure opinions, attitudes, or behaviors. It consists of a statement or a question, followed by a series of odd numbered answer statements. Respondents choose the option that best corresponds with how they feel about the statement or question. Because respondents are presented with a range of possible answers, percent scales are great for capturing the level of agreement or their feelings regarding the topic in a more nuanced way.
-        Percent scales are most useful when measuring unobservable individual characteristics, or characteristics with no concrete, objective measurement. These can be elements like attitudes, feelings, or opinions that cause variations in behavior.
+        The Percent Scale API allows users to create, configure, and manage percentage scales, as well as submit responses to those scales. It provides endpoints for creating and updating scale settings, as well as handling scale response submissions. The API enables users to create and configure percentage scales with multiple attributes and options.
+        A Percent scale API allows users to create and configure percentage scales and submit responses to those scales. It provides endpoints for managing scale settings and handling scale response submissions.
+        
    - Example:
           ![image]()
    - Documentation:
@@ -67,10 +68,14 @@
         The paired_comparison API endpoint enables users to conduct a comprehensive analysis and gain insights from respondents' preferences or perceptions within the given pairs
 
    - Example:
-         ![image]()
+         ![image](https://media.discordapp.net/attachments/971320265919332362/1155828778833039400/IMG_4569.png?width=772&height=396)
    - Documentation:
         https://documenter.getpostman.com/view/link_for_paired_comparison_scale_api_documentation
 
-
-
-
+- ## QSORT scale
+   - Description: 
+        The Q-Sort Scale is a psychological assessment tool used to measure and rank subjective opinions or personality traits of individuals. It typically involves sorting a set of items or statements into predefined categories, allowing researchers to gain insights into an individual's perceptions, values, or preferences. Given below is the API collection for creating and managing Q-Sort scales, streamlining the process of administering and analyzing Q-Sort assessments.
+   - Example:
+         ![image]()
+   - Documentation:
+        https://documenter.getpostman.com/view/link_for_qsort_scale_api_documentation
