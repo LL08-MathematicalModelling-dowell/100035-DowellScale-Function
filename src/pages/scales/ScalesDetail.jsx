@@ -32,9 +32,9 @@ const ScalesDetail = () => {
                     <MdManageHistory className='text-primary'/>
                     </span> Scale History
                 </h2>
-                {scaleData && scaleData.map((scale)=>(
+                {scaleData && scaleData.map((scale, index)=>(
                     <>
-                        <Button width={'full'}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button>
+                        <Button width={'full'} onClick={()=>navigateTo(`/scales-settings/${scale?.settings.scale_name || scale?.settings?.scalename}`)} key={index}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button>
                     </>
                 ))}
             </div>
@@ -52,7 +52,7 @@ const ScalesDetail = () => {
             </div>
         </div>
         <div className='w-full lg:w-8/12 flex items-center justify-end my-4'>
-            <Button primary width={3/12}>create new scale</Button>
+            <Button primary width={3/12} onClick={()=>navigateTo('/create-scales')}>create new scale</Button>
         </div>
     </div>
   )
