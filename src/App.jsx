@@ -21,7 +21,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/create-scale-settings" element={<CreateSettings />} />
-            <Route path="/create-scale-response" element={<CreateResponse />} />
+            <Route path="/create-scale-response/:id" element={<CreateResponse />} />
             <Route
               path="/single-scale-settings/:id"
               element={<SingleScaleSettings />}

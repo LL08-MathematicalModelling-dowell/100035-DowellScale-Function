@@ -1,24 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import {
-  useNavigate,
-  // useParams
-} from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import Cookies from 'universal-cookie';
+import Fallback from '../components/Fallback';
 
 const CreateResponse = () => {
   // const { scale_id } = useParams();
+  const cookies = new Cookies();
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    user_name: '',
-    scale_id: '',
-    orientation: '',
-    fontcolor: '',
-    fontstyle: '',
-    scalecolor: '',
-    roundcolor: '',
-    time: 0,
-    item_list: '',
-  });
+  const { id } = useParams();
+  const location = useLocation();
+  const userSelections = location.state?.userSelections || [];
+  // console.log(userSelections);
+  const selectedOptions =
+    JSON.parse(localStorage.getItem(`selectedOptions+${id}`)) || [];
+  // console.log(selectedOptions);
+  localStorage.setItem(`optionsSent+${id}`, JSON.stringify(selectedOptions));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,24 +25,78 @@ const CreateResponse = () => {
       [name]: value,
     });
   };
+  const [formData, setFormData] = useState({
+    user_name: '',
+    scale_id: id,
+    brand_name: '',
+    product_name: '',
+    process_id: '1',
+    products_ranking: location.state?.userSelections || [],
+  });
+
+  // console.log(formData.process_id);
+
+  const handleInputValueChange = (index, value) => {
+    const newProductRanking = [...formData.products_ranking];
+
+    newProductRanking[index] = value;
+    setFormData({
+      ...formData,
+      item_list: newProductRanking,
+    });
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const sessionId = cookies.get('sessionid');
+  useEffect(() => {
+    fetchuser();
+  }, []);
+  const fetchuser = async () => {
+    try {
+      var myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: JSON.stringify({
+          // session_id: sessionId,
+          session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
+        }),
+        redirect: 'follow',
+      };
+      const response = await fetch(
+        `https://100014.pythonanywhere.com/api/userinfo/`,
+        requestOptions
+      );
+      const data = await response.json();
+      setFormData({
+        user_name: data.userinfo.username,
+        scale_id: formData.scale_id,
+        brand_name: formData.brand_name,
+        product_name: formData.product_name,
+        process_id: formData.process_id,
+        products_ranking: formData.products_ranking,
+      });
+      setIsLoading(false);
+    } catch (error) {
+      console.log('Error fetching user:', error.message);
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const itemListArray = JSON.parse(formData.item_list);
-    // const headers = { 'Content-Type': 'application/json' };
+    setIsLoading(true);
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
     var raw = JSON.stringify({
       username: formData.user_name,
-      scale_name: formData.scale_name,
-      orientation: formData.orientation,
-      fontcolor: formData.fontcolor,
-      fontstyle: formData.fontstyle,
-      scalecolor: formData.scalecolor,
-      roundcolor: formData.roundcolor,
-      time: formData.time,
-      'item list': formData.item_list.split(''),
+      scale_id: formData.scale_id,
+      brand_name: formData.brand_name,
+      product_name: formData.product_name,
+      process_id: formData.process_id,
+      products_ranking: formData.products_ranking,
     });
     console.log(raw);
 
@@ -57,7 +109,7 @@ const CreateResponse = () => {
 
     try {
       const data = await fetch(
-        'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/',
+        'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-submit-response/',
         // '',
         requestOptions
       );
@@ -65,191 +117,119 @@ const CreateResponse = () => {
       console.log(result);
 
       // const response = JSON.parse(result);
-      if (
-        !JSON.parse(result.success).isSuccess ||
-        JSON.parse(result.success).isSuccess === false
-      ) {
-        console.log(JSON.parse(result.success).isSuccess);
+      if (result.error) {
+        toast.error(result.error);
+        setFormData({
+          username: formData.user_name,
+          scale_id: formData.scale_id,
+          brand_name: formData.brand_name,
+          product_name: formData.product_name,
+          process_id: formData.process_id,
+          products_ranking: formData.products_ranking,
+        });
+        setIsLoading(false);
         return;
       } else {
-        console.log(`${JSON.stringify(result?.data)}`);
-        toast.success(
-          `Inserted Id = ${
-            JSON.parse(result.success).inserted_id
-          } ${JSON.stringify(result?.data)}`
-        );
-        const timeout = setTimeout(() => navigate('/'), 3000);
-        return () => clearTimeout(timeout);
+        console.log(result.success);
+        console.log(result.data);
+        console.log(result.data.response_id);
+        setIsLoading(false);
+        toast.success(result.success);
+        // const timeout = setTimeout(
+        //   () => navigate(`/single-scale-response/${result.data.response_id}`),
+        //   3000
+        // );
+        // return () => clearTimeout(timeout);
       }
     } catch (error) {
+      setIsLoading(false);
       console.log('Error', error);
     }
   };
+  // console.log(userSelections);
+  const handleGoBack = () => {
+    navigate(-1, {
+      state: { selections: userSelections },
+    }); // This navigates back to the previous page
+  };
+
+  if (isLoading) {
+    return <Fallback />;
+  }
   return (
-    <div className="container mx-auto mt-8">
-      <div className="w-full max-w-md mx-auto">
-        <h1 className="text-4xl font-bold">Paired Comparison Scale</h1>
-        <h3 className="text-xl font-semibold">Create Scale Settings</h3>
+    <div className="mx-auto mt-8 lg:container ">
+      <div>
+        <button onClick={handleGoBack}>Go Back</button>
       </div>
-      <form className="w-full max-w-md mx-auto" onSubmit={handleSubmit}>
-        {/* <div className="mb-4">
-          <label
-            htmlFor="user_name"
-            className="block font-semibold text-gray-600"
-          >
-            UserName
-          </label>
-          <input
-            type="text"
-            id="user_name"
-            name="user_name"
-            value={formData.user_name}
-            onChange={handleChange}
-            className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-            // required
-          />
-        </div> */}
-
-        <div className="mb-4">
-          <label
-            htmlFor="scale_name"
-            className="block font-semibold text-gray-600"
-          >
-            Scale Name
-          </label>
-          <input
-            type="text"
-            id="scale_name"
-            name="scale_name"
-            value={formData.scale_name}
-            onChange={handleChange}
-            className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-            // required
-          />
+      <form
+        className="lg:w-[60%] w-full mx-auto border-4 border-gray-500 bg-[#d9edf7] shadow-md p-8"
+        onSubmit={handleSubmit}
+      >
+        <div className="w-full max-w-md mx-auto">
+          <h1 className="text-3xl font-medium text-center">
+            Create scale Response
+          </h1>
         </div>
-        <div className="mb-4">
-          <label
-            htmlFor="orientation"
-            className="block font-semibold text-gray-600"
-          >
-            Orientation
-          </label>
-          <input
-            type="text"
-            id="orientation"
-            name="orientation"
-            value={formData.orientation}
-            onChange={handleChange}
-            className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-            // required
-          />
+        <div className="grid gap-6 mb-6 md:grid-cols-2">
+          <div className="mb-4">
+            <label
+              htmlFor="brand_name"
+              className="block font-semibold text-gray-600"
+            >
+              Brand Name
+            </label>
+            <input
+              type="text"
+              id="brand_name"
+              name="brand_name"
+              value={formData.brand_name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 mt-4 border rounded-lg focus:outline-none"
+              // required
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="product_name"
+              className="block font-semibold text-gray-600"
+            >
+              Product Name
+            </label>
+            <input
+              type="text"
+              id="product_name"
+              name="product_name"
+              value={formData.product_name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 mt-4 border rounded-lg focus:outline-none"
+              // required
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="products_ranking"
+              className="block font-semibold text-gray-600"
+            >
+              Product Ranking
+            </label>
+            {formData.products_ranking.map((value, index) => (
+              <input
+                key={index}
+                type="text"
+                placeholder={`Product Ranking ${index + 1}`}
+                value={value}
+                className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                onChange={(e) => handleInputValueChange(index, e.target.value)}
+              />
+            ))}
+          </div>
         </div>
-        <div className="mb-4">
-          <label
-            htmlFor="fontcolor"
-            className="block font-semibold text-gray-600"
-          >
-            Font Color
-          </label>
-          <input
-            type="color"
-            id="fontcolor"
-            name="fontcolor"
-            value={formData.fontcolor}
-            onChange={handleChange}
-            className="w-full border rounded-lg focus:outline-none focus:ring"
-            // required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="fontstyle"
-            className="block font-semibold text-gray-600"
-          >
-            Font Style
-          </label>
-          <input
-            type="text"
-            id="fontstyle"
-            name="fontstyle"
-            value={formData.fontstyle}
-            onChange={handleChange}
-            className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-            // required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="scalecolor"
-            className="block font-semibold text-gray-600"
-          >
-            Scale Color
-          </label>
-          <input
-            type="color"
-            id="scalecolor"
-            name="scalecolor"
-            value={formData.scalecolor}
-            onChange={handleChange}
-            className="w-full border rounded-lg focus:outline-none focus:ring"
-            // required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="roundcolor"
-            className="block font-semibold text-gray-600"
-          >
-            Round Color
-          </label>
-          <input
-            type="color"
-            id="roundcolor"
-            name="roundcolor"
-            value={formData.roundcolor}
-            onChange={handleChange}
-            className="w-full border rounded-lg focus:outline-none focus:ring"
-            // required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="time" className="block font-semibold text-gray-600">
-            Time
-          </label>
-          <input
-            type="number"
-            id="time"
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
-            className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-            // required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="item_list"
-            className="block font-semibold text-gray-600"
-          >
-            Item List
-          </label>
-          <input
-            type="text"
-            id="item_list"
-            name="item_list"
-            value={formData.item_list}
-            onChange={handleChange}
-            className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-            // required
-          />
-        </div>
-
-        <div className="mt-4">
+        <div className="flex mt-4 lg:justify-end">
           <button
             type="submit"
-            className="px-12 py-2 text-white bg-[#1A8753] rounded-full hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+            className="px-8 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none "
           >
-            Submit
+            Save
           </button>
         </div>
       </form>
