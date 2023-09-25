@@ -58,7 +58,7 @@
         A Percent scale API allows users to create and configure percentage scales and submit responses to those scales. It provides endpoints for managing scale settings and handling scale response submissions.
         
    - Example:
-          ![image](![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/56716832/8d749eff-1188-4ed7-86f8-1d7f543084f5)
+          ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/56716832/8d749eff-1188-4ed7-86f8-1d7f543084f5)
 )
    - Documentation:
         https://documenter.getpostman.com/view/link_for_percent_scale_api_documentation
@@ -69,7 +69,7 @@
         The paired_comparison API endpoint enables users to conduct a comprehensive analysis and gain insights from respondents' preferences or perceptions within the given pairs
 
    - Example:
-         ![image](![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/56716832/b0d3d819-d11c-4c5b-9214-3d11da644f1a)
+         ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/56716832/b0d3d819-d11c-4c5b-9214-3d11da644f1a)
 )
    - Documentation:
         https://documenter.getpostman.com/view/link_for_paired_comparison_scale_api_documentation
