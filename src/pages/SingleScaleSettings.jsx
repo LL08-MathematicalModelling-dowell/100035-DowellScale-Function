@@ -63,7 +63,7 @@ const SingleScaleSettings = () => {
       // );
 
       const results = response.data;
-      // console.log();
+      console.log(response.data);
       setRoundColor(results.success.roundcolor);
       setScaleColor(results.success.scalecolor);
       setFontColor(results.success.fontcolor);
@@ -131,7 +131,7 @@ const SingleScaleSettings = () => {
     return <Fallback />;
   }
   return (
-    <div className="flex flex-col items-center justify-center mt-10">
+    <div className="flex flex-col items-center justify-center my-10">
       <div className="w-full max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-center">{data.name}</h1>
       </div>

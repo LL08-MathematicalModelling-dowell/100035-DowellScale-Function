@@ -119,6 +119,7 @@ const CreateResponse = () => {
       // const response = JSON.parse(result);
       if (result.error) {
         toast.error(result.error);
+        console.log(result.error);
         setFormData({
           username: formData.user_name,
           scale_id: formData.scale_id,
@@ -157,9 +158,14 @@ const CreateResponse = () => {
     return <Fallback />;
   }
   return (
-    <div className="mx-auto mt-8 lg:container ">
+    <div className="mx-auto my-8 lg:container ">
       <div>
-        <button onClick={handleGoBack}>Go Back</button>
+        <button
+            onClick={handleGoBack}
+            className="px-8 py-2 mt-4 mb-6 ml-2 text-white capitalize bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none"
+          >
+            &#60;&#60; Go Back
+          </button>
       </div>
       <form
         className="lg:w-[60%] w-full mx-auto border-4 border-gray-500 bg-[#d9edf7] shadow-md p-8"

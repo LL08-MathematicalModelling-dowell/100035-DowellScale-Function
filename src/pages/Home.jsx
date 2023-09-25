@@ -42,26 +42,25 @@ const Home = () => {
       <p className="my-4 text-4xl text-[#1A8753]">
         Dowell Paired Comparison Scales Settings
       </p>
-      <div className="flex flex-col lg:flex-row border-2 border-black w-full lg:w-[60%] lg:h-72">
-        <div className="p-4 overflow-scroll overflow-x-hidden lg:w-1/4">
+      <div className="flex flex-col  lg:flex-row border-2 border-black w-full lg:w-[60%] h-3/5">
+        <div className="p-4 overflow-scroll overflow-x-hidden lg:w-1/4 h-60">
           <h1 className="text-xl font-medium text-center underline">
             Scale History
           </h1>
           <div className="flex flex-col">
-            {
-              Object.values(data).map((e) => (
-                <Link
-                  key={e._id}
-                  to={`/single-scale-settings/${e._id}`}
-                  className="text-center lg:text-start"
-                >
-                  {e.settings.name}
-                </Link>
-              ))}
+            {Object.values(data).map((e) => (
+              <Link
+                key={e._id}
+                to={`/single-scale-settings/${e._id}`}
+                className="text-center lg:text-start"
+              >
+                {e.settings.name}
+              </Link>
+            ))}
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center p-4 mx-auto border border-black lg:w-3/4">
+        <div className="flex flex-col flex-wrap items-center justify-center p-4 mx-auto border border-black lg:w-3/4">
           <div className="flex flex-row flex-wrap justify-center h-auto ">
             <div className="w-full h-40 p-4 mx-2 my-2 bg-green-500 lg:w-60">
               <div className="flex items-center justify-center py-8">
@@ -94,8 +93,10 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className="w-full lg:w-3/4 lg:pl-4">
-            <div className="flex items-end justify-end h-40">
+        </div>
+      </div>
+          <div className="w-full lg:w-[60%] lg:pl-4">
+            <div className="flex items-center justify-center h-40 lg:justify-end">
               <Link
                 to="/create-scale-settings"
                 className="px-8 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none "
@@ -104,8 +105,6 @@ const Home = () => {
               </Link>
             </div>
           </div>
-        </div>
-      </div>
     </div>
   );
 };
