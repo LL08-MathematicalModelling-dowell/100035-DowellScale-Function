@@ -399,6 +399,7 @@ def evaluation_api(request):
                 if i['document_data']['details']['id'] == payload.get('document_id'):
                     all_scales.append(i)
 
+
         elif report_type == 'scale_id':
             for i in data_:
                 field_add = {"template_id": payload.get('template_id'),

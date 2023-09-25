@@ -28,12 +28,14 @@ urlpatterns = [
     path('nps-lite/', include('npslite.urls')),
     path('likert/', include('likert.urls')),
     path('percent-sum/', include('percent_sum.urls')),
+    path('ranking/', include('ranking.urls')),
     path('home/', include('login.urls')),
     path('client/', include('client.urls')),
     path('api/', include('api.urls')),
-    path('evaluation/', include('EvaluationModule.urls')),
+        path('evaluation/', include('EvaluationModule.urls')),
     path('apiconf/', include('APIconf.urls')),
     path('qsort/', include('Qsort.urls')),
+    path('paired-comparison/', include('paired_comparison.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

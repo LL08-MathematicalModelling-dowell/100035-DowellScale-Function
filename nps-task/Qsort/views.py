@@ -97,8 +97,9 @@ def CreateScale(request):
         return JsonResponse({"Response": show_response}, status=status.HTTP_201_CREATED)
 
     if request.method == 'GET':
-        payload = request.data
-        if 'scale_id' not in payload:
+        params = request.GET
+        scale_id = params.get("scale_id")
+        if not scale_id:
             z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "fetch",
                                  {"settings.scaletype": "qsort"}, "nil")
@@ -107,7 +108,7 @@ def CreateScale(request):
             return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
                                 status=status.HTTP_200_OK)
         else:
-            field_add = {"_id": payload["scale_id"]}
+            field_add = {"_id": scale_id}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
             x = json.loads(x)
@@ -212,6 +213,40 @@ def ResponseAPI(request):
                             return JsonResponse({"Error": f"Missing required field: {field}"},
                                                 status=status.HTTP_400_BAD_REQUEST)
 
+                    if "document_responses" in payload:
+                        document_response = payload['document_responses']
+                        instance_id = payload['instance_id']
+                        process_id = payload['process_id']
+                        if not isinstance(process_id, str):
+                            return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+                    for response in document_response:
+                        if not isinstance(response, dict):
+                            return Response({"error": "The document responses should be a list of dictionaries."},
+                                            status=status.HTTP_400_BAD_REQUEST)
+                        document_data = {"details": {"action": payload.get('action', ""), 
+                                             "authorized": payload.get('authorized',""), 
+                                             "cluster": payload.get('cluster', ""), 
+                                             "collection": payload.get('collection',""), 
+                                             "command": payload.get('command',""), 
+                                             "database": payload.get('database', ""), 
+                                             "document": payload.get('document', ""), 
+                                             "document_flag":payload.get('document_flag',""), 
+                                             "document_right": payload.get('document_right', ""), 
+                                             "field": payload.get('field',""), 
+                                             "flag": payload.get('flag', ""), 
+                                             "function_ID": payload.get('function_ID', ""),
+                                             "metadata_id": payload.get('metadata_id', ""), 
+                                             "process_id": payload['process_id'], 
+                                             "role": payload.get('role', ""), 
+                                             "team_member_ID": payload.get('team_member_ID', ""), 
+                                             "product_name": payload.get('product_name', ""),
+                                             "update_field": {"content": payload.get('content', ""), 
+                                                              "document_name": payload.get('document_name', ""), 
+                                                              "page": payload.get('page', "")}, 
+                                                              "user_type": payload.get('user_type', ""), 
+                                                              "id": payload['_id']} 
+                                             }
+                        
                     # Define fixed pile ranges
                     pile_ranges = {
                         "disagree": [-5, -4, -3, -2, -1],
@@ -298,7 +333,13 @@ def ResponseAPI(request):
                         "fontcolor": payload["fontcolor"]
 
                     }
-
+                    
+                    if "process_id" in payload:
+                        add["process_id"] = payload["process_id"]
+                        
+                    if document_data:
+                        add["document_data"] = document_data
+                    
                     x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                          "1094", "ABCDE", "insert",
                                          add, "nil")
