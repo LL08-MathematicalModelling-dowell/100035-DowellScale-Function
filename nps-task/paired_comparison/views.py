@@ -7,30 +7,41 @@ import datetime
 from nps.eventID import get_event_id
 from collections import Counter
 from .utils import generate_pairs, arrange_ranking, segment_ranking, find_inconsistent_pair
+from django.core.files.storage import default_storage
+
 
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
     if request.method == 'POST':
-        response = request.data
+        response = dict(request.data)
         username = response.get('username')
+        images_dict = request.FILES
         if username == None:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
         try:
-            name = response['scale_name']
-            orientation = response['orientation']
-            scalecolor = response['scalecolor']
-            fontcolor = response['fontcolor']
-            roundcolor = response['roundcolor']
-            fontstyle = response['fontstyle']
-            time = response['time']
-            item_list = response['item list']
-            item_count = response["item_count"]
+            name = response['scale_name'][0]
+            orientation = response['orientation'][0]
+            scalecolor = response['scalecolor'][0]
+            fontcolor = response['fontcolor'][0]
+            roundcolor = response['roundcolor'][0]
+            fontstyle = response['fontstyle'][0]
+            time = response['time'][0]
+            item_list = response['item_list']
+            item_count = int(response["item_count"][0])
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
+        if images_dict != {}:
+            image_names = images_dict.keys()
+            if list(image_names) != item_list:
+                return Response({"error": "Images name must match Item List"}, status=status.HTTP_400_BAD_REQUEST)
+            for file in images_dict.values():
+                _, type = str(file).split(".")
+                if type != "jpg" and type != "png":
+                    return Response({"error": "Only image files allowed"}, status=status.HTTP_400_BAD_REQUEST)
         if "user" in response:
             user = response["user"]
         else:
-            user = True        
+            user = True   
         if item_count != len(item_list):
             return Response({"error": "item count does not match length of item list"}, status=status.HTTP_400_BAD_REQUEST)
         if item_count < 2:
@@ -45,6 +56,10 @@ def settings_api_view_create(request):
         if expected_pairs_count != total_pairs:
             return Response({"error": "Total number of pairs is not equal to expected number of pairs"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         eventID = get_event_id()
+        image_paths = []
+        for image_name in images_dict.keys():
+            path = default_storage.save(f"{eventID}/{image_name}/{str(images_dict[image_name])}", images_dict[image_name])
+            image_paths.append(path)
         field_add = {
             "event_id": eventID,
             "settings" : {"orientation": orientation,
@@ -60,6 +75,7 @@ def settings_api_view_create(request):
                             "username": username,
                             "user" : user,
                             "name": name,
+                            "image_paths": image_paths,
                             "scale-category": "paired-comparison scale",
                              "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                              }
@@ -68,7 +84,8 @@ def settings_api_view_create(request):
                                  field_add, "nil")
 
         user_json = json.loads(x)
-        details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
+        scale_id = user_json['inserted_id']
+        details = {"scale_id": scale_id, "event_id": eventID, "username": user}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                         "ABCDE",
                                         "insert", details, "nil")
