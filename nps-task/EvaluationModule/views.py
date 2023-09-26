@@ -359,21 +359,11 @@ def evaluation_api(request):
         field_add = {"process_id": process_id}
 
         if not process_id:
-            return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"error": "Invalid Input."}, status=status.HTTP_400_BAD_REQUEST)
         elif report_type == 'document_id' and not payload.get('document_id'):
-            return JsonResponse({"error": "Required fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'document_id' and not payload.get('document_id') and payload.get('scale_id'):
-            return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'process_id' and payload.get('scale_id') and payload.get('document_id'):
-            return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need other parameters"}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'process_id' and payload.get('scale_id'):
-            return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'scale_id'."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'process_id' and payload.get('document_id'):
-            return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'scale_id' and payload.get('document_id'):
-            return JsonResponse({"error": "You have selected 'scale_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"error": "Invalid Input."}, status=status.HTTP_400_BAD_REQUEST)
         elif report_type == 'scale_id' and not payload.get('element_id') or not payload.get('element_id') or not payload.get('type_of_element') or not payload.get('template_id'):
-            return JsonResponse({"error": "Required fields are not present. \nRequired Fields: element_id, template_id, type_of_element."}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"error": "Invalid Input."}, status=status.HTTP_400_BAD_REQUEST)
 
 
         try:
@@ -456,8 +446,8 @@ def evaluation_api(request):
             response_ = {
                 "scale_category": scale_type,
                 "no_of_scales": len(scores.get("nps scale", [])),
-                "nps_score": sum(scores.get("nps scale", [])),
-                "nps_total_score": len(scores.get("nps scale", [])) * 10,
+                "total_score": sum(scores.get("nps scale", [])),
+                # "total_score": len(scores.get("nps scale", [])) * 10,
                 "max_total_score": largest,
                 "score_list": scores.get("nps scale")
             }
