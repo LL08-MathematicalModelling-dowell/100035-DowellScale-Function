@@ -13,10 +13,39 @@ const ScalesDetail = () => {
     const navigateTo = useNavigate();
     console.log(scaleData, 'scaleData')
 
+    const itemsAvailable = [
+        {
+            name:'item 1',
+            rankings:[0, 1, 2, 3, 4]
+        },
+        {
+            name:'item 2',
+            rankings:[0, 1, 2, 3, 4]
+        },
+        {
+            name:'item 3',
+            rankings:[0, 1, 2, 3, 4]
+        },
+        {
+            name:'item 4',
+            rankings:[0, 1, 2, 3, 4]
+        },
+        {
+            name:'item 5',
+            rankings:[0, 1, 2, 3, 4]
+        },
+    ]
+
+    const itemName = itemsAvailable.map((item, index)=> {
+        return <ul className='border p-2' key={index}>{item.name}</ul>
+    });
+
 
     useEffect(()=>{
         fetchScaleData(slug);
     },[]);
+
+    
 
 
     if (isLoading) {
@@ -48,6 +77,33 @@ const ScalesDetail = () => {
                     <div>
                         <h2 className='text-xl capitalize'>{slug.split('-').join(' ')}</h2>
                     </div>
+                </div>
+                <div className='w-full flex gap-3 flex-col md:flex-row'>
+                    <>
+                    <div className='w-1/2'>
+                        <h3 className='my-2'>Items Available</h3>
+                        <ul>
+                            {/* <h4 className='border p-1'>{itemName}</h4> */}
+                            {itemName}
+                        </ul>
+                    </div>
+                    <div className='w-1/2'>
+                        <h3 className='my-2'>Rankings</h3>
+                        {
+                            itemsAvailable && itemsAvailable.map((item, index)=>(
+                                <select name="" id="" disabled="" className='w-full px-2 border outline-0 py-2' key={index}>
+                                    {item.rankings.map((ranking)=>(
+                                        <option value={ranking} className='p-2 border-primary'>{ranking}</option>
+                                    ))}
+                                </select>
+                            ))
+                        }
+                        
+                    </div>
+                    </>
+                </div>
+                <div className='w-full'>
+                    <Button primary width={'full'}>Save and Proceed</Button>
                 </div>
             </div>
         </div>
