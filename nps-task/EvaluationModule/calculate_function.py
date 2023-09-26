@@ -132,18 +132,63 @@ def process_data(data, doc_no=None):
     print(f"\n\nall_scales: {all_scales}.................\n\n")
 
     scores = defaultdict(list)
+    nps_categories = []
     for x in all_scales:
         scale_type = x["scale_data"]["scale_type"]
         print(f"\n\nscale_type: {scale_type}.................\n\n")
         score = x['score']['score']
         print(f"\n\nscore: {score}.................\n\n")
         scores[scale_type].append(int(score))
+        scores[scale_type].append(int(score))
+        if scale_type == "nps scale":
+            category = x['score']['category']
+            nps_categories.append(category)
 
-
-    return scores
+    nps_scale_data = calculate_nps_category(nps_categories)
+    return scores, nps_scale_data
 """
     Generates Random Number for the document to show API results using Process ID 
 """
+
+
+def calculate_nps_category(categories):
+    promoters = categories.count("promoter")
+    detractors = categories.count("detractor")
+    passives = categories.count("passive")
+
+    total_responses = len(categories)
+
+    print("\n\n\nTotal Response \n\n\n", total_responses)
+
+    if total_responses == 0:
+        return "N/A"  # Avoid division by zero
+
+    promoters_percentage = (promoters / total_responses) * 100
+    detractors_percentage = (detractors / total_responses) * 100
+    passive_percentage = (passives / total_responses) * 100
+
+    net_promoter_score = promoters_percentage - detractors_percentage
+
+    if 1 <= net_promoter_score <= 100:
+        overall_nps_category = "majorly promoters"
+    elif -100 <= net_promoter_score <= -1:
+        overall_nps_category = "majorly detractors"
+    elif net_promoter_score == 0:
+        overall_nps_category = "balanced"
+    else:
+        overall_nps_category = "N/A"  # Handle cases outside defined ranges
+
+    response = {
+        "net_promoter_score": net_promoter_score,
+        "promoters_percentage": promoters_percentage,
+        "passives_percentage": passive_percentage,
+        "detractors_percentage": detractors_percentage,
+        "overall_nps_category": overall_nps_category
+    }
+    return response
+
+
+
 def generate_random_number():
     min_number = 10 ** 2
     max_number = 10 ** 6 - 1

@@ -358,22 +358,22 @@ def evaluation_api(request):
 
         field_add = {"process_id": process_id}
 
-        if not process_id:
-            return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'document_id' and not payload.get('document_id'):
-            return JsonResponse({"error": "Required fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'document_id' and not payload.get('document_id') and payload.get('scale_id'):
-            return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'process_id' and payload.get('scale_id') and payload.get('document_id'):
-            return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need other parameters"}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'process_id' and payload.get('scale_id'):
-            return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'scale_id'."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'process_id' and payload.get('document_id'):
-            return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'scale_id' and payload.get('document_id'):
-            return JsonResponse({"error": "You have selected 'scale_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
-        elif report_type == 'scale_id' and not payload.get('element_id') or not payload.get('element_id') or not payload.get('type_of_element') or not payload.get('template_id'):
-            return JsonResponse({"error": "Required fields are not present. \nRequired Fields: element_id, template_id, type_of_element."}, status=status.HTTP_400_BAD_REQUEST)
+        # if not process_id:
+        #     return JsonResponse({"error": "Required fields: process_id."}, status=status.HTTP_400_BAD_REQUEST)
+        # elif report_type == 'document_id' and not payload.get('document_id'):
+        #     return JsonResponse({"error": "Required fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
+        # elif report_type == 'document_id' and not payload.get('document_id') and payload.get('scale_id'):
+        #     return JsonResponse({"error": "Wrong Fields Selected. \nRequired fields: document_id."}, status=status.HTTP_400_BAD_REQUEST)
+        # elif report_type == 'process_id' and payload.get('scale_id') and payload.get('document_id'):
+        #     return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need other parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        # elif report_type == 'process_id' and payload.get('scale_id'):
+        #     return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'scale_id'."}, status=status.HTTP_400_BAD_REQUEST)
+        # elif report_type == 'process_id' and payload.get('document_id'):
+        #     return JsonResponse({"error": "You have selected 'Process_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
+        # elif report_type == 'scale_id' and payload.get('document_id'):
+        #     return JsonResponse({"error": "You have selected 'scale_id' Reports so you dont need 'document_id'."}, status=status.HTTP_400_BAD_REQUEST)
+        # elif report_type == 'scale_id' and not payload.get('element_id') or not payload.get('element_id') or not payload.get('type_of_element') or not payload.get('template_id'):
+        #     return JsonResponse({"error": "Required fields are not present. \nRequired Fields: element_id, template_id, type_of_element."}, status=status.HTTP_400_BAD_REQUEST)
 
 
         try:
@@ -443,7 +443,7 @@ def evaluation_api(request):
         largest = max(calculate_score)
         # Process the fetched data
         if all_scales:
-            scores = process_data(all_scales)
+            scores, scale_specific_data = process_data(all_scales)
             print(scores, "scores")
             response_ = {
                 "scale_category": scale_type,
@@ -451,7 +451,8 @@ def evaluation_api(request):
                 "nps_score": sum(scores.get("nps scale", [])),
                 "nps_total_score": len(scores.get("nps scale", [])) * 10,
                 "max_total_score": largest,
-                "score_list": scores.get("nps scale")
+                "score_list": scores.get("nps scale"),
+                "scale_specific_data": scale_specific_data
             }
             print(response_, "response_")
         else:
@@ -476,6 +477,7 @@ def evaluation_api(request):
         # Execute stattricks_api API call
         try:
             with ThreadPoolExecutor() as executor:
+                process_id = f"{process_id}{report_type}"
                 response_json_future = executor.submit(stattricks_api, "evaluation_module", process_id, 16, 3, {"list1": calculate_score})
                 response_json = response_json_future.result()
                 print(response_json, "response_json______________________")
@@ -498,7 +500,7 @@ def evaluation_api(request):
 
 
 def evaluation_editor_process_id(request, process_id, doc_no):
-    random_number = generate_random_number()
+    random_number = f"{process_id}{generate_random_number()}"
     context = {}
 
     # Fetch data from cache if available
