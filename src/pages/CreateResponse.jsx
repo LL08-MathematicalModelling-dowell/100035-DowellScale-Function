@@ -135,7 +135,7 @@ const CreateResponse = () => {
         console.log(result.data);
         console.log(result.data.response_id);
         setIsLoading(false);
-        toast.success(result.success);
+        toast.success('Successfully Created');
         // const timeout = setTimeout(
         //   () => navigate(`/single-scale-response/${result.data.response_id}`),
         //   3000
