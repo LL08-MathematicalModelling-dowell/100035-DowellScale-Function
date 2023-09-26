@@ -10,7 +10,7 @@ import SingleScaleResponse from './pages/SingleScaleResponse';
 import CreateResponse from './pages/CreateResponse';
 import SingleScaleSettings from './pages/SingleScaleSettings';
 import UpdateScaleSettings from './pages/UpdateScaleSettings';
-import { Scales, ScalesDetail, ScalesSettings, CreateScales } from './pages/scales';
+import { Scales, ScalesDetail, ScalesSettings, CreateScales, AvailableScales } from './pages/scales';
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/all-scales" element={<Scales />} />
+            <Route path="/available-scales" element={<AvailableScales />} />
             <Route path="/all-scales/:slug" element={<ScalesDetail />} />
             <Route path="/scales-settings/:slug" element={<ScalesSettings />} />
             <Route path="/create-scales" element={<CreateScales />} />

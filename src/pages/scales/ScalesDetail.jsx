@@ -83,7 +83,6 @@ const ScalesDetail = () => {
                     <div className='w-1/2'>
                         <h3 className='my-2'>Items Available</h3>
                         <ul>
-                            {/* <h4 className='border p-1'>{itemName}</h4> */}
                             {itemName}
                         </ul>
                     </div>
@@ -103,7 +102,7 @@ const ScalesDetail = () => {
                     </>
                 </div>
                 <div className='w-full'>
-                    <Button primary width={'full'}>Save and Proceed</Button>
+                    <Button primary width={'full'} onClick={()=>navigateTo('/available-scales')}>Save and Proceed</Button>
                 </div>
             </div>
         </div>
