@@ -149,9 +149,8 @@ def settings_api_view_create(request):
             settings["scale-category"] = "paired-comparison scale"
             settings["date_updated"] = datetime.datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S")
-            update_field = {"settings": settings}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                                 field_add, update_field)
+                                 field_add, settings)
             return Response({"success": "Successfully Updated ", "data": settings})
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
