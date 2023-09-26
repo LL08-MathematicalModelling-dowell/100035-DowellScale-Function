@@ -16,6 +16,7 @@ const CreateResponse = () => {
   const selectedOptions =
     JSON.parse(localStorage.getItem(`selectedOptions+${id}`)) || [];
   // console.log(selectedOptions);
+  // localStorage.clear();
   localStorage.setItem(`optionsSent+${id}`, JSON.stringify(selectedOptions));
 
   const handleChange = (e) => {

@@ -88,6 +88,7 @@ const SingleScaleSettings = () => {
       // Map the selected indices to their corresponding option names
       const selectedOptions = data.paired_items.map((paired, pairIndex) => {
         const selectedIndex = userPicks[pairIndex];
+        localStorage.clear();
         localStorage.setItem(
           `selectedOptions+${id}`,
           JSON.stringify(userPicks)
@@ -151,19 +152,29 @@ const SingleScaleSettings = () => {
                       // style={{ height: '100%' }}
                     >
                       <Pair
-                        className={`w-1/2 p-4 lg:h-48 mx-2 text-center border border-black rounded-lg cursor-pointer focus:outline-none flex justify-center items-center ${
+                        className={`w-1/2 p-4 lg:h-48 mx-2 text-center border border-black rounded-lg cursor-pointer focus:outline-none flex flex-col justify-center items-center ${
                           userPicks[pairIndex] === 0 ? 'selected-button' : ''
                         }`}
                         onClick={() => handleButtonClick(pairIndex, 0)}
                       >
+                        <img
+                          src="/src/assets/avatar_img.jpg"
+                          alt="Image Alt Text"
+                          className="w-10 h-10 p-0 mb-2 rounded-full"
+                        />
                         <p className="text-center">{paired[0]}</p>
                       </Pair>
                       <Pair
-                        className={`flex items-center justify-center w-1/2 p-4 mx-2 text-center border border-black rounded-lg cursor-pointer lg:h-48 ${
+                        className={`w-1/2 p-4 lg:h-48 mx-2 text-center border border-black rounded-lg cursor-pointer focus:outline-none flex flex-col justify-center items-center  ${
                           userPicks[pairIndex] === 1 ? 'selected-button' : ''
                         }`}
                         onClick={() => handleButtonClick(pairIndex, 1)}
                       >
+                        <img
+                          src="/src/assets/avatar_img.jpg"
+                          alt="Image Alt Text"
+                          className="w-10 h-10 mb-2 rounded-full"
+                        />
                         <p className="text-center"> {paired[1]}</p>
                       </Pair>
                     </div>
