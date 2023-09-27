@@ -107,7 +107,7 @@ const ScalesDetail = () => {
             </div>
         </div>
         <div className='w-full lg:w-8/12 flex items-center justify-end my-4'>
-            <Button primary width={3/12} onClick={()=>navigateTo('/create-scales')}>create new scale</Button>
+            <Button primary width={3/12} onClick={()=>navigateTo(`/create-scales?slug=${slug}`)}>create new scale</Button>
         </div>
     </div>
   )
