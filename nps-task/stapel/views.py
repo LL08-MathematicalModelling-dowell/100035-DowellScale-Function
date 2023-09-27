@@ -343,7 +343,7 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
                                      "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response_data)
 
-    score_data = data.get("data", [])
+    score_data = data.get("data")
 
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "fetch",
@@ -362,7 +362,7 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     field_add = {"username": username, "event_id": eventID, "scale_data": {"scale_id": scale_id, "scale_type": "stapel scale"},
                  "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
-                 "score": [score]}
+                 "score": score}
     if process_id:
         field_add["process_id"] = process_id
 

@@ -100,7 +100,7 @@ def settings_api_view_create(request):
             "username": username
         }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-                field_add, "nil")
+                settings, "nil")
 
         scale_id = str((json.loads(x)['inserted_id']))
 

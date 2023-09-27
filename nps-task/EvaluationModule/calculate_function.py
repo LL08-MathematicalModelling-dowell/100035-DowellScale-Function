@@ -6,38 +6,44 @@ import json
 from rest_framework.decorators import api_view
 import requests
 
-
 # dowell API
 url = 'http://uxlivinglab.pythonanywhere.com/'
-def dowellconnection(cluster,platform,database,collection,document,team_member_ID,function_ID,command,field,update_field):
-    data={
-      "cluster": cluster,
-      "platform": platform,
-      "database": database,
-      "collection": collection,
-      "document": document,
-      "team_member_ID": team_member_ID,
-      "function_ID": function_ID,
-      "command": command,
-      "field": field,
-      "update_field":update_field
-       }
+
+
+def dowellconnection(cluster, platform, database, collection, document, team_member_ID, function_ID, command, field,
+                     update_field):
+    data = {
+        "cluster": cluster,
+        "platform": platform,
+        "database": database,
+        "collection": collection,
+        "document": document,
+        "team_member_ID": team_member_ID,
+        "function_ID": function_ID,
+        "command": command,
+        "field": field,
+        "update_field": update_field
+    }
     headers = {'content-type': 'application/json'}
-    try :
-      response = requests.post(url, json=data,headers=headers)
-      return response.json()
+    try:
+        response = requests.post(url, json=data, headers=headers)
+        return response.json()
     except:
-      return "check your connectivity"
+        return "check your connectivity"
+
 
 """
     This function calculates the total score for a given document number and product name.
     It fetches data using the Dowell API, filters out the relevant document, and sums up the
     scores for the "nps scale".
 """
+
+
 def calculate_total_score(doc_no=None, product_name=None):
     try:
         field_add = {"brand_data.product_name": product_name}
-        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch", field_add, "nil")
+        response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                         "1094", "ABCDE", "fetch", field_add, "nil")
         data = json.loads(response_data)["data"]
         """
         This line below 'all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[0] == doc_no]'
@@ -62,7 +68,6 @@ def calculate_total_score(doc_no=None, product_name=None):
 # Statricks API
 def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues):
     url = "https://100004.pythonanywhere.com/processapi"
-
     payload = {
         "title": title,
         "Process_id": process_id,
@@ -70,14 +75,7 @@ def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues)
         "series": series,
         "seriesvalues": seriesvalues
     }
-
     response = requests.post(url, json=payload)
-
-    print(f"\n\nResponse status code: {response.status_code}\n\n")
-    print(f"\n\nResponse headers: {response.headers}\n\n")
-    print(f"\n\nResponse content: {response.text}\n\n")
-
-
     return response.json()
 
 
@@ -94,28 +92,36 @@ def stattricks_api_get(process_id):
     return response.json()
 
 
-
 """
     Get the results of scores through calling the calculate_total_score function and using the statricks API to get the results
 """
+
+
 def Evaluation_module(process_id, doc_no=None, product_name=None):
-    return stattricks_api("evaluation_module", process_id, 16, 3, {"list1": calculate_total_score(doc_no, product_name)})
+    return stattricks_api("evaluation_module", process_id, 16, 3,
+                          {"list1": calculate_total_score(doc_no, product_name)})
+
 
 """
     This function uses the Dowell API to fetch data from the database for a specific product name.
     The result is then returned as a Python dictionary.
 """
+
+
 def fetch_data(product_name):
     field_add = {"brand_data.product_name": product_name}
     response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                      "1094", "ABCDE", "fetch", field_add, "nil")
+                                     "1094", "ABCDE", "fetch", field_add, "nil")
     return json.loads(response_data)["data"]
+
 
 """
     This function takes the fetched data and a document number as input. It processes the data to collect
     scores for a particular document number and returns a dictionary where keys are scale types and values
     are lists of corresponding scores.
 """
+
+
 def process_data(data, doc_no=None):
     """
     This line below
@@ -146,19 +152,23 @@ def process_data(data, doc_no=None):
 
     nps_scale_data = calculate_nps_category(nps_categories)
     return scores, nps_scale_data
+
+
 """
     Generates Random Number for the document to show API results using Process ID 
 """
 
 
 def calculate_nps_category(categories):
-    promoters = categories.count("promoter")
-    detractors = categories.count("detractor")
-    passives = categories.count("passive")
+    print("This are my categories", categories)
+    promoters = categories.count("Promoter")
+    detractors = categories.count("Detractor")
+    passives = categories.count("Neutral")
 
     total_responses = len(categories)
 
-    print("\n\n\nTotal Response \n\n\n", total_responses)
+    print(
+        f"\n\n\nTotal Response {total_responses} \n Counts -- Promomter : {promoters} detractors : {detractors} passive : {passives}\n\n")
 
     if total_responses == 0:
         return "N/A"  # Avoid division by zero
@@ -187,6 +197,40 @@ def calculate_nps_category(categories):
     }
     return response
 
+
+def calculate_stapel_scale_category(responses):
+    # Count the number of positive and negative responses
+    positive_responses = sum(1 for response in responses if response > 0)
+    negative_responses = sum(1 for response in responses if response < 0)
+
+    # Calculate the total number of responses
+    total_responses = len(responses)
+
+    # Calculate the Positive Responses Percentage and Negative Responses Percentage
+    positive_percentage = (positive_responses / total_responses) * 100
+    negative_percentage = (negative_responses / total_responses) * 100
+
+    # Determine the Stapel Category based on average score
+    average_score = sum(responses) / total_responses
+    if average_score > 0:
+        stapel_category = "majorly positive"
+    elif average_score < 0:
+        stapel_category = "majorly negative"
+    else:
+        stapel_category = "neutral"
+
+    # Print the results
+    print(f"Positive Responses Percentage: {positive_percentage}%")
+    print(f"Negative Responses Percentage: {negative_percentage}%")
+    print(f"Stapel Category: {stapel_category}")
+
+    response = {
+        "average_score": average_score,
+        "positives_percentage": positive_percentage,
+        "negatives_percentage": negative_percentage,
+        "overall_stapel_category": stapel_category
+    }
+    return response
 
 
 def generate_random_number():
