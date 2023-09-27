@@ -647,8 +647,8 @@ def document_response(document_id, process_id):
     return score, scale_type
 
 def statistics(scores, process_id):
-    normality = Normality_api(process_id)
     stattrics = stattricks_api("evaluation_module", process_id, 16, 3, {"list1": scores})
+    normality = Normality_api(process_id)
     return normality, stattrics
 
 @api_view(['POST'])
