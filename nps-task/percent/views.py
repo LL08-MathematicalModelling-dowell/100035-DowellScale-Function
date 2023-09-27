@@ -49,7 +49,7 @@ def settings_api_view_create(request):
                      "settings": {"orientation": orientation, "scale_color": scale_color, "fontstyle": fontstyle,
                                   "no_of_scales": number_of_scales, "fontcolor": fontcolor,
                                   "left": "0%", "right": "100%",
-                                  "time": time, "name": name, "scale-category": "percent scale", "user": user,
+                                  "time": time, "name": name, "scale_category": "percent scale", "user": user,
                                   "product_names": product_names, "product_count": product_count,
                                   "allow_resp": response.get('allow_resp', True),
                                   "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -70,12 +70,12 @@ def settings_api_view_create(request):
             param = request.GET
             scale_id = param.get('scale_id', None)
             if not scale_id:
-                field_add = {"settings.scale-category": "percent scale"}
+                field_add = {"settings.scale_category": "percent scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response(json.loads(response_data)['data'], status=status.HTTP_200_OK)
 
-            field_add = {"_id": scale_id, "settings.scale-category": "percent scale"}
+            field_add = {"_id": scale_id, "settings.scale_category": "percent scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -108,7 +108,7 @@ def settings_api_view_create(request):
                 if key in response:
                     settings[key] = response[key]
             settings['name'] = response.get('scale_name', settings["name"])
-            settings["scale-category"] = "percent_sum scale"
+            settings["scale_category"] = "percent_sum scale"
             settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             update_field = {"settings": settings}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
@@ -190,7 +190,7 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
 
     event_id = get_event_id()
     # Check if scale exists
-    field_add = {"_id": scale_id, "settings.scale-category": "percent scale"}
+    field_add = {"_id": scale_id, "settings.scale_category": "percent scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
                                      "find", field_add, "nil")
@@ -270,7 +270,7 @@ def single_scale_response_api_view(request, id=None):
 
     if request.method == 'GET':
         settings = scale_data['data'][0]['settings']
-        if settings.get('scale-category') != 'percent scale':
+        if settings.get('scale_category') != 'percent scale':
             return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"payload": scale_data['data']})
 
@@ -308,7 +308,7 @@ def dowell_scale_admin(request):
             field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "scalecolor": scalecolor, "time": time,
                                       "template_name": template_name, "number_of_scales": number_of_scales,
-                                      "name": name, "scale-category": "percent scale", "scale_type": scale_type, }}
+                                      "name": name, "scale_category": "percent scale", "scale_type": scale_type, }}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                                  field_add, "nil")
             # return redirect(f"http://127.0.0.1:8000/percent/percent-scale1/{template_name}")
@@ -481,7 +481,7 @@ def default_scale_admin(request):
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
     context["username"] = username
-    field_add = {"settings.scale-category": "percent scale"}
+    field_add = {"settings.scale_category": "percent scale"}
     all_scales = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                   field_add, "nil")
     data = json.loads(all_scales)

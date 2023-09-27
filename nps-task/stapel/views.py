@@ -99,7 +99,7 @@ def settings_api_view_create(request):
                              "left": response['left'],
                              "right": response['right'],
                              "scale": scale,
-                             "scale-category": "stapel scale",
+                             "scale_category": "stapel scale",
                              "allow_resp": response.get('allow_resp', True),
                              "no_of_scales": no_of_scales,
                              "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -171,7 +171,7 @@ def settings_api_view_create(request):
                                          "right": right,
                                          "scale": scale,
                                          "allow_resp": allow_resp,
-                                         "scale-category": "stapel scale",
+                                         "scale_category": "stapel scale",
                                          "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                          }
                             }
@@ -227,12 +227,12 @@ def settings_api_view_create(request):
             params = request.GET
             scale_id = params.get('scale_id')
             if not scale_id:
-                field_add = {"settings.scale-category": "stapel scale"}
+                field_add = {"settings.scale_category": "stapel scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
 
-            field_add = {"_id": scale_id, "settings.scale-category": "stapel scale"}
+            field_add = {"_id": scale_id, "settings.scale_category": "stapel scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -329,7 +329,7 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
     if validate_score is False:
         return Response({"Error": "Score must be an integer"})
 
-    field_add = {"_id": scale_id, "settings.scale-category": "stapel scale"}
+    field_add = {"_id": scale_id, "settings.scale_category": "stapel scale"}
     default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                "fetch", field_add, "nil")
     data = json.loads(default)
@@ -387,7 +387,7 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
 @api_view(['GET', ])
 def scale_settings_api_view(request):
     try:
-        field_add = {"settings.scale-category": "stapel scale"}
+        field_add = {"settings.scale_category": "stapel scale"}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                              field_add, "nil")
     except:
@@ -480,7 +480,7 @@ def dowell_scale_admin(request):
                                                            "fontcolor": fontcolor, "fomat": fomat, "time": time,
                                                            "template_name": template_name, "name": name, "text": text,
                                                            "left": left, "right": right, "scale": scale,
-                                                           "scale-category": "stapel scale",
+                                                           "scale_category": "stapel scale",
                                                            "no_of_scales": no_of_scales}}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                                  field_add, "nil")
@@ -658,7 +658,7 @@ def default_scale_admin(request):
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
     try:
-        field_add = {"settings.scale-category": "stapel scale"}
+        field_add = {"settings.scale_category": "stapel scale"}
         all_scales = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                       "fetch", field_add, "nil")
         data = json.loads(all_scales)
