@@ -19,15 +19,15 @@ def settings_api_view_create(request):
         if username == None:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
         try:
-            name = response['scale_name'][0]
-            orientation = response['orientation'][0]
-            scalecolor = response['scalecolor'][0]
-            fontcolor = response['fontcolor'][0]
-            roundcolor = response['roundcolor'][0]
-            fontstyle = response['fontstyle'][0]
-            time = response['time'][0]
+            name = response['scale_name']
+            orientation = response['orientation']
+            scalecolor = response['scalecolor']
+            fontcolor = response['fontcolor']
+            roundcolor = response['roundcolor']
+            fontstyle = response['fontstyle']
+            time = response['time']
             item_list = response['item_list']
-            item_count = int(response["item_count"][0])
+            item_count = int(response["item_count"])
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelt"}, status=status.HTTP_400_BAD_REQUEST)
         if images_dict != {}:
