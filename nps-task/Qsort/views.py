@@ -350,7 +350,7 @@ def ResponseAPI(request):
                     if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
 
                         results = move_last_to_start(user_info)
-                        return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
+                        return JsonResponse({"Success": data_dict}, status=status.HTTP_200_OK)
                     elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][
                                                                                                   0:6] == 'E11000':
                         return JsonResponse({"Error": "Response Already Exists"}, status=status.HTTP_400_BAD_REQUEST)
@@ -358,31 +358,22 @@ def ResponseAPI(request):
                         return JsonResponse({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
-        payload = request.data
-        if 'scale_id' not in payload:
-            z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                 "fetch",
-                                 {"settings.scaletype": "qsort"}, "nil")
+        params = request.GET
+        id = params.get("id")
+        if not id:
+            z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                        "scale_reports",
+                                        "1094", "ABCDE", "fetch", {"settings.scaletype": "qsort"}, "nil")
 
             z = json.loads(z)
             return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
                                 status=status.HTTP_200_OK)
         else:
-            field_add = {"_id": payload["scale_id"]}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                                 field_add, "nil")
-            x = json.loads(x)
-
-            try:
-                # You might need to modify this condition based on how your connection function handles non-existing
-                # scales
-                if x["error"]:
-                    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                         "fetch",
-                                         {"settings.scaletype": "qsort"}, "nil")
-
-                    z = json.loads(z)
-                    return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
-
-            except:
-                return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
+            field_add = {"_id": id}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                        "scale_reports",
+                                        "1094", "ABCDE", "fetch", field_add, "nil")
+            data = json.loads(x)
+            if data.get('data') == []:
+                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
+            return Response({"data": data['data']}, status=status.HTTP_200_OK)
