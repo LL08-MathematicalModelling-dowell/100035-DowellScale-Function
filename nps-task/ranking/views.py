@@ -73,6 +73,7 @@ def settings_api_view_create(request):
       
         event_id = get_event_id()
         settings = {
+            "event_id": event_id,
             "scalename": scalename,
             "scale_category": "ranking scale",
             "num_of_stages": num_of_stages,
@@ -94,18 +95,18 @@ def settings_api_view_create(request):
             "username": username
         }
 
-        field_add = {
-            "event_id": event_id,
-            "settings": settings,
+        settings = {
             "username": username
         }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                 settings, "nil")
 
-        scale_id = str((json.loads(x)['inserted_id']))
+        scale_id = json.loads(x)['inserted_id']
+        details = {
+            "scale_id": scale_id, "event_id": event_id, "username": username}
 
         user_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                 "ABCDE", "insert", {"username": username}, "nil")
+                                 "ABCDE", "insert", details, "nil")
         if not user_data:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
 
