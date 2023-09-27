@@ -61,7 +61,7 @@
           ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/56716832/8d749eff-1188-4ed7-86f8-1d7f543084f5)
 )
    - Documentation:
-        https://documenter.getpostman.com/view/link_for_percent_scale_api_documentation
+        https://documenter.getpostman.com/view/27723419/2s946k6qhA
 
 - ## PAIRED_COMPARISON scale
    - Description: 
@@ -72,7 +72,7 @@
          ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/56716832/b0d3d819-d11c-4c5b-9214-3d11da644f1a)
 )
    - Documentation:
-        https://documenter.getpostman.com/view/link_for_paired_comparison_scale_api_documentation
+        https://documenter.getpostman.com/view/21255221/2s9YCBu9pJ
 
 - ## QSORT scale
    - Description: 
