@@ -58,7 +58,7 @@ def settings_api_view_create(request):
             field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "font_color": font_color,
                                       "no_of_scales": number_of_scales,
-                                      "time": time, "name": name, "scale-category": "likert scale", "user": user,
+                                      "time": time, "name": name, "scale_category": "likert scale", "user": user,
                                       "round_color": round_color, "fomat": fomat, "label_selection": label_selection,
                                       "fontstyle": fontstyle, 
                                       "label_input": label_input, "user": user,
@@ -85,13 +85,13 @@ def settings_api_view_create(request):
             params = request.GET
             scale_id = params.get('scale_id')
             if not scale_id:
-                field_add = {"settings.scale-category": "likert scale"}
+                field_add = {"settings.scale_category": "likert scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
 
             field_add = {"_id": scale_id,
-                         "settings.scale-category": "likert scale"}
+                         "settings.scale_category": "likert scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -128,7 +128,7 @@ def settings_api_view_create(request):
                 if key in response:
                     settings[key] = response[key]
             settings['name'] = response.get('scale_name', settings["name"])
-            settings["scale-category"] = "likert scale"
+            settings["scale_category"] = "likert scale"
             settings["date_updated"] = datetime.datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S")
             update_field = {"settings": settings}
@@ -211,7 +211,7 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
     previous_response = previous_response.get('data')            
     if len(previous_response) > 0 :
         return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
-    field_add = {"_id": scale_id, "settings.scale-category": "likert scale"}
+    field_add = {"_id": scale_id, "settings.scale_category": "likert scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
                                      "find", field_add, "nil")
@@ -340,7 +340,7 @@ def dowell_scale_admin(request):
                                           "labelscale": labelscale,
                                           "number_of_scales": number_of_scales, "time": time,
                                           "template_name": template_name, "name": name, "scales": scales,
-                                          "labeltype": labeltype, "scale-category": "likert scale"}}
+                                          "labeltype": labeltype, "scale_category": "likert scale"}}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale",
                                      "scale", "scale", "1093", "ABCDE", "insert", field_add, "nil")
 
@@ -530,7 +530,7 @@ def default_scale_admin(request):
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
     context["username"] = username
-    field_add = {"settings.scale-category": "likert scale"}
+    field_add = {"settings.scale_category": "likert scale"}
     all_scales = dowellconnection("dowellscale", "bangalore", "dowellscale",
                                   "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
     data = json.loads(all_scales)

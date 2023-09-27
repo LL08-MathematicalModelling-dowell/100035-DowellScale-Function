@@ -160,15 +160,11 @@ def process_data(data, doc_no=None):
 
 
 def calculate_nps_category(categories):
-    print("This are my categories", categories)
     promoters = categories.count("Promoter")
     detractors = categories.count("Detractor")
     passives = categories.count("Neutral")
 
     total_responses = len(categories)
-
-    print(
-        f"\n\n\nTotal Response {total_responses} \n Counts -- Promomter : {promoters} detractors : {detractors} passive : {passives}\n\n")
 
     if total_responses == 0:
         return "N/A"  # Avoid division by zero
@@ -218,11 +214,6 @@ def calculate_stapel_scale_category(responses):
         stapel_category = "majorly negative"
     else:
         stapel_category = "neutral"
-
-    # Print the results
-    print(f"Positive Responses Percentage: {positive_percentage}%")
-    print(f"Negative Responses Percentage: {negative_percentage}%")
-    print(f"Stapel Category: {stapel_category}")
 
     response = {
         "average_score": average_score,

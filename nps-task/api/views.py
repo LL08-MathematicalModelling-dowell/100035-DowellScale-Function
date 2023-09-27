@@ -184,7 +184,7 @@ def settings_api_view_create(request):
                         for i in range(1, int(settings["no_of_scales"]) + 1)]
             return Response({"data": json.loads(response_data), "urls": urls})
         else:
-            field_add = {"settings.scale-category": "nps scale"}
+            field_add = {"settings.scale_category": "nps scale"}
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                              "ABCDE", "fetch", field_add, "nil")
             return Response({"data": json.loads(response_data)})
@@ -221,7 +221,7 @@ def settings_api_view_create(request):
                 "right": right,
                 "center": center,
                 "allow_resp": allow_resp,
-                "scale-category": "nps scale",
+                "scale_category": "nps scale",
                 "show_total_score": 'true',
                 "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
@@ -267,7 +267,7 @@ def settings_api_view_create(request):
                 "left": left,
                 "right": right,
                 "center": center,
-                "scale-category": "nps scale",
+                "scale_category": "nps scale",
                 "show_total_score": 'true',
                 "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
@@ -298,7 +298,7 @@ def dynamic_scale_instances(request):
     settings = settings_json['data'][0]['settings']
     template_name = settings['template_name']
     settings['allow_resp'] = True
-    scale_type = settings['scale-category']
+    scale_type = settings['scale_category']
     name_url = ""
 
     if scale_type == "stapel scale":
@@ -365,7 +365,7 @@ def dynamic_scale_instances_new(request):
     settings_json = json.loads(x)
     settings = settings_json['data'][0]['settings']
     settings['allow_resp'] = True
-    scale_type = settings['scale-category']
+    scale_type = settings['scale_category']
 
     if scale_type == "stapel scale":
         name_url = "/stapel/stapel-scale1/"
@@ -496,7 +496,7 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
 
 
 def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None):
-    field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
+    field_add = {"_id": scale_id, "settings.scale_category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
     data = json.loads(default_scale)
@@ -557,7 +557,7 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
 @api_view(['GET', ])
 def scale_settings_api_view(request):
     try:
-        field_add = {"settings.scale-category": "nps scale"}
+        field_add = {"settings.scale_category": "nps scale"}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                              field_add, "nil")
     except:
@@ -696,7 +696,7 @@ def new_nps_create(request):
                     "custom_emoji_format": custom_emoji_format,
                     "center": center,
                     "allow_resp": response.get('allow_resp', True),
-                    "scale-category": "nps scale",
+                    "scale_category": "nps scale",
                     "show_total_score": response.get('show_total_score', True),
                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
@@ -812,7 +812,7 @@ def new_nps_create(request):
                     "center": center,
                     "allow_resp": allow_resp,
                     "show_total_score": show_total_score,
-                    "scale-category": "nps scale",
+                    "scale_category": "nps scale",
                     "fontstyle": fontstyle,
                     "date_created": settings["date_created"],
                     "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -831,13 +831,13 @@ def new_nps_create(request):
             scale_id = params.get('scale_id')
             print(scale_id)
             if not scale_id:
-                field_add = {"settings.scale-category": "nps scale"}
+                field_add = {"settings.scale_category": "nps scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
 
             field_add = {"_id": scale_id,
-                         "settings.scale-category": "nps scale"}
+                         "settings.scale_category": "nps scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
