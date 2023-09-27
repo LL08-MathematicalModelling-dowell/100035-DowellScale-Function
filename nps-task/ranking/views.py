@@ -26,15 +26,15 @@ def settings_api_view_create(request):
             username = data['username']
             scalename = data['scalename']
             num_of_stages = data['num_of_stages']
-            num_of_substages = data['num_of_substages']
+            num_of_substages = data.get('num_of_substages', 0)
             stages = data['stages']
             stages_arrangement = data['stages_arrangement']
             item_count = data['item_count']
             item_list = data['item_list']
             orientation = data['orientation']
-            scalecolor = data.get('scalecolor', '')
-            fontcolor = data.get('fontcolor', '')
-            fontstyle = data.get('fontstyle', '')
+            scalecolor = data['scalecolor']
+            fontcolor = data['fontcolor']
+            fontstyle = data['fontstyle']
             time = data.get('time', 0)
             ranking_method_stages = data['ranking_method_stages']
             start_with_zero = data.get('start_with_zero', False)
@@ -42,6 +42,17 @@ def settings_api_view_create(request):
             display_ranks = data['display_ranks']
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelled"}, status=status.HTTP_400_BAD_REQUEST)
+        required_fields = ["username", "scalename", 
+                           "num_of_stages", "stages", 
+                           "stages_arrangement","item_count", 
+                           "item_list", "orientation", 
+                           "scalecolor", "fontcolor", 
+                           "fontstyle", "ranking_method_stages", 
+                           "reference", "display_ranks"
+                           ]
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return Response({"error": f"{field} is missing or empty."}, status=status.HTTP_400_BAD_REQUEST)
 
         if not stages:
             return Response({"error": "The 'stages' list cannot be empty."},
