@@ -100,7 +100,7 @@ def settings_api_view_create(request):
             "username": username
         }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-                field_add, "nil")
+                settings, "nil")
 
         scale_id = str((json.loads(x)['inserted_id']))
 
@@ -179,16 +179,17 @@ def settings_api_view_create(request):
 @api_view(['GET', 'POST'])
 def response_submit_api_view(request):
     if request.method == 'GET':
-        scale_id = request.data.get('scale_id', '')
-        if scale_id:
+        params = request.GET
+        id = params.get("id")
+        if id:
             # Retrieve specific response by scale_id
-            field_add = {"_id": scale_id, "scale_data.scale_type": "ranking scale"}
+            field_add = {"_id": id, "scale_data.scale_type": "ranking scale"}
             scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(scale)
-            if data['data'] is None:
-                return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
+            if data.get('data') is None:
+                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
             return Response({"data": data['data']}, status=status.HTTP_200_OK)
         else:
             # Return all ranking scale responses
