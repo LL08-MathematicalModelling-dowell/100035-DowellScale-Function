@@ -15,14 +15,8 @@ def Normality_api(process_id):
 
     headers = {'content-type': 'application/json'}
     response = requests.post(url, json=data, headers=headers)
-
-    print(f"\n\nresponse: {response}\n\n")
-
     response_data = response.json()
-
-    print(f"\n\nresponse_data: {response_data}\n\n")
     try:
-
         title = response_data.get('title')
         process_id = response_data.get('Process_id')
         bins = response_data.get('bins')
@@ -30,7 +24,6 @@ def Normality_api(process_id):
         series_count = response_data.get('series_count')
         calculations = response_data.get('calculations')
         list1 = calculations.get('list1') if calculations else None
-
         return {
             'title': title,
             'process_id': process_id,
