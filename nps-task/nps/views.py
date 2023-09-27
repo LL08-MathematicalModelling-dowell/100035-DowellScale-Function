@@ -14,11 +14,11 @@ import concurrent.futures
 from django.core.cache import cache
 
 
-
 def generate_random_number():
     min_number = 10 ** 2
     max_number = 10 ** 6 - 1
     return random.randint(min_number, max_number)
+
 
 def compare_event_ids(arr1, arr2):
     return bool(set(arr1) & set(arr2))  # returns True if there's a common element
@@ -34,6 +34,7 @@ def find_category(score):
     else:
         category = "Promoter"
     return category
+
 
 def total_score_fun(id):
     try:
@@ -65,7 +66,8 @@ def total_score_fun(id):
 
     return overall_category, category, all_scores, instance_ids, total_score, existing_responses
 
-@api_view(['POST',])
+
+@api_view(['POST', ])
 def custom_configuration_list(request):
     template_id = request.data.get('template_id')
     field_add = {"template_id": template_id}
@@ -81,7 +83,9 @@ def custom_configuration_list(request):
 
     return Response({"data": element_ids})
 
+
 import concurrent.futures
+
 
 @api_view(['GET', 'POST', 'PUT'])
 def custom_configuration_view(request):
@@ -91,7 +95,8 @@ def custom_configuration_view(request):
 
         # Perform the API call using concurrent.futures
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data",
+            future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "custom_data",
+                                     "custom_data",
                                      "1181", "ABCDE", "find", field_add, "nil")
             response_data = future.result()
 
@@ -117,7 +122,8 @@ def custom_configuration_view(request):
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 # future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                 #                           "ABCDE", "find", field_add, "nil")
-                future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                          "1093",
                                           "ABCDE", "update", field_add, {"settings.name": scale_label})
 
                 # response_data1 = future1.result()
@@ -132,7 +138,8 @@ def custom_configuration_view(request):
         field_add = {"scale_id": scale_id}
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data",
+            future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "custom_data",
+                                     "custom_data",
                                      "1181", "ABCDE", "fetch", field_add, "nil")
             response_data = future.result()
 
@@ -156,9 +163,9 @@ def custom_configuration_view(request):
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 # CREATE SCALE SETTINGS
 import concurrent.futures
+
 
 @api_view(['POST', 'PUT', 'GET'])
 def settings_api_view_create(request):
@@ -170,16 +177,19 @@ def settings_api_view_create(request):
             field_add_fetch = {"settings.template_name": field_add}
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                         "ABCDE", "find", field_add_fetch, "nil")
-                future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-                                         "ABCDE", "fetch", field_add, "nil")
+                future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                          "1093",
+                                          "ABCDE", "find", field_add_fetch, "nil")
+                future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                          "scale_reports", "1094",
+                                          "ABCDE", "fetch", field_add, "nil")
 
                 response_data1 = future1.result()
                 response_data2 = future2.result()
 
             if response_data1 is None or response_data2 is None:
-                return Response({"error": "Error occurred while fetching data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"error": "Error occurred while fetching data."},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             settings = json.loads(response_data1)['data']['settings']
             template_name = settings["template_name"]
@@ -192,12 +202,14 @@ def settings_api_view_create(request):
             field_add = {"settings.scale-category": "nps scale"}
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                         "1093",
                                          "ABCDE", "fetch", field_add, "nil")
                 response_data = future.result()
 
             if response_data is None:
-                return Response({"error": "Error occurred while fetching data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"error": "Error occurred while fetching data."},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             return Response({"data": json.loads(response_data)})
 
@@ -308,7 +320,8 @@ def settings_api_view_create(request):
             response_data2 = future2.result()
 
         if response_data2 is None:
-            return Response({"error": "Error occurred while updating data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": "Error occurred while updating data."},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         urls = []
         if int(settings["no_of_scales"]) > 1:
@@ -324,9 +337,9 @@ def settings_api_view_create(request):
 
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
+
 def build_url(public_url, template_name, scale_number):
     return f"{public_url}/nps-scale1/{template_name}?brand_name=WorkflowAI&product_name=editor/{scale_number}"
-
 
 
 @api_view(['POST'])
@@ -336,8 +349,9 @@ def dynamic_scale_instances(request):
     field_add = {"_id": scale_id}
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                 "fetch", field_add, "nil")
+        future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                  "ABCDE",
+                                  "fetch", field_add, "nil")
         x = future1.result()
 
         settings_json = json.loads(x)
@@ -359,7 +373,8 @@ def dynamic_scale_instances(request):
 
         if 'no_of_documents' in response:
             no_of_documents = response['no_of_documents'] + start
-            futures = [executor.submit(build_instance, public_url, name_url, template_name, x) for x in range(start, int(no_of_documents))]
+            futures = [executor.submit(build_instance, public_url, name_url, template_name, x) for x in
+                       range(start, int(no_of_documents))]
             for future in concurrent.futures.as_completed(futures):
                 instance = future.result()
                 instances.append(instance)
@@ -375,23 +390,24 @@ def dynamic_scale_instances(request):
             "settings.allow_resp": True
         }
 
-        future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                 "update", field_add, update_field)
+        future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                  "ABCDE",
+                                  "update", field_add, update_field)
         z = future2.result()
 
-        future3 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                 "fetch", field_add, "nil")
+        future3 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                  "ABCDE",
+                                  "fetch", field_add, "nil")
         x = future3.result()
 
     settings_json = json.loads(x)
     return Response({"success": z, "response": settings_json['data'][0]['settings']})
 
+
 def build_instance(public_url, name_url, template_name, document_number):
     return {
         f"document{document_number}": f"{public_url}{name_url}{template_name}?brand_name=WorkflowAI&product_name=editor/{document_number}"
     }
-
-
 
 
 @api_view(['POST'])
@@ -409,12 +425,12 @@ def nps_response_view_submit(request):
         field_add = {"_id": scale_id, "settings.scale-category": "nps scale"}
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+            future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                      "1093", "ABCDE",
                                       "find", field_add, "nil")
             default_scale = future1.result()
 
             data = json.loads(default_scale)
-            print(data)
             if data['data'] is None:
                 return Response({"Error": "Scale does not exist"})
 
@@ -426,7 +442,8 @@ def nps_response_view_submit(request):
             responses_id = [c['event_id'] for c in existing_responses if
                             int(c['score'][0]['instance_id'].split("/")[0]) == int(instance_id)]
 
-            future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+            future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "users", "users",
+                                      "1098",
                                       "ABCDE", "fetch", {"scale_id": scale_id, "username": user}, "nil")
             user_details = future2.result()
 
@@ -444,7 +461,8 @@ def nps_response_view_submit(request):
                          "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
                          "score": [score_data]}
 
-            future3 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+            future3 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                      "scale_reports", "1094",
                                       "ABCDE", "insert", field_add, "nil")
             z = future3.result()
 
@@ -453,13 +471,14 @@ def nps_response_view_submit(request):
                          "Category": category})
     return Response({"error": "Invalid data provided."}, status=status.HTTP_400_BAD_REQUEST)
 
+
 # GET ALL SCALES
 @api_view(['GET', ])
 def scale_settings_api_view(request):
     try:
         field_add = {"settings.scale-category": "nps scale"}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-            field_add, "nil")
+                             field_add, "nil")
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -474,7 +493,7 @@ def single_scale_settings_api_view(request, id=None):
         # field_add = {"_id": id }
         field_add = {"settings.template_name": id, }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-            "fetch", field_add, "nil")
+                             "fetch", field_add, "nil")
         settings_json = json.loads(x)
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -498,7 +517,7 @@ def single_scale_response_api_view(request, id=None):
     try:
         field_add = {"_id": id}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-            "1094", "ABCDE", "fetch", field_add, "nil")
+                             "1094", "ABCDE", "fetch", field_add, "nil")
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -513,14 +532,16 @@ def scale_response_api_view(request):
         # field_add = {}
         field_add = {"scale_data.scale_type": "nps scale", }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-            "1094", "ABCDE", "fetch", field_add, "nil")
+                             "1094", "ABCDE", "fetch", field_add, "nil")
     except:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         return Response(json.loads(x))
 
+
 import concurrent.futures
+
 
 @xframe_options_exempt
 @csrf_exempt
@@ -529,7 +550,8 @@ def dowell_editor_admin(request, id):
     context = {}
 
     with ThreadPoolExecutor() as executor:
-        future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+        future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                  "ABCDE",
                                   "find", field_add, "nil")
         x = future1.result()
 
@@ -569,8 +591,9 @@ def dowell_editor_admin(request, id):
                 cache_key = f"api_cache:{id}"
                 cached_response = cache.get(cache_key)
                 if cached_response is None:
-                    with executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                                        field_add, update_field) as future2:
+                    with executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                         "1093", "ABCDE", "update",
+                                         field_add, update_field) as future2:
                         x = future2.result()
                         cache.set(cache_key, x, timeout=60)  # Cache response for 60 seconds
 
@@ -636,13 +659,13 @@ def dowell_editor_admin(request, id):
                 cache_key = f"api_cache:{id}"
                 cached_response = cache.get(cache_key)
                 if cached_response is None:
-                    with executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                                        field_add, update_field) as future2:
+                    with executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                         "1093", "ABCDE", "update",
+                                         field_add, update_field) as future2:
                         x = future2.result()
                         cache.set(cache_key, x, timeout=60)  # Cache response for 60 seconds
 
                 return render(request, 'nps/editor_percent_scale.html', context)
-
 
 
 def dowell_scale_admin(request):
@@ -669,7 +692,6 @@ def dowell_scale_admin(request):
         text = f"{left}+{center}+{right}"
         rand_num = random.randrange(1, 10000)
         template_name = f"{name.replace(' ', '')}{rand_num}"
-        print(allow_resp)
         if time == "":
             time = 0
         if allow_resp == "false":
@@ -679,14 +701,17 @@ def dowell_scale_admin(request):
         try:
             eventID = get_event_id()
             field_add = {"event_id": eventID, "settings": {"orientation": orientation, "numberrating": numberrating,
-                                                           "scalecolor": scalecolor, "roundcolor": roundcolor, "allow_resp": allow_resp,
+                                                           "scalecolor": scalecolor, "roundcolor": roundcolor,
+                                                           "allow_resp": allow_resp,
                                                            "fontcolor": fontcolor, "fomat": fomat, "time": time,
                                                            "template_name": template_name, "name": name, "text": text,
                                                            "left": left, "right": right, "center": center,
                                                            "scale-category": "nps scale", "no_of_scales": no_of_scales,
-                                                           "show_total_score": show_total, "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+                                                           "show_total_score": show_total,
+                                                           "date_created": datetime.datetime.now().strftime(
+                                                               "%Y-%m-%d %H:%M:%S")}}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
-                field_add, "nil")
+                                 field_add, "nil")
             # User details
             user_json = json.loads(x)
             details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
@@ -696,44 +721,52 @@ def dowell_scale_admin(request):
     return render(request, 'nps/scale_admin.html', context)
 
 
-
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
 
 @xframe_options_exempt
 @csrf_exempt
 def dowell_scale1(request, tname1):
+    global response_saved
+    context = {}
+    context["public_url"] = public_url
+    # Get url parameters
+    brand_name = request.GET.get('brand_name', None)
+    product_name = request.GET.get('product_name', None)
+    ls = request.path
     url = request.build_absolute_uri()
-    current_url = url.split('/')[-1]
-    brand_name = request.GET.get('brand_name')
-    product_name = request.GET.get('product_name')
+    try:
+        x, s = url.split('?')
+        names_values_dict = dict(x.split('=') for x in s.split('&'))
+        xy = x[1].replace('&', ',')
+        y = xy.replace('=', ':')
+        z = '{' + y + '}'
+        pls = ls.split("/")
+        tname = pls[1]
+        context["brand_name"] = names_values_dict['brand_name']
+        context["product_name"] = names_values_dict['product_name'].split('/')[0]
+        context["scale_name"] = tname1
+    except:
+        f_path = request.get_full_path()
+        response = redirect('nps:error_page')
+        response.set_cookie('url', f_path)
+        return response
 
-    context = {
-        "public_url": public_url,
-        "brand_name": brand_name,
-        "product_name": product_name.split('/')[0],
-        "scale_name": tname1,
-        "url": "../scaleadmin",
-        "urltext": "Create new scale",
-        "btn": "btn btn-dark",
-        "hist": "Scale History",
-        "bglight": "bg-light",
-        "left": "border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)",
-        "cur_url": current_url
-    }
+    context["url"] = "../scaleadmin"
+    context["urltext"] = "Create new scale"
+    context["btn"] = "btn btn-dark"
+    context["hist"] = "Scale History"
+    context["bglight"] = "bg-light"
+    context["left"] = "border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)"
 
-    # scale settings and user details calls
-    field_add = {"settings.template_name": tname1}
-    details = {"scale_id": None, "username": None}
+    # scale settings call
+    field_add = {"settings.template_name": tname1, }
 
-    with ThreadPoolExecutor() as executor:
-        future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find", field_add, "nil")
-        future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE", "fetch", details, "nil")
-        default = future1.result()
-        user_details = future2.result()
-
+    default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find",
+                               field_add, "nil")
     data = json.loads(default)
     id_scores = data['data']["_id"]
-    context["scale_id"] = id_scores
+    context["scale_id"] = data['data']['_id']
     x = data['data']['settings']
     context['show_total'] = x['show_total_score']
     context["defaults"] = x
@@ -742,84 +775,89 @@ def dowell_scale1(request, tname1):
     allow_resp = x['allow_resp']
     context["no_of_scales"] = number_of_scale
     context["total_score_scales"] = int(number_of_scale) * 10
+    current_url = url.split('/')[-1]
+    context['cur_url'] = current_url
 
-    # check if the url has an instance or if allow response variable == True/False
-    if not allow_resp or len(current_url) > 3:
+    # check if the url has an instance of if allow response variable == True/False
+    # if allow_resp == False or len(current_url) > 3:
+    if allow_resp == False:
         context["dont_click"] = True
         return render(request, 'nps/single_scale.html', context)
+    else:
+        if len(current_url) > 3:
+            current_url = 1
+        user = request.session.get('user_name')
+        context["dont_click"] = False
+        existing_scale = False
 
-    user = request.session.get('user_name')
-    context["dont_click"] = False
-
-    overall_category, category, all_scores, instanceID, total_score, existing_responses = total_score_fun(id_scores)
-    responses_id = [int(c['score'][0]['instance_id'].split("/")[0]) for c in existing_responses if int(c['score'][0]['instance_id'].split("/")[0]) == int(current_url)]
-
-    user_dets = json.loads(user_details)
-    user_ids = [i["event_id"] for i in user_dets["data"]]
-
-    existing_scale = compare_event_ids(user_ids, responses_id)
-
-    if existing_scale:
-        context['response_saved'] = total_score
-        context['score'] = "show"
-        context['all_scores'] = all_scores
-        context['total_scores'] = total_score
-        return render(request, 'nps/single_scale.html', context)
+        overall_category, category, all_scores, b, total_score, existing_responses = total_score_fun(
+            context["scale_id"])
+        user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                        "ABCDE", "fetch",
+                                        {"scale_id": context['scale_id'], "username": user, "instance_id": current_url},
+                                        "nil")
+        user_dets = json.loads(user_details)
+        if len(user_dets['data']) >= 1:
+            b = [l['score'][0]['score'] for l in existing_responses if
+                 l['score'][0]['instance_id'].split("/")[0] == f"{current_url}"]
+            category = find_category(b[0])
+            existing_scale = True
+            context['response_saved'] = b
+            context['score'] = "show"
+            context['all_scores'] = all_scores
+            context['total_scores'] = total_score
 
     if request.method == 'POST':
         score = request.POST['scoretag']
         categ = find_category(score)
         context['response_saved'] = score
         eventID = get_event_id()
-        score = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'score': score, "category": categ}
 
-        if not existing_scale:
-            overall_category, category, all_scores, instanceID, total_score, existing_responses = total_score_fun(
+        score = {"instance_id": f"{current_url}/{context['no_of_scales']}", 'score': score, "category": categ}
+        if existing_scale == False:
+            overall_category, category, all_scores, b, total_score, existing_responses = total_score_fun(
                 id_scores.strip())
             total_score_save = f"{total_score}/{context['total_score_scales']}"
             try:
                 field_add = {"event_id": eventID,
-                             "scale_data": {"scale_id": id_scores, "scale_type": "nps scale"},
+                             "scale_data": {"scale_id": context["scale_id"], "scale_type": "nps scale"},
                              "brand_data": {"brand_name": context["brand_name"],
                                             "product_name": context["product_name"]}, "score": [score],
                              "total_score": total_score_save}
-
-                with ThreadPoolExecutor() as executor:
-                    future3 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale",
-                                              "scale_reports", "scale_reports", "1094", "ABCDE", "insert", field_add,
-                                              "nil")
-                    x = future3.result()
+                z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                     "1094", "ABCDE", "insert", field_add, "nil")
 
                 # User details
+                user_json = json.loads(z)
+                user = request.session.get('user_name')
+                details = {"scale_id": context['scale_id'], "event_id": eventID, "username": user,
+                           "instance_id": current_url, }
+                user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                                "ABCDE", "insert", details, "nil")
                 context['score'] = "show"
-
                 # calculate_total_score
-                overall_category, category, all_scores, instanceID, total_score, existing_responses = total_score_fun(
+                overall_category, category, all_scores, b, total_score, existing_responses = total_score_fun(
                     id_scores.strip())
                 context['all_scores'] = all_scores
                 context['total_scores'] = total_score
             except:
-                context["Error"] = "Error occurred while saving the custom pl contact admin"
+                context["Error"] = "Error Occurred while save the custom pl contact admin"
     return render(request, 'nps/single_scale.html', context)
 
 
 import concurrent.futures
+
 
 def brand_product_error(request):
     context = {}
     context["public_url"] = public_url
     url = request.COOKIES['url']
     template_name = url.split("/")[2]
-    field_add = {"settings.template_name": template_name, "scale_data.scale_id": None}
+    field_add = {"settings.template_name": template_name}
+    default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                     "fetch", field_add, "nil")
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        future1 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
-        response = future1.result()
-
-        future2 = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch", field_add, "nil")
-        response2 = future2.result()
-
-    data = json.loads(response)
+    data = json.loads(default_scale)
     x = data['data'][0]['settings']
     context["defaults"] = x
     number_of_scale = x['no_of_scales']
@@ -830,8 +868,13 @@ def brand_product_error(request):
     for i in range(int(number_of_scale)):
         context["no_of_scales"].append(i)
 
+    response_res = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                    "scale_reports",
+                                    "1094", "ABCDE", "fetch", {"scale_data.scale_id": scale_id}, "nil")
+
     context['existing_scales'] = []
-    data2 = json.loads(response2)
+    data2 = json.loads(response_res)
+
     x2 = data2["data"]
     for i in x2:
         b = i['score'][0]['instance_id'].split("/")[0]
@@ -840,7 +883,6 @@ def brand_product_error(request):
     name = url.replace("'", "")
     context['template_url'] = f"{public_url}{name}?brand_name=your_brand&product_name=your_product"
     return render(request, 'nps/error_page.html', context)
-
 
 
 def default_scale(request):
@@ -864,7 +906,8 @@ def default_scale_admin(request):
     context["urltext"] = "Create new scale"
     field_add = {"settings.scale-category": "nps scale"}
     all_scales = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-        field_add, "nil")
+                                  field_add, "nil")
     data = json.loads(all_scales)
-    context["npsall"] = sorted(data["data"], key=lambda d: d['_id'], reverse=True)
+    context["npsall"] = sorted(
+        data["data"], key=lambda d: d['_id'], reverse=True)
     return render(request, 'nps/default.html', context)

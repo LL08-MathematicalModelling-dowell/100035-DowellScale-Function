@@ -26,10 +26,10 @@ SECRET_KEY = 'django-insecure-174^!vny@!oln&!^5%*dod#^fnbw92g9t_c&=y$g5h2-#dmyt=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-if DEBUG == True:
-    public_url = "http://127.0.0.1:8000"
+if DEBUG != True:
+    public_url = "https://100035.pythonanywhere.com"
 else:
-    public_url = "100035.pythonanywhere.com"
+    public_url = "http://127.0.0.1:8000/"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'EvaluationModule',
     'percent_sum',
     'Qsort',
+    'paired_comparison',
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',
 ]
