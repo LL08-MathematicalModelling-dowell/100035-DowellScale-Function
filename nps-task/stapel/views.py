@@ -289,7 +289,7 @@ def stapel_response_view_submit(request):
         try:
             if "scale_id" in response:
                 id = response['scale_id']
-                field_add = {"scale_data.scale_id": id, "scale_data.scale_type": "stapel scale"}
+                field_add = {"scale_data.scale_id": id, "scale_data.scale_category": "stapel scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
@@ -331,13 +331,14 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
 
     field_add = {"_id": scale_id, "settings.scale_category": "stapel scale"}
     default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                               "fetch", field_add, "nil")
+                               "find", field_add, "nil")
     data = json.loads(default)
-    x = data['data'][0]['settings']
+    x = data['data']['settings']
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"})
     elif x['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
+
     number_of_scale = x['no_of_scales']
 
     # find existing scale reports
@@ -562,7 +563,6 @@ def dowell_scale1(request, tname1):
         score_data = data["data"]
         # score_data = data["data"][0]['score']
 
-        total_score = 0
         total_score = sum(
             int(i['score'][0]['score']) for i in score_data if len(i['score'][0]['instance_id'].split("/")[0]) <= 3)
 
