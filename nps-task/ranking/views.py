@@ -94,14 +94,10 @@ def settings_api_view_create(request):
             "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "username": username
         }
-
-        settings = {
-            "username": username
-        }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                 settings, "nil")
 
-        scale_id = json.loads(x)['inserted_id']
+        scale_id = str(json.loads(x)['inserted_id'])
         details = {
             "scale_id": scale_id, "event_id": event_id, "username": username}
 
