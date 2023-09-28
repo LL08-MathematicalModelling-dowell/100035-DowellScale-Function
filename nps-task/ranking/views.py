@@ -136,7 +136,7 @@ def settings_api_view_create(request):
             except Exception as e:
                 return Response({"error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            field_add = {"settings.scale-category": "ranking scale"}
+            field_add = {"settings.scale_category": "ranking scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "fetch", field_add, "nil")
             settings_list = []
@@ -179,7 +179,7 @@ def settings_api_view_create(request):
             stages = dict(sorted(response.items()))
         elif settings['stages_arrangement'] == 'Programmer\'s Choice':
             pass
-        settings["scale-category"] = "ranking scale"
+        settings["scale_category"] = "ranking scale"
         settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         update_field = {"settings": settings}
@@ -207,7 +207,7 @@ def response_submit_api_view(request):
             return Response({"data": data['data']}, status=status.HTTP_200_OK)
         else:
             # Return all ranking scale responses
-            field_add = {"settings.scale-category": "ranking scale"}
+            field_add = {"settings.scale_category": "ranking scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
             settings_list = []
@@ -432,7 +432,7 @@ def dowell_scale_admin(request):
             field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "scalecolor": scalecolor, "time": time,
                                       "template_name": template_name, "number_of_scales": number_of_scales,
-                                      "name": name, "scale-category": "ranking scale",
+                                      "name": name, "scale_category": "ranking scale",
                                       "NumberofProduct": number_of_product, "productnames": product_names}}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                                  field_add, "nil")
@@ -601,7 +601,7 @@ def default_scale_admin(request):
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
     context["username"] = username
-    field_add = {"settings.scale-category": "ranking scale"}
+    field_add = {"settings.scale_category": "ranking scale"}
     all_scales = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                   field_add, "nil")
     data = json.loads(all_scales)
