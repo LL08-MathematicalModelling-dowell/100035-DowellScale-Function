@@ -364,11 +364,13 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
                                     {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
     user_dets = json.loads(user_details)
     if len(user_dets['data']) >= 1:
-        b = [l['score'][0]['score'] for l in score_data if
-             l['score'][0]['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0]['event_id']]
+        b = [l['score']['score'] for l in score_data if
+             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0]['event_id']]
 
         return Response({"error": "Scale Response Exists!", "current_score": b[0]},
                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
     eventID = get_event_id()
     score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score}
 
