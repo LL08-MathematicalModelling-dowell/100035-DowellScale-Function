@@ -110,11 +110,12 @@ def settings_api_view_create(request):
                                  field_add, "nil")
 
             user_json = json.loads(x)
+            field_add['scale_id'] = user_json['inserted_id']
             details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
             user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                             "ABCDE",
                                             "insert", details, "nil")
-            return Response({"success": x, "data": field_add}, status=status.HTTP_201_CREATED)
+            return Response({"success": True, "data": field_add}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -255,10 +256,7 @@ def stapel_response_view_submit(request):
                 user = response['username']
             except KeyError:
                 return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-            
-            process_id = response["process_id"]
-            if not isinstance(process_id, str):
-                return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+
 
             process_id = response["process_id"]
             if not isinstance(process_id, str):
@@ -267,6 +265,10 @@ def stapel_response_view_submit(request):
             if 'document_responses' in response:
                 document_responses = response['document_responses']
                 instance_id = response['instance_id']
+                process_id = response['process_id']
+
+                if not isinstance(process_id, str):
+                    return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 resp = []
                 for x in document_responses:
                     scale_id = x['scale_id']
@@ -279,7 +281,13 @@ def stapel_response_view_submit(request):
                 scale_id = response['scale_id']
                 score = response.get('score', '0')
                 instance_id = response['instance_id']
-                return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
+                if "process_id" in response:
+                    process_id = response['process_id']
+                    if not isinstance(process_id, str):
+                        return Response({"error": "The process ID should be a string."},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                    return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
+                return response_submit_loop(response, scale_id, instance_id, user, score)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
