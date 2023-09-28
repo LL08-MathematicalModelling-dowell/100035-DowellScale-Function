@@ -500,11 +500,12 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
     data = json.loads(default_scale)
-    settings = data['data']['settings']
 
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
-    elif settings['allow_resp'] == False:
+    settings = data['data']['settings']
+
+    if settings['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
     number_of_scale = settings['no_of_scales']
     scale_id = data['data']['_id']
