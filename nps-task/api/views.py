@@ -704,15 +704,14 @@ def new_nps_create(request):
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                              "ABCDE",
                                              "insert", field_add, "nil")
-
+            field_add['scale_id'] = json.loads(response_data)['inserted_id']
             # Should be inserted in a thread
-            details = {"scale_id": json.loads(
-                response_data)['inserted_id'], "event_id": event_ID, "username": username}
+            details = {"scale_id": json.loads(response_data)['inserted_id'], "event_id": event_ID, "username": username}
             user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                             "ABCDE",
                                             "insert", details, "nil")
 
-            return Response({"success": response_data, "data": field_add}, status=status.HTTP_201_CREATED)
+            return Response({"success": True, "data": field_add}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
