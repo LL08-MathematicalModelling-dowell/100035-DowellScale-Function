@@ -3,39 +3,11 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import Fallback from '../components/Fallback';
+// import axios from 'axios';
 
 const CreateSettings = () => {
   const navigate = useNavigate();
-  const cookies = new Cookies();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isInputVisible, setInputVisible] = useState(false);
-  const [itemCount, setItemCount] = useState(0);
   const [inputValues, setInputValues] = useState([]);
-  const toggleInput = () => {
-    setInputVisible(!isInputVisible);
-  };
-
-  const handleInputChange = (e) => {
-    const value = parseInt(e.target.value);
-
-    // Check if the value is a positive integer
-    if (!isNaN(value) && value > 0) {
-      setItemCount(value);
-      setInputValues(Array(value).fill(''));
-    } else {
-      // Handle invalid input, e.g., show an error message or prevent setting state
-      // For simplicity, I'm setting numItems to 0 here
-      setItemCount();
-      setInputValues([]);
-    }
-  };
-
-  const handleInputValueChange = (index, value) => {
-    const newInputValues = [...inputValues];
-    newInputValues[index] = value;
-    setInputValues(newInputValues);
-  };
-
   const [formData, setFormData] = useState({
     user_name: '',
     scale_name: '',
@@ -45,8 +17,54 @@ const CreateSettings = () => {
     scalecolor: '',
     roundcolor: '',
     time: 0,
+    // item_count: 0,
     item_list: inputValues,
   });
+  const cookies = new Cookies();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isInputVisible, setInputVisible] = useState(false);
+  const [itemCount, setItemCount] = useState(0);
+  const [picture, setPicture] = useState([]);
+  const toggleInput = () => {
+    setInputVisible(!isInputVisible);
+  };
+
+  // const handleInputValueChange = (index, value) => {
+  //   const newInputValues = [...inputValues];
+  //   newInputValues[index] = value;
+  //   setInputValues(newInputValues);
+  // };
+
+  const handleInputValueChange = (index, value) => {
+    setInputValues((prevInputValues) => {
+      const newInputValues = [...prevInputValues];
+      newInputValues[index] = value;
+      return newInputValues;
+    });
+  };
+  
+
+
+  const handleInputChange = (e) => {
+    const value = parseInt(e.target.value);
+
+    // Check if the value is a positive integer
+    if (!isNaN(value) && value > 0) {
+      setItemCount(value);
+      // setFormData({
+      //   item_count: value,
+      // });
+      setInputValues(Array(value).fill(''));
+    } else {
+      // Handle invalid input, e.g., show an error message or prevent setting state
+      // For simplicity, I'm setting numItems to 0 here
+      setItemCount();
+      // setFormData({
+      //   item_count: 0,
+      // });
+      setInputValues([]);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,6 +73,48 @@ const CreateSettings = () => {
       [name]: value,
     });
   };
+
+  // const uploadPicture = (e, index) => {
+  //   setPicture((prevPicture) => {
+  //     const updatedPictures = [...prevPicture];
+  //     updatedPictures[index] = {
+  //       picturePreview: URL.createObjectURL(e.target.files[0]),
+  //       pictureAsFile: e.target.files[0],
+  //     };
+  //     return updatedPictures;
+  //   });
+  // };
+
+// const uploadPicture = (e, index) => {
+//   const file = e.target.files[0];
+//   const updatedPictures = [...picture];
+  
+//   if (file) {
+//     updatedPictures[index] = {
+//       picturePreview: URL.createObjectURL(file),
+//       pictureAsFile: file,
+//     };
+    
+//     setPicture(updatedPictures);
+//   }
+// };
+  
+const uploadPicture = (e, index) => {
+  const file = e.target.files[0];
+
+  if (file) {
+    const updatedImageList = [...picture];
+    updatedImageList[index] = {
+      name: inputValues[index], // Use the input value as the image name
+      picturePreview: URL.createObjectURL(file),
+      pictureAsFile: file,
+    };
+
+    setPicture(updatedImageList);
+  }
+};
+
+  
 
   const sessionId = cookies.get('sessionid');
   useEffect(() => {
@@ -92,40 +152,111 @@ const CreateSettings = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
+    // var myHeaders = new Headers();
+    // myHeaders.append('Content-Type', 'multipart/form-data');
 
-    var raw = JSON.stringify({
-      username: formData.user_name,
-      scale_name: formData.scale_name,
-      orientation: formData.orientation,
-      fontcolor: formData.fontcolor,
-      fontstyle: formData.fontstyle,
-      scalecolor: formData.scalecolor,
-      roundcolor: formData.roundcolor,
-      time: formData.time,
-      item_count: itemCount,
-      'item list': inputValues,
+    // const formDataObject = {
+    //   username: formData.user_name,
+    //   scale_name: formData.scale_name,
+    //   orientation: formData.orientation,
+    //   fontcolor: formData.fontcolor,
+    //   fontstyle: formData.fontstyle,
+    //   scalecolor: formData.scalecolor,
+    //   roundcolor: formData.roundcolor,
+    //   time: formData.time,
+    //   item_count: itemCount,
+    //   'item list': inputValues,
+    // };
+    // inputValues.forEach((value, index) => {
+    //   // Handle file uploads here
+    //   const fileInput = document.querySelector(`#item_image_${index}`);
+    //   if (fileInput && fileInput.files.length > 0) {
+    //     console.log( fileInput.files[0].name);
+    //     formDataObject[value] = fileInput.files[0].name;
+    //   }
+    // });
+    // var raw = JSON.stringify(formDataObject);
+
+    // console.log(raw);
+
+    // const itemArrayJSON = JSON.stringify(inputValues);
+
+    const formDataObject = new FormData();
+
+    // Append form fields to the FormData object
+    formDataObject.append('username', formData.user_name);
+    formDataObject.append('scale_name', formData.scale_name);
+    formDataObject.append('orientation', formData.orientation);
+    formDataObject.append('fontcolor', formData.fontcolor);
+    formDataObject.append('fontstyle', formData.fontstyle);
+    formDataObject.append('scalecolor', formData.scalecolor);
+    formDataObject.append('roundcolor', formData.roundcolor);
+    formDataObject.append('time', formData.time);
+    formDataObject.append('item_count', itemCount);
+    // formDataObject.append('item_list', inputValues);
+
+    // console.log(...formDataObject);
+
+    // Append each item in the "item_list" array separately
+    inputValues.forEach((value) => {
+      formDataObject.append(`item_list`, value);
+      // console.log(...formDataObject);
     });
-    console.log(raw);
+
+    // Now you can send formData as the request body...
+
+    // Append file inputs to the FormData object
+    // inputValues.forEach((value, index) => {
+    //   const fileInput = document.querySelector(`#item_image_${index}`);
+    //   if (fileInput && fileInput.files.length > 0) {
+    //     console.log(fileInput.files[0]);
+    //     console.log(picture.pictureAsFile);
+    //     formDataObject.append(value, picture.pictureAsFile);
+    //   }
+    // });
+
+    inputValues.forEach((value, index) => {
+      const fileInput = document.querySelector(`#item_image_${index}`);
+      if (fileInput && fileInput.files.length > 0) {
+        // console.log(picture[index]?.pictureAsFile.name);
+        const imageFile = picture[index]; // Get the corresponding image file
+        // console.log(imageFile);
+        if (imageFile) {
+          formDataObject.append(value, imageFile.pictureAsFile.name);
+        }
+      }
+    });
+    
+    console.log(picture.pictureAsFile);
+    const formDataJSON = JSON.stringify(
+      Object.fromEntries(formDataObject.entries())
+    );
+    console.log(formDataJSON);
+    console.log(...formDataObject);
+    // for (var [key, value] of formDataObject.entries()) {
+    //   var raw = JSON.stringify(key, value);
+    //   console.log(key, value);
+    // }
 
     var requestOptions = {
       method: 'POST',
-      headers: myHeaders,
-      body: raw,
+      // headers: myHeaders,
+      body: formDataObject,
       redirect: 'follow',
     };
+    console.log(formDataObject);
 
     try {
       const data = await fetch(
-        'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/',
+        'http://localhost:8000/paired-comparison/paired-comparison-settings/',
+        // '',
         requestOptions
       );
       const result = await data.json();
       console.log(result);
 
       if (result.error) {
-        console.log(result.error);
+        console.log(result);
         toast.error(result.error);
         setFormData({
           user_name: '',
@@ -158,6 +289,7 @@ const CreateSettings = () => {
       console.log('Error', error);
     }
   };
+
   if (isLoading) {
     return <Fallback />;
   }
@@ -166,6 +298,7 @@ const CreateSettings = () => {
       <form
         className="lg:w-[60%] w-full mx-auto border-4 border-gray-500 bg-[#d9edf7] shadow-md p-8"
         onSubmit={handleSubmit}
+        encType="multipart/form-data"
       >
         <div className="w-full max-w-md mx-auto">
           <h1 className="text-3xl font-medium text-center">
@@ -184,7 +317,7 @@ const CreateSettings = () => {
               type="text"
               id="scale_name"
               name="scale_name"
-              value={formData.scale_name}
+              value={formData.scale_name || ''}
               onChange={handleChange}
               className="w-full px-4 py-2 mt-4 border rounded-lg focus:outline-none"
               // required
@@ -221,7 +354,7 @@ const CreateSettings = () => {
                 type="color"
                 id="fontcolor"
                 name="fontcolor"
-                value={formData.fontcolor}
+                value={formData.fontcolor ||  "#000000"}
                 onChange={handleChange}
                 className="w-full my-2 rounded-lg focus:outline-none"
                 // required
@@ -299,7 +432,7 @@ const CreateSettings = () => {
                 type="color"
                 id="scalecolor"
                 name="scalecolor"
-                value={formData.scalecolor}
+                value={formData.scalecolor ||  "#000000"}
                 onChange={handleChange}
                 className="w-full my-2 border rounded-lg focus:outline-none "
                 // required
@@ -318,12 +451,28 @@ const CreateSettings = () => {
                 type="color"
                 id="roundcolor"
                 name="roundcolor"
-                value={formData.roundcolor}
+                value={formData.roundcolor ||  "#000000"}
                 onChange={handleChange}
                 className="w-full my-2 border rounded-lg focus:outline-none "
                 // required
               />
             </div>
+          </div>
+          <div className="">
+            <label
+              htmlFor="item_count"
+              className="font-semibold text-gray-600 "
+            >
+              Number of Items:
+            </label>
+            <input
+              type="number"
+              name="item_count"
+              id="item_count"
+              value={itemCount || 0}
+              onChange={handleInputChange}
+              className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+            />
           </div>
           <div className="mb-4">
             <label htmlFor="time" className="block font-semibold text-gray-600">
@@ -333,7 +482,7 @@ const CreateSettings = () => {
             <label className="relative inline-flex items-center mb-4 cursor-pointer">
               <input
                 type="checkbox"
-                name="time"
+                name="toggle"
                 value=""
                 className="sr-only peer"
                 checked={isInputVisible}
@@ -347,40 +496,79 @@ const CreateSettings = () => {
                 type="number"
                 id="time"
                 name="time"
-                value={formData.time}
+                value={formData.time || 0}
                 onChange={handleChange}
                 className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
                 // required
               />
             )}
           </div>
-          <div>
-            <label htmlFor="numItems" className="font-semibold text-gray-600 ">
-              Number of Items:
-            </label>
-            <input
-              type="number"
-              id="numItems"
-              value={itemCount}
-              onChange={handleInputChange}
-              className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-            />
 
-            <div>
-              {inputValues.map((value, index) => (
+          {/* <div className=""> */}
+          {inputValues.map((value, index) => (
+            <div key={index}>
+              <input
+                // key={index}
+                type="text"
+                name="item_list"
+                placeholder={`paired ${index + 1}`}
+                value={value}
+                className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                onChange={(e) => handleInputValueChange(index, e.target.value)}
+              />
+              <div key={`file_input_${index}`}>
                 <input
-                  key={index}
-                  type="text"
-                  placeholder={`paired ${index + 1}`}
-                  value={value}
+                  // key={index + value}
+                  id={`item_image_${index}`}
+                  type="file"
+                  name={value}
                   className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                  onChange={(e) =>
-                    handleInputValueChange(index, e.target.value)
-                  }
+                  onChange={(e) => uploadPicture(e, index)}
                 />
-              ))}
+              </div>
             </div>
-          </div>
+          ))}
+          {/* </div> */}
+          {/* {inputValues.map((value, index) => (
+                <>
+                  <input
+                    key={index}
+                  type="file"
+                  name={value}
+                  className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                />
+                </>
+              ))} */}
+          {/* <div key={index} className="mb-4">
+                <input
+                  type="file"
+                  id={`item_image_${index}`}
+                  name="value"
+                  className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                />
+              </div> */}
+          {/* {inputValues.map((value, index) => (
+                <div key={index}>
+                  <input
+                    type="text"
+                    placeholder={`paired ${index + 1}`}
+                    value={value}
+                    className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                    onChange={(e) =>
+                      handleInputValueChange(index, e.target.value)
+                    }
+                  />
+                  <div className="mb-4">
+                    <input
+                      type="file"
+                      id={`item_image_${index}`}
+                      name={`item_image_${index}`}
+                      className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                      onChange={(e) => handleFileInputChange(index, e)}
+                    />
+                  </div>
+                </div>
+              ))} */}
         </div>
         <div className="flex mt-4 lg:justify-end">
           <button
