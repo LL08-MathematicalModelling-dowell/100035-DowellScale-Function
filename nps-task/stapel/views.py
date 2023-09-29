@@ -387,8 +387,8 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
                "username": username}
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
                                     "insert", details, "nil")
-
-    return Response({"success": z, "payload": field_add})
+    field_add['inserted_id'] = json.loads(z)['inserted_id']
+    return Response({"success": True, "payload": field_add})
 
 
 # GET ALL SCALES
