@@ -11,19 +11,23 @@ const numberValidation = Yup.number()
 
 
 export const rankingScalesSchema = Yup.object({
+    user: Yup.boolean().required(REQUIRED_TXT),
+    username: Yup.string(),
     scalename: Yup.string().required(REQUIRED_TXT),
     num_of_stages: numberValidation,
-    num_of_substages: numberValidation,
-    stages_arrangement: Yup.string().required(REQUIRED_TXT),
     stages: Yup.string().required(REQUIRED_TXT),
+    num_of_substages: numberValidation,
+    item_count:numberValidation,
+    item_list:Yup.string().required(REQUIRED_TXT),
+    stages_arrangement: Yup.string().required(REQUIRED_TXT),
     scalecolor: Yup.string().required(REQUIRED_TXT),
     fontcolor: Yup.string().required(REQUIRED_TXT),
-    fontstyle:numberValidation,
+    fontstyle: Yup.string().required(REQUIRED_TXT),
     orientation: Yup.string().required(REQUIRED_TXT),
     ranking_method_stages: Yup.string().required(REQUIRED_TXT),
-    start_with_zero: Yup.string().required(REQUIRED_TXT),
+    start_with_zero: Yup.boolean().required(REQUIRED_TXT),
     reference: Yup.string().required(REQUIRED_TXT),
-    display_ranks: Yup.string().required(REQUIRED_TXT),
+    display_ranks: Yup.boolean().required(REQUIRED_TXT),
 });
 
 

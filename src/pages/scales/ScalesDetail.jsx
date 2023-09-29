@@ -11,7 +11,7 @@ const ScalesDetail = () => {
     const { slug } = useParams();
     const { isLoading, scaleData, fetchScaleData} = useGetScale();
     const navigateTo = useNavigate();
-    console.log(scaleData, 'scaleData')
+    // console.log(scaleData, 'scaleData')
 
     const itemsAvailable = [
         {
