@@ -57,8 +57,8 @@ def settings_api_view_create(request):
         y_range = []
         for position in range(X_lower_limit, X_upper_limit+1, X_spacing):
             x_range.append(position)
-            for position in range(Y_lower_limit, Y_upper_limit+1, Y_spacing):
-                y_range.append(position)
+        for position in range(Y_lower_limit, Y_upper_limit+1, Y_spacing):
+            y_range.append(position)
         eventID = get_event_id()
         field_add = {"event_id": eventID,
                      "settings": {"item_list": item_list, "scale_color": scale_color, "fontstyle": fontstyle,
@@ -67,7 +67,7 @@ def settings_api_view_create(request):
                                   "item_count": item_count, "X_left": X_left, "X_right": X_right, "Y_top": Y_top,
                                   "Y_bottom": Y_bottom, "marker_color": marker_color, "center": (0,0), "position": "center",
                                    "marker_type": marker_type, "x_range": x_range, "y_range": y_range,
-                                  "allow_resp": allow_resp,
+                                  "allow_resp": allow_resp, "X_spacing": X_spacing, "Y_spacing": Y_spacing, 
                                   "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                   }
                      }
@@ -97,7 +97,7 @@ def settings_api_view_create(request):
             if not settings_json.get('data'):
                 return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
             settings = settings_json['data']['settings']
-            return Response({"success": settings})
+            return Response({"success": settings_json})
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'PUT':
@@ -113,21 +113,21 @@ def settings_api_view_create(request):
         for key in settings.keys():
             if key in response:
                 settings[key] = response[key]
-        if "item_list" or "item_count" in response:
+        if ("item_list" and "item_count") in response:
             item_count = response["item_count"]
             item_list = response["item_list"]
             if item_count != len(item_list):
                 return Response({"error": "item_count must be equal to length of item_list"}, status=status.HTTP_400_BAD_REQUEST)
         X_upper_limit = None
-        Y_lower_limit = None
+        Y_upper_limit = None
         X_spacing = None
         Y_spacing = None
-        if "X_spacing" and "X_upper_limit" in response:
+        if ("X_spacing" and "X_upper_limit") in response:
             X_upper_limit = response["X_upper_limit"]
             X_spacing = response["X_spacing"]
         elif "X_spacing" in response:
             X_spacing = response["X_spacing"]
-            X_upper_limit = settings["X_upper_limit"]
+            X_upper_limit = settings["x_range"][-1]
         elif "X_upper_limit" in response:
             X_spacing = settings["X_spacing"]
             X_upper_limit = response["X_upper_limit"]
@@ -139,12 +139,12 @@ def settings_api_view_create(request):
             for position in range(X_lower_limit, X_upper_limit+1, X_spacing):
                 x_range.append(position)
 
-        if "Y_spacing" and "Y_upper_limit" in response:
+        if "Y_spacing" in response and "Y_upper_limit" in response:
             Y_upper_limit = response["Y_upper_limit"]
             Y_spacing = response["Y_spacing"]
         elif "Y_spacing" in response:
             Y_spacing = response["Y_spacing"]
-            Y_upper_limit = settings["Y_upper_limit"]
+            Y_upper_limit = settings["y_range"][-1]
         elif "Y_upper_limit" in response:
             Y_spacing = settings["Y_spacing"]
             Y_upper_limit = response["Y_upper_limit"]
@@ -156,7 +156,7 @@ def settings_api_view_create(request):
             for position in range(Y_lower_limit, Y_upper_limit+1, Y_spacing):
                 y_range.append(position)
         
-        if "item_list" or  "item_count" in response:
+        if ("item_list" and  "item_count") in response:
             settings["item_count"] = item_count
             settings["item_count"] = item_list
         
@@ -168,6 +168,6 @@ def settings_api_view_create(request):
         settings["date_updated"] = datetime.datetime.now().strftime(
             "%Y-%m-%d %H:%M:%S")
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                                field_add, settings)
+                                field_add, {"settings" : settings})
         return Response({"success": "Successfully Updated ", "data": settings})
 
