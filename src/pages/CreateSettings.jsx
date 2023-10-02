@@ -222,7 +222,7 @@ const uploadPicture = (e, index) => {
         const imageFile = picture[index]; // Get the corresponding image file
         // console.log(imageFile);
         if (imageFile) {
-          formDataObject.append(value, imageFile.pictureAsFile.name);
+          formDataObject.append(value, imageFile.pictureAsFile);
         }
       }
     });
