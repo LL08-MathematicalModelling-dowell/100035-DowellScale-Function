@@ -882,8 +882,6 @@ def redirect_view(request):
     scale_id = request.GET.get('scale_id')
 
 
-    if scaletype is None or api_key is None or scale_type is None:
-        return error_response(request, {"error":"api_key and scale_type should not be None!"}, status.HTTP_400_BAD_REQUEST)
     try:
         # request_data = json.loads(request.body)
         api_resp = processApikey(api_key)
@@ -891,7 +889,7 @@ def redirect_view(request):
             credit_count = api_resp['total_credits']
             if credit_count > 0:
                 if scale_id is not None and request.method == "GET":
-                    responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports","scale_reports","1094", "ABCDE", "fetch", {"scale_data.scale_id": scale_id.strip(), "scale_data.scale_type": f"{scaletype} scale"},"nil")
+                    responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports","scale_reports","1094", "ABCDE", "fetch", {"scale_data.scale_id": scale_id.strip()},"nil")
                     setting_response = dowellconnection("dowellscale", "bangalore", "dowellscale",   "scale", "scale", "1093", "ABCDE", "find",{"_id": scale_id}, "nil")
                     if scale_type == "settings":
                         return error_response(request, {"success": True, "settings": json.loads(setting_response)['data']},status.HTTP_200_OK)
