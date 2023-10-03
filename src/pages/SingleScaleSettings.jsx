@@ -16,6 +16,7 @@ const SingleScaleSettings = () => {
   const [scaleColor, setScaleColor] = useState('');
   const [fontColor, setFontColor] = useState('');
   const [fontStyle, setFontStyle] = useState('');
+  const [imagePaths, setImagePaths] = useState('/src/assets/avatar_img.jpg');
 
   const [userPicks, setUserPicks] = useState([]);
 
@@ -64,11 +65,13 @@ const SingleScaleSettings = () => {
 
       const results = response.data;
       console.log(response.data);
+      console.log(response.data.success.image_paths);
       setRoundColor(results.success.roundcolor);
       setScaleColor(results.success.scalecolor);
       setFontColor(results.success.fontcolor);
       setFontStyle(results.success.fontstyle);
       setData(results.success);
+      setImagePaths(results.success.image_paths);
       setIsLoading(false);
     } catch (error) {
       console.log('Error fetching scales:', error.message);
@@ -158,8 +161,8 @@ const SingleScaleSettings = () => {
                         onClick={() => handleButtonClick(pairIndex, 0)}
                       >
                         <img
-                          src="/src/assets/avatar_img.jpg"
-                          alt="Image Alt Text"
+                          src={`https://100035.pythonanywhere.com/nps-task/static/images/${imagePaths[pairIndex]}`}
+                          alt={`https://100035.pythonanywhere.com/nps-task/static/images/${imagePaths[pairIndex]}`}
                           className="w-10 h-10 p-0 mb-2 rounded-full"
                         />
                         <p className="text-center">{paired[0]}</p>
@@ -171,9 +174,9 @@ const SingleScaleSettings = () => {
                         onClick={() => handleButtonClick(pairIndex, 1)}
                       >
                         <img
-                          src="/src/assets/avatar_img.jpg"
-                          alt="Image Alt Text"
-                          className="w-10 h-10 mb-2 rounded-full"
+                          src={`nps-task/static/images/${imagePaths[pairIndex]}`}
+                          alt={`nps-task/static/images/${imagePaths[pairIndex]}`}
+                          className="w-10 h-10 p-0 mb-2 rounded-full"
                         />
                         <p className="text-center"> {paired[1]}</p>
                       </Pair>

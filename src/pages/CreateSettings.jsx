@@ -248,7 +248,7 @@ const uploadPicture = (e, index) => {
 
     try {
       const data = await fetch(
-        'http://localhost:8000/paired-comparison/paired-comparison-settings/',
+        'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/',
         // '',
         requestOptions
       );
