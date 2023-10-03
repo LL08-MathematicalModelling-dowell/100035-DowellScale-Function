@@ -8,6 +8,7 @@ from nps.eventID import get_event_id
 from collections import Counter
 from .utils import generate_pairs, arrange_ranking, segment_ranking, find_inconsistent_pair
 from django.core.files.storage import default_storage
+import uuid
 
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -57,8 +58,9 @@ def settings_api_view_create(request):
             return Response({"error": "Total number of pairs is not equal to expected number of pairs"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         eventID = get_event_id()
         image_paths = []
+        unique_path = uuid.uuid4()
         for image_name in images_dict.keys():
-            path = default_storage.save(f"{eventID}/{image_name}/{str(images_dict[image_name])}", images_dict[image_name])
+            path = default_storage.save(f"{unique_path}/{image_name}/{str(images_dict[image_name])}", images_dict[image_name])
             image_paths.append(path)
         field_add = {
             "event_id": eventID,
