@@ -303,7 +303,7 @@ def response_submit_api_view(request):
             return Response(result)
 
 
-def response_submit_loop(username, scale_id, responses, instance_id=None, process_id=None, document_data=None):
+def response_submit_loop(username, scale_id, responses, instance_id, process_id=None, document_data=None):
     # # Check if response already exists for this event
     field_add = {"username": username, "scale_data.scale_id": scale_id, "scale_data.scale_type": "ranking scale",
                  "scale_data.instance_id": instance_id}
