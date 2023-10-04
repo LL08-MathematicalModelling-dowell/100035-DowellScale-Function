@@ -66,7 +66,7 @@ def settings_api_view_create(request):
                                   "time": time, "name": name, "scale-category": "perceptual mapping", "username": username,
                                   "item_count": item_count, "X_left": X_left, "X_right": X_right, "Y_top": Y_top,
                                   "Y_bottom": Y_bottom, "marker_color": marker_color, "center": (0,0), "position": "center",
-                                   "marker_type": marker_type, "x_range": x_range, "y_range": y_range,
+                                   "marker_type": marker_type, "x_range": x_range, "y_range": y_range, "X_upper_limit": X_upper_limit, "Y_upper_limit": Y_upper_limit,
                                   "allow_resp": allow_resp, "X_spacing": X_spacing, "Y_spacing": Y_spacing, 
                                   "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                   }
