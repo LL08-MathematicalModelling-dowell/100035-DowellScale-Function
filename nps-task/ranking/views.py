@@ -26,15 +26,15 @@ def settings_api_view_create(request):
             username = data['username']
             scalename = data['scalename']
             num_of_stages = data['num_of_stages']
-            num_of_substages = data['num_of_substages']
+            num_of_substages = data.get('num_of_substages', 0)
             stages = data['stages']
             stages_arrangement = data['stages_arrangement']
             item_count = data['item_count']
             item_list = data['item_list']
             orientation = data['orientation']
-            scalecolor = data.get('scalecolor', '')
-            fontcolor = data.get('fontcolor', '')
-            fontstyle = data.get('fontstyle', '')
+            scalecolor = data['scalecolor']
+            fontcolor = data['fontcolor']
+            fontstyle = data['fontstyle']
             time = data.get('time', 0)
             ranking_method_stages = data['ranking_method_stages']
             start_with_zero = data.get('start_with_zero', False)
@@ -42,6 +42,17 @@ def settings_api_view_create(request):
             display_ranks = data['display_ranks']
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or misspelled"}, status=status.HTTP_400_BAD_REQUEST)
+        required_fields = ["username", "scalename", 
+                           "num_of_stages", "stages", 
+                           "stages_arrangement","item_count", 
+                           "item_list", "orientation", 
+                           "scalecolor", "fontcolor", 
+                           "fontstyle", "ranking_method_stages", 
+                           "reference", "display_ranks"
+                           ]
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return Response({"error": f"{field} is missing or empty."}, status=status.HTTP_400_BAD_REQUEST)
 
         if not stages:
             return Response({"error": "The 'stages' list cannot be empty."},
@@ -125,7 +136,7 @@ def settings_api_view_create(request):
             except Exception as e:
                 return Response({"error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            field_add = {"settings.scale-category": "ranking scale"}
+            field_add = {"settings.scale_category": "ranking scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "fetch", field_add, "nil")
             settings_list = []
@@ -168,7 +179,7 @@ def settings_api_view_create(request):
             stages = dict(sorted(response.items()))
         elif settings['stages_arrangement'] == 'Programmer\'s Choice':
             pass
-        settings["scale-category"] = "ranking scale"
+        settings["scale_category"] = "ranking scale"
         settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         update_field = {"settings": settings}
@@ -196,7 +207,7 @@ def response_submit_api_view(request):
             return Response({"data": data['data']}, status=status.HTTP_200_OK)
         else:
             # Return all ranking scale responses
-            field_add = {"settings.scale-category": "ranking scale"}
+            field_add = {"settings.scale_category": "ranking scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
             settings_list = []
@@ -421,7 +432,7 @@ def dowell_scale_admin(request):
             field_add = {"event_id": eventID,
                          "settings": {"orientation": orientation, "scalecolor": scalecolor, "time": time,
                                       "template_name": template_name, "number_of_scales": number_of_scales,
-                                      "name": name, "scale-category": "ranking scale",
+                                      "name": name, "scale_category": "ranking scale",
                                       "NumberofProduct": number_of_product, "productnames": product_names}}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
                                  field_add, "nil")
@@ -590,7 +601,7 @@ def default_scale_admin(request):
     context["btn"] = "btn btn-dark"
     context["urltext"] = "Create new scale"
     context["username"] = username
-    field_add = {"settings.scale-category": "ranking scale"}
+    field_add = {"settings.scale_category": "ranking scale"}
     all_scales = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                   field_add, "nil")
     data = json.loads(all_scales)

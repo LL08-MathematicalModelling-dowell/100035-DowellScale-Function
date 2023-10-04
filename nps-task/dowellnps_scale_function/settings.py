@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'percent_sum',
     'Qsort',
     'paired_comparison',
+    'perceptual_mapping',
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',
 ]

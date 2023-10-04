@@ -110,11 +110,12 @@ def settings_api_view_create(request):
                                  field_add, "nil")
 
             user_json = json.loads(x)
+            field_add['scale_id'] = user_json['inserted_id']
             details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": user}
             user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                             "ABCDE",
                                             "insert", details, "nil")
-            return Response({"success": x, "data": field_add}, status=status.HTTP_201_CREATED)
+            return Response({"success": True, "data": field_add}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -255,14 +256,15 @@ def stapel_response_view_submit(request):
                 user = response['username']
             except KeyError:
                 return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
-            
-            process_id = response["process_id"]
-            if not isinstance(process_id, str):
-                return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+
 
             if 'document_responses' in response:
                 document_responses = response['document_responses']
                 instance_id = response['instance_id']
+                process_id = response['process_id']
+
+                if not isinstance(process_id, str):
+                    return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
                 resp = []
                 for x in document_responses:
                     scale_id = x['scale_id']
@@ -275,7 +277,13 @@ def stapel_response_view_submit(request):
                 scale_id = response['scale_id']
                 score = response.get('score', '0')
                 instance_id = response['instance_id']
-                return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
+                if "process_id" in response:
+                    process_id = response['process_id']
+                    if not isinstance(process_id, str):
+                        return Response({"error": "The process ID should be a string."},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                    return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
+                return response_submit_loop(response, scale_id, instance_id, user, score)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -329,10 +337,11 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
     default = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                "find", field_add, "nil")
     data = json.loads(default)
-    x = data['data']['settings']
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"})
-    elif x['allow_resp'] == False:
+    x = data['data']['settings']
+
+    if x['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
 
     number_of_scale = x['no_of_scales']
@@ -351,11 +360,13 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
                                     {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
     user_dets = json.loads(user_details)
     if len(user_dets['data']) >= 1:
-        b = [l['score'][0]['score'] for l in score_data if
-             l['score'][0]['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0]['event_id']]
+        b = [l['score']['score'] for l in score_data if
+             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0]['event_id']]
 
         return Response({"error": "Scale Response Exists!", "current_score": b[0]},
                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
     eventID = get_event_id()
     score = {"instance_id": f"{instance_id}/{number_of_scale}", 'score': score}
 
@@ -376,8 +387,8 @@ def response_submit_loop(response, scale_id, instance_id, username, score, proce
                "username": username}
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
                                     "insert", details, "nil")
-
-    return Response({"success": z, "payload": field_add})
+    field_add['inserted_id'] = json.loads(z)['inserted_id']
+    return Response({"success": True, "payload": field_add})
 
 
 # GET ALL SCALES

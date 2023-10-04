@@ -63,8 +63,6 @@ def calculate_total_score(doc_no=None, product_name=None):
         return [x['score'][0]['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
     except Exception as e:
         raise RuntimeError("Error calculating total score.") from e
-
-
 # Statricks API
 def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues):
     url = "https://100004.pythonanywhere.com/processapi"

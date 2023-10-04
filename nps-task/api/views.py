@@ -55,15 +55,12 @@ def total_score_fun(id):
     data = json.loads(response_data)
     existing_responses = data["data"]
 
-
-
     total_score = sum(int(i['score']['score']) for i in data['data'])
 
     all_scores = [i['score'] for i in data['data']]
 
     instance_ids = [int(i['score']['instance_id'].split("/")[0])
                     for i in data['data']]
-
 
     if total_score == 0 or len(all_scores) == 0:
         overall_category = "No response provided"
@@ -453,9 +450,26 @@ def nps_response_view_submit(request):
                 for x in document_responses:
                     scale_id = x['scale_id']
                     score = x['score']
-                    document_data = {"details": {"action": response.get('action', ""), "authorized": response.get('authorized',""), "cluster": response.get('cluster', ""), "collection": response.get('collection',""), "command": response.get('command',""), "database": response.get('database', ""), "document": response.get('document', ""), "document_flag":response.get('document_flag',""), "document_right": response.get('document_right', ""), "field": response.get('field',""), "flag": response.get('flag', ""), "function_ID": response.get('function_ID', ""),"metadata_id": response.get('metadata_id', ""), "process_id": response['process_id'], "role": response.get('role', ""), "team_member_ID": response.get('team_member_ID', ""), "update_field": {"content": response.get('content', ""), "document_name": response.get('document_name', ""), "page": response.get('page', "")}, "user_type": response.get('user_type', ""), "id": response['_id']}, "product_name": response.get('product_name', "")}
+                    document_data = {
+                        "details": {"action": response.get('action', ""), "authorized": response.get('authorized', ""),
+                                    "cluster": response.get('cluster', ""),
+                                    "collection": response.get('collection', ""),
+                                    "command": response.get('command', ""), "database": response.get('database', ""),
+                                    "document": response.get('document', ""),
+                                    "document_flag": response.get('document_flag', ""),
+                                    "document_right": response.get('document_right', ""),
+                                    "field": response.get('field', ""), "flag": response.get('flag', ""),
+                                    "function_ID": response.get('function_ID', ""),
+                                    "metadata_id": response.get('metadata_id', ""),
+                                    "process_id": response['process_id'], "role": response.get('role', ""),
+                                    "team_member_ID": response.get('team_member_ID', ""),
+                                    "update_field": {"content": response.get('content', ""),
+                                                     "document_name": response.get('document_name', ""),
+                                                     "page": response.get('page', "")},
+                                    "user_type": response.get('user_type', ""), "id": response['_id']},
+                        "product_name": response.get('product_name', "")}
                     success = response_submit_loop(
-                        response, scale_id, instance_id, user, score,process_id, document_data)
+                        response, scale_id, instance_id, user, score, process_id, document_data)
                     resp.append(success.data)
                 return Response({"data": resp}, status=status.HTTP_200_OK)
             else:
@@ -465,7 +479,8 @@ def nps_response_view_submit(request):
                 if "process_id" in response:
                     process_id = response['process_id']
                     if not isinstance(process_id, str):
-                        return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+                        return Response({"error": "The process ID should be a string."},
+                                        status=status.HTTP_400_BAD_REQUEST)
                     return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
                 return response_submit_loop(response, scale_id, instance_id, user, score)
         except Exception as e:
@@ -478,8 +493,8 @@ def nps_response_view_submit(request):
             if id != None:
                 field_add["_id"] = id
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                                "scale_reports",
-                                                "1094", "ABCDE", "fetch", field_add, "nil")
+                                             "scale_reports",
+                                             "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(response_data)
             if data.get("data") == []:
                 return Response({"error": "Scale response not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -500,11 +515,12 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
     data = json.loads(default_scale)
-    settings = data['data']['settings']
 
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
-    elif settings['allow_resp'] == False:
+    settings = data['data']['settings']
+
+    if settings['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
     number_of_scale = settings['no_of_scales']
     scale_id = data['data']['_id']
@@ -519,7 +535,8 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     user_dets = json.loads(user_details)
     if len(user_dets['data']) >= 1:
         b = [l['score']['score'] for l in existing_responses if
-             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0]['event_id']]
+             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0][
+                 'event_id']]
         category = find_category(b[0])
 
         return Response({"error": "Scale Response Exists!", "current_score": b[0], "Category": category},
@@ -551,7 +568,9 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
                                     "ABCDE", "insert",
                                     {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
                                      "username": user}, "nil")
-    return Response({"success": z, "payload": common_data})
+    common_data['inserted_id'] = json.loads(z)['inserted_id']
+    return Response({"success": True, "payload": common_data})
+
 
 # GET ALL SCALES
 @api_view(['GET', ])
@@ -704,15 +723,14 @@ def new_nps_create(request):
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                              "ABCDE",
                                              "insert", field_add, "nil")
-
+            field_add['scale_id'] = json.loads(response_data)['inserted_id']
             # Should be inserted in a thread
-            details = {"scale_id": json.loads(
-                response_data)['inserted_id'], "event_id": event_ID, "username": username}
+            details = {"scale_id": json.loads(response_data)['inserted_id'], "event_id": event_ID, "username": username}
             user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                             "ABCDE",
                                             "insert", details, "nil")
 
-            return Response({"success": response_data, "data": field_add}, status=status.HTTP_201_CREATED)
+            return Response({"success": True, "data": field_add}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -854,71 +872,79 @@ def new_nps_create(request):
 
 @api_view(['POST', 'GET', 'PUT'])
 def error_response(request, message, status):
-    return Response({"error": message}, status=status)
+    return Response(message, status=status)
 
 
 def redirect_view(request):
+    api_key = request.GET.get('api_key')
     scaletype = request.GET.get('scale_type')
     scale_type = request.GET.get('type')
+    scale_id = request.GET.get('scale_id')
 
-    if scale_type == "" or scaletype == "":
-        return error_response(request, "scale_type and type should not be null!", status.HTTP_400_BAD_REQUEST)
+
     try:
-        request_data = json.loads(request.body)
-        if "api_key" in request_data:
-            api_key = request_data.get('api_key')
-            api_resp = processApikey(api_key)
-            if api_resp['success'] is True:
-                credit_count = api_resp['total_credits']
-                if credit_count >= 0:
-                    if "nps_lite" in scaletype and "settings" in scale_type:
-                        return nps_lite.settings_api_view_create(request)
-                    elif "nps_lite" in scaletype and "response" in scale_type:
-                        return nps_lite.submit_response_view(request)
-                    elif "stapel" in scaletype and "settings" in scale_type:
-                        return stapel.settings_api_view_create(request)
-                    elif "stapel" in scaletype and "response" in scale_type:
-                        return stapel.stapel_response_view_submit(request)
-                    elif "likert" in scaletype and "settings" in scale_type:
-                        return likert.settings_api_view_create(request)
-                    elif "likert" in scaletype and "response" in scale_type:
-                        return likert.submit_response_view(request)
-                    elif "percent_sum" in scaletype and "settings" in scale_type:
-                        return percent_sum.settings_api_view_create(request)
-                    elif "percent_sum" in scaletype and "response" in scale_type:
-                        return percent_sum.percent_sum_response_submit(request)
-                    elif "nps" in scaletype and "settings" in scale_type:
-                        return new_nps_create(request)
-                    elif "nps" in scaletype and "response" in scale_type:
-                        return nps_response_view_submit(request)
-                    elif "percent" in scaletype and "settings" in scale_type:
-                        return percent.settings_api_view_create(request)
-                    elif "percent" in scaletype and "response" in scale_type:
-                        return percent.percent_response_view_submit(request)
-                    elif "ranking" in scaletype and "settings" in scale_type:
-                        return ranking.settings_api_view_create(request)
-                    elif "ranking" in scaletype and "response" in scale_type:
-                        return ranking.response_submit_api_view(request)
-                    elif "paired-comparison" in scaletype and "settings" in scale_type:
-                        return paired_comparison.settings_api_view_create(request)
-                    elif "paired-comparison" in scaletype and "response" in scale_type:
-                        return paired_comparison.scale_response_api_view(request)
-                    elif "qsort" in scaletype and "settings" in scale_type:
-                        return Qsort.CreateScale(request)
-                    elif "qsort" in scaletype and "response" in scale_type:
-                        return Qsort.ResponseAPI(request)
-                    else:
-                        return error_response(request, "Scale will be available soon.", status.HTTP_404_NOT_FOUND)
+        # request_data = json.loads(request.body)
+        api_resp = processApikey(api_key)
+        if api_resp['success'] is True:
+            credit_count = api_resp['total_credits']
+            if credit_count > 0:
+                if scale_id is not None and request.method == "GET":
+                    responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports","scale_reports","1094", "ABCDE", "fetch", {"scale_data.scale_id": scale_id.strip()},"nil")
+                    setting_response = dowellconnection("dowellscale", "bangalore", "dowellscale",   "scale", "scale", "1093", "ABCDE", "find",{"_id": scale_id}, "nil")
+                    if scale_type == "settings":
+                        return error_response(request, {"success": True, "settings": json.loads(setting_response)['data']},status.HTTP_200_OK)
+                    return error_response(request, {"success": True, "responses": json.loads(responses)['data']},status.HTTP_200_OK)
+                # elif brand_name is not None and product_name is not None and request.method == "GET":
+                #     responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports","scale_reports","1094","ABCDE", "fetch",{"brand_data.brand_name": brand_name.strip(),"brand_data.product_name": product_name.strip(),"scale_data.scale_type": f"{scaletype} scale"},    "nil")
+                #     return error_response(request, {"success": True, "response": json.loads(responses)['data']},status.HTTP_200_OK)
+                if "nps_lite" in scaletype and "settings" in scale_type:
+                    return nps_lite.settings_api_view_create(request)
+                elif "nps_lite" in scaletype and "response" in scale_type:
+                    return nps_lite.submit_response_view(request)
+                elif "stapel" in scaletype and "settings" in scale_type:
+                    return stapel.settings_api_view_create(request)
+                elif "stapel" in scaletype and "response" in scale_type:
+                    return stapel.stapel_response_view_submit(request)
+                elif "likert" in scaletype and "settings" in scale_type:
+                    return likert.settings_api_view_create(request)
+                elif "likert" in scaletype and "response" in scale_type:
+                    return likert.submit_response_view(request)
+                elif "percent_sum" in scaletype and "settings" in scale_type:
+                    return percent_sum.settings_api_view_create(request)
+                elif "percent_sum" in scaletype and "response" in scale_type:
+                    return percent_sum.percent_sum_response_submit(request)
+                elif "nps" in scaletype and "settings" in scale_type:
+                    return new_nps_create(request)
+                elif "nps" in scaletype and "response" in scale_type:
+                    return nps_response_view_submit(request)
+                elif "percent" in scaletype and "settings" in scale_type:
+                    return percent.settings_api_view_create(request)
+                elif "percent" in scaletype and "response" in scale_type:
+                    return percent.percent_response_view_submit(request)
+                elif "ranking" in scaletype and "settings" in scale_type:
+                    return ranking.settings_api_view_create(request)
+                elif "ranking" in scaletype and "response" in scale_type:
+                    return ranking.response_submit_api_view(request)
+                elif "paired-comparison" in scaletype and "settings" in scale_type:
+                    return paired_comparison.settings_api_view_create(request)
+                elif "paired-comparison" in scaletype and "response" in scale_type:
+                    return paired_comparison.scale_response_api_view(request)
+                elif "qsort" in scaletype and "settings" in scale_type:
+                    return Qsort.CreateScale(request)
+                elif "qsort" in scaletype and "response" in scale_type:
+                    return Qsort.ResponseAPI(request)
                 else:
-                    error_message = api_resp['message']
-                    return error_response(request, {"success": False, "msg": error_message,
-                                                    "total credits": api_resp['total_credits']},
-                                          status.HTTP_400_BAD_REQUEST)
-            elif api_resp['success'] is False:
+                    return error_response(request, {"success": False, "message": "Scale will be available soon."},
+                                          status.HTTP_404_NOT_FOUND)
+            else:
                 error_message = api_resp['message']
-                return error_response(request, {"success": False, "msg": error_message}, status.HTTP_200_OK)
-        else:
-            return error_response(request, {"success": False, "msg": "Provide a valid API key"},
-                                  status.HTTP_403_FORBIDDEN)
+                return error_response(request, {"success": False, "msg": error_message,
+                                                "total credits": api_resp['total_credits']},
+                                      status.HTTP_400_BAD_REQUEST)
+        elif api_resp['success'] is False:
+            error_message = api_resp['message']
+            return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
+
     except Exception as e:
-        return error_response(request, e, status.HTTP_400_BAD_REQUEST)
+        print("Erererer")
+        return error_response(request, {"success": False, "error": "Provide required fields"}, status.HTTP_400_BAD_REQUEST)
