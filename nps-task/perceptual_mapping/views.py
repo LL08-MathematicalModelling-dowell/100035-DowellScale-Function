@@ -175,26 +175,29 @@ def settings_api_view_create(request):
 @api_view(['POST', 'GET'])
 def response_submit_api_view(request):
     if request.method == 'GET':
-        try:
-            params = request.GET
-            scale_id = params.get("scale_id")
-            if not scale_id:
-                field_add = {"scale_data.scale_type": "perceptual_mapping scale"}
-                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-                                                 "ABCDE", "fetch", field_add, "nil")
-                return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
-
-            field_add = {"_id": scale_id, "scale_data.scale_type": "perceptual_mapping scale"}          
+        params = request.GET
+        id = params.get("scale_id")
+        if id:
+            # Retrieve specific response by scale_id
+            field_add = {"_id": id, "scale_data.scale_type": "perceptual_mapping scale"}
             scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                      "scale_reports",
                                      "1094", "ABCDE", "fetch", field_add, "nil")
-            settings_json = json.loads(scale)
-            if not settings_json.get('data'):
-                return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
-            settings = settings_json['data']
-            return Response({"success": settings_json})
-        except Exception as e:
-            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            data = json.loads(scale)
+            if data.get('data') is None:
+                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"data": data['data']}, status=status.HTTP_200_OK)
+        else:
+            # Return all perceptual_mapping scale responses
+            field_add = {"scale_data.scale_type": "perceptual_mapping scale"}
+            scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                     "scale_reports",
+                                     "1094", "ABCDE", "fetch", field_add, "nil")
+            settings_list = []
+            responses = json.loads(scale)
+            for item in responses['data']:
+                settings_list.append(item)
+            return Response({"data": settings_list}, status=status.HTTP_200_OK)
         
 
     elif request.method == 'POST':
@@ -210,7 +213,7 @@ def response_submit_api_view(request):
                 document_response = response['document_responses']
                 instance_id = response['instance_id']
                 process_id = response['process_id']
-                brand_name = response['brand_name'],
+                brand_name = response['brand_name']
                 product_name = response['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
@@ -269,9 +272,8 @@ def response_submit_api_view(request):
             responses = {
                 "brand_name": brand_name,
                 "product_name": product_name,
-                "positions": positions
+                "positions": positions,
             }
-            print(instance_id, '-------------------------------------')
             if "process_id" in response:
                 process_id = response.get('process_id')
                 if not isinstance(process_id, str):
@@ -291,7 +293,6 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
                                          field_add, "nil")
     previous_response = json.loads(previous_response)
     previous_response = previous_response.get('data')
-    print(previous_response, len(previous_response), '-------------------------------------')
     if len(previous_response) > 0:
         return Response({"error": "You have already submitted a response for this scale."},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -340,12 +341,7 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
             return Response({"error": f"{item} x possision not in x_range"}, status=status.HTTP_400_BAD_REQUEST)
         if possision[1] not in y_range:
             return Response({"error": f"{item} y possision not in y_range"}, status=status.HTTP_400_BAD_REQUEST)
-        if possision[0] < x_left or possision[0] > x_right:
-            return Response({"error": f"{item} x possision not in x_left and x_right"}, status=status.HTTP_400_BAD_REQUEST)
-        if possision[1] < y_bottom or possision[1] > y_top:
-            return Response({"error": f"{item} y possision not in y_bottom and y_top"}, status=status.HTTP_400_BAD_REQUEST)
         
-
     field_add = {"event_id": event_id,
                     "scale_data": {"scale_id": scale_id, "scale_type": "perceptual_mapping scale"},
                     "brand_data": {"brand_name": responses['brand_name'], "product_name": responses['product_name']},
