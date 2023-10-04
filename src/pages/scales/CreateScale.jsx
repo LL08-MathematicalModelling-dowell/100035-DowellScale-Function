@@ -15,7 +15,7 @@ const CreateScale = ()=>{
     const [subInputs, setSubInputs] = useState([]);
     const [subInputsValue, setSubInputsValue] = useState([]);
     const [inputCount, setInputCount] = useState(1);
-    const [selectedInputType, setSelectedInputType] = useState('');
+
 
     const [formData, setFormData] = useState({
         user: true,
@@ -75,7 +75,7 @@ const CreateScale = ()=>{
     const handleSubmitSubinputs = ()=>{
         console.log(subInputsValue,  '***** inputs')
         setSubInputs([]);
-        setValues([...values, '']);
+        setSubInputsValue([...subInputsValue, '']);
         handleToggleInputModal();
     }
 
@@ -147,7 +147,8 @@ const CreateScale = ()=>{
                                 <button 
                                     onClick={()=>removeInputValueItem(value)}
                                     className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
-                                    {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span></button>
+                                    {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span>
+                                </button>
                             ))}
                         </div>
                     </div>

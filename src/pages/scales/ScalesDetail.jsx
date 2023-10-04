@@ -6,6 +6,7 @@ import { BsArrowLeft} from 'react-icons/bs';
 import useGetScale from '../../hooks/useGetScale';
 import Fallback from '../../components/Fallback';
 import { Button } from '../../components/button';
+import { dataSettings } from '../../utils/data';
 
 const ScalesDetail = () => {
     const { slug } = useParams();
@@ -75,7 +76,10 @@ const ScalesDetail = () => {
                     <BsArrowLeft className='text-white' />
                     back</button>
                     <div>
-                        <h2 className='text-xl capitalize'>{slug.split('-').join(' ')}</h2>
+                        <h2 className='text-xl capitalize'>
+                            {/* {slug.split('-').join(' ')} */}
+                            stage name: {dataSettings.brand_name}
+                        </h2>
                     </div>
                 </div>
                 <div className='w-full flex gap-3 flex-col md:flex-row'>
@@ -86,16 +90,26 @@ const ScalesDetail = () => {
                             {itemName}
                         </ul>
                     </div>
-                    <div className='w-1/2'>
+                    <div className='h-64 w-1/2 overflow-y-scroll'>
                         <h3 className='my-2'>Rankings</h3>
                         {
-                            itemsAvailable && itemsAvailable.map((item, index)=>(
-                                <select name="" id="" disabled="" className='w-full px-2 border outline-0 py-2' key={index}>
-                                    {item.rankings.map((ranking)=>(
-                                        <option value={ranking} className='p-2 border-primary'>{ranking}</option>
-                                    ))}
-                                </select>
+                            dataSettings.rankings.map((item, index)=>(
+                                <div key={index} className="">
+                                    <label htmlFor="orientation" className="text-sm font-normal mb-1 ml-1">{item.stage_name}</label>
+                                    <select 
+                                        name="" 
+                                        id="" 
+                                        disabled="" 
+                                        value={'ranking'} 
+                                        className='w-full px-2 border outline-0 py-2' 
+                                    >
+                                        {item.stage_rankings.map((ranking)=>(
+                                            <option  className='p-2 border-primary'>{ranking.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             ))
+                            
                         }
                         
                     </div>
