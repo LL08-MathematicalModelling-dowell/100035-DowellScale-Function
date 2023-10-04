@@ -10,7 +10,7 @@ import SingleScaleResponse from './pages/SingleScaleResponse';
 import CreateResponse from './pages/CreateResponse';
 import SingleScaleSettings from './pages/SingleScaleSettings';
 import UpdateScaleSettings from './pages/UpdateScaleSettings';
-import { Scales, ScalesDetail, ScalesSettings, CreateScales, AvailableScales } from './pages/scales';
+import { Scales, ScalesDetail, ScalesSettings, CreateScales, CreateScale, AvailableScales } from './pages/scales';
 import { Stages } from './pages/test';
 
 function App() {
@@ -28,6 +28,7 @@ function App() {
             <Route path="/all-scales/:slug" element={<ScalesDetail />} />
             <Route path="/scales-settings/:slug" element={<ScalesSettings />} />
             <Route path="/create-scales" element={<CreateScales />} />
+            <Route path="/create-scale" element={<CreateScale />} />
             <Route path="/create-scale-settings" element={<CreateSettings />} />
             <Route path="/create-scale-response" element={<CreateResponse />} />
             <Route

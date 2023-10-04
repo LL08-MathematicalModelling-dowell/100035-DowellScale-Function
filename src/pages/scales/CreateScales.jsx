@@ -17,9 +17,12 @@ const CreateScales = ()=>{
     const [subInputs, setSubInputs] = useState([]);
     const [subInputsValue, setSubInputsValue] = useState([]);
     const [inputCount, setInputCount] = useState(1);
+    const [selectedInputType, setSelectedInputType] = useState('');
 
     const orientation = ['Vertical', 'Horizontal']
     const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled']
+
+    console.log(selectedInputType, 'selectedInputType')
 
     const handleToggleTime = ()=>{
         setTimeOn(!timeOn);
@@ -41,6 +44,8 @@ const CreateScales = ()=>{
 
     const handleSubmitSubinputs = ()=>{
         console.log(subInputsValue,  '***** inputs')
+        setSubInputs([]);
+        setValues([...values, '']);
         handleToggleInputModal();
     }
 
@@ -48,50 +53,30 @@ const CreateScales = ()=>{
         const newInputItems = subInputs.filter((input)=> input !== item);
         setSubInputs(newInputItems);
     }
+
+    const removeInputValueItem = (item)=>{
+        const newInputItems = subInputsValue.filter((value)=> value !== item);
+        setSubInputsValue(newInputItems);
+    }
     return(
         <div className="h-screen w-full flex flex-col items-center justify-center">
             <div className="w-7/12 m-auto">
                 <h2 className="capitalize text-center text-lg">set up your Ranking</h2>
             <Formik
                     initialValues={{
-                        // user: true,
-                        // username: "Michael",
-                        // scalename: "",
-                        // num_of_stages:6,
-                        // stages: [],
-                        // num_of_substages:0,
-                        // item_count:2,
-                        // item_list:[],
-                        // stages_arrangement: "",
-                        // scalecolor: "",
-                        // fontcolor:"",
-                        // fontstyle: "",
-                        // orientation: "",
-                        // ranking_method_stages: "",
-                        // start_with_zero: true,
-                        // reference: "",
-                        // display_ranks: true
-
                         user: true,
                         username: "Joel",
                         scalename: "car ranking",
-                        num_of_stages:6,
+                        num_of_stages:2,
                         num_of_substages:3,
-                        stages: [
-                            "City 1",
-                            "City 2",
-                            "City 3",
-                            "City 4",
-                            "City 5",
-                            "City 6"
-                        ],
+                        stages: (selectedInputType === 'stages' && subInputsValue),
                         item_count:2,
-                        item_list:["one", "two"],
-                        stages_arrangement: "Using ID numbers",
-                        scalecolor: "#FFFFFF",
-                        fontcolor:"#FCFCFC",
-                        fontstyle: "Sans Serif",
-                        orientation: "Horizontal",
+                        item_list:(selectedInputType === 'item_count' && subInputsValue),
+                        stages_arrangement: "",
+                        scalecolor: "",
+                        fontcolor:"",
+                        fontstyle: "",
+                        orientation: "",
                         ranking_method_stages: "Unique Ranking",
                         start_with_zero: true,
                         reference: "Overall Ranking",
@@ -143,11 +128,45 @@ const CreateScales = ()=>{
                                             name="num_of_stages"
                                             type="number"
                                             placeholder="num of stages"
-                                            onClick={handleToggleInputModal}
+                                            onClick={()=>{
+                                                setSelectedInputType('stages');
+                                                handleToggleInputModal();
+                                            }}
                                         />
                                         <div className="">
-                                            {subInputsValue && subInputsValue.map((value)=>(
-                                                <button className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">{value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span></button>
+                                            {(selectedInputType === 'stages') && subInputsValue && subInputsValue.map((value)=>(
+                                                <button 
+                                                    onClick={()=>removeInputValueItem(value)}
+                                                    className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
+                                                    {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span></button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <TextInput
+                                            label='number of sub stages'
+                                            name="num_of_substages"
+                                            type="number"
+                                            placeholder="number of sub stages"
+                                        />
+                                    </div>
+                                    <div>
+                                        <TextInput
+                                            label='item count'
+                                            name="item_count"
+                                            type="number"
+                                            placeholder="item count"
+                                            onClick={()=>{
+                                                setSelectedInputType('item_count');
+                                                handleToggleInputModal();
+                                            }}
+                                        />
+                                        <div className="">
+                                            {(selectedInputType === 'item_count') && subInputsValue && subInputsValue.map((value)=>(
+                                                <button 
+                                                    onClick={()=>removeInputValueItem(value)}
+                                                    className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
+                                                    {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span></button>
                                             ))}
                                         </div>
                                     </div>
@@ -188,6 +207,36 @@ const CreateScales = ()=>{
                                                     </option>
                                                 ))}
                                         </SelectInput>
+                                    </div>
+                                    <div>
+                                        <TextInput 
+                                            label='scale color'
+                                            name="scalecolor"
+                                            autoComplete="given-name"
+                                            type="color"
+                                            placeholder='scale color'
+                                            
+                                        />
+                                    </div>
+                                    <div>
+                                        <TextInput 
+                                            label='font color'
+                                            name="fontcolor"
+                                            autoComplete="given-name"
+                                            type="color"
+                                            placeholder='font color'
+                                            
+                                        />
+                                    </div>
+                                    <div>
+                                        <TextInput 
+                                            label='font style'
+                                            name="fontstyle"
+                                            autoComplete="given-name"
+                                            type="text"
+                                            placeholder='font style'
+                                            
+                                        />
                                     </div>
                                 </div>
                                 <div>

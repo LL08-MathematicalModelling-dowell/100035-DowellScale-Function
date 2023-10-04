@@ -11,15 +11,16 @@ const InputsModal = ({
 }) => {
   return (
     <div className='h-screen w-full flex flex-col justify-center fixed top-0 left-0 bg-primary/40'>
-        <button 
-            onClick={handleToggleInputModal}
-            className='px-2 bg-red-500 text-white rounded-full absolute right-10 top-10'>
-            x
-        </button>
-        <div className='w-5/12 m-auto border bg-white p-5'>
+        
+        <div className='w-5/12 m-auto border bg-white p-5 relative'>
+            <button 
+                onClick={handleToggleInputModal}
+                className='px-2 bg-red-500 text-white rounded-full absolute right-2 top-2'>
+                x
+            </button>
             <div className='flex justify-end'>
-                <button className='bg-gray-500 flex items-center gap-5 px-5 py-2 text-white my-5' 
-                onClick={handleAddInputArea}>Add more values <span>+</span></button>
+                <button className='bg-gray-500 flex items-center gap-5 px-5 py-2 text-white my-10' 
+                onClick={handleAddInputArea}>Add {subInputs.length > 0 && 'more'} stages <span>+</span></button>
             </div>
             <div className='grid grid-cols-2 gap-3'>
                 {subInputs.map((content, index)=>(

@@ -11,8 +11,8 @@ const numberValidation = Yup.number()
 
 
 export const rankingScalesSchema = Yup.object({
-    user: Yup.boolean().required(REQUIRED_TXT),
-    username: Yup.string(),
+    // user: Yup.boolean().required(REQUIRED_TXT),
+    // username: Yup.string(),
     scalename: Yup.string().required(REQUIRED_TXT),
     num_of_stages: numberValidation,
     stages: Yup.string().required(REQUIRED_TXT),
