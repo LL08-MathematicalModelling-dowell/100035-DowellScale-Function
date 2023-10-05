@@ -47,8 +47,10 @@ def settings_api_view_create(request):
             return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
         if item_count != len(item_list):
             return Response({"error": "item_count must be equal to length of item_list"}, status=status.HTTP_400_BAD_REQUEST)
-        if not 1 <= X_upper_limit <= 10 and 1 <= Y_upper_limit <= 10:
-            return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 10"}, status=status.HTTP_400_BAD_REQUEST)
+        if not 1 <= X_upper_limit <= 100 or not 1 <= Y_upper_limit <= 100:
+            return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 100"}, status=status.HTTP_400_BAD_REQUEST)
+        if not 1 <= X_spacing <= 50 or not  1 <= Y_spacing <= 50 :
+            return Response({"error": f"X_spacing and Y_spacing must be between 1 and 50"}, status=status.HTTP_400_BAD_REQUEST)
         X_lower_limit = -X_upper_limit
         Y_lower_limit = -Y_upper_limit
         x_range = []
@@ -134,8 +136,10 @@ def settings_api_view_create(request):
             X_spacing = settings["X_spacing"]
             X_upper_limit = response["X_upper_limit"]
         if X_upper_limit and X_spacing:
-            if not 1 <= X_upper_limit <= 10:
-                return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 10"}, status=status.HTTP_400_BAD_REQUEST)
+            if not 1 <= X_upper_limit <= 100:
+                return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 100"}, status=status.HTTP_400_BAD_REQUEST)
+            if not 1 <= X_spacing <= 50:
+                return Response({"error": f"X_spacing must be between 1 and 50"}, status=status.HTTP_400_BAD_REQUEST)
             X_lower_limit = -X_upper_limit
             x_range = []
             for n in range(X_lower_limit, X_upper_limit+1):
@@ -152,8 +156,10 @@ def settings_api_view_create(request):
             Y_spacing = settings["Y_spacing"]
             Y_upper_limit = response["Y_upper_limit"]
         if Y_upper_limit and Y_spacing:
-            if not 1 <= Y_upper_limit <= 10:
-                return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 10"}, status=status.HTTP_400_BAD_REQUEST)
+            if not 1 <= Y_upper_limit <= 100:
+                return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 100"}, status=status.HTTP_400_BAD_REQUEST)
+            if not 1 <= Y_spacing <= 50 :
+                return Response({"error": f"Y_spacing must be between 1 and 50"}, status=status.HTTP_400_BAD_REQUEST)
             Y_lower_limit = -Y_upper_limit
             y_range = []
             for n in range(Y_lower_limit, Y_upper_limit+1):
