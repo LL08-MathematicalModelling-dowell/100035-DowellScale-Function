@@ -313,6 +313,8 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
     
     x_range = settings['x_range']
     y_range = settings['y_range']
+    X_upper_limit = settings['X_upper_limit']
+    Y_upper_limit = settings['Y_upper_limit']
     x_left = settings['X_left']
     x_right = settings['X_right']
     y_top = settings['Y_top']
