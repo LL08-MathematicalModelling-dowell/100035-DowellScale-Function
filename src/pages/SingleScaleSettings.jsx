@@ -40,9 +40,6 @@ const SingleScaleSettings = () => {
     updatedUserPicks[pairIndex] = buttonIndex;
     // Update the userPicks state with the new array
     setUserPicks(updatedUserPicks);
-    // localStorage.setItem('selectedOptions', JSON.stringify(updatedUserPicks));
-    // console.log(updatedUserPicks);
-    // console.log(`User picked: ${paired[pairIndex][buttonIndex]} from pair ${pairIndex + 1}`);
   }
 
   useEffect(() => {

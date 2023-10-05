@@ -33,12 +33,6 @@ const CreateSettings = () => {
     setIsImageVisible(!isImageVisible);
   };
 
-  // const handleInputValueChange = (index, value) => {
-  //   const newInputValues = [...inputValues];
-  //   newInputValues[index] = value;
-  //   setInputValues(newInputValues);
-  // };
-
   const handleInputValueChange = (index, value) => {
     setInputValues((prevInputValues) => {
       const newInputValues = [...prevInputValues];
@@ -61,9 +55,6 @@ const CreateSettings = () => {
       // Handle invalid input, e.g., show an error message or prevent setting state
       // For simplicity, I'm setting numItems to 0 here
       setItemCount();
-      // setFormData({
-      //   item_count: 0,
-      // });
       setInputValues([]);
     }
   };
@@ -127,34 +118,6 @@ const CreateSettings = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // var myHeaders = new Headers();
-    // myHeaders.append('Content-Type', 'multipart/form-data');
-
-    // const formDataObject = {
-    //   username: formData.user_name,
-    //   scale_name: formData.scale_name,
-    //   orientation: formData.orientation,
-    //   fontcolor: formData.fontcolor,
-    //   fontstyle: formData.fontstyle,
-    //   scalecolor: formData.scalecolor,
-    //   roundcolor: formData.roundcolor,
-    //   time: formData.time,
-    //   item_count: itemCount,
-    //   'item list': inputValues,
-    // };
-    // inputValues.forEach((value, index) => {
-    //   // Handle file uploads here
-    //   const fileInput = document.querySelector(`#item_image_${index}`);
-    //   if (fileInput && fileInput.files.length > 0) {
-    //     console.log( fileInput.files[0].name);
-    //     formDataObject[value] = fileInput.files[0].name;
-    //   }
-    // });
-    // var raw = JSON.stringify(formDataObject);
-
-    // console.log(raw);
-
-    // const itemArrayJSON = JSON.stringify(inputValues);
 
     const formDataObject = new FormData();
 
@@ -168,32 +131,15 @@ const CreateSettings = () => {
     formDataObject.append('roundcolor', formData.roundcolor);
     formDataObject.append('time', formData.time);
     formDataObject.append('item_count', itemCount);
-    // formDataObject.append('item_list', inputValues);
 
-    // console.log(...formDataObject);
-
-    // Append each item in the "item_list" array separately
     inputValues.forEach((value) => {
       formDataObject.append(`item_list`, value);
-      // console.log(...formDataObject);
     });
 
-    // Now you can send formData as the request body...
-
-    // Append file inputs to the FormData object
-    // inputValues.forEach((value, index) => {
-    //   const fileInput = document.querySelector(`#item_image_${index}`);
-    //   if (fileInput && fileInput.files.length > 0) {
-    //     console.log(fileInput.files[0]);
-    //     console.log(picture.pictureAsFile);
-    //     formDataObject.append(value, picture.pictureAsFile);
-    //   }
-    // });
 
     inputValues.forEach((value, index) => {
       const fileInput = document.querySelector(`#item_image_${index}`);
       if (fileInput && fileInput.files.length > 0) {
-        // console.log(picture[index]?.pictureAsFile.name);
         const imageFile = picture[index]; // Get the corresponding image file
         // console.log(imageFile);
         if (imageFile) {
@@ -510,7 +456,6 @@ const CreateSettings = () => {
                   {isImageVisible && (
                     <div key={`file_input_${index}`} className="inline">
                       <input
-                        // key={index + value}
                         id={`item_image_${index}`}
                         type="file"
                         name={value}
