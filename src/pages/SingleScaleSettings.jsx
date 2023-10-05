@@ -16,7 +16,7 @@ const SingleScaleSettings = () => {
   const [scaleColor, setScaleColor] = useState('');
   const [fontColor, setFontColor] = useState('');
   const [fontStyle, setFontStyle] = useState('');
-  const [imagePaths, setImagePaths] = useState('/src/assets/avatar_img.jpg');
+  const [imagePaths, setImagePaths] = useState([]);
 
   const [userPicks, setUserPicks] = useState([]);
 
@@ -65,13 +65,13 @@ const SingleScaleSettings = () => {
 
       const results = response.data;
       console.log(response.data);
-      console.log(response.data.success.image_paths);
+      console.log(response.data.success?.image_paths);
       setRoundColor(results.success.roundcolor);
       setScaleColor(results.success.scalecolor);
       setFontColor(results.success.fontcolor);
       setFontStyle(results.success.fontstyle);
       setData(results.success);
-      setImagePaths(results.success.image_paths);
+      setImagePaths(results.success.image_paths || '');
       setIsLoading(false);
     } catch (error) {
       console.log('Error fetching scales:', error.message);
@@ -160,11 +160,26 @@ const SingleScaleSettings = () => {
                         }`}
                         onClick={() => handleButtonClick(pairIndex, 0)}
                       >
-                        <img
-                          src={`https://100035.pythonanywhere.com/nps-task/static/images/${imagePaths[pairIndex]}`}
-                          alt={`https://100035.pythonanywhere.com/nps-task/static/images/${imagePaths[pairIndex]}`}
-                          className="w-10 h-10 p-0 mb-2 rounded-full"
-                        />
+                        {imagePaths ? (
+                          <img
+                            src={
+                              `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}` ||
+                              '/src/assets/avatar_img.jpg'
+                            }
+                            alt={
+                              `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}` ||
+                              '/src/assets/avatar_img.jpg'
+                            }
+                            className="w-10 h-10 p-0 mb-2 rounded-full"
+                          />
+                        ) : (
+                          <img
+                            src={'/src/assets/avatar_img.jpg'}
+                            alt={'/src/assets/avatar_img.jpg'}
+                            className="w-10 h-10 p-0 mb-2 rounded-full"
+                          />
+                        )}
+
                         <p className="text-center">{paired[0]}</p>
                       </Pair>
                       <Pair
@@ -173,11 +188,26 @@ const SingleScaleSettings = () => {
                         }`}
                         onClick={() => handleButtonClick(pairIndex, 1)}
                       >
-                        <img
-                          src={`nps-task/static/images/${imagePaths[pairIndex]}`}
-                          alt={`nps-task/static/images/${imagePaths[pairIndex]}`}
-                          className="w-10 h-10 p-0 mb-2 rounded-full"
-                        />
+                         {imagePaths ? (
+                          <img
+                            src={
+                              `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}` ||
+                              '/src/assets/avatar_img.jpg'
+                            }
+                            alt={
+                              `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}` ||
+                              '/src/assets/avatar_img.jpg'
+                            }
+                            className="w-10 h-10 p-0 mb-2 rounded-full"
+                          />
+                        ) : (
+                          <img
+                            src={'/src/assets/avatar_img.jpg'}
+                            alt={'/src/assets/avatar_img.jpg'}
+                            className="w-10 h-10 p-0 mb-2 rounded-full"
+                          />
+                        )}
+
                         <p className="text-center"> {paired[1]}</p>
                       </Pair>
                     </div>

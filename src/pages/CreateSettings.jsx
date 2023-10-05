@@ -23,10 +23,14 @@ const CreateSettings = () => {
   const cookies = new Cookies();
   const [isLoading, setIsLoading] = useState(true);
   const [isInputVisible, setInputVisible] = useState(false);
+  const [isImageVisible, setIsImageVisible] = useState(false);
   const [itemCount, setItemCount] = useState(0);
   const [picture, setPicture] = useState([]);
   const toggleInput = () => {
     setInputVisible(!isInputVisible);
+  };
+  const toggleImageInput = () => {
+    setIsImageVisible(!isImageVisible);
   };
 
   // const handleInputValueChange = (index, value) => {
@@ -42,8 +46,6 @@ const CreateSettings = () => {
       return newInputValues;
     });
   };
-  
-
 
   const handleInputChange = (e) => {
     const value = parseInt(e.target.value);
@@ -74,47 +76,20 @@ const CreateSettings = () => {
     });
   };
 
-  // const uploadPicture = (e, index) => {
-  //   setPicture((prevPicture) => {
-  //     const updatedPictures = [...prevPicture];
-  //     updatedPictures[index] = {
-  //       picturePreview: URL.createObjectURL(e.target.files[0]),
-  //       pictureAsFile: e.target.files[0],
-  //     };
-  //     return updatedPictures;
-  //   });
-  // };
+  const uploadPicture = (e, index) => {
+    const file = e.target.files[0];
 
-// const uploadPicture = (e, index) => {
-//   const file = e.target.files[0];
-//   const updatedPictures = [...picture];
-  
-//   if (file) {
-//     updatedPictures[index] = {
-//       picturePreview: URL.createObjectURL(file),
-//       pictureAsFile: file,
-//     };
-    
-//     setPicture(updatedPictures);
-//   }
-// };
-  
-const uploadPicture = (e, index) => {
-  const file = e.target.files[0];
+    if (file) {
+      const updatedImageList = [...picture];
+      updatedImageList[index] = {
+        name: inputValues[index], // Use the input value as the image name
+        picturePreview: URL.createObjectURL(file),
+        pictureAsFile: file,
+      };
 
-  if (file) {
-    const updatedImageList = [...picture];
-    updatedImageList[index] = {
-      name: inputValues[index], // Use the input value as the image name
-      picturePreview: URL.createObjectURL(file),
-      pictureAsFile: file,
-    };
-
-    setPicture(updatedImageList);
-  }
-};
-
-  
+      setPicture(updatedImageList);
+    }
+  };
 
   const sessionId = cookies.get('sessionid');
   useEffect(() => {
@@ -226,7 +201,7 @@ const uploadPicture = (e, index) => {
         }
       }
     });
-    
+
     console.log(picture.pictureAsFile);
     const formDataJSON = JSON.stringify(
       Object.fromEntries(formDataObject.entries())
@@ -354,7 +329,7 @@ const uploadPicture = (e, index) => {
                 type="color"
                 id="fontcolor"
                 name="fontcolor"
-                value={formData.fontcolor ||  "#000000"}
+                value={formData.fontcolor || '#000000'}
                 onChange={handleChange}
                 className="w-full my-2 rounded-lg focus:outline-none"
                 // required
@@ -432,7 +407,7 @@ const uploadPicture = (e, index) => {
                 type="color"
                 id="scalecolor"
                 name="scalecolor"
-                value={formData.scalecolor ||  "#000000"}
+                value={formData.scalecolor || '#000000'}
                 onChange={handleChange}
                 className="w-full my-2 border rounded-lg focus:outline-none "
                 // required
@@ -451,28 +426,12 @@ const uploadPicture = (e, index) => {
                 type="color"
                 id="roundcolor"
                 name="roundcolor"
-                value={formData.roundcolor ||  "#000000"}
+                value={formData.roundcolor || '#000000'}
                 onChange={handleChange}
                 className="w-full my-2 border rounded-lg focus:outline-none "
                 // required
               />
             </div>
-          </div>
-          <div className="">
-            <label
-              htmlFor="item_count"
-              className="font-semibold text-gray-600 "
-            >
-              Number of Items:
-            </label>
-            <input
-              type="number"
-              name="item_count"
-              id="item_count"
-              value={itemCount || 0}
-              onChange={handleInputChange}
-              className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-            />
           </div>
           <div className="mb-4">
             <label htmlFor="time" className="block font-semibold text-gray-600">
@@ -503,31 +462,70 @@ const uploadPicture = (e, index) => {
               />
             )}
           </div>
+          <div className="">
+            <label
+              htmlFor="item_count"
+              className="font-semibold text-gray-600 "
+            >
+              Number of Items:
+            </label>
+            <input
+              type="number"
+              name="item_count"
+              id="item_count"
+              value={itemCount || 0}
+              onChange={handleInputChange}
+              className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+            />
+
+            <div>
+              {inputValues.length > 0 && (
+                <label className="relative inline-flex items-center mb-4 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="toggle"
+                    value=""
+                    className="sr-only peer"
+                    checked={isImageVisible}
+                    onChange={toggleImageInput}
+                  />
+                  <div className="w-11 h-6 bg-gray-400 rounded-full peer   peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-400"></div>
+                  <span className="ml-3 text-sm">Toggle Image</span>
+                </label>
+              )}
+              {inputValues.map((value, index) => (
+                <div key={index} className="inline">
+                  <input
+                    // key={index}
+                    type="text"
+                    name="item_list"
+                    placeholder={`paired ${index + 1}`}
+                    value={value}
+                    className="inline w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                    onChange={(e) =>
+                      handleInputValueChange(index, e.target.value)
+                    }
+                  />
+
+                  {isImageVisible && (
+                    <div key={`file_input_${index}`} className="inline">
+                      <input
+                        // key={index + value}
+                        id={`item_image_${index}`}
+                        type="file"
+                        name={value}
+                        className="inline w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                        onChange={(e) => uploadPicture(e, index)}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* <div className=""> */}
-          {inputValues.map((value, index) => (
-            <div key={index}>
-              <input
-                // key={index}
-                type="text"
-                name="item_list"
-                placeholder={`paired ${index + 1}`}
-                value={value}
-                className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                onChange={(e) => handleInputValueChange(index, e.target.value)}
-              />
-              <div key={`file_input_${index}`}>
-                <input
-                  // key={index + value}
-                  id={`item_image_${index}`}
-                  type="file"
-                  name={value}
-                  className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                  onChange={(e) => uploadPicture(e, index)}
-                />
-              </div>
-            </div>
-          ))}
+
           {/* </div> */}
           {/* {inputValues.map((value, index) => (
                 <>
