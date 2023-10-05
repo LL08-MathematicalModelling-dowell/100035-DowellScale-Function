@@ -16,18 +16,51 @@ const ScalesDetail = () => {
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
 
     console.log(sigleScaleData, 'singe scale data********');
+
+    const stages = [
+        'Stage 1 Content',
+        'Stage 2 Content',
+        'Stage 3 Content',
+      ];
     
 
     const navigateTo = useNavigate();
     // console.log(scaleData[0], 'scaleData')
     const [rankingForm, setRankingForm] = useState({ });
 
+    const [currentStage, setCurrentStage] = useState(0);
+    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOptions, setSelectedOptions] = useState(new Array(stages.length).fill(null));
+
+
+    const handleNext = () => {
+      setCurrentStage(prevStage => prevStage + 1);
+    };
+  
+    const handlePrev = () => {
+      setCurrentStage(prevStage => prevStage - 1);
+    };
+
+    const handleChangeOption = (option) => {
+        const updatedOptions = [...selectedOptions];
+        updatedOptions[currentStage] = option;
+        setSelectedOptions(updatedOptions);
+      };
+    
+      const handleSaveAndProceed = () => {
+        handleNext();
+      };
+    
+      const handleSubmit = () => {
+        console.log(selectedOptions);
+      };
+
     const handleChangeRankingForm = (e) => {
         const { name, value } = e.target;
         setRankingForm(prevState => ({ ...prevState, [name]: value }));
     }
 
-    console.log(rankingForm, '***')
+    
 
     const itemsAvailable = [
         {
@@ -102,9 +135,42 @@ const ScalesDetail = () => {
                         </h2>
                     </div>
                 </div>
+                <div>
+                    <h2 className=''>Stage {currentStage + 1}</h2>
+                        
+                        <Button onClick={handlePrev} disabled={currentStage === 0}>Previous</Button>
+                        
+                </div>
                 <div className='w-full flex gap-3 flex-col md:flex-row'>
                     <>
-                    <div className='w-1/2'>
+                    
+                    <div className='py-10 w-full flex gap-3 flex-col md:flex-row'>
+                        <div>
+                        
+                        </div>
+                        <div className='flex gap-5 items-center w-full'>
+                            <div className='w-1/2'>
+                                <h2>Items available</h2>
+                                {stages[currentStage]}
+                            </div>
+                            <div className='w-1/2'>
+                                <h3 className='my-2'>selecte items</h3>
+                                <select
+                                    value={selectedOptions[currentStage]}
+                                    onChange={(e) => handleChangeOption(e.target.value)}
+                                >
+                                    <option value=''>Select an option</option>
+                                    {[0, 1, 2, 3].map((option) => (
+                                    <option key={option} value={option}>
+                                        Option {option}
+                                    </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                            
+                    </div>
+                    {/* <div className='w-1/2'>
                         <h3 className='my-2'>Items Available</h3>
                         <ul>
                             {itemName}
@@ -133,14 +199,26 @@ const ScalesDetail = () => {
                             
                         }
                         
-                    </div>
+                    </div> */}
                     </>
                 </div>
-                <div className='w-full'>
+                {/* <div className='w-full'>
                     <Button primary width={'full'} onClick={()=>navigateTo('/available-scales')}>Save and Proceed</Button>
-                </div>
+                </div> */}
                 </>
                 )}
+                {currentStage === stages.length - 1 ? (
+                            <Button width={'full'} primary onClick={handleSubmit} disabled={selectedOptions[currentStage] === ''}>
+                            Submit
+                            </Button>
+                        ) : (
+                            <Button primary
+                            onClick={handleSaveAndProceed}
+                            disabled={selectedOptions[currentStage] === ''}
+                            >
+                            Save and Proceed
+                            </Button>
+                        )}
             </div>
         </div>
         <div className='w-full lg:w-8/12 flex items-center justify-end my-4'>
