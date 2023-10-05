@@ -16,18 +16,51 @@ const ScalesDetail = () => {
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
 
     // console.log(sigleScaleData, 'singe scale data********');
+
+    const stages = [
+        'Stage 1 Content',
+        'Stage 2 Content',
+        'Stage 3 Content',
+      ];
     
 
     const navigateTo = useNavigate();
     console.log(scaleData[0], 'scaleData')
     const [rankingForm, setRankingForm] = useState({ });
 
+    const [currentStage, setCurrentStage] = useState(0);
+    const [selectedOption, setSelectedOption] = useState('');
+    const [selectedOptions, setSelectedOptions] = useState(new Array(stages.length).fill(null));
+
+
+    const handleNext = () => {
+      setCurrentStage(prevStage => prevStage + 1);
+    };
+  
+    const handlePrev = () => {
+      setCurrentStage(prevStage => prevStage - 1);
+    };
+
+    const handleChangeOption = (option) => {
+        const updatedOptions = [...selectedOptions];
+        updatedOptions[currentStage] = option;
+        setSelectedOptions(updatedOptions);
+      };
+    
+      const handleSaveAndProceed = () => {
+        handleNext();
+      };
+    
+      const handleSubmit = () => {
+        console.log(selectedOptions);
+      };
+
     const handleChangeRankingForm = (e) => {
         const { name, value } = e.target;
         setRankingForm(prevState => ({ ...prevState, [name]: value }));
     }
 
-    console.log(rankingForm, '***')
+    
 
     const itemsAvailable = [
         {
@@ -104,7 +137,40 @@ const ScalesDetail = () => {
                 </div>
                 <div className='w-full flex gap-3 flex-col md:flex-row'>
                     <>
-                    <div className='w-1/2'>
+                    <div className='w-full flex gap-3 flex-col md:flex-row'>
+                        <div>
+                        <h2>Step {currentStage + 1}</h2>
+                        <div>{stages[currentStage]}</div>
+                        <button onClick={handlePrev} disabled={currentStage === 0}>Previous</button>
+                        {currentStage === stages.length - 1 ? (
+                            <button onClick={handleSubmit} disabled={selectedOptions[currentStage] === ''}>
+                            Submit
+                            </button>
+                        ) : (
+                            <button
+                            onClick={handleSaveAndProceed}
+                            disabled={selectedOptions[currentStage] === ''}
+                            >
+                            Save and Proceed
+                            </button>
+                        )}
+                        </div>
+                        <div className='w-1/2'>
+                        <h3 className='my-2'>Options</h3>
+                        <select
+                            value={selectedOptions[currentStage]}
+                            onChange={(e) => handleChangeOption(e.target.value)}
+                        >
+                            <option value=''>Select an option</option>
+                            {[0, 1, 2, 3].map((option) => (
+                            <option key={option} value={option}>
+                                Option {option}
+                            </option>
+                            ))}
+                        </select>
+                        </div>
+                    </div>
+                    {/* <div className='w-1/2'>
                         <h3 className='my-2'>Items Available</h3>
                         <ul>
                             {itemName}
@@ -133,12 +199,12 @@ const ScalesDetail = () => {
                             
                         }
                         
-                    </div>
+                    </div> */}
                     </>
                 </div>
-                <div className='w-full'>
+                {/* <div className='w-full'>
                     <Button primary width={'full'} onClick={()=>navigateTo('/available-scales')}>Save and Proceed</Button>
-                </div>
+                </div> */}
                 </>
                 )}
             </div>
