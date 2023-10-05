@@ -15,11 +15,11 @@ const ScalesDetail = () => {
     const { isLoading, scaleData, fetchScaleData} = useGetScale();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
 
-    // console.log(sigleScaleData, 'singe scale data********');
+    console.log(sigleScaleData, 'singe scale data********');
     
 
     const navigateTo = useNavigate();
-    console.log(scaleData[0], 'scaleData')
+    // console.log(scaleData[0], 'scaleData')
     const [rankingForm, setRankingForm] = useState({ });
 
     const handleChangeRankingForm = (e) => {
