@@ -7,8 +7,7 @@ import useGetScale from '../../hooks/useGetScale';
 import useGetSingleScale from '../../hooks/useGetSingleScale';
 import Fallback from '../../components/Fallback';
 import { Button } from '../../components/button';
-import { dataSettings } from '../../utils/data';
-import { space } from 'postcss/lib/list';
+
 
 const ScalesDetail = () => {
     const { slug } = useParams();
@@ -48,7 +47,7 @@ const ScalesDetail = () => {
     // itemsAvailableSchema.map((item) => {
     //     console.log(item.rankings, 'schema***');
     //   });
-    console.log(db, 'new schema')
+    // console.log(db, 'new schema')
 
     // const [database, setDatabase] = useState(
     //     stages.map((stage)=>{
@@ -91,7 +90,12 @@ const ScalesDetail = () => {
     }
 
     const handleSubmit = ()=>{
-        handleNext();
+        if (currentStage === stages.length - 1) {
+            // to perform, more actions
+            console.log(db, 'data base')
+        } else {
+            handleNext();
+        }
     }
 
     const handleFetchSingleScale = async(scaleId)=>{
