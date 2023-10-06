@@ -94,8 +94,8 @@ const CreateSettings = () => {
         method: 'POST',
         headers: myHeaders,
         body: JSON.stringify({
-          // session_id: sessionId,
-          session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
+          session_id: sessionId,
+          // session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
         }),
         redirect: 'follow',
       };

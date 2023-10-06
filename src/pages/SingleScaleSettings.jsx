@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import Fallback from '../components/Fallback';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
+import avatarImage from '../assets/avatar_img.jpg';
 
 import axios from 'axios';
 const SingleScaleSettings = () => {
@@ -161,18 +162,18 @@ const SingleScaleSettings = () => {
                           <img
                             src={
                               `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}` ||
-                              '/src/assets/avatar_img.jpg'
+                              avatarImage
                             }
                             alt={
                               `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}` ||
-                              '/src/assets/avatar_img.jpg'
+                              avatarImage
                             }
                             className="w-10 h-10 p-0 mb-2 rounded-full"
                           />
                         ) : (
                           <img
-                            src={'/src/assets/avatar_img.jpg'}
-                            alt={'/src/assets/avatar_img.jpg'}
+                            src={avatarImage}
+                            alt={avatarImage}
                             className="w-10 h-10 p-0 mb-2 rounded-full"
                           />
                         )}
@@ -189,18 +190,18 @@ const SingleScaleSettings = () => {
                           <img
                             src={
                               `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}` ||
-                              '/src/assets/avatar_img.jpg'
+                              avatarImage
                             }
                             alt={
                               `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}` ||
-                              '/src/assets/avatar_img.jpg'
+                              avatarImage
                             }
                             className="w-10 h-10 p-0 mb-2 rounded-full"
                           />
                         ) : (
                           <img
-                            src={'/src/assets/avatar_img.jpg'}
-                            alt={'/src/assets/avatar_img.jpg'}
+                            src={avatarImage}
+                            alt={avatarImage}
                             className="w-10 h-10 p-0 mb-2 rounded-full"
                           />
                         )}
