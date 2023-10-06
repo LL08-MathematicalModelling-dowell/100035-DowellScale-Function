@@ -9,6 +9,7 @@ from collections import Counter
 from .utils import generate_pairs, arrange_ranking, segment_ranking, find_inconsistent_pair
 from django.core.files.storage import default_storage
 import uuid
+import os
 
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -57,11 +58,11 @@ def settings_api_view_create(request):
         if expected_pairs_count != total_pairs:
             return Response({"error": "Total number of pairs is not equal to expected number of pairs"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         eventID = get_event_id()
-        image_paths = []
-        unique_path = uuid.uuid4()
+        image_paths = {}
         for image_name in images_dict.keys():
-            path = default_storage.save(f"{unique_path}/{image_name}/{str(images_dict[image_name])}", images_dict[image_name])
-            image_paths.append(path)
+            _, type = str(images_dict[image_name]).split(".")
+            path = default_storage.save(f"{uuid.uuid4()}.{type}", images_dict[image_name])
+            image_paths[image_name] = path
         field_add = {
             "event_id": eventID,
             "settings" : {"orientation": orientation,
@@ -114,14 +115,16 @@ def settings_api_view_create(request):
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "PUT":
         try:
-            response = request.data
+            response = dict(request.data)
+            images_dict = request.FILES
             if "scale_id" not in response:
                 return Response({"error": "scale_id missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
-            if "item_list" or "item_count" in response:
+            if "item_list" in response or "item_count" in response:
                 item_list = response.get('item_list')
                 item_count = response.get('item_count')
                 if (item_list == None) or (item_count == None):
                     return Response({"error": "item_list and item_count have to be updated together"}, status=status.HTTP_400_BAD_REQUEST)
+                item_count, item_list = item_count[0], item_list[0]
                 if item_count != len(item_list):
                     return Response({"error": "item count does not match length of item list"}, status=status.HTTP_400_BAD_REQUEST)
                 if item_count < 2:
@@ -135,7 +138,7 @@ def settings_api_view_create(request):
                 expected_pairs_count = (item_count * (item_count-1))/2
                 if expected_pairs_count != total_pairs:
                     return Response({"error": "Total number of pairs is not equal to expected number of pairs"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            id = response['scale_id']
+            id = response['scale_id'][0]
             field_add = {"_id": id, }
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                 "fetch", field_add, "nil")
@@ -143,7 +146,7 @@ def settings_api_view_create(request):
             settings = settings_json['data'][0]['settings']
             for key in settings.keys():
                 if key in response:
-                    settings[key] = response[key]
+                    settings[key] = response[key][0]
             if "item_list" in response:
                 settings["paired_items"] = paired_items
                 settings["total_items"] = item_count
@@ -151,6 +154,28 @@ def settings_api_view_create(request):
             settings["scale-category"] = "paired-comparison scale"
             settings["date_updated"] = datetime.datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S")
+            if images_dict != {}:
+                for file in images_dict.values():
+                    _, type = str(file).split(".")
+                    if type != "jpg" and type != "png":
+                        return Response({"error": "Only image files allowed"}, status=status.HTTP_400_BAD_REQUEST)
+                image_names = images_dict.keys()
+                for image in list(image_names):
+                    if image not in settings["item_list"]:
+                        return Response({"error": "Images name must be in Item List"}, status=status.HTTP_400_BAD_REQUEST)
+            image_paths = settings["image_paths"]
+            unique_path = uuid.uuid4()
+            for image_name in images_dict.keys():
+                if image_name in image_paths:
+                    filename = image_paths[image_name]
+                    try:
+                        os.remove(f"static/images/{filename}")
+                    except:
+                        pass
+                _, type = str(images_dict[image_name]).split(".")
+                path = default_storage.save(f"{unique_path}.{type}", images_dict[image_name])
+                image_paths[image_name] = path
+            settings["image_paths"] = image_paths
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                  field_add, settings)
             return Response({"success": "Successfully Updated ", "data": settings})
