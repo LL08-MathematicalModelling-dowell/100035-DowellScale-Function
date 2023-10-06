@@ -14,76 +14,88 @@ const ScalesDetail = () => {
     const { slug } = useParams();
     const { isLoading, scaleData, fetchScaleData} = useGetScale();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
-
-    console.log(sigleScaleData, 'singe scale data********');
-
+    const [currentStage, setCurrentStage] = useState(0);
+    
+    
     const stages = [
-        'Stage 1 Content',
-        'Stage 2 Content',
-        'Stage 3 Content',
+        'Stage 1',
+        'Stage 2',
+        'Stage 3',
       ];
     
+    const itemsAvailable = ['item 111', 'item 222'];
+    const rankings = [0, 1];
+    const [itemsAvailableSchema, setItemsAvailableSchema] = useState(
+        itemsAvailable.map((item)=>{
+            const updatedItems = {
+                item:item,
+                rankings:[0,1],
+                option:0
+            }
+            return updatedItems
+        })
+    );
+    const [db, setDb] = useState([
+        {
+            stage: stages[currentStage],
+            items: itemsAvailableSchema.map(item => ({
+                itemName: item.item,
+                rank: item.option
+            }))
+        }
+    ]);
+
+    // itemsAvailableSchema.map((item) => {
+    //     console.log(item.rankings, 'schema***');
+    //   });
+    console.log(db, 'new schema')
+
+    // const [database, setDatabase] = useState(
+    //     stages.map((stage)=>{
+    //         const dbSchema = {
+    //                     stageName:stage,
+    //                     itemList:itemsAvailable.map((item)=>{
+    //                         return {
+    //                             itemName:item,
+    //                             rank:0,
+    //                         }
+    //                     })
+    //                 }
+    //             return dbSchema;
+    //     })
+    // );
+
+  
+
 
     const navigateTo = useNavigate();
-    // console.log(scaleData[0], 'scaleData')
-    const [rankingForm, setRankingForm] = useState({ });
 
-    const [currentStage, setCurrentStage] = useState(0);
-    const [selectedOption, setSelectedOption] = useState('');
-    const [selectedOptions, setSelectedOptions] = useState(new Array(stages.length).fill(null));
-
-
-    const handleNext = () => {
-      setCurrentStage(prevStage => prevStage + 1);
-    };
-  
-    const handlePrev = () => {
-      setCurrentStage(prevStage => prevStage - 1);
-    };
-
-    const handleChangeOption = (option) => {
-        const updatedOptions = [...selectedOptions];
-        updatedOptions[currentStage] = option;
-        setSelectedOptions(updatedOptions);
-      };
     
-      const handleSaveAndProceed = () => {
-        handleNext();
-      };
-    
-      const handleSubmit = () => {
-        console.log(selectedOptions);
-      };
 
-    const handleChangeRankingForm = (e) => {
-        const { name, value } = e.target;
-        setRankingForm(prevState => ({ ...prevState, [name]: value }));
+    const handleNext = ()=>{
+        const currentStage = db.length + 1; 
+        const updatedDb = [...db, {
+            stage: `Stage ${currentStage}`,
+            items: itemsAvailableSchema.map(item => ({
+                itemName: item.item,
+                rank: item.option
+            }))
+        }];
+        setDb(updatedDb);
+        setCurrentStage(prev => prev + 1);
+    }
+    const handlePrev = ()=>{
+        if(currentStage > 0){
+            setCurrentStage(prev => prev - 1);
+        }
     }
 
-    
-
-    const itemsAvailable = [
-        {
-            name:'item 1',
-            rankings:[0, 1]
-        },
-        {
-            name:'item 2',
-            rankings:[3, 4]
-        },
-        {
-            name:'item 3',
-            rankings:[1, 2]
-        }
-    ]
-
-    const itemName = itemsAvailable.map((item, index)=> {
-        return <ul className='border p-2' key={index}>{item.name}</ul>
-    });
+    const handleSubmit = ()=>{
+        handleNext();
+    }
 
     const handleFetchSingleScale = async(scaleId)=>{
         await fetchSingleScaleData(scaleId);
-        // console.log('....loging scale id', scaleId);
     }
 
 
@@ -113,112 +125,76 @@ const ScalesDetail = () => {
                     </>
                 ))}
             </div>
-            
             <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
             {loading ? <h3>...loading data</h3> : (
                 <>
-                    <div className='w-full lg:w-8/12 flex items-center gap-5'>
-                    <button 
-                        onClick={()=>navigateTo(-1)}
-                        className='w-3/12 bg-primary text-white flex items-center justify-center gap-2 hover:bg-gray-700/50 py- px-2 py-2 my-1 capitalize'> 
-                    <BsArrowLeft className='text-white' />
-                    back</button>
-                    <div>
-                        <h2 className='text-xl capitalize'>
+                    <div className='w-full  flex items-center gap-5'>
+                        <button 
+                            onClick={()=>navigateTo(-1)}
+                            className='w-3/12 bg-primary text-white flex items-center justify-center gap-2 hover:bg-gray-700/50 py- px-2 py-2 my-1 capitalize'> 
+                            <BsArrowLeft className='text-white' />
+                            Go Back
+                        </button>
+                        <span className='w-3/12 border px-10 py-1'>stage {currentStage + 1} of {stages.length}</span>
+                        <h2 className='text-xl capitalize border w-6/12 px-2 py-1 text-center'>
                             {/* {slug.split('-').join(' ')} */}
-                            stage name: 
-                            {sigleScaleData ?
+                            {stages[currentStage]}
+                            {/* {sigleScaleData ?
                                 sigleScaleData?.map((scale)=>(
                                     <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
                                 )) : (scaleData[0]?.settings?.scalename || scaleData[0]?.settings?.scale_name)
-                        }
+                        } */}
                         </h2>
                     </div>
-                </div>
-                <div>
-                    <h2 className=''>Stage {currentStage + 1}</h2>
-                        
-                        <Button onClick={handlePrev} disabled={currentStage === 0}>Previous</Button>
-                        
-                </div>
-                <div className='w-full flex gap-3 flex-col md:flex-row'>
-                    <>
-                    
-                    <div className='py-10 w-full flex gap-3 flex-col md:flex-row'>
-                        <div>
-                        
-                        </div>
-                        <div className='flex gap-5 items-center w-full'>
-                            <div className='w-1/2'>
-                                <h2>Items available</h2>
-                                {stages[currentStage]}
+                    <div className='w-full flex gap-3 flex-col md:flex-row'>
+                        <>
+                            <div className='w-full'>
+                                <h2 className='border px-2 my-7'>Items available</h2>
+                               {
+                                <ul>
+                                    {
+                                        itemsAvailableSchema.map((item, index)=>(
+                                            <li key={index} className='border px-3 py-1'>{item.item}</li>
+                                        ))
+                                    }
+                                </ul>
+                               }
                             </div>
-                            <div className='w-1/2'>
-                                <h3 className='my-2'>selecte items</h3>
-                                <select
-                                    value={selectedOptions[currentStage]}
-                                    onChange={(e) => handleChangeOption(e.target.value)}
-                                >
-                                    <option value=''>Select an option</option>
-                                    {[0, 1, 2, 3].map((option) => (
-                                    <option key={option} value={option}>
-                                        Option {option}
-                                    </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                            
-                    </div>
-                    {/* <div className='w-1/2'>
-                        <h3 className='my-2'>Items Available</h3>
-                        <ul>
-                            {itemName}
-                        </ul>
-                    </div>
-                    <div className='h-64 w-1/2 overflow-y-scroll'>
-                        <h3 className='my-2'>Rankings</h3>
-                        {
-                            itemsAvailable.map((item, index) => (
-                                <div key={index} className="">
-                                    <label htmlFor={item.name} className="text-sm font-normal mb-1 ml-1">{item.name}</label>
+                            <div className='w-full'>
+                                <h2 className='border px-2 my-7'>Select Rankings</h2>
+                                {itemsAvailableSchema.map((item, index) => (
+                                <div className='w-full' key={index}>
+                                    {/* <h2 className='border px-2 my-7'>{item.item}</h2> */}
                                     <select
-                                        name={item.name}
-                                        id={item.name}
-                                        value={rankingForm[item.name] || ''} 
-                                        className='w-full px-2 border outline-0 py-2'
-                                        onChange={handleChangeRankingForm}
+                                        name={`ranking-${index}`}
+                                        value={item.option}
+                                        onChange={(e) => {
+                                            const selectedOption = e.target.value;
+                                            setItemsAvailableSchema(prevState => {
+                                                const updatedItems = [...prevState];
+                                                updatedItems[index].option = selectedOption;
+                                                return updatedItems;
+                                            });
+                                        }}
+                                        className='w-full border px-3 py-1 outline-0'
                                     >
-                                        {item.rankings.map((ranking, i) => (
-                                            <option className='p-2 border-primary' key={i} value={ranking}>{ranking}</option>
+                                        {rankings.map((ranking) => (
+                                            <option key={ranking} value={ranking}>
+                                                {ranking}
+                                            </option>
                                         ))}
                                     </select>
                                 </div>
-                            ))
-                            
-                            
-                        }
-                        
-                    </div> */}
-                    </>
-                </div>
-                {/* <div className='w-full'>
-                    <Button primary width={'full'} onClick={()=>navigateTo('/available-scales')}>Save and Proceed</Button>
-                </div> */}
+                            ))}
+                            </div>
+                        </>
+                    </div>
                 </>
                 )}
-                {currentStage === stages.length - 1 ? (
-                            <Button width={'full'} primary onClick={handleSubmit} disabled={selectedOptions[currentStage] === ''}>
-                            Submit
-                            </Button>
-                        ) : (
-                            <Button primary
-                            onClick={handleSaveAndProceed}
-                            disabled={selectedOptions[currentStage] === ''}
-                            >
-                            Save and Proceed
-                            </Button>
-                        )}
+                <div className='flex items-center gap-3 mt-10'>
+                    <Button width={'full'} onClick={handlePrev} disabled={currentStage===0}>Previous</Button>
+                    <Button width={'full'} primary onClick={handleSubmit}>save and proceed</Button>
+                </div>
             </div>
         </div>
         <div className='w-full lg:w-8/12 flex items-center justify-end my-4'>

@@ -1,9 +1,14 @@
 
 import React from "react"
 
-const Button = ({ children, primary, width, ...props })=>{
+const Button = ({ children, primary, width, disabled, ...props })=>{
+    const className = disabled ? 'cursor-not-allowed' : 'bg-primary'
     return(
-        <button className={`w-${width} ${primary ? 'bg-primary text-white' : 'bg-gray-700/20'} hover:bg-gray-700/50 py-2 px-2 my-1`} {...props}>
+        <button 
+            className={`w-${width} ${primary ? `${className} text-white` : 'bg-gray-700/20'} hover:bg-gray-700/50 py-2 px-2 my-1`} 
+            {...props}
+            disabled={disabled}
+            >
             { children }
         </button>
     )

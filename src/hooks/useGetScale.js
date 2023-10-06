@@ -11,7 +11,7 @@ const useGetScale = () => {
             setIsLoading(true);
             const response = await axios.get(`http://100035.pythonanywhere.com/ranking/api/${endPoint}`);
             setScaleData(response.data); 
-            console.log(response, '**** resttt')
+            // console.log(response, '**** resttt')
         } catch (error) {
             console.error(error);
         } finally {
