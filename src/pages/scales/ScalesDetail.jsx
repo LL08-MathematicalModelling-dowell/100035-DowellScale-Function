@@ -16,19 +16,14 @@ const ScalesDetail = () => {
     const [currentStage, setCurrentStage] = useState(0);
     
     
-    const stages = [
-        'Stage 1',
-        'Stage 2',
-        'Stage 3',
-      ];
-    
+    const stages = ['Stage 1', 'Stage 2', 'Stage 3',];
     const itemsAvailable = ['item 111', 'item 222'];
-    const rankings = [0, 1];
+    const rankings = [3, 1];
+
     const [itemsAvailableSchema, setItemsAvailableSchema] = useState(
         itemsAvailable.map((item)=>{
             const updatedItems = {
                 item:item,
-                rankings:[0,1],
                 option:0
             }
             return updatedItems
@@ -44,37 +39,14 @@ const ScalesDetail = () => {
         }
     ]);
 
-    // itemsAvailableSchema.map((item) => {
-    //     console.log(item.rankings, 'schema***');
-    //   });
-    // console.log(db, 'new schema')
-
-    // const [database, setDatabase] = useState(
-    //     stages.map((stage)=>{
-    //         const dbSchema = {
-    //                     stageName:stage,
-    //                     itemList:itemsAvailable.map((item)=>{
-    //                         return {
-    //                             itemName:item,
-    //                             rank:0,
-    //                         }
-    //                     })
-    //                 }
-    //             return dbSchema;
-    //     })
-    // );
-
-  
-
 
     const navigateTo = useNavigate();
 
     
 
     const handleNext = ()=>{
-        const currentStage = db.length + 1; 
         const updatedDb = [...db, {
-            stage: `Stage ${currentStage}`,
+            stage: `Stage ${currentStage + 1}`,
             items: itemsAvailableSchema.map(item => ({
                 itemName: item.item,
                 rank: item.option
@@ -89,14 +61,38 @@ const ScalesDetail = () => {
         }
     }
 
-    const handleSubmit = ()=>{
+    const handleSelectOption = (e, index) => {
+        const selectedOption = e.target.value;
+    
+        setItemsAvailableSchema(prevSchema => {
+            const updatedSchema = [...prevSchema];
+            updatedSchema[index].option = selectedOption;
+            return updatedSchema;
+        });
+
+        console.log(selectedOption, '***** schema')
+    };
+    
+
+    const handleSubmit = () => {
+        const updatedDb = [...db];
+        updatedDb[currentStage] = {
+            stage: `Stage ${currentStage + 1}`,
+            items: itemsAvailableSchema.map(item => ({
+                itemName: item.item,
+                rank: item.option
+            }))
+        };
+        setDb(updatedDb);
+    
         if (currentStage === stages.length - 1) {
-            // to perform, more actions
-            console.log(db, 'data base')
+            // Perform additional actions for the last stage
+            console.log(updatedDb, 'database');
         } else {
-            handleNext();
+            setCurrentStage(prev => prev + 1);
         }
     }
+    
 
     const handleFetchSingleScale = async(scaleId)=>{
         await fetchSingleScaleData(scaleId);
@@ -172,14 +168,7 @@ const ScalesDetail = () => {
                                     <select
                                         name={`ranking-${index}`}
                                         value={item.option}
-                                        onChange={(e) => {
-                                            const selectedOption = e.target.value;
-                                            setItemsAvailableSchema(prevState => {
-                                                const updatedItems = [...prevState];
-                                                updatedItems[index].option = selectedOption;
-                                                return updatedItems;
-                                            });
-                                        }}
+                                        onChange={(e)=>handleSelectOption(e, index)}
                                         className='w-full border px-3 py-1 outline-0'
                                     >
                                         {rankings.map((ranking) => (
