@@ -18,7 +18,7 @@ const ScalesDetail = () => {
     
     const stages = ['Stage 1', 'Stage 2', 'Stage 3',];
     const itemsAvailable = ['item 111', 'item 222'];
-    const rankings = [3, 1];
+    const rankings = [0, 1];
 
     const [itemsAvailableSchema, setItemsAvailableSchema] = useState(
         itemsAvailable.map((item)=>{
