@@ -20,7 +20,7 @@ const ScalesDetail = () => {
 
     console.log(sigleScaleData, 'sigleScaleData***')
     
-    const stages = ['Stage 1', 'Stage 2'];
+    const stages = ['City 5', 'City 6'];
     const itemsAvailable = ['item 111', 'item 222'];
     const rankings = [0, 1];
 
@@ -79,7 +79,7 @@ const ScalesDetail = () => {
     const handleSubmit = async() => {
         const updatedDb = [...db];
         updatedDb[currentStage] = {
-            stage_name: `Stage ${currentStage + 1}`,
+            stage_name: stages[`${currentStage}`],
             stage_rankings: itemsAvailableSchema.map(item => ({
                 name: item.item,
                 rank: item.option
@@ -92,7 +92,7 @@ const ScalesDetail = () => {
                 scale_id: "651bd7295c8f069f1f078ed5",
                 brand_name: "New Brand",
                 product_name:"New Product",
-                num_of_stages: 6,
+                num_of_stages: 2,
                 num_of_substages:0,
                 username: "natan",
                 rankings:updatedDb
