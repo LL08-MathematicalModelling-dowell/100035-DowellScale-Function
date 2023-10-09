@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router';
+import useCreateRankingScalesResponse from '../../hooks/useCreateRankingScalesResponse';
 import { MdManageHistory } from 'react-icons/md';
 import { BsArrowLeft} from 'react-icons/bs';
 import useGetScale from '../../hooks/useGetScale';
@@ -13,10 +14,13 @@ const ScalesDetail = () => {
     const { slug } = useParams();
     const { isLoading, scaleData, fetchScaleData} = useGetScale();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
+    const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
     const [currentStage, setCurrentStage] = useState(0);
+
+
+    console.log(sigleScaleData, 'sigleScaleData***')
     
-    
-    const stages = ['Stage 1', 'Stage 2', 'Stage 3',];
+    const stages = ['Stage 1', 'Stage 2'];
     const itemsAvailable = ['item 111', 'item 222'];
     const rankings = [0, 1];
 
@@ -31,9 +35,9 @@ const ScalesDetail = () => {
     );
     const [db, setDb] = useState([
         {
-            stage: stages[currentStage],
-            items: itemsAvailableSchema.map(item => ({
-                itemName: item.item,
+            stage_name: stages[currentStage],
+            stage_rankings: itemsAvailableSchema.map(item => ({
+                name: item.item,
                 rank: item.option
             }))
         }
@@ -44,17 +48,17 @@ const ScalesDetail = () => {
 
     
 
-    const handleNext = ()=>{
-        const updatedDb = [...db, {
-            stage: `Stage ${currentStage + 1}`,
-            items: itemsAvailableSchema.map(item => ({
-                itemName: item.item,
-                rank: item.option
-            }))
-        }];
-        setDb(updatedDb);
-        setCurrentStage(prev => prev + 1);
-    }
+    // const handleNext = ()=>{
+    //     const updatedDb = [...db, {
+    //         stage: `Stage ${currentStage + 1}`,
+    //         items: itemsAvailableSchema.map(item => ({
+    //             itemName: item.item,
+    //             rank: item.option
+    //         }))
+    //     }];
+    //     setDb(updatedDb);
+    //     setCurrentStage(prev => prev + 1);
+    // }
     const handlePrev = ()=>{
         if(currentStage > 0){
             setCurrentStage(prev => prev - 1);
@@ -69,25 +73,32 @@ const ScalesDetail = () => {
             updatedSchema[index].option = selectedOption;
             return updatedSchema;
         });
-
-        console.log(selectedOption, '***** schema')
     };
     
 
-    const handleSubmit = () => {
+    const handleSubmit = async() => {
         const updatedDb = [...db];
         updatedDb[currentStage] = {
-            stage: `Stage ${currentStage + 1}`,
-            items: itemsAvailableSchema.map(item => ({
-                itemName: item.item,
+            stage_name: `Stage ${currentStage + 1}`,
+            stage_rankings: itemsAvailableSchema.map(item => ({
+                name: item.item,
                 rank: item.option
             }))
         };
         setDb(updatedDb);
     
         if (currentStage === stages.length - 1) {
-            // Perform additional actions for the last stage
-            console.log(updatedDb, 'database');
+            const payload =  {
+                scale_id: "651bd7295c8f069f1f078ed5",
+                brand_name: "New Brand",
+                product_name:"New Product",
+                num_of_stages: 6,
+                num_of_substages:0,
+                username: "natan",
+                rankings:updatedDb
+              }
+            await CreateRankingScalesResponse(payload)
+            
         } else {
             setCurrentStage(prev => prev + 1);
         }
