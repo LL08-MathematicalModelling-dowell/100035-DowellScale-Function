@@ -76,6 +76,7 @@ def settings_api_view_create(request):
         user_json = json.loads(x)
         details = {
             "scale_id": user_json['inserted_id'], "event_id": eventID, "username": username}
+        field_add['scale_id'] = user_json['inserted_id']
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098", "ABCDE",
                                         "insert", details, "nil")
         return Response({"success": True, "data": field_add})
