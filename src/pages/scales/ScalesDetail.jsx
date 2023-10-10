@@ -16,7 +16,6 @@ const ScalesDetail = () => {
     const { isLoading, scaleData, fetchScaleData} = useGetScale();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
-    const [defaultScale, setDefaultScale] = useState([]);
     const [currentStage, setCurrentStage] = useState(0);
 
 
