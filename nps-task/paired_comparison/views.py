@@ -1,5 +1,3 @@
-import base64
-import imghdr
 import json
 from nps.dowellconnection import dowellconnection
 from rest_framework.decorators import api_view
@@ -14,24 +12,6 @@ import uuid
 import os
 
 
-def save_image(key, image_data,image_label_format):
-    try:
-        # Decode the base64-encoded image data
-        image_bytes = base64.b64decode(image_data)
-    except ValueError:
-        # Handle invalid base64 data
-        return
-
-    # Determine the file extension based on the image format
-    image_format = imghdr.what('', h=image_bytes)
-    if image_format is None:
-        # Handle unsupported or unknown image formats
-        return
-
-    # Define a unique path for each image
-    image_path = f'images/{key}.{image_format}'
-    default_storage.save(image_path, image_bytes)
-    image_label_format[key] = image_path
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
     if request.method == 'POST':
@@ -79,8 +59,10 @@ def settings_api_view_create(request):
             return Response({"error": "Total number of pairs is not equal to expected number of pairs"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         eventID = get_event_id()
         image_paths = {}
-        for key, image_data in images_dict.items():
-            save_image(key, image_data, images_dict)
+        for image_name in images_dict.keys():
+            _, type = str(images_dict[image_name]).split(".")
+            path = default_storage.save(f"{uuid.uuid4()}.{type}", images_dict[image_name])
+            image_paths[image_name] = path
         field_add = {
             "event_id": eventID,
             "settings" : {"orientation": orientation,
