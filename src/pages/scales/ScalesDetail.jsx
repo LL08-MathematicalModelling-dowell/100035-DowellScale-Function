@@ -82,7 +82,7 @@ const ScalesDetail = () => {
             stage_name: stages[`${currentStage}`],
             stage_rankings: itemsAvailableSchema.map(item => ({
                 name: item.item,
-                rank: item.option
+                rank: Number(item.option)
             }))
         };
         setDb(updatedDb);
