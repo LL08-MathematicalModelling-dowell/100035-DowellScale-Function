@@ -95,7 +95,7 @@ const ScalesDetail = () => {
         const selectedOptions = itemsAvailableSchema.map(item => item.option);
         const isDuplicate = new Set(selectedOptions).size !== selectedOptions.length;
         if (isDuplicate) {
-            toast.error('you selected similar options. must be 0 and 1');
+            toast.error('Please assign unique ranks to each item');
             return;
         }
         const updatedDb = [...db];
