@@ -303,7 +303,7 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
     scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
                              "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
     scale = json.loads(scale)
-    if not scale['data']:
+    if not scale.get('data, none'):
         return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
     if scale['data'][0]['settings']['scale_category'] != 'perceptual_mapping scale':
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
