@@ -18,7 +18,7 @@ const ScalesDetail = () => {
     const [currentStage, setCurrentStage] = useState(0);
 
 
-    console.log(sigleScaleData, 'sigleScaleData***')
+    
     
     const stages = ['City 5', 'City 6'];
     const itemsAvailable = ['item 111', 'item 222'];
@@ -82,7 +82,7 @@ const ScalesDetail = () => {
             stage_name: stages[`${currentStage}`],
             stage_rankings: itemsAvailableSchema.map(item => ({
                 name: item.item,
-                rank: item.option
+                rank:Number(item.option),
             }))
         };
         setDb(updatedDb);
