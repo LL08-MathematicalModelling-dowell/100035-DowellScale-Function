@@ -41,3 +41,18 @@
    - Documentation:
         https://documenter.getpostman.com/view/21255221/2s93z9d3tX
 
+- ## RANKING Scale
+   - Description:
+        A ranking scale is a survey question tool that measures people's preferences by asking them to rank their views on a list of related items. The ranking scale is used for managing ranking scales and collecting user responses. It provides endpoints for creating new ranking scales and submitting rankings for a specific scale. The API allows users to define ranking scales with multiple stages and sub-stages, and users can submit their rankings for each stage. The API facilitates the storage and retrieval of ranking data, enabling analysis and insights based on user-generated rankings.
+   - Example: ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/56716832/0f01fec3-c629-4c01-b434-7e6b34fa75df)
+   
+   - Documentation:
+     
+        https://documenter.getpostman.com/view/27723419/2s9Y5bRh35
+
+- ## QSORT scale
+
+    - Description: The Q-Sort Scale is a psychological assessment tool used to measure and rank subjective opinions or personality traits of individuals. It typically involves sorting a set of items or statements into predefined categories, allowing researchers to gain insights into an individual's perceptions, values, or preferences. Given below is the API collection for creating and managing Q-Sort scales, streamlining the process of administering and analyzing Q-Sort assessments.
+    - Example: ![image]
+      
+    - Documentation: https://documenter.getpostman.com/view/link_for_qsort_scale_api_documentation
