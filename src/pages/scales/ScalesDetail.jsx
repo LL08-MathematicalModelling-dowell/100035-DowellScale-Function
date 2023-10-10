@@ -16,6 +16,7 @@ const ScalesDetail = () => {
     const { isLoading, scaleData, fetchScaleData} = useGetScale();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
+    const [defaultScale, setDefaultScale] = useState([]);
     const [currentStage, setCurrentStage] = useState(0);
 
 
@@ -134,6 +135,7 @@ const ScalesDetail = () => {
     useEffect(()=>{
         fetchScaleData(slug);
     },[]);
+    
 
     
 
@@ -219,7 +221,7 @@ const ScalesDetail = () => {
                 )}
                 <div className='flex items-center gap-3 mt-10'>
                     {/* <Button width={'full'} onClick={handlePrev} disabled={currentStage===0}>Previous</Button> */}
-                    <Button width={'full'} primary onClick={handleSubmit}>save and proceed</Button>
+                    <Button width={'full'} primary onClick={handleSubmit}>{(currentStage === stages.length - 1) ? 'submit' : 'save and proceed'}</Button>
                 </div>
             </div>
         </div>
