@@ -323,6 +323,8 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
     
     x_range = settings['x_range']
     y_range = settings['y_range']
+    X_upper_limit = settings['X_upper_limit']
+    Y_upper_limit = settings['Y_upper_limit']
     x_left = settings['X_left']
     x_right = settings['X_right']
     y_top = settings['Y_top']
@@ -342,18 +344,22 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
             return Response({"error": f"{item} not in item_list"}, status=status.HTTP_400_BAD_REQUEST)
         
     #check if all possitions, and items  are valid
-    for item, possision in positions.items():
-        if isinstance(possision, list) == False:
-            return Response({"error": f"{item} possision must be a tuple"}, status=status.HTTP_400_BAD_REQUEST)
+    for item, position in positions.items():
+        if isinstance(position, list) == False:
+            return Response({"error": f"{item} position must be a list of x and y position"}, status=status.HTTP_400_BAD_REQUEST)
         if item not in item_list:
             return Response({"error": f"{item} not in item_list"}, status=status.HTTP_400_BAD_REQUEST)
-        if possision[0] not in x_range:
-            return Response({"error": f"{item} x possision not in x_range"}, status=status.HTTP_400_BAD_REQUEST)
-        if possision[1] not in y_range:
-            return Response({"error": f"{item} y possision not in y_range"}, status=status.HTTP_400_BAD_REQUEST)
+        if position[0] < -X_upper_limit or position[0] > X_upper_limit:
+            return Response({"error": f"{item} position not in range"}, status=status.HTTP_400_BAD_REQUEST)
+        if position[1] < -Y_upper_limit or position[1] > Y_upper_limit:
+            return Response({"error": f"{item} position not in range"}, status=status.HTTP_400_BAD_REQUEST)
+        if position[0] not in x_range:
+            return Response({"error": f"{item} x position not in x_range"}, status=status.HTTP_400_BAD_REQUEST)
+        if position[1] not in y_range:
+            return Response({"error": f"{item} y position not in y_range"}, status=status.HTTP_400_BAD_REQUEST)
         
     field_add = {"event_id": event_id,
-                    "scale_data": {"scale_id": scale_id, "scale_type": "perceptual_mapping scale"},
+                    "scale_data": {"scale_id": scale_id, "scale_type": "perceptual_mapping scale",  "instance_id": instance_id},
                     "brand_data": {"brand_name": responses['brand_name'], "product_name": responses['product_name']},
                     "positions": positions,
                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
