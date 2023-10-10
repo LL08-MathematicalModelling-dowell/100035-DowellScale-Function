@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import useCreateRankingScalesResponse from '../../hooks/useCreateRankingScalesResponse';
 import { MdManageHistory } from 'react-icons/md';
 import { BsArrowLeft} from 'react-icons/bs';
+import { toast } from 'react-toastify';
 import useGetScale from '../../hooks/useGetScale';
 import useGetSingleScale from '../../hooks/useGetSingleScale';
 import Fallback from '../../components/Fallback';
@@ -73,10 +74,30 @@ const ScalesDetail = () => {
             updatedSchema[index].option = selectedOption;
             return updatedSchema;
         });
+
+        // const selectedOption = e.target.value;
+        // const isOptionAlreadyChosen = itemsAvailableSchema.some((item, i) => i !== index && item.option === selectedOption);
+
+        // if (isOptionAlreadyChosen) {
+        //     toast.error('option has already been selected. must be 0 or 1')
+        //     return;
+        // }
+
+        // setItemsAvailableSchema(prevSchema => {
+        //     const updatedSchema = [...prevSchema];
+        //     updatedSchema[index].option = selectedOption;
+        //     return updatedSchema;
+        // });
     };
     
 
     const handleSubmit = async() => {
+        const selectedOptions = itemsAvailableSchema.map(item => item.option);
+        const isDuplicate = new Set(selectedOptions).size !== selectedOptions.length;
+        if (isDuplicate) {
+            toast.error('you selected similar options. must be 0 and 1');
+            return;
+        }
         const updatedDb = [...db];
         updatedDb[currentStage] = {
             stage_name: stages[`${currentStage}`],
@@ -141,13 +162,14 @@ const ScalesDetail = () => {
                 <>
                     <div className='w-full  flex items-center gap-5'>
                         <button 
-                            onClick={()=>navigateTo(-1)}
+                            onClick={handlePrev} disabled={currentStage===0}
                             className='w-3/12 bg-primary text-white flex items-center justify-center gap-2 hover:bg-gray-700/50 py- px-2 py-2 my-1 capitalize'> 
                             <BsArrowLeft className='text-white' />
                             Go Back
                         </button>
-                        <span className='w-3/12 border px-10 py-1'>stage {currentStage + 1} of {stages.length}</span>
-                        <h2 className='text-xl capitalize border w-6/12 px-2 py-1 text-center'>
+                        {/* <Button width={'1/2'} onClick={handlePrev} disabled={currentStage===0}>Previous</Button> */}
+                        <h2 className='w-3/12 border text-center py-2'>stage {currentStage + 1} of {stages.length}</h2>
+                        <h2 className='text-xl capitalize border w-6/12 py-1 text-center'>
                             {/* {slug.split('-').join(' ')} */}
                             {stages[currentStage]}
                             {/* {sigleScaleData ?
@@ -196,7 +218,7 @@ const ScalesDetail = () => {
                 </>
                 )}
                 <div className='flex items-center gap-3 mt-10'>
-                    <Button width={'full'} onClick={handlePrev} disabled={currentStage===0}>Previous</Button>
+                    {/* <Button width={'full'} onClick={handlePrev} disabled={currentStage===0}>Previous</Button> */}
                     <Button width={'full'} primary onClick={handleSubmit}>save and proceed</Button>
                 </div>
             </div>

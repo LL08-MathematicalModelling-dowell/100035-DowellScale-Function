@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+
 const useCreateRankingScalesResponse = () => {
     const [isLoading, setIsLoading] = useState(false);
     const CreateRankingScalesResponse = async(payload)=>{
