@@ -124,7 +124,7 @@ def settings_api_view_create(request):
                 item_count = response.get('item_count')
                 if (item_list == None) or (item_count == None):
                     return Response({"error": "item_list and item_count have to be updated together"}, status=status.HTTP_400_BAD_REQUEST)
-                item_count, item_list = item_count[0], item_list[0]
+                item_count = int(item_count[0])
                 if item_count != len(item_list):
                     return Response({"error": "item count does not match length of item list"}, status=status.HTTP_400_BAD_REQUEST)
                 if item_count < 2:
