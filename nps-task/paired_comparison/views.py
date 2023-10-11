@@ -148,6 +148,8 @@ def settings_api_view_create(request):
                 if key in response:
                     settings[key] = response[key][0]
             if "item_list" in response:
+                settings["item_list"] = item_list
+                settings["item_count"] = item_count
                 settings["paired_items"] = paired_items
                 settings["total_items"] = item_count
                 settings["total_pairs"] = total_pairs
