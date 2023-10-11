@@ -8,7 +8,11 @@ export default {
       display: ['Open Sans', 'sans-serif'],
       body: ['Open Sans', 'sans-serif'],
     },
+  
     extend: {
+      colors:{
+        primary:'#1A8753',
+      },
       screens: {
         mf: '990px',
       },
