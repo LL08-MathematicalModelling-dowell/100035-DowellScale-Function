@@ -431,7 +431,7 @@ def is_emoji(character):
 
 # SUMBIT SCALE RESPONSE
 @api_view(['POST', 'GET'])
-def nps_response_view_submit(request):
+def nps_response_view_submit(request, api_key=None):
     if request.method == "POST":
         try:
             response = request.data
@@ -482,8 +482,8 @@ def nps_response_view_submit(request):
                     if not isinstance(process_id, str):
                         return Response({"error": "The process ID should be a string."},
                                         status=status.HTTP_400_BAD_REQUEST)
-                    return response_submit_loop(response, scale_id, instance_id, user, score, process_id)
-                return response_submit_loop(response, scale_id, instance_id, user, score)
+                    return response_submit_loop(response, scale_id, instance_id, user, score, process_id,api_key=api_key)
+                return response_submit_loop(response, scale_id, instance_id, user, score, api_key=api_key)
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
@@ -511,7 +511,7 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
     return None
 
 
-def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None):
+def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None, api_key=None):
     field_add = {"_id": scale_id, "settings.scale_category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
@@ -561,6 +561,8 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     # Conditionally add "process_id" if it exists
     if process_id:
         common_data["process_id"] = process_id
+    if api_key:
+        common_data["api_key"] = api_key
     if document_data:
         common_data["document_data"] = document_data
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
@@ -848,7 +850,6 @@ def new_nps_create(request):
         try:
             params = request.GET
             scale_id = params.get('scale_id')
-            print(scale_id)
             if not scale_id:
                 field_add = {"settings.scale_category": "nps scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
@@ -895,9 +896,9 @@ def redirect_view(request):
                     if scale_type == "settings":
                         return error_response(request, {"success": True, "settings": json.loads(setting_response)['data']},status.HTTP_200_OK)
                     return error_response(request, {"success": True, "responses": json.loads(responses)['data']},status.HTTP_200_OK)
-                # elif brand_name is not None and product_name is not None and request.method == "GET":
-                #     responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports","scale_reports","1094","ABCDE", "fetch",{"brand_data.brand_name": brand_name.strip(),"brand_data.product_name": product_name.strip(),"scale_data.scale_type": f"{scaletype} scale"},    "nil")
-                #     return error_response(request, {"success": True, "response": json.loads(responses)['data']},status.HTTP_200_OK)
+                elif api_key and scaletype is None and scale_type is None and request.method == "GET":
+                    responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports","scale_reports","1094","ABCDE", "fetch",{"api_key": api_key.strip()},"nil")
+                    return error_response(request, {"success": True, "response": json.loads(responses)['data']},status.HTTP_200_OK)
                 if "nps_lite" in scaletype and "settings" in scale_type:
                     return nps_lite.settings_api_view_create(request)
                 elif "nps_lite" in scaletype and "response" in scale_type:
@@ -917,7 +918,7 @@ def redirect_view(request):
                 elif "nps" in scaletype and "settings" in scale_type:
                     return new_nps_create(request)
                 elif "nps" in scaletype and "response" in scale_type:
-                    return nps_response_view_submit(request)
+                    return nps_response_view_submit(request, api_key)
                 elif "percent" in scaletype and "settings" in scale_type:
                     return percent.settings_api_view_create(request)
                 elif "percent" in scaletype and "response" in scale_type:
@@ -951,5 +952,4 @@ def redirect_view(request):
             return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
 
     except Exception as e:
-        print("Erererer")
-        return error_response(request, {"success": False, "error": "Provide required fields"}, status.HTTP_400_BAD_REQUEST)
+        return error_response(request, {"success": False, "error": f"Provide required fields {e}"}, status.HTTP_400_BAD_REQUEST)
