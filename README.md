@@ -56,3 +56,19 @@
     - Example: ![image]
       
     - Documentation: https://documenter.getpostman.com/view/link_for_qsort_scale_api_documentation
+
+- ## Paired-Comparison scale
+   - Description:
+         A paired comparison scale is a type of measurement scale that compares two items at a time and asks respondents to choose which item they prefer. It is a comparative scale, meaning that it measures the relative differences between items, rather than the absolute value of each item. Paired comparison scales are often used in market research to measure consumer preferences for different products, brands, or features. The API provides endpoints for defining items to be compared, attach images and submit ressponses. This data can then be retrieved and analysed for insight gathering.
+
+   - Example:
+
+   - Documentation: https://documenter.getpostman.com/view/21255221/2s9YCBu9pJ
+
+- ## Perceptual Mapping Scale
+   - Description: 
+      A perceptual mapping scale is a type of scale that is used to measure how consumers perceive different products, brands, or services. It is a graphical representation of consumers' perceptions, and it can be used to identify opportunities for new products or services, to develop marketing strategies, and to track changes in consumer perceptions over time. The API provides endpoints for defining products to be rated and the graphical limits, then endpoints to give ratings to products within the specified graohical limits are provided. Perceptual mapping scales are a valuable tool for businesses that want to understand how consumers perceive their products or services. They can be used to make more informed decisions about product development, marketing, and brand positioning.
+   
+   - Example:
+
+   - Documentation: https://documenter.getpostman.com/view/21255221/2s9YJjQyfX
