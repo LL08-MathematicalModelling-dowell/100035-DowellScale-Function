@@ -37,11 +37,7 @@ function App() {
           </Routes>
         </Suspense>
 
-        {/* <Navbar />
-    <Main/> */}
-        {/* <Services />
-  <Transactions />
-  <Footer /> */}
+
       </div>
     </>
   );
