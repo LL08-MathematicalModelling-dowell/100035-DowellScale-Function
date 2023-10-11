@@ -115,8 +115,8 @@ const CreateScale = ()=>{
     }
     return(
         <div className="h-screen w-full flex flex-col items-center justify-center">
-            <div className="w-7/12 m-auto">
-                <h2 className="capitalize text-center text-lg">set up your Ranking</h2>
+            <div className="w-7/12 m-auto border p-10">
+                <h2 className="capitalize text-center text-lg mb-7">set up your Ranking</h2>
             <div>
                 <div className='grid grid-cols-3 gap-3 mb-10'>
                     <CustomTextInput 
@@ -152,13 +152,13 @@ const CreateScale = ()=>{
                             ))}
                         </div>
                     </div>
-                    <div className="flex items-center justify-center">
+                    <div className="">
                         <CustomTextInput
                             label='item count'
                             name="item_count"
                             type="number"
                             placeholder="item count"
-                            
+                            // className='w-full outline-0 border py-1 px-1 rounded-sm text-gray-700'
                         />
                         {/* <button className="bg-primary text-white px-1 py-1" 
                             onClick={()=>{

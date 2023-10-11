@@ -6,6 +6,7 @@ const useGetSingleScale = () => {
     const [sigleScaleData, setSingleScaleData] = useState(null);
 
     const fetchSingleScaleData = async (scaleId) => {
+        console.log(scaleId, 'scaleId scaleId **')
         try {
             setLoading(true);
             const response = await axios.get(`http://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id=${scaleId}`);
