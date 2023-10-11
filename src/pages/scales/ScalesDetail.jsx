@@ -18,15 +18,36 @@ const ScalesDetail = () => {
     const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
     const [currentStage, setCurrentStage] = useState(0);
 
+    console.log(scaleData[112], '*** scaleData')
+
+
+
+    const dataStages = sigleScaleData?.map((scale)=>{
+        const stages = scale?.settings?.stages.map((stage)=>{
+            return stage;
+        })
+        return stages;
+    });
+
+    const dataItems = sigleScaleData?.map((scale)=>{
+        const itemList = scale?.settings?.item_list.map((list)=>{
+            return list;
+        })
+        return itemList;
+    })
+
+    // console.log(dataItems[0], 'dataItems')
+
 
     
     
-    const stages = ['City 5', 'City 6'];
-    const itemsAvailable = ['item 111', 'item 222'];
+    const stages = dataStages ? dataStages[0] : ['City 5', 'City 6'];
+    console.log(stages, 'stages')
+    const itemsAvailable = dataItems ? dataItems[0] : ['item 111', 'item 222'];
     const rankings = [0, 1];
 
     const [itemsAvailableSchema, setItemsAvailableSchema] = useState(
-        itemsAvailable.map((item)=>{
+        (dataItems ? dataItems[0] : itemsAvailable).map((item)=>{
             const updatedItems = {
                 item:item,
                 option:0
@@ -34,6 +55,8 @@ const ScalesDetail = () => {
             return updatedItems
         })
     );
+
+    console.log(itemsAvailableSchema, 'itemsAvailableSchema')
     const [db, setDb] = useState([
         {
             stage_name: stages[currentStage],
@@ -74,20 +97,6 @@ const ScalesDetail = () => {
             updatedSchema[index].option = selectedOption;
             return updatedSchema;
         });
-
-        // const selectedOption = e.target.value;
-        // const isOptionAlreadyChosen = itemsAvailableSchema.some((item, i) => i !== index && item.option === selectedOption);
-
-        // if (isOptionAlreadyChosen) {
-        //     toast.error('option has already been selected. must be 0 or 1')
-        //     return;
-        // }
-
-        // setItemsAvailableSchema(prevSchema => {
-        //     const updatedSchema = [...prevSchema];
-        //     updatedSchema[index].option = selectedOption;
-        //     return updatedSchema;
-        // });
     };
     
 
@@ -219,9 +228,16 @@ const ScalesDetail = () => {
                 </>
                 )}
                 <div className='flex items-center gap-3 mt-10'>
-                    {/* <Button width={'full'} onClick={handlePrev} disabled={currentStage===0}>Previous</Button> */}
+                   
                     <Button width={'full'} primary onClick={handleSubmit}>{(currentStage === stages.length - 1) ? 'submit' : 'save and proceed'}</Button>
+                   
                 </div>
+                {sigleScaleData && sigleScaleData.map((scale, index)=>(
+                    <>
+                        <Button width={'full'} onClick={()=>navigateTo(`/scales-settings/${scale._id}`)} key={index}>update scale</Button>
+                    </>
+                ))}
+                {/* <Button width={'full'}>update scale</Button> */}
             </div>
         </div>
         <div className='w-full lg:w-8/12 flex items-center justify-end my-4'>
