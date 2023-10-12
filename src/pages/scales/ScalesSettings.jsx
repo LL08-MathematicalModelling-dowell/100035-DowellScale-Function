@@ -16,6 +16,7 @@ const ScalesSettings = ()=>{
     const { _id, settings } = (sigleScaleData && sigleScaleData[0]) || {};
     const [isLoading, setIsLoading] = useState(false);
     const updateResponse = useUpdateResponse();
+    const navigateTo = useNavigate();
 
 
     const scalename = settings?.scalename;
@@ -140,6 +141,7 @@ const ScalesSettings = ()=>{
     }
 
     const handleUpdateRankingScale = async()=>{
+        console.log(updatePayload)
         try {
             setIsLoading(true);
             const response = await updateResponse(updatePayload);
