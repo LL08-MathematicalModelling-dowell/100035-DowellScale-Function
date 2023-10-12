@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { toast } from 'react-toastify';
+import { useParams, useNavigate } from "react-router-dom";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
 import useGetSingleScale from "../../hooks/useGetSingleScale";
 import { useUpdateResponse } from "../../hooks/useUpdateResponse";
@@ -13,9 +14,9 @@ const ScalesSettings = ()=>{
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const [timeOn, setTimeOn] = useState(false);
     const { _id, settings } = (sigleScaleData && sigleScaleData[0]) || {};
+    const [isLoading, setIsLoading] = useState(false);
     const updateResponse = useUpdateResponse();
 
-    console.log(_id, 'settings')
 
     const scalename = settings?.scalename;
     const num_of_stages = settings?.num_of_stages;
@@ -138,23 +139,29 @@ const ScalesSettings = ()=>{
         setUpdateFormData({ ...updateFormData, [name]:value });
     }
 
-    const handleUpdateRankingScale = ()=>{
-        // try {
-        //     updateResponse(payload)
-        // } catch (error) {
-        //     console.log(error)
-        // }
-        updateResponse(updatePayload)
-        console.log(updatePayload, 'payload');
+    const handleUpdateRankingScale = async()=>{
+        try {
+            setIsLoading(true);
+            const response = await updateResponse(updatePayload);
+            // console.log(response, 'updated response')
+            toast.success('successfully updated');
+            setTimeout(()=>{
+                navigateTo(`/all-scales/${'ranking-scale'}`);
+            },2000)
+        } catch (error) {
+            console.log(error)
+        }finally{
+            setIsLoading(false)
+        }
     }
 
-    if(loading){
+    if(loading || isLoading){
         return <Fallback />
     }
     return(
         <div className="h-screen w-full flex flex-col items-center justify-center">
-        <div className="w-7/12 m-auto border p-10">
-            <h2 className="capitalize text-center text-lg mb-7">update ranking scale</h2>
+        <div className="w-7/12 m-auto border border-2 p-10">
+            <h2 className="capitalize text-center text-lg mb-7">update <span className="text-primary font-xl border-b">{scalename}</span></h2>
         <div>
             <div className='grid grid-cols-3 gap-3 mb-10'>
                 <CustomTextInput 
