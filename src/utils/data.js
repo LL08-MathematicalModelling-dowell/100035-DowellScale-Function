@@ -47,3 +47,14 @@ export const dataSettings =  {
                }
           ]
   }
+
+
+  const data2 = {
+    event_id: "FB101000000012",
+    settings:{
+        scalename: "car ranking",
+        stages: [],
+        item_count:2,
+        item_list:["item 1","item 2"],
+    }
+  }

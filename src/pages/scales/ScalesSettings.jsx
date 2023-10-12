@@ -3,68 +3,149 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
 import useGetSingleScale from "../../hooks/useGetSingleScale";
+import { useUpdateResponse } from "../../hooks/useUpdateResponse";
 import Fallback from "../../components/Fallback";
 import CustomTextInput from "../../components/forms/inputs/CustomTextInput";
+import { Button } from "../../components/button";
 
 const ScalesSettings = ()=>{
     const { slug } = useParams();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const [timeOn, setTimeOn] = useState(false);
-    
-    // const { position, jobDescription } = formData || {};
-    // const [jobDetails, setJobDetails] = useState(
-    //     Object.assign({}, { position, jobDescription })
-    // );
+    const { _id, settings } = (sigleScaleData && sigleScaleData[0]) || {};
+    const updateResponse = useUpdateResponse();
 
+    console.log(_id, 'settings')
 
-    
-    const data = sigleScaleData && sigleScaleData?.map((scale)=> {
-        return scale
-    })
+    const scalename = settings?.scalename;
+    const num_of_stages = settings?.num_of_stages;
+    const num_of_substages = settings?.num_of_substages;
+    const stages = settings?.stages;
+    const item_count = settings?.item_count;
+    const item_list = settings?.item_list;
+    const scalecolor = settings?.scalecolor;
+    const fontcolor = settings?.fontcolor;
+    const fontstyle = settings?.fontstyle;
+    const orientation = settings?.orientation;
+    const ranking_method_stages = settings?.ranking_method_stages;
+    const start_with_zero = settings?.start_with_zero;
+    const reference = settings?.reference;
+    const stages_arrangement = settings?.stages_arrangement;
+    const display_ranks = settings?.display_ranks;
+        
+    //item_list:["item 1","item 2"],
+    //stages_arrangement: "",
+    //orientation: "",
+    //ranking_method_stages: "Unique Ranking",
+    //reference: "",
 
-    console.log(sigleScaleData && sigleScaleData[0], '**** sigleScaleData');
+    const [updateFormData, setUpdateFormData] = useState(
+        Object.assign({}, { 
+            user: true,
+            username: "Joel",
+            scalename,
+            num_of_stages, 
+            num_of_substages, 
+            stages, 
+            item_count, 
+            item_list,
+            scalecolor, 
+            fontcolor, 
+            fontstyle, 
+            orientation,
+            ranking_method_stages,
+            start_with_zero, 
+            reference,
+            stages_arrangement,
+            display_ranks 
+        })
+    );
 
-    const [formData, setFormData] = useState({
-        user: true,
-        username: "Joel",
-        scalename: "car ranking",
-        num_of_stages:(sigleScaleData && sigleScaleData[0]?.settings?.num_of_stages),
-        num_of_substages:(sigleScaleData && sigleScaleData[0]?.settings?.num_of_substages),
-        stages: [],
-        item_count:(sigleScaleData && sigleScaleData[0]?.settings?.item_count),
-        item_list:["item 1","item 2"],
-        stages_arrangement: "",
-        scalecolor: (sigleScaleData && sigleScaleData[0]?.settings?.scalecolor),
-        fontcolor:(sigleScaleData && sigleScaleData[0]?.settings?.fontcolor),
-        fontstyle: (sigleScaleData && sigleScaleData[0]?.settings?.fontstyle),
-        orientation: "",
-        ranking_method_stages: "Unique Ranking",
-        start_with_zero: true,
-        reference: "",
-        display_ranks: true
-    });
-
-    const orientation = ['Vertical', 'Horizontal']
+    const updateOrientation = ['Vertical', 'Horizontal']
     const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled']
     const ranking_reference = ['Overall Ranking', 'StageWise Ranking']
     const fontStyles = ['segoe print', 'times new romans', 'franklin gothic']
+
+    const updatePayload = {
+            scale_id:_id,
+            user: true,
+            username: "Joel",
+            scalename:updateFormData.scalename,
+            num_of_stages:updateFormData.num_of_stages, 
+            num_of_substages:updateFormData.num_of_substages, 
+            stages:updateFormData.stages, 
+            item_count:updateFormData.item_count, 
+            item_list:updateFormData.item_list,
+            scalecolor:updateFormData.scalecolor, 
+            fontcolor:updateFormData.fontcolor, 
+            fontstyle:updateFormData.fontstyle, 
+            orientation:updateFormData.orientation,
+            ranking_method_stages:updateFormData.ranking_method_stages,
+            start_with_zero:updateFormData.start_with_zero, 
+            reference:updateFormData.reference,
+            stages_arrangement:updateFormData.stages_arrangement,
+            display_ranks:updateFormData.display_ranks 
+    }
 
 
     const handleToggleTime = ()=>{
         setTimeOn(!timeOn);
     }
 
-    const handleFetchSingleScale = async(scaleId)=>{
-        await fetchSingleScaleData(scaleId);
+   
+
+    const handleFetchSingleScale = async (scaleId) => {
+        try {
+            await fetchSingleScaleData(scaleId);
+        } catch (error) {
+            console.error("Error fetching single scale data:", error);
+        }
     }
 
-    useEffect(()=>{
-        handleFetchSingleScale(slug);
-    },[slug]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await handleFetchSingleScale(slug);
+        }
+        fetchData();
+    }, [slug]);
+
+    useEffect(() => {
+        if (settings) {
+          setUpdateFormData({
+            scalename: settings?.scalename || '',
+            num_of_stages: settings.num_of_stages || '',
+            num_of_substages: settings.num_of_substages || 0,
+            stages: settings.stages || '',
+            item_count: settings.item_count || '',
+            item_list: settings.item_list || [],
+            scalecolor: settings.scalecolor || '',
+            fontcolor: settings.fontcolor || '',
+            fontstyle: settings.fontstyle || '',
+            orientation: settings.orientation || '',
+            ranking_method_stages: settings.ranking_method_stages || '',
+            start_with_zero: settings.start_with_zero || '',
+            reference: settings.reference || '',
+            stages_arrangement: settings?.stages_arrangement || '',
+            display_ranks: settings.display_ranks || ''
+          });
+        }
+      }, [settings]);
+      
 
     const handleChange = (e)=>{
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]:value });
+        setUpdateFormData({ ...updateFormData, [name]:value });
+    }
+
+    const handleUpdateRankingScale = ()=>{
+        // try {
+        //     updateResponse(payload)
+        // } catch (error) {
+        //     console.log(error)
+        // }
+        updateResponse(updatePayload)
+        console.log(updatePayload, 'payload');
     }
 
     if(loading){
@@ -73,13 +154,13 @@ const ScalesSettings = ()=>{
     return(
         <div className="h-screen w-full flex flex-col items-center justify-center">
         <div className="w-7/12 m-auto border p-10">
-            <h2 className="capitalize text-center text-lg mb-7">set up your Ranking</h2>
+            <h2 className="capitalize text-center text-lg mb-7">update ranking scale</h2>
         <div>
             <div className='grid grid-cols-3 gap-3 mb-10'>
                 <CustomTextInput 
                     label='scale name'
                     name='scalename'
-                    value={formData.scalename}
+                    value={updateFormData?.scalename}
                     type='text'
                     handleChange={handleChange}
                     placeholder='enter scale name'
@@ -88,7 +169,7 @@ const ScalesSettings = ()=>{
                     <CustomTextInput 
                         label='number of stages'
                         name='num_of_stages'
-                        value={formData.num_of_stages}
+                        value={updateFormData.num_of_stages}
                         type='number'
                         handleChange={handleChange}
                         placeholder='enter number of stages'
@@ -98,6 +179,8 @@ const ScalesSettings = ()=>{
                     <CustomTextInput
                         label='item count'
                         name="item_count"
+                        value={updateFormData.item_count}
+                        handleChange={handleChange}
                         type="number"
                         placeholder="item count"
                     />
@@ -106,7 +189,7 @@ const ScalesSettings = ()=>{
                 <CustomTextInput 
                     label='number of substages'
                     name='num_of_substages'
-                    value={formData.num_of_substages}
+                    value={updateFormData.num_of_substages}
                     type='number'
                     handleChange={handleChange}
                     placeholder='enter number of substages'
@@ -117,11 +200,11 @@ const ScalesSettings = ()=>{
                         label="Select a orientation" 
                         name="orientation" 
                         className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                        value={formData.orientation}
+                        value={updateFormData.orientation}
                         onChange={handleChange}
                     >
                         <option value={''}>-- Select orientation  --</option>
-                        {orientation.map((orientation, i) => (
+                        {updateOrientation.map((orientation, i) => (
                             <option key={i} >
                                 {orientation}
                             </option>
@@ -134,7 +217,7 @@ const ScalesSettings = ()=>{
                         label="Select arrangement" 
                         name="stages_arrangement" 
                         className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                        value={formData.stages_arrangement}
+                        value={updateFormData.stages_arrangement}
                         onChange={handleChange}
                     >
                         <option value={''}>-- Select stages arrangement  --</option>
@@ -150,7 +233,7 @@ const ScalesSettings = ()=>{
                     <select label="Select a reference" 
                         name="reference" 
                         className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                        value={formData.reference}
+                        value={updateFormData.reference}
                         onChange={handleChange}
                     >
                         <option value={''}>-- Select ranking reference  --</option>
@@ -186,7 +269,7 @@ const ScalesSettings = ()=>{
                         autoComplete="given-name"
                         type="color"
                         placeholder='scale color'
-                        value={formData.scalecolor}
+                        value={updateFormData.scalecolor}
                         onChange={handleChange}
                         className="w-full"
                     />
@@ -199,7 +282,7 @@ const ScalesSettings = ()=>{
                         autoComplete="given-name"
                         type="color"
                         placeholder='font color'
-                        value={formData.fontcolor}
+                        value={updateFormData.fontcolor}
                         onChange={handleChange}
                         className="w-full"
                     />
@@ -210,7 +293,7 @@ const ScalesSettings = ()=>{
                         label="Select font style" 
                         name="fontstyle" 
                         className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                        value={formData.fontstyle}
+                        value={updateFormData.fontstyle}
                         onChange={handleChange}
                     >
                         <option value={''}>-- Select font style  --</option>
@@ -223,7 +306,7 @@ const ScalesSettings = ()=>{
                 </div>
             </div>
         </div>
-        
+        <Button primary width={'full'} onClick={handleUpdateRankingScale}>Update scale</Button>
         </div>
         
     </div>

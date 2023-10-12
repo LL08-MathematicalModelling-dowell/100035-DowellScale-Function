@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Formik, Form } from 'formik';
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
 import { Button } from "../../components/button";
 import Fallback from "../../components/Fallback";
@@ -15,19 +17,20 @@ const CreateScale = ()=>{
     const [subInputs, setSubInputs] = useState([]);
     const [subInputsValue, setSubInputsValue] = useState([]);
     const [inputCount, setInputCount] = useState(1);
+    const navigateTo = useNavigate();
 
 
     const [formData, setFormData] = useState({
         user: true,
         username: "Joel",
-        scalename: "car ranking",
+        scalename: "",
         num_of_stages:0,
         num_of_substages:3,
         stages: [],
-        item_count:2,
-        item_list:["item 1","item 2"],
+        item_count:1,
+        item_list:["item 1"],
         stages_arrangement: "",
-        scalecolor: "",
+        scalecolor: "#e3e3e3",
         fontcolor:"#FF5733",
         fontstyle: "",
         orientation: "",
@@ -89,12 +92,12 @@ const CreateScale = ()=>{
         setSubInputsValue(newInputItems);
     }
 
-    const handleSubmitScales = ()=>{
+    const handleSubmitScales = async()=>{
         const payload = {
             user: formData.user,
             username: formData.username,
             scalename:formData.scalename,
-            num_of_stages:formData.num_of_stages,
+            num_of_stages:Number(formData.num_of_stages),
             num_of_substages:formData.num_of_stages,
             stages: subInputsValue,
             item_count:formData.item_count,
@@ -110,8 +113,19 @@ const CreateScale = ()=>{
             display_ranks: true
         }
 
-        createScale('ranking-scale', payload);
-        console.table(payload, '**** payload');
+        try {
+            await createScale('ranking-scale', payload);
+            console.log(scaleData, 'daaaaa**')
+            if(scaleData.status===201){
+                toast.success(scaleData.data.success);
+                setTimeout(()=>{
+                    navigateTo(`/all-scales/${'ranking-scale'}`)
+                },2000)
+            }
+        } catch (error) {
+            console.log('error')
+            toast.success('an error occured');
+        }
     }
     return(
         <div className="h-screen w-full flex flex-col items-center justify-center">
@@ -200,7 +214,7 @@ const CreateScale = ()=>{
                         </select>
                     </div>
                     <div>
-                        <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">arrangement</label>
+                        <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">stages arrangement</label>
                         <select 
                             label="Select arrangement" 
                             name="stages_arrangement" 
@@ -295,7 +309,7 @@ const CreateScale = ()=>{
                 </div>
             </div>
             <div>
-                {isLoading ? <Fallback/> : <Button type="submit" width={'3/12'} primary onClick={handleSubmitScales}>Save</Button>}
+                {isLoading ? <Fallback/> : <Button type="submit" width={'full'} primary onClick={handleSubmitScales}>Save</Button>}
             </div>
             </div>
             {showInputModal && (<InputsModal 
