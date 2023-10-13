@@ -19,6 +19,7 @@ def dowellshuffling_function(statements):
     random.shuffle(statements)
     return statements
 
+
 def move_last_to_start(d):
     if not d:
         return d
@@ -31,12 +32,15 @@ def move_last_to_start(d):
 
 @api_view(['GET', 'POST', 'PUT'])
 def CreateScale(request):
-    global field_add,x
-    required_fields = ['sort_order', 'statements', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor', 'user', 'name' ]
+    global field_add, x
+    required_fields = ['sort_order', 'statements', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor', 'user',
+                       'name']
 
     if request.method == 'POST':
         payload = request.data
+
         for field in required_fields:
+            print(f"Checking for {field}")
             if field not in payload:
                 return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -64,9 +68,9 @@ def CreateScale(request):
             "statements": statements,
             "settings": {
                 "scaletype": "qsort",
-            "scalecolor": payload["scalecolor"],
-            "fontstyle": payload["fontstyle"],
-            "fontcolor": payload["fontcolor"],
+                "scalecolor": payload["scalecolor"],
+                "fontstyle": payload["fontstyle"],
+                "fontcolor": payload["fontcolor"],
             }
         }
 
@@ -77,10 +81,11 @@ def CreateScale(request):
 
         inserted_id = data_dict["inserted_id"]
         show_response = {
-            "Scale_id": inserted_id,
+            "scale_id": inserted_id,
             "event_id": eventID['event_id'],
             "product_name": payload["product_name"],
             "sort_order": sort_order,
+            "Number of statements": len(statements),
             "settings": {
                 "scalecolor": payload["scalecolor"],
                 "fontstyle": payload["fontstyle"],
@@ -92,22 +97,33 @@ def CreateScale(request):
         return JsonResponse({"Response": show_response}, status=status.HTTP_201_CREATED)
 
     if request.method == 'GET':
-        payload = request.data
-        if 'scale_id' not in payload:
-            return JsonResponse({"Error": "Missing required field: scale_id"}, status=status.HTTP_400_BAD_REQUEST)
+        params = request.GET
+        scale_id = params.get("scale_id")
+        if not scale_id:
+            z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                 "fetch",
+                                 {"settings.scaletype": "qsort"}, "nil")
+
+            z = json.loads(z)
+            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
+                                status=status.HTTP_200_OK)
         else:
-            field_add = {"_id": payload["scale_id"]}
+            field_add = {"_id": scale_id}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                  field_add, "nil")
             x = json.loads(x)
-            if x["error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
-                z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                     "fetch",
-                                     {"settings.scaletype": "qsort"}, "nil")
+            print(x)
+            try:
+                if x[
+                    "error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
+                    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                         "fetch",
+                                         {"settings.scaletype": "qsort"}, "nil")
 
-                z = json.loads(z)
-                return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
-        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
+                    z = json.loads(z)
+                    return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
+            except:
+                return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
         fields = ['sort_order', 'scale_id', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
@@ -134,90 +150,230 @@ def CreateScale(request):
 
 @api_view(['POST', 'GET'])
 def ResponseAPI(request):
-    required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
+    payload = request.data
 
     if request.method == 'POST':
-        payload = request.data
-        for field in required_fields:
-            if field not in payload:
-                return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
+        field_add = {"_id": payload["scale_id"]}
+        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find",
+                             field_add, "nil")
+        x = json.loads(x)
+        try:
+            type = x["data"]["settings"]["scaletype"]
+        except:
+            type = "nil"
 
-        # Define fixed pile ranges
-        pile_ranges = {
-            "disagree": [-5, -4, -3, -2, -1],
-            "neutral": [0],
-            "agree": [1, 2, 3, 4, 5]
-        }
-
-        # Function to assign statements to piles and calculate scores
-        def assign_to_piles(statements, pile_range):
-            if len(statements) != sum([2 if score in [-5, 5] else 3 if score in [-4, 4] else 4 if score in [-3,
-                                                                                                            3] else 5 if score in [
-                -2, 2] else 6 if score in [-1, 1] else 7 for score in pile_range]):
-                raise ValueError("Invalid number of statements for piles")
-
-            distribution = {
-                -5: 2, -4: 3, -3: 4, -2: 5, -1: 6,
-                0: 7,
-                1: 6, 2: 5, 3: 4, 4: 3, 5: 2
-            }
-
-            scores = []
-            count = 0
-            for score in pile_range:
-                for _ in range(distribution[score]):
-                    scores.append(score)
-                    count += 1
-
-            if count != len(statements):
-                raise ValueError("Mismatch in statement count and score distribution")
-
-            return scores
-
-        # Iterate through groups (disagree, neutral, agree) and calculate scores
-        results = {}
-        for group, group_data in payload.items():
-            if group in ["disagree", "neutral", "agree"]:
-                statements = group_data['statements']
-                scores = assign_to_piles(statements, pile_ranges[group])
-                results[group.capitalize()] = {'statements': statements, 'scores': scores}
-
-        # Other payload information
-        user_info = {key: value for key, value in payload.items() if key not in ["disagree", "neutral", "agree"]}
-
-        field_add = {"scale_id": payload["scale_id"]}
-        update_field = {"data": results}
-
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                             field_add, update_field)
-
-        user_info['results'] = results
-
-        data_dict = json.loads(x)
-        print(data_dict)
-        if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
-
-            results = move_last_to_start(user_info)
-            return JsonResponse({"Success": results}, status=status.HTTP_200_OK)
-        else:
-            return JsonResponse({"Error": "Invalid Dowell Response"}, status=status.HTTP_400_BAD_REQUEST)
-
-    if request.method == 'GET':
-        payload = request.data
-        if 'scale_id' not in payload:
-            return JsonResponse({"Error": "Missing required field: scale_id"}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            field_add = {"_id": payload["scale_id"]}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                                 field_add, "nil")
-            x = json.loads(x)
+        try:
             if x[
                 "error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
-                z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                     "fetch",
-                                     {"settings.scaletype": "qsort"}, "nil")
+                return JsonResponse({"Error": "Scale does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            if type != "qsort":
+                return JsonResponse({"Error": "Scale is not a qsort"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                     "1094", "ABCDE", "find",
+                                     field_add, "nil")
+                x = json.loads(x)
+                if x["isSuccess"] == 'True':
+                    return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["responses"]},
+                                        status=status.HTTP_200_OK)
+                else:
+                    # try:
+                    #     if x["data"][0]["statements"]:
+                    #         return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["statements"]},
+                    #                             status=status.HTTP_200_OK)
+                    # except:
+                    required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor',
+                                       'fontstyle', 'fontcolor']
+                    print(sum(
+                        [len(data["statements"]) for key, data in payload.items() if
+                         key in ["disagree", "neutral", "agree"]]))
+                    total_statements = sum(
+                        [len(data["statements"]) for key, data in payload.items() if
+                         key in ["disagree", "neutral", "agree"]])
 
-                z = json.loads(z)
-                return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
-        return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
+                    if not total_statements in range(60, 141):
+                        return JsonResponse(
+                            {"Error": "Invalid number of total statements. Must be between 60 and 140 inclusive."},
+                            status=status.HTTP_400_BAD_REQUEST)
+                    # Check for continuous card numbers
+                    all_cards = []
+                    for group in ["disagree", "neutral", "agree"]:
+                        if group in payload:
+                            all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
+                    all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
 
+                    if all_cards != list(range(1, total_statements + 1)):
+                        return JsonResponse({"Error": "Card numbers are not continuous or missing."},
+                                            status=status.HTTP_400_BAD_REQUEST)
+
+                    payload = request.data
+                    for field in required_fields:
+                        if field not in payload:
+                            return JsonResponse({"Error": f"Missing required field: {field}"},
+                                                status=status.HTTP_400_BAD_REQUEST)
+
+                    if "document_responses" in payload:
+                        document_response = payload['document_responses']
+                        instance_id = payload['instance_id']
+                        process_id = payload['process_id']
+                        if not isinstance(process_id, str):
+                            return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
+                    for response in document_response:
+                        if not isinstance(response, dict):
+                            return Response({"error": "The document responses should be a list of dictionaries."},
+                                            status=status.HTTP_400_BAD_REQUEST)
+                        document_data = {"details": {"action": payload.get('action', ""), 
+                                             "authorized": payload.get('authorized',""), 
+                                             "cluster": payload.get('cluster', ""), 
+                                             "collection": payload.get('collection',""), 
+                                             "command": payload.get('command',""), 
+                                             "database": payload.get('database', ""), 
+                                             "document": payload.get('document', ""), 
+                                             "document_flag":payload.get('document_flag',""), 
+                                             "document_right": payload.get('document_right', ""), 
+                                             "field": payload.get('field',""), 
+                                             "flag": payload.get('flag', ""), 
+                                             "function_ID": payload.get('function_ID', ""),
+                                             "metadata_id": payload.get('metadata_id', ""), 
+                                             "process_id": payload['process_id'], 
+                                             "role": payload.get('role', ""), 
+                                             "team_member_ID": payload.get('team_member_ID', ""), 
+                                             "product_name": payload.get('product_name', ""),
+                                             "update_field": {"content": payload.get('content', ""), 
+                                                              "document_name": payload.get('document_name', ""), 
+                                                              "page": payload.get('page', "")}, 
+                                                              "user_type": payload.get('user_type', ""), 
+                                                              "id": payload['_id']} 
+                                             }
+                        
+                    # Define fixed pile ranges
+                    pile_ranges = {
+                        "disagree": [-5, -4, -3, -2, -1],
+                        "neutral": [0],
+                        "agree": [1, 2, 3, 4, 5]
+                    }
+
+                    # Function to dynamically distribute scores
+                    def assign_to_piles(statements, pile_range):
+                        total_statements = len(statements)
+                        distribution = {}
+
+                        # Calculate base ratios for each score
+                        base_ratios = {
+                            -5: 2 / 47, -4: 3 / 47, -3: 4 / 47, -2: 5 / 47, -1: 6 / 47,
+                            0: 7 / 47,
+                            1: 6 / 47, 2: 5 / 47, 3: 4 / 47, 4: 3 / 47, 5: 2 / 47
+                        }
+
+                        # Pro-rata distribution based on the number of actual statements
+                        for score in pile_range:
+                            distribution[score] = round(base_ratios[score] * total_statements)
+
+                        # Adjust for any discrepancies due to rounding
+                        discrepancy = total_statements - sum(distribution.values())
+                        adjusting_scores = sorted(pile_range, key=lambda x: abs(x))
+
+                        while discrepancy != 0:
+                            for score in adjusting_scores:
+                                if discrepancy > 0:
+                                    distribution[score] += 1
+                                    discrepancy -= 1
+                                elif discrepancy < 0:
+                                    distribution[score] -= 1
+                                    discrepancy += 1
+                                if discrepancy == 0:
+                                    break
+
+                        # Create a copy of the statements and sort them by their card number
+                        sorted_statements = sorted(statements,
+                                                   key=lambda x: str(x['card']).split('-')[1] if '-' in str(
+                                                       x['card']) else x[
+                                                       'card'])
+                        print(statements)
+                        # Assign scores to statements based on their card numbers, but maintain the original order for output
+                        scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in
+                                             statements]
+
+                        for score in pile_range:
+                            for _ in range(distribution[score]):
+                                statement = sorted_statements.pop(0)
+                                index = next(
+                                    (i for i, s in enumerate(scored_statements) if s['card'] == statement['card']),
+                                    None)
+                                if index is not None:
+                                    scored_statements[index]['score'] = score
+
+                        return scored_statements
+
+                    # Iterate through groups (disagree, neutral, agree) and calculate scores
+                    results = {}
+                    for group, group_data in payload.items():
+                        if group in ["disagree", "neutral", "agree"]:
+                            statements = group_data['statements']
+                            scores = assign_to_piles(statements, pile_ranges[group])
+                            results[group.capitalize()] = scores
+
+                    # Other payload information
+                    user_info = {key: value for key, value in payload.items() if
+                                 key not in ["disagree", "neutral", "agree"]}
+                    user_info['results'] = results
+
+                    event = get_event_id()
+                    add = {
+                        "event_id": event,
+                        "_id": payload["scale_id"],
+                        "results": results,
+                        "user": payload["user"],
+                        "name": payload["name"],
+                        "product_name": payload["product_name"],
+                        "scale_type": "Qsort",
+                        "scalecolor": payload["scalecolor"],
+                        "fontstyle": payload["fontstyle"],
+                        "fontcolor": payload["fontcolor"]
+
+                    }
+                    
+                    if "process_id" in payload:
+                        add["process_id"] = payload["process_id"]
+                        
+                    if document_data:
+                        add["document_data"] = document_data
+                    
+                    x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                         "1094", "ABCDE", "insert",
+                                         add, "nil")
+
+                    x = json.loads(x)
+
+                    data_dict = x
+                    if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
+
+                        results = move_last_to_start(user_info)
+                        return JsonResponse({"Success": data_dict}, status=status.HTTP_200_OK)
+                    elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][
+                                                                                                  0:6] == 'E11000':
+                        return JsonResponse({"Error": "Response Already Exists"}, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return JsonResponse({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'GET':
+        params = request.GET
+        id = params.get("id")
+        if not id:
+            z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                        "scale_reports",
+                                        "1094", "ABCDE", "fetch", {"settings.scaletype": "qsort"}, "nil")
+
+            z = json.loads(z)
+            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
+                                status=status.HTTP_200_OK)
+        else:
+            field_add = {"_id": id}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                        "scale_reports",
+                                        "1094", "ABCDE", "fetch", field_add, "nil")
+            data = json.loads(x)
+            if data.get('data') == []:
+                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
+            return Response({"data": data['data']}, status=status.HTTP_200_OK)

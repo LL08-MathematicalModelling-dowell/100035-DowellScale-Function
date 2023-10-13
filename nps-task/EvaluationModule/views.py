@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.core.cache import cache
+
+from api.views import find_category
 from .calculate_function import *
 from .normality import *
 from concurrent.futures import ThreadPoolExecutor
@@ -13,8 +15,11 @@ This module takes random number, attaches it to the product name and doc_no and 
 Evaluation API with process id as the process id is the random number. It then uses the same random number to
 process the Normality API and get the responses of both the APIs, and finally renders the data to the template.
 """
+
+
 def evaluation_editor(request, product_name, doc_no):
     random_number = generate_random_number()
+    print(f"\n\nrandom_number: {random_number}\n\n")
     context = {}
 
     # Fetch data from cache if available
@@ -27,7 +32,8 @@ def evaluation_editor(request, product_name, doc_no):
 
     # Execute dowellconnection API call using ThreadPoolExecutor
     with ThreadPoolExecutor() as executor:
-        data_future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+        data_future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                      "scale_reports",
                                       "1094", "ABCDE", "fetch", field_add, "nil")
         data = json.loads(data_future.result())["data"]
 
@@ -54,7 +60,8 @@ def evaluation_editor(request, product_name, doc_no):
 
     # Execute stattricks_api API call using ThreadPoolExecutor
     with ThreadPoolExecutor() as executor:
-        response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3, {"list1": calculate_score})
+        response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3,
+                                               {"list1": calculate_score})
         response_json = response_json_future.result()
         context.update(response_json)
 
@@ -86,7 +93,6 @@ def evaluation_editor(request, product_name, doc_no):
     print(f"stattricks_api: {response_json}\n")
     print(f"Normality_api: {normality}")
 
-
     return render(request, 'EvaluationModule/editor_reports.html', context)
 
 
@@ -110,22 +116,18 @@ def csv_new(request, product_name, doc_no):
         data = json.loads(data_future.result())["data"]
         # print(f"\n\n data: {data}\n\n")
 
-
     all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[0] == doc_no]
     calculate_score = [x['score'][0]['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
     # print(f"\n\ndata: {calculate_score}\n\n")
     # print(f"\n\nall_scales: {all_scales}\n\n")
 
-
-
-
     for item in all_scales:
         data_ = {
-        "scale_id" : item['scale_data']['scale_id'],
-        "event_id" : item['event_id'],
-        "score" : item['score'][0]['score'],
-        "scale_type" : item['scale_data']['scale_type'],
-        "product_name" : item['brand_data']['product_name']
+            "scale_id": item['scale_data']['scale_id'],
+            "event_id": item['event_id'],
+            "score": item['score'][0]['score'],
+            "scale_type": item['scale_data']['scale_type'],
+            "product_name": item['brand_data']['product_name']
         }
         if data_ not in data_list:
             data_list.append(data_)
@@ -190,8 +192,8 @@ def by_username(request, username, scale_category):
                     pass
     print(list_of_scales)
 
-
     return render(request, 'EvaluationModule/by_username.html', {"responses": list_of_scales})
+
 
 @api_view(['GET'])
 def by_username_api(request, username, scale_category):
@@ -233,8 +235,8 @@ def by_username_api(request, username, scale_category):
                 except:
                     pass
 
+    return Response({"responses": list_of_scales}, status=status.HTTP_200_OK)
 
-    return Response({"responses": list_of_scales},status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def Target_API(request):
@@ -296,7 +298,7 @@ def Target_API(request):
                 # print(f"{j['_id']}")
                 field_add = {"_id": j['_id']}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                      "1094", "ABCDE", "fetch", field_add, "nil")
+                                     "1094", "ABCDE", "fetch", field_add, "nil")
                 # print(f"x: {x}...x")
                 settings_json = json.loads(x)
                 # print(f" {settings_json}")
@@ -314,7 +316,201 @@ def Target_API(request):
     #     # Return the response as JSON
     #     return JsonResponse(response.json(), safe=False)
 
-
-
     # If the request failed, return an error response
     return JsonResponse({"error": "Failed to retrieve data from the original API."}, status=500)
+
+def evaluation_editor_process_id(request, process_id, doc_no):
+    random_number = f"{process_id}{generate_random_number()}"
+    context = {}
+
+    # Fetch data from cache if available
+    cache_key = f"evaluation_editor_{process_id}_{doc_no}"
+    cached_data = cache.get(cache_key)
+    if cached_data:
+        return render(request, 'EvaluationModule/editor_reports.html', cached_data)
+
+    field_add = {"process_id": process_id}
+
+    # Execute dowellconnection API call using ThreadPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        data_future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                      "scale_reports",
+                                      "1094", "ABCDE", "fetch", field_add, "nil")
+        data = json.loads(data_future.result())["data"]
+
+    all_scales = [x for x in data if x['score'][0]['instance_id'].split("/")[0] == doc_no]
+    calculate_score = [x['score'][0]['score'] for x in all_scales if x["scale_data"]["scale_type"] == "nps scale"]
+    # print(f"\n\ndata: {calculate_score}\n\n")
+    # print(f"\n\nall_scales: {all_scales}\n\n")
+
+    if len(data) != 0:
+        scores = process_data(data, doc_no)
+        nps_scales = len(scores["nps scale"])
+        nps_score = sum(scores["nps scale"])
+        stapel_scales = len(scores["stapel scale"])
+        stapel_score = scores["stapel scale"]
+
+        context.update({
+            "nps_scales": nps_scales,
+            "nps_score": nps_score,
+            "nps_total_score": nps_scales * 10,
+            "stapel_scales": stapel_scales,
+            "stapel_scores": stapel_score,
+            "score_series": scores["nps scale"]
+        })
+
+    # Execute stattricks_api API call using ThreadPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3,
+                                               {"list1": calculate_score})
+        response_json = response_json_future.result()
+        context.update(response_json)
+
+    poison_case_results = response_json.get("poison case results", {})
+    normal_case_results = response_json.get("normal case results", {})
+    context.update({
+        "poison_case_results": poison_case_results,
+        "normal_case_results": normal_case_results
+    })
+
+    # Execute Normality_api API call using ThreadPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        normality_future = executor.submit(Normality_api, random_number)
+        normality = normality_future.result()
+        context.update(normality)
+
+    normality_data = normality.get('list1') if normality else None
+    context.update({
+        "n_title": normality.get('title'),
+        "n_process_id": normality.get('process_id'),
+        "n_bins": normality.get('bins'),
+        "n_allowed_error": normality.get('allowed_error'),
+        "n_series_count": normality.get('series_count'),
+        "n_list1": normality_data
+    })
+
+    # Cache the data for future requests
+    cache.set(cache_key, context)
+    print(f"stattricks_api: {response_json}\n")
+    print(f"Normality_api: {normality}")
+
+    return render(request, 'EvaluationModule/editor_reports.html', context)
+
+
+def categorize_scale_generate_scale_specific_report(scale_type, score):
+    if scale_type == "nps scale":
+        score = [int(x) for x in score]
+        nps_categories = [find_category(x) for x in score]
+        nps_scale_data = calculate_nps_category(nps_categories)
+
+        response_ = {
+            "scale_category": scale_type,
+            "no_of_scales": len(score),
+            "nps_score": sum(score),
+            "nps_total_score": len(score) * 10,
+            "max_total_score": max(score),
+            "score_list": score,
+            "scale_specific_data": nps_scale_data
+        }
+        return response_
+    elif scale_type == "stapel scale":
+        score = [int(x) for x in score]
+        stapel_scale_data = calculate_stapel_scale_category(score)
+
+        response_ = {
+            "scale_category": scale_type,
+            "no_of_scales": len(score),
+            "stapel_score": sum(score),
+            # "stapel_total_score": len(score) * 10,
+            "max_total_score": max(score),
+            "score_list": score,
+            "scale_specific_data": stapel_scale_data
+        }
+        return response_
+
+
+def fetch_scores_and_scale_type(query_params):
+    response_data_scores = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                            "scale_reports", "1094", "ABCDE", "fetch", query_params, "nil")
+
+    scores = [x['score']['score'] for x in json.loads(response_data_scores)['data']]
+    scale_type = json.loads(response_data_scores)['data'][0]["scale_data"]["scale_type"]
+    return scores, scale_type
+
+
+def statistics(scores, process_id):
+    stattrics = stattricks_api("evaluation_module", process_id, 16, 3, {"list1": scores})
+    normality = Normality_api(process_id)
+    return normality, stattrics
+
+def get_scores(report_type, response_data):
+    if report_type == "document":
+        document_id = response_data.get("document_id")
+        query_params = {"document_data.details.id": document_id, "process_id": response_data.get("process_id")}
+        return fetch_scores_and_scale_type(query_params)
+
+    elif report_type == "process":
+        query_params = {"process_id": response_data.get("process_id")}
+        return fetch_scores_and_scale_type(query_params)
+
+    elif report_type == "scale":
+        query_params = {
+            "template_id": response_data.get("template_id"),
+            f"custom_input_groupings.{response_data.get('type_of_element')}": response_data.get("element"),
+            "process_id": response_data.get("process_id")
+        }
+        return fetch_scores_and_scale_type(query_params)
+
+
+@api_view(['POST'])
+def evaluation_api(request):
+    try:
+        report_type = request.GET.get('report_type', '').strip()
+        valid_report_types = ["process", "document", "scale"]
+
+        if report_type not in valid_report_types:
+            return Response({"error": "Please provide a valid report type (scale/document/process)"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        response_data = request.data
+        if report_type == "process":
+            process_id = response_data.get("process_id")
+            if not process_id:
+                return Response({"error": "Please provide a process_id in the request body for 'process' report type"},
+                                status=status.HTTP_400_BAD_REQUEST)
+        elif report_type == "document":
+            document_id = response_data.get("document_id")
+            process_id = response_data.get("process_id")
+            if not document_id or not process_id:
+                return Response({
+                    "error": "Please provide both 'document_id' and 'process_id' in the request body for 'document' report type"},
+                    status=status.HTTP_400_BAD_REQUEST)
+        elif report_type == "scale":
+            template_id = response_data.get("template_id")
+            type_of_element = response_data.get("type_of_element")
+            element = response_data.get("element")
+            process_id = response_data.get("process_id")
+            if not template_id or not type_of_element or not element or not process_id:
+                return Response({
+                    "error": "Please provide 'template_id', 'type_of_element', 'element', and 'process_id' in the request body for 'scale' report type"},
+                    status=status.HTTP_400_BAD_REQUEST)
+
+        scores, scale_type = get_scores(report_type, response_data)
+
+        if not scores:
+            return Response({"error": "No responses found for the given data"}, status=status.HTTP_404_NOT_FOUND)
+        elif len(scores) < 3:
+            return Response({"error": "Not enough scores found for the given info."}, status=status.HTTP_403_FORBIDDEN)
+
+        response_ = categorize_scale_generate_scale_specific_report(scale_type, scores)
+        process_id = f'{process_id}{report_type}'
+        normality, stattrics = statistics(scores, process_id)
+        response_["normality_analysis"] = normality
+        response_["central_tendencies"] = stattrics
+        return Response({"success": response_}, status=status.HTTP_200_OK)
+
+    except IndexError as e:
+        return Response({"error": f"No responses found for the above {report_type} wise report."},
+                        status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+

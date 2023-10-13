@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from django.views.generic import TemplateView
+
 from dowellnps_scale_function import views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
@@ -36,6 +38,8 @@ urlpatterns = [
     path('apiconf/', include('APIconf.urls')),
     path('qsort/', include('Qsort.urls')),
     path('paired-comparison/', include('paired_comparison.urls')),
+    path("paired-comparison/", TemplateView.as_view(template_name="index1.html")),
+    path('perceptual-mapping/', include('perceptual_mapping.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
