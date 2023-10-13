@@ -46,9 +46,19 @@ const CreateScale = ()=>{
         start_with_zero: true,
         reference: "",
         display_ranks: true,
-        time:10
+        time:0
     })
 
+    const requiredFields = [
+        'scalename', 
+        'num_of_stages', 
+        'item_count', 
+        'num_of_substages', 
+        'orientation', 
+        'stages_arrangement', 
+        'reference',
+        'fontstyle',
+    ];
     const orientation = ['Vertical', 'Horizontal']
     const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled']
     const ranking_reference = ['Overall Ranking', 'StageWise Ranking']
@@ -60,11 +70,6 @@ const CreateScale = ()=>{
         const { name, value } = e.target;
         setFormData({ ...formData, [name]:value });
     }
-
-    // const handleBlur = ()=>{
-    //     setSubInputs([...Array(Number(formData.num_of_stages))].map((_, i) => i + 1));
-    //     handleToggleInputModal();
-    // }
 
     const handleCreateStages = ()=>{
         setSubInputs([...Array(Number(formData.num_of_stages))].map((_, i) => i + 1));
@@ -173,10 +178,29 @@ const CreateScale = ()=>{
         }
 
         console.log(payload, 'payload here')
+        for (const field of requiredFields) {
+            if (!formData[field]) {
+                toast.error(`Please complete the "${field.replace(/_/g, ' ')}" field.`);
+                return;
+            }
+        }
+
+        if (formData.time < 9) {
+            toast.error('Time cannot be empty, please set a time greater than 9');
+            return;
+        }
+        if (payload.stages.length === 0) {
+            toast.error('Click on number of stages to provide at least one stage item.');
+            return;
+        }
+        if (payload.item_list.length === 0) {
+            toast.error('Click on item count to add at least one item in the list.');
+            return;
+        }
 
         try {
             await createScale('ranking-scale', payload);
-            console.log(scaleData, 'daaaaa**')
+            // console.log(scaleData, 'daaaaa**')
             if(scaleData.status===201){
                 toast.success(scaleData.data.success);
                 setTimeout(()=>{
@@ -315,14 +339,15 @@ const CreateScale = ()=>{
                         </div>
                         {
                             timeOn && (
-                                <CustomTextInput
+                                <input
                                     name="time"
                                     type="number"
                                     placeholder="enter a valid time"
                                     value={formData.time}
                                     onChange={handleChange}
-                                    
+                                    className='w-full outline-0 border py-1 px-1 rounded-sm text-gray-700'
                                 />
+
                             )
                         }
                         
