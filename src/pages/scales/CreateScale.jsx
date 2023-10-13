@@ -185,7 +185,7 @@ const CreateScale = ()=>{
             }
         }
 
-        if (formData.time < 9) {
+        if (timeOn===true && (formData.time < 9)) {
             toast.error('Time cannot be empty, please set a time greater than 9');
             return;
         }
@@ -200,11 +200,11 @@ const CreateScale = ()=>{
 
         try {
             await createScale('ranking-scale', payload);
-            // console.log(scaleData, 'daaaaa**')
+            console.log(scaleData?.data?.scale_id, 'daaaaa**')
             if(scaleData.status===201){
                 toast.success(scaleData.data.success);
                 setTimeout(()=>{
-                    navigateTo(`/all-scales/${'ranking-scale'}`)
+                    navigateTo(`/scales-settings/${scaleData?.data?.scale_id}`)
                 },2000)
             }
         } catch (error) {
