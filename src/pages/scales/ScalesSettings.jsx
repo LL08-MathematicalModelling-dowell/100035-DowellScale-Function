@@ -8,6 +8,7 @@ import { useUpdateResponse } from "../../hooks/useUpdateResponse";
 import Fallback from "../../components/Fallback";
 import CustomTextInput from "../../components/forms/inputs/CustomTextInput";
 import { Button } from "../../components/button";
+import { fontStyles } from "../../utils/constants/fontStyles";
 
 const ScalesSettings = ()=>{
     const { slug } = useParams();
@@ -66,7 +67,7 @@ const ScalesSettings = ()=>{
     const updateOrientation = ['Vertical', 'Horizontal']
     const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled']
     const ranking_reference = ['Overall Ranking', 'StageWise Ranking']
-    const fontStyles = ['segoe print', 'times new romans', 'franklin gothic']
+    
 
     const updatePayload = {
             scale_id:_id,
