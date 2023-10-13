@@ -45,7 +45,8 @@ const CreateScale = ()=>{
         ranking_method_stages: "Unique Ranking",
         start_with_zero: true,
         reference: "",
-        display_ranks: true
+        display_ranks: true,
+        time:10
     })
 
     const orientation = ['Vertical', 'Horizontal']
@@ -318,6 +319,9 @@ const CreateScale = ()=>{
                                     name="time"
                                     type="number"
                                     placeholder="enter a valid time"
+                                    value={formData.time}
+                                    onChange={handleChange}
+                                    
                                 />
                             )
                         }
