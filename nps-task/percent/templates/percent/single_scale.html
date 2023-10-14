@@ -1,0 +1,578 @@
+{% load i18n %} {% load static %}
+<html lang="en">
+    <head>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+        />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>Percent Scale</title>
+        <style>
+            /* width */
+            ::-webkit-scrollbar {
+                width: 2px;
+            }
+
+            /* Track */
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            /* Handle */
+            ::-webkit-scrollbar-thumb {
+                background: #888;
+            }
+
+            /* Handle on hover */
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+            #time-out-response {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                /*margin: auto;*/
+                width: 600px;
+                height: 180px;
+                font-family: "Open Sans", Arial, sans-serif;
+                font-size: calc(4em + 10vw);
+                text-align: center;
+                color: #fff;
+                background-image: linear-gradient(
+                    -225deg,
+                    #cf2778,
+                    #7c64d5,
+                    #4cc3ff
+                );
+                overflow: hidden;
+                display: none;
+            }
+            h4 {
+        font-size: .6em;
+        font-weight: 700;
+        text-shadow: 0 0 0.1em rgba(0, 0, 0, 0.5);
+    }
+
+    h4 span::after {
+        content: '🕛';
+        font-size: 0.9em;
+        animation: clock 5s linear infinite;
+    }
+
+    h5 {
+        font-size: 0.15em;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-top: 1em;
+        text-shadow: 0 0 0.2em rgba(0, 0, 0, 0.5);
+    }
+
+    .apple-os h4 span {
+        margin: 0 0.1em;
+    }
+
+    .apple-os h5 {
+        margin-top: 0.4em;
+    }
+
+    @keyframes clock {
+        8.333% {
+            content: '🕐';
+        }
+
+        16.666% {
+            content: '🕑';
+        }
+
+        25% {
+            content: '🕒';
+        }
+
+        33.333% {
+            content: '🕓';
+        }
+
+        41.666% {
+            content: '🕔';
+        }
+
+        50% {
+            content: '🕕';
+        }
+
+        58.333% {
+            content: '🕖';
+        }
+
+        66.666% {
+            content: '🕗';
+        }
+
+        75% {
+            content: '🕘';
+        }
+
+        83.333% {
+            content: '🕙';
+        }
+
+        91.666% {
+            content: '🕚';
+        }
+    }
+            #snackbar {
+                visibility: hidden;
+                min-width: 250px;
+                margin-left: -125px;
+                background-color: green;
+                color: #fff;
+                text-align: center;
+                border-radius: 2px;
+                padding: 16px;
+                position: fixed;
+                z-index: 1;
+                right: 10%;
+                top: 30px;
+                font-size: 17px;
+            }
+
+            #snackbar.show {
+                visibility: visible;
+                -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            }
+
+            @-webkit-keyframes fadein {
+                from {
+                    top: 0;
+                    opacity: 0;
+                }
+                to {
+                    top: 30px;
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadein {
+                from {
+                    top: 0;
+                    opacity: 0;
+                }
+                to {
+                    top: 30px;
+                    opacity: 1;
+                }
+            }
+
+            @-webkit-keyframes fadeout {
+                from {
+                    top: 30px;
+                    opacity: 1;
+                }
+                to {
+                    top: 0;
+                    opacity: 0;
+                }
+            }
+
+            @keyframes fadeout {
+                from {
+                    top: 30px;
+                    opacity: 1;
+                }
+                to {
+                    top: 0;
+                    opacity: 0;
+                }
+            }
+            .slidecontainer {
+                width: 100%; /* Width of the outside container */
+            }
+
+            /* The slider itself */
+            .slider {
+                -webkit-appearance: none; /* Override default CSS styles */
+                appearance: none;
+                width: 100%; /* Full-width */
+                height: 15px;
+                border-radius: 5px;
+                background: #d3d3d3; /* Grey background */
+                outline: none; /* Remove outline */
+                opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+                -webkit-transition: 0.2s; /* 0.2 seconds transition on hover */
+                transition: opacity 0.2s;
+            }
+
+            /* Mouse-over effects */
+            .slider:hover {
+                opacity: 1; /* Fully shown on mouse-over */
+            }
+
+            /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+            .slider::-webkit-slider-thumb {
+                -webkit-appearance: none; /* Override default look */
+                appearance: none;
+                width: 25px; /* Set a specific slider handle width */
+                height: 25px; /* Slider handle height */
+                background: rgb(255, 255, 255);
+                cursor: pointer; /* Cursor on hover */
+                border-radius: 50%;
+                border: 5px solid #000000;
+            }
+
+            .slider::-moz-range-thumb {
+                width: 25px; /* Set a specific slider handle width */
+                height: 25px; /* Slider handle height */
+                background: #04aa6d; /* Green background */
+                cursor: pointer; /* Cursor on hover */
+                border-radius: 50%;
+            }
+            #horizontal {
+                display: flex;
+                justify-content: space-between;
+                padding: 20px;
+            }
+
+            #labels {
+                display: flex;
+                justify-content: space-between;
+                font-weight: bold;
+                font-size: 25px;
+            }
+
+            #serial {
+                color: black;
+                padding: 10px 20px;
+                font-size: 16px;
+                font-weight: bold;
+                float: left;
+            }
+
+            #countdown {
+                color: black;
+                float: right;
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            #count-scales {
+                color: black;
+                float: left;
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+
+            .card-header {
+                color: #88b04b;
+                font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+                font-weight: 900;
+                font-size: 40px;
+                margin-bottom: 10px;
+            }
+            .card-paragraph {
+                color: #404f5e;
+                font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+                font-size: 20px;
+                margin: 0;
+            }
+
+            .card {
+                background: white;
+                padding: 60px;
+                border-radius: 4px;
+                box-shadow: 0 2px 3px #c8d0d8;
+                margin: 0 auto;
+                width: 600px;
+                display: none;
+            }
+
+            .checkmark {
+                color: #9abc66;
+                font-size: 100px;
+                line-height: 200px;
+                margin-left: -15px;
+            }
+
+            @media screen and (max-width: 600px) {
+                #labels {
+                    font-size: 20px;
+                }
+            }
+
+            @media screen and (max-width: 995px) {
+                #horizontal {
+                    padding: 10px;
+                }
+
+                #labels {
+                    font-size: 14px;
+                }
+            }
+            @media screen and (max-width: 335px) {
+                #horizontal {
+                    padding: 10px;
+                }
+
+                #labels {
+                    font-size: 14px;
+                }
+            }
+            .Footer {
+                width: 100%;
+                margin: auto;
+                font-size: large;
+                font-weight: 800;
+            }
+            #count-scales {
+                color: black;
+                float: left;
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+
+            .card-header {
+                color: #88b04b;
+                font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+                font-weight: 900;
+                font-size: 40px;
+                margin-bottom: 10px;
+            }
+            .card-paragraph {
+                color: #404f5e;
+                font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+                font-size: 20px;
+                margin: 0;
+            }
+
+            .card {
+                background: white;
+                padding: 60px;
+                border-radius: 4px;
+                box-shadow: 0 2px 3px #c8d0d8;
+                margin: 0 auto;
+                width: 600px;
+                display: none;
+            }
+
+            .checkmark {
+                color: #9abc66;
+                font-size: 100px;
+                line-height: 200px;
+                margin-left: -15px;
+            }
+        </style>
+        <script>
+            $(document).ready(function() {
+            	const serial=window.location.href;
+            	let split_serial = serial.split('/');
+            	let series= split_serial[split_serial.length -1];
+            	let se = document.getElementById("serial");
+            	let num ={{defaults.number_of_scales}};
+            	let view = document.getElementById('res');
+            	//console.log(series.length)
+            	function Checklist(){
+            		if (series.length > 3){
+            			se.innerHTML = ""
+            		}
+            		else{
+            			se.innerHTML=series +"/" + num;
+            		}
+            	}
+            	Checklist()
+
+                   let check = {{recorded_score}};
+                   //console.log(check)
+                   if (check === 101){
+                       console.log("No answer given")
+                    }
+                   else {
+                       var scale_container = document.getElementById("scale-container-main")
+                       var card_response = document.getElementById("card-response")
+                       scale_container.style.display = "none"
+                       card_response.style.display = "inline-block"
+            		view.innerHTML="Your response of "+ check +"%" +" has been submitted"
+                }
+
+            	let response = []
+
+            function responseScales(id){
+
+            		if (response.length === parseInt('{{default.number_of_scales|safe}}')){
+            				return
+            		}
+            		if ( response.length < parseInt('{{default.number_of_scales|safe}}') ) {count_scales.innerHTML = response.length + 1}
+            		response.push(id)
+
+            		if (response.length === parseInt('{{default.number_of_scales|safe}}')){
+            				score_tag.value = response
+            				console.log(response)
+            				x.innerHTML = `Response ${response.length} of ${parseInt('{{default.number_of_scales|safe}}')} submitted`
+            				x.className = "show";
+            				setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+            				return document.getElementById('jsform').submit();
+            		}
+            		else{
+            				x.innerHTML = `Response ${response.length} of ${parseInt('{{default.number_of_scales|safe}}')} submitted`
+            				x.className = "show";
+            				setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+
+
+            		}
+            }})
+        </script>
+    </head>
+    <body>
+        <form method="POST" id="jsform">
+            {% csrf_token %}
+            <input type="hidden" name="scoretag" id="scoretag" />
+        </form>
+        <div id="snackbar"></div>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-sm-2"></div>
+                <div id="time-out-response">
+                    <h4 aria-label="408 Error">O<span></span>PS</h4>
+                    <h5>Session Expired! Can't Submit Response.</h5>
+                </div>
+
+                <div class="card" id="card-response">
+                    <div
+                        style="
+                            border-radius: 200px;
+                            height: 200px;
+                            width: 200px;
+                            background: #f8faf5;
+                            margin: 0 auto;
+                            text-align: center;
+                        "
+                    >
+                        <i class="checkmark">✓</i>
+                    </div>
+                    <h1 class="card-header text-center">Success</h1>
+                    <p class="card-paragraph text-center" id="res">
+                        We received your response;<br />
+                        Thanks!
+                    </p>
+                </div>
+                <div
+                    class="col-sm-8 bg-light"
+                    id="scale-container-main"
+                    style="
+                        border: silver 2px solid;
+                        box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3);
+                    "
+                >
+                    <h1 style="text-align: center" class="text-danger">
+                        <span id="serial" style="float: left"
+                            >{{cur_url}}/{{no_of_scales}}</span
+                        >
+                        <b>{{defaults.name}}</b><span id="countdown"></span>
+                    </h1>
+                    <br />
+
+                    <div id="scale-container">
+                        <div class="slidecontainer">
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="50"
+                                class="slider"
+                                id="myRange"
+                            />
+                        </div>
+
+                        <div
+                            class="pl-3"
+                            id="labels-vert"
+                            style="font-size: 2em"
+                        ></div>
+                    </div>
+                    <!--        <div id="horizontal" ></div>-->
+                    <div class="Footer" id="labels">
+                        <div style="float: left">0%</div>
+                        <div id="demo" align="center">Nil</div>
+                        <div style="float: right">100%</div>
+                    </div>
+                    <br />
+                    <div class="rate" align="center">
+                        <button class="btn btn-primary" id="test">Rate</button>
+                    </div>
+                </div>
+                <script>
+                    	var slider = document.getElementById("myRange");
+                    	var output = document.getElementById("demo");
+                    	slider.style.background ='{{defaults.scalecolor|safe}}';
+                    	output.innerHTML = (slider.value + "%"); // Display the default slider value
+                    // Update the current slider value (each time you drag the slider handle)
+                    	slider.oninput = function() {
+                    	output.innerHTML = this.value+"%";
+                    	}
+
+                    	scoretag = document.getElementById("scoretag");
+                                             function checkStatus(){
+                                                 var scale_container = document.getElementById("scale-container-main")
+                                                 var card_response = document.getElementById("card-response")
+                                                 scale_container.style.display = "none"
+                                                 card_response.style.display = "inline-block"
+                                             }
+                                             //console.log('{{score|safe}}')
+
+                    	let time = {{defaults.time|safe}};
+                    	const countdownEl = document.getElementById("countdown");
+                    	const test =document.getElementById('test')
+                        if (window.location.href === "{{public_url|safe}}/nps-scale1/defaultnpsscale?brand_name=your%20brand&product_name=your%20product" || '{{score|safe}}' === 'show' || time === "0" ){
+                            countdownEl.style.display = "none"
+                        } else {
+                        setInterval(updateCountdown, 1000)
+                        }
+                    	updateAnswer()
+                    	setInterval(updateCountdown, 1000)
+                    	serial = document.getElementById("serial")
+                    	//serial.innerHTML = parseInt(serial.innerHTML-1)
+                    	function updateAnswer(){
+                    		$("#test").click(function(){
+                    			ans = slider.value;
+                    			test.innerHTML = "Submitted";
+                    			test.style="pointer-events: none";
+                    			scoretag.value=ans;
+                                document.getElementById("time-out-response").style.display = "none"
+                    			document.getElementById("jsform").submit();
+                                                     checkStatus();
+                    		})
+                    }
+
+                    	function updateCountdown(){
+                    			const minutes = Math.floor(time/60);
+                    			let seconds = time % 60;
+
+                    			seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                    			countdownEl.innerHTML = `${minutes}:${seconds}`
+                    			seconds < 10  && minutes == 0 ? countdownEl.style.color = "red" : countdownEl.style.color = "black" ;
+                    			time--;
+                    			time = time < 0 ? redirectMain() : time;
+                    	}
+
+
+                    	function redirectMain(){
+                            document.getElementById("time-out-response").style.display = "flex"
+                            document.getElementById("scale-container-main").style.display = "none"
+                    			//window.location.replace("http://100014.pythonanywhere.com/main")
+
+                    	}
+                </script>
+                <div class="col-sm-2"></div>
+            </div>
+        </div>
+    </body>
+</html>

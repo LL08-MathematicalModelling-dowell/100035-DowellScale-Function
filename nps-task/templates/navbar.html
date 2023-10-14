@@ -1,0 +1,24 @@
+<style>
+	.navimg{
+	height: 40px;
+	width: 40px;
+	padding-right: 5px;
+	}
+
+    .logo-title, .logout{
+        color : black;
+    }
+    .logout:hover, .logo-title:hover{
+        color : #fff;
+    }
+</style>
+
+<nav class="topnav navbar navbar-expand-lg navbar-light bg-success fixed-top">
+	{% load static %}
+	<div class="container d-flex">
+		<a class="nav-item nav-link" href="{% url 'login:home' %}"><img class="navimg"
+                                                                   src="{% static 'images/dowell-logo.png' %}"
+        /><strong class="logo-title">HOME</strong></a>
+		<a href="{% url 'login:logout_btn' %}" class="nav-item nav-link btn btn-warning logout">LOGOUT</a>
+	</div>
+</nav>

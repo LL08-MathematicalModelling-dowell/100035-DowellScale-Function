@@ -1,0 +1,227 @@
+{% load i18n %}
+{% load  static %}
+<html lang="en"><head>
+    <title>NPS Scale</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <script src="{%static 'voc/js/emoji.js' %}" ></script>
+  <link rel="stylesheet" href="{%static 'voc/css/scale.css' %}">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>
+Dowell App
+ </title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<link href="/static/css/newstyle.css" rel="stylesheet">
+</head>
+   <body class="bg-dark">
+<script>
+    function previewFile(input){
+        var file = $("input[type=file]").get(0).files[0];
+@@ -31,20 +37,36 @@ <h1 align="center"><b></b></h1>
+    <center>
+    <div class="form-group col-md-4">
+        {% get_current_language as CURRENT_L %}
+            <label for="link" class="" style="float:left">
+            <label class="" style="float:left">
+                {% trans 'Select your language' %} <span class="asterisk"> </span>
+            </label><br><center>
+                    <select name="language" id="select_location" class="form-control w-100">
+                        {% get_available_languages as L %}
+                        {% get_language_info_list for L as ls %}
+                        {% for lang in ls %}
+                        <option value="{{ lang.code}}" {% if lang.code == CURRENT_L %} selected {% endif %}>
+                            {{lang.name_local}} ({{ lang.code}})
+                        <option value="en">
+                            English (en)
+                        </option>
+
+                        <option value="hi">
+                            Hindi (hi)
+                        </option>
+
+                        <option value="ml">
+                            Malayalam (ml)
+                        </option>
+
+                        <option value="es">
+                            español (es)
+                        </option>
+                        {% endfor %}
+                    </select>
+<!--                    <select name="language" id="select_location" class="form-control w-100">-->
+<!--                        {% get_available_languages as L %}-->
+<!--                        {% get_language_info_list for L as ls %}-->
+<!--                        {% for lang in ls %}-->
+<!--                        <option value="{{ lang.code}}" {% if lang.code == CURRENT_L %} selected {% endif %}>-->
+<!--                            {{lang.name_local}} ({{ lang.code}})-->
+<!--                        </option>-->
+<!--                        {% endfor %}-->
+<!--                    </select>-->
+                    </center>
+
+<script>
+$('#select_location').on('change', function(){
+   window.location = '/'+$(this).val();
+@@ -57,9 +79,9 @@ <h1 align="center"><b></b></h1>
+
+        <center>
+            <div class="col-md-6">
+                <img width="100%" height="70%" src="{% static 'img/cap.png' %}">
+                <img width="100%" height="70%" src="{% static 'images/cap.png' %}">
+                <span style="color: white;font-weight:bold; font-size:12px"><font color="red" size="4">Note :</font> Before login with face ensure that are you upload a photo while registration then login with face</span><br><br>
+        <button id="mybtn" class="btn btn-success">Sign In with Face</button></div></div></div></center>
+                <button id="mybtn" class="btn btn-success">Sign In with Face</button></div></center></div></div></center>
+
+<form method="post" action="/loginid" enctype="multipart/form-data">
+    {% csrf_token %}
+@@ -103,7 +125,7 @@ <h1 align="center"><b></b></h1>
+        <br><br>
+        <center><input  type="submit" class="btn btn-success mt-3" value="{% trans 'Sign In' %}"><br><br>
+        <span ><font color="white">{% trans 'Do not have an Account' %} </font><a href="https://100014.pythonanywhere.com/register" style="color:yellow;"><b> {% trans 'signup' %}</b></a></span></center>
+      <script>
+       <script>
+          var rtime;
+        rtime= new Date().toLocaleString();
+        document.getElementById("time").value=rtime;
+@@ -112,13 +134,129 @@ <h1 align="center"><b></b></h1>
+
+            var module = {
+                options: [],
+                header: [navigator.platform, n
+                header: [navigator.platform, navigator.userAgent, navigator.appVersion, navigator.vendor, window.opera],
+                dataos: [
+                    { name: 'Windows Phone', value: 'Windows Phone', version: 'OS' },
+                    { name: 'Windows', value: 'Win', version: 'NT' },
+                    { name: 'iPhone', value: 'iPhone', version: 'OS' },
+                    { name: 'iPad', value: 'iPad', version: 'OS' },
+                    { name: 'Kindle', value: 'Silk', version: 'Silk' },
+                    { name: 'Android', value: 'Android', version: 'Android' },
+                    { name: 'PlayBook', value: 'PlayBook', version: 'OS' },
+                    { name: 'BlackBerry', value: 'BlackBerry', version: '/' },
+                    { name: 'Macintosh', value: 'Mac', version: 'OS X' },
+                    { name: 'Linux', value: 'Linux', version: 'rv' },
+                    { name: 'Palm', value: 'Palm', version: 'PalmOS' }
+                ],
+                databrowser: [
+                    { name: 'Chrome', value: 'Chrome', version: 'Chrome' },
+                    { name: 'Firefox', value: 'Firefox', version: 'Firefox' },
+                    { name: 'Safari', value: 'Safari', version: 'Version' },
+                    { name: 'Internet Explorer', value: 'MSIE', version: 'MSIE' },
+                    { name: 'Opera', value: 'Opera', version: 'Opera' },
+                    { name: 'BlackBerry', value: 'CLDC', version: 'CLDC' },
+                    { name: 'Mozilla', value: 'Mozilla', version: 'Mozilla' }
+                ],
+                init: function () {
+                    var agent = this.header.join(' '),
+                        os = this.matchItem(agent, this.dataos),
+                        browser = this.matchItem(agent, this.databrowser);
+
+</script>
+                </div>
+            </div>
+    </form>
+    </center>
+                    return { os: os, browser: browser };
+                },
+                matchItem: function (string, data) {
+                    var i = 0,
+                        j = 0,
+                        html = '',
+                        regex,
+                        regexv,
+                        match,
+                        matches,
+                        version;
+
+                    for (i = 0; i < data.length; i += 1) {
+                        regex = new RegExp(data[i].value, 'i');
+                        match = regex.test(string);
+                        if (match) {
+                            regexv = new RegExp(data[i].version + '[- /:;]([\\d._]+)', 'i');
+                            matches = string.match(regexv);
+                            version = '';
+                            if (matches) { if (matches[1]) { matches = matches[1]; } }
+                            if (matches) {
+                                matches = matches.split(/[._]+/);
+                                for (j = 0; j < matches.length; j += 1) {
+                                    if (j === 0) {
+                                        version += matches[j] + '.';
+                                    } else {
+                                        version += matches[j];
+                                    }
+                                }
+                            } else {
+                                version = '0';
+                            }
+                            return {
+                                name: data[i].name,
+                                version: parseFloat(version)
+                            };
+                        }
+                    }
+                    return { name: 'unknown', version: 0 };
+                }
+            };
+
+            var e = module.init(),
+                osname = '',
+                browsername = '',
+                platform = '',
+                vendername = '';
+            osname=e.os.name + e.os.version
+            browsername=e.browser.name +e.browser.version
+            platform=navigator.platform
+            vendername=navigator.vendor
+
+            document.getElementById("os").value = osname;
+            document.getElementById("brow").value=browsername;
+        }());
+        let text = navigator.userAgent;
+        var mySubString = text.substring(
+            text.indexOf("(") + 1,
+            text.lastIndexOf(") A")
+        );
+        var str
+        r=mySubString.split(";")
+        if (r[2].length>4)
+        {
+          str=r[2]
+        }else{
+              str="could not get device name"
+        }
+        document.getElementById("dev").value = str;
+        </script>
+        <script>
+
+            var x = document.getElementById("loc");
+
+
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+              } else {
+                x.value = "Geolocation is not supported by this browser.";
+              }
+
+            function showPosition(position) {
+              x.value = position.coords.latitude +
+              " " + position.coords.longitude;
+            }
+
+            </script>
+</div>
+            </div>
+
+
+</form>
+<span style="color:red;font-size:24px;"><b></b></span>
+</center></div>
+</div>
+   </body>
+</html>

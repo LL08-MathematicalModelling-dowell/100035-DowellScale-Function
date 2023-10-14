@@ -1,0 +1,560 @@
+{% load i18n %}
+{% load  static %}
+<html lang="en">
+<head>
+	<title>NPS Scale</title>
+	<link rel="icon" type="image/x-icon" href="{% static '/images/dowell-logo.png' %}">
+
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+
+	<style id="fa-main" media="all">
+  /*!
+   * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
+   * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+   */
+
+   .switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+   #snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: green;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  right: 10%;
+  top: 30px;
+  font-size: 17px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {top: 30px; opacity: 1;}
+  to {top: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {top: 30px; opacity: 1;}
+  to {top: 0; opacity: 0;}
+}
+
+   #horizontal span{
+       font-size: 30px;
+       padding: 5px;
+       height: 70px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       width: 70px;
+       border-radius: 50%;
+       margin: 5px;
+       cursor: pointer;
+   }
+
+
+
+    #vertical span{
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+    }
+
+    #vertical {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        width: 100px;
+        align-items: center;
+    }
+
+    #labels-vert{
+        display: none;
+        justify-content: space-between;
+        flex-direction: column;
+        }
+
+<!--   #horizontal span{-->
+<!--       font-size: 30px;-->
+<!--       padding: 10px;-->
+<!--       border-radius: 50%;-->
+<!--       margin: 5px;-->
+<!--   }-->
+
+    #labels-vert{
+        /*display: none;*/
+        justify-content: space-between;
+        flex-direction: column;
+        }
+
+
+   #horizontal{
+       display: flex;
+       justify-content: space-between;
+   }
+
+   #timeInput{
+   display: none;
+   }
+
+
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body class=".bg-secondary">
+<div id="snackbar"></div>
+<div class="container">
+	<div class="row" style="margin-top: 3%;">
+		<div class="col-lg-1 col-md-2 d-sm-none"></div>
+		<div class="col-lg-10 clo-md-8 col-sm-12 bg-info"
+		     style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
+			<form id="scale_settings" method="POST" onsubmit="event.preventDefault(); myFunction();">
+				{% csrf_token %}
+				<h2 align="center"><u>Setup a new scale</u></h2>
+				<div class="form-group col-md-6">
+					<label for="head">Name of Scale</label>
+					<input class="form-control" id="head" name="nameofscale" onchange="myName()"
+					       placeholder="Name of scale"
+					       required type="text">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="orientation">Orientation</label>
+					<select class="form-control" id="orientation" name="orientation" required>
+						<option selected="">Choose...</option>
+						<option value="horizontal">Horizontal</option>
+						<option value="vertical">Vertical</option>
+					</select>
+				</div>
+				<!--				<div class="form-group col-md-6">-->
+				<!--					<label for="numberof">Number of rating</label>-->
+				<!--					&lt;!&ndash;<input type="number" name="numberof" class="form-control" id="numberof" min="0" max="10" placeholder="Number of Scale" required>&ndash;&gt;-->
+				<!--					<input class="form-control" disabled id="numberof" name="numberof" type="number" value=10>-->
+				<!--				</div>-->
+
+				<div class="form-group col-md-4">
+					<label for="scolor">Scale Color</label>
+					<input class="form-control" id="scolor" name="scolor" onchange="myScolor()"
+					       placeholder="Background Color"
+					       required type="color">
+				</div>
+				<div class="form-group col-md-4">
+					<label for="rcolor">Round Color</label>
+					<input class="form-control" id="rcolor" name="rcolor" onchange="myRcolor()" placeholder="Font Color"
+					       required type="color">
+				</div>
+				<div class="form-group col-md-4">
+					<label for="fcolor">Font Color</label>
+					<input class="form-control" id="fcolor" name="fcolor" onchange="myFcolor()"
+					       placeholder="Scale Color"
+					       required type="color">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="format">Format</label>
+					<select class="form-control" id="format" name="format" onchange="myFormat()" required>
+						<option selected="">Choose...</option>
+						<option value="numbers">Numbers</option>
+						<option value="emoji">Emojis</option>
+						<option value="stars">Stars</option>
+					</select>
+				</div>
+				<div class="form-group col-md-6">
+					<label for="lefttext">Left</label>
+					<input class="form-control" id="lefttext" name="left" onchange="myLtext()" placeholder="Left Text"
+					       required type="text">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="centertext">Center</label>
+					<input class="form-control" id="centertext" name="center" onchange="myCtext()"
+					       placeholder="Center Text"
+					       required type="text">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="righttext">Right</label>
+					<input class="form-control" id="righttext" name="right" onchange="myRtext()"
+					       placeholder="Right Text"
+					       required type="text">
+				</div>
+				<div class="form-group col-md-3">
+					<label for="time">Number of Scales</label>
+					<input class="form-control" id="no_of_scales" min="1" max="100" name="no_of_scales"
+					       onchange="myNumScales()" placeholder="Number of scales" type="number">
+				</div>
+
+				<div class="form-group col-md-6 "
+				     style="display: flex; align-items: center; justify-content: center; margin-top: 25px">
+					<label class="switch">
+						<input id="checkbox" type="checkbox">
+						<span class="slider round"></span>
+					</label>
+					<span style="font-weight: bold">Toggle to set Time</span>
+				</div>
+
+
+				<div class="form-group col-md-3" id="timeInput">
+					<label for="time">Time (sec)</label>
+					<input class="form-control" id="time" name="time" onchange="myTime()" placeholder="Time" type="number">
+				</div>
+
+				<div class="form-group col-md-6 "
+				     style="display: flex; align-items: center; justify-content: start; margin-top: 25px">
+					<label class="switch">
+						<input id="checkboxScores"  type="checkbox">
+						<span class="slider round"></span>
+					</label>
+					<span style="font-weight: bold">Toggle to show total scores for all instances</span>
+				</div>
+
+				<div class="form-group col-md-6 "
+				     style="display: flex; align-items: center; justify-content: start; margin-top: 25px">
+					<label class="switch">
+						<input id="checkboxResponse"  type="checkbox">
+						<span class="slider round"></span>
+					</label>
+					<span style="font-weight: bold">Toggle to enable submission or response</span>
+				</div>
+
+				<input id="checkboxScoresInput" name="checkboxScores" type="text" value="false" style="display: none">
+				<input id="checkboxResponseInput" name="checkboxResponse" type="text" value="false"style="display: none">
+
+				<div class="form-group col-md-12 text-right p-15">
+					<button class="btn btn-primary" id="saveBtn">Save</button>
+					<a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" id="prevBtn"
+					   onclick="preview();">Preview</a>
+				</div>
+			</form>
+		</div>
+		<div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
+			<!--<img src="https://100014.pythonanywhere.com/media/brandlogos/thumbnails/" width="90%" height="100%" style="height:150px" alt="your logo"><hr>-->
+			<!--               	<div style="font-size:20px">Considering your experience with <b></b>, how likely would you be to recommend <b></b> to your friend or colleague<br></div><hr>-->
+			<!--                   <div class="horizontal d-flex justify-content-center" id="red"></div>-->
+			<!--                   <center><div class="d-flex justify-content-center" id="horizontal"></div></center>-->
+			<!--                   <hr>-->
+			<!--                   <br>-->
+		</div>
+		<!-- Button trigger modal -->
+
+		<!-- Modal -->
+
+		<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter"
+		     role="dialog" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+				<div class="modal-content" id="modalContent">
+					<div class="modal-header">
+						<h2 align="center" class="modal-title" id="exampleModalLongTitle"></h2>
+						<button aria-label="Close" class="close" data-dismiss="modal" type="button">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+					<div class="modal-body" id="modal-body">
+						<div class="horizontal d-flex justify-content-center" id="red"></div>
+						<center>
+							<div id="horizontal"></div>
+						</center>
+						<br>
+						<div class="pl-3" id="lab-hor" style="font-size:2em">
+							<div id="left"></div>
+							<div id="center"></div>
+							<div id="right"></div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+						<!--<button type="button" class="btn btn-primary">Save changes</button>-->
+					</div>
+				</div>
+			</div>
+			<script>
+                  var vert="vertical";
+                  var hori="horizontal";
+                  var name="number";
+                  var n=0;
+
+                  let head_name;
+                  let orient;
+                  let format;
+                  let scolor;
+                  let rcolor;
+                  let fcolor;
+                  let ltext;
+                  let ctext;
+                  let rtext;
+                  let time;
+                  let no_of_scales;
+                  let showScores;
+
+
+                  let checkbox = document.getElementById("checkbox");
+			      checkbox.addEventListener( "change", () => {
+			         if ( checkbox.checked ) {
+			            document.getElementById("timeInput").style.display = "block";
+			         } else {
+			            document.getElementById("timeInput").style.display = "none";
+			         }
+			      });
+
+			      let checkboxScores = document.getElementById("checkboxScores");
+			      checkboxScores.addEventListener( "change", () => {
+			        console.log(checkboxScores.checked)
+			        document.getElementById("checkboxScoresInput").value = checkboxScores.checked;
+			      });
+
+
+			      let checkboxResponse = document.getElementById("checkboxResponse");
+			      checkboxResponse.addEventListener( "change", () => {
+			        console.log(checkboxResponse.checked)
+			        document.getElementById("checkboxResponseInput").value = checkboxResponse.checked;
+			      });
+
+
+                  function myFunction() {
+					if (ltext === ctext || ctext === rtext || ltext === rtext){
+						alert("Labels should be unique")
+						return
+					}
+	                var x = document.getElementById("snackbar");
+	                x.className = "show";
+	                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+	                return document.getElementById('scale_settings').submit();
+                    }
+
+                  function myName() {
+                      head_name = document.getElementById("head").value;
+                  }
+                  function myScolor() {
+                      scolor = document.getElementById("scolor").value;
+                  }
+
+                  function myNumScales() {
+                      no_of_scales = document.getElementById("no_of_scales").value;
+                      var x = document.getElementById("snackbar");
+                      x.innerHTML = `Successfully created ${no_of_scales} scales`;
+                  }
+
+
+                  function myRcolor() {
+                      rcolor = document.getElementById("rcolor").value;
+                  }
+                  function myFcolor() {
+                      fcolor = document.getElementById("fcolor").value;
+                  }
+                  function myFormat() {
+                      format = document.getElementById("format").value;
+                  }
+                  function myLtext() {
+                      ltext = document.getElementById("lefttext").value;
+                  }
+                  function myRtext() {
+                      rtext = document.getElementById("righttext").value;
+                  }
+                  function myCtext() {
+                      ctext = document.getElementById("centertext").value;
+                  }
+                  function myTime() {
+                      time = document.getElementById("time").value;
+                  }
+
+                  var e = document.getElementById("orientation");
+                    function onChange() {
+                      orient = e.value
+                    }
+                    e.onchange = onChange;
+                    onChange();
+
+                 function preview(){
+                    if (head_name === "undefined" || orient === "Choose..." || format === "undefined" || scolor === "undefined" || rcolor === "undefined" || ltext === "undefined" || ctext === "undefined" || rtext === "undefined" || time === "undefined" ){
+                        alert("Fields can't be empty")
+                        return document.getElementById("modalContent").style.display = "none"
+                    }
+                  var scale_bg = document.getElementById("horizontal")
+                  var orientation = document.getElementById("orientation")
+                  var vert = document.getElementById("vert-div")
+                  var sca_vert = document.getElementById("labels-vert")
+
+                  scale_bg.style.background = $("#scolor").val();
+                  scale_bg.style.padding = "20px 20px";
+
+                  var e = document.getElementById("orientation");
+                  var lab_hor= document.getElementById("lab-hor");
+                  var modal= document.getElementById("modal-body");
+                  var c= document.getElementById("center");
+                  var value = e.value;
+
+
+                  if (value ==="vertical" ){
+                    scale_bg.style.flexDirection = "column";
+                    scale_bg.style.width = "100px";
+                    scale_bg.style.margin = "auto";
+                    modal.style.display = "flex";
+                    modal.style.flexDirection = "row";
+                    modal.style.justifyContent = "center";
+                    lab_hor.style.display = "flex";
+                    lab_hor.style.flexDirection = "column";
+                    lab_hor.style.justifyContent = "space-between";
+                    c.style.width = "unset";
+                  }else {
+                    scale_bg.style.flexDirection = "row";
+                    lab_hor.style.display = "flex";
+                    lab_hor.style.justifyContent = "space-between";
+                    lab_hor.style.flexDirection = "row";
+                    modal.style.flexDirection = "column";
+                    scale_bg.style.width = "unset";
+                  }
+                  document.getElementById("exampleModalLongTitle").innerHTML=$("#head").val();
+                  document.getElementById("left").innerHTML=$("#lefttext").val();
+                  document.getElementById("right").innerHTML=$("#righttext").val();
+                  document.getElementById("center").innerHTML=$("#centertext").val();
+                  // document.getElementById("ghost").style.display="block";
+                  $("#red").attr('class', $("#orientation").val());
+                //   $('#horizontal').attr("id", $("#orientation").val());
+                  em=$("#orientation").val();
+
+                  $('#'+em).empty();
+<!--                  n = $("#numberof").val();-->
+                  n= 10
+                  //alert('#'+rt+" "+$("#bgcolor").val());
+                  $('#red').css({"backgroundColor": $("#scolor").val()});
+                  var name = $('#format').val();
+                  ram(name,n);
+
+                 }
+                //               for (let i = 1; i <= n; i++) {
+                //     const para = document.createElement("p");
+                //       para.innerHTML = i;
+                //       para.id="demo"+i
+                //       document.getElementById("horizontal").appendChild(para);
+                //      document.getElementById("demo"+i).innerHTML = i;
+                //      document.getElementById("demo"+i).style.backgroundColor = $("#fcolor").val();
+                //      document.getElementById("demo"+i).style.color = $("#scolor").val();
+                //   }
+                  function ram(star,num){
+                      var ans = [];
+                      ans = []
+                      document.getElementById("horizontal").innerHTML = "";
+                      function range(start, end) {
+                        for (let i = start; i <= end; i++) {
+                            ans.push(i);
+                        }
+                        return ans;
+                      }
+                      console.log(range(0, num))
+
+                      for (let i = 0; i < ans.length; i++) {
+                          const para = document.createElement("span");
+                          para.id=i
+                          document.getElementById("horizontal").appendChild(para);
+                          if (star==="stars"){
+                               document.getElementById(i).innerHTML = '<i class="fa fa-star"></i>';
+                               document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                           }
+                           else if(star==="emoji"){
+                               if (i > n/2){
+                                    document.getElementById(i).innerHTML = "\uD83D\uDE00";
+                                    document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                                }
+                                else{
+                                    document.getElementById(i).innerHTML = "&#128577;";
+                                    document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                                }
+                           }
+                           else if (star === "numbers"){
+                              document.getElementById(i).innerHTML = ans[i];
+                               document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                            }else {
+                                console.log("Tall Boy")
+                            }
+                     document.getElementById(i).style.color = $("#fcolor").val();
+                  }
+                  }
+
+
+		</script>
+		</div>
+
+	</div>
+</div>
+</body>
+</html>

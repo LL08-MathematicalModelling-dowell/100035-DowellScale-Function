@@ -1,0 +1,209 @@
+{% extends "index.html" %}
+{% block title %}NPS LITE SCALE{% endblock %}
+{% block content %}
+    <style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+
+     /* width */
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    .url-clipboard {
+        padding: 10px;
+        border: 1px solid #ccc;
+        max-width: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+        background-color: black;
+        border-radius: 5px;
+      }
+
+      input {
+        border: none;
+        outline: none;
+        width: 95%;
+        display: flex;
+        flex-wrap: wrap;
+        background-color: transparent;
+      }
+
+      i:hover {
+        color: lightblue;
+      }
+
+      i {
+          color: #fff;
+        cursor: pointer;
+        font-size: 2rem;
+      }
+    .section-container_nps_lite{
+        margin-top: 5%;
+        display: flex;
+    }
+
+    .previous-scales_nps_lite{
+        display: flex;
+        flex-direction: column;
+        width: 180px;
+        padding : 15px;
+        justify-content: flex-start;
+        border: 1px solid darkgreen;
+        overflow-y:scroll;
+<!--        height: 200px;-->
+    }
+
+    .previous-scales_nps_lite a{
+        margin: 3px 0;
+        text-decoration: none;
+        color: teal;
+    }
+
+    .time_nps_lite{
+        color: blue;
+        font-style: italic;
+        font-weight: bold;
+        position:absolute;
+        top: 0;
+        right: 0;
+        margin:10px;
+        font-size: 14px
+
+    }
+
+    .title_nps_lite{
+     display: flex;
+     text-align: center;
+     padding-top: 10px;
+     color: gray;
+     font-weight: bold;
+    }
+
+    .container_nps_lite{
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0px 0px 0px;
+    }
+
+    .container_nps_lite div{
+    background: #6df782;
+    color: green;
+    font-weight: bold;
+    padding: 5px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    }
+
+    .container_nps_lite div:hover{
+    background: #2edb4e;
+    }
+    </style>
+    {% if user == "admin" %}
+    <style>
+        .main-container_nps_lite{
+        display: flex;
+        flex-direction : column;
+        justify-content: center;
+        padding: 30px;
+        width: 400px;
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+        border: 1px solid darkgreen;
+        position: relative;
+    }
+    </style>
+    {% else %}
+    <style>
+        .main-container_nps_lite{
+        display: flex;
+        flex-direction : column;
+        justify-content: center;
+        padding: 30px;
+        width: 400px;
+        border-radius: 15px;
+        border: 1px solid darkgreen;
+        position: relative;
+    }
+    </style>
+    {% endif %}
+
+    {% if user == "admin" %}
+    <div class="url-clipboard">
+      <p id="mytext"></p>
+      <!-- <button id="TextToCopy" ><img src="button_image.png"></button> -->
+      <i class="bi bi-clipboard" id="clip-icon" onclick="copy_function('mytext')"></i>
+    </div>
+    {% endif %}
+
+<div class="section-container_nps_lite">
+    {% if user == "admin" %}
+    <div class="previous-scales_nps_lite">
+        <h3>Scale history</h3>
+        {% for scale in npslite_all %}
+        <a href="{{public_url}}/nps-lite/nps-lite-scale/{{scale.settings.template_name}}/">{{scale.settings.template_name}}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="main-container_nps_lite">
+        <!--<p class="time_nps_lite">10:30</p>-->
+        <p class="title_nps_lite">Do you wish to recommend this application to your friend?</p>
+        <div class="container_nps_lite">
+            <div class="left_nps_lite">🙁 No</div>
+            <div class="center_nps_lite">🙂 May be</div>
+            <div class="right_nps_lite">😃 Yes</div>
+        </div>
+        {% if user == "admin" %}
+        <div>
+            <a style="float:right; text-decoration:none ; background: teal; margin-top:20px; padding: 10px 10px;color: #fff;border-radius: 5px;"
+               href="{% url 'nps_lite:settings_page' %}">Create New Scale</a>
+            <br>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+    function codeAddress() {
+        var copyText = document.getElementById('mytext')
+        copyText.style.color = "#ccc";
+        copyText.style.fontSize = "18px";
+        copyText.style.fontWeight = "400";
+        copyText.innerHTML = `{{public_url|safe}}/nps-lite/nps-lite-scale/Default4270/?brand_name=<b>your-brand
+        </b>&product_name=<b>your-product</b>`
+        }
+      window.onload = codeAddress;
+
+      function copy_function(id){
+        var clip = document.getElementById("clip-icon");
+        var value = document.getElementById(id).innerHTML;
+        var input_temp = document.createElement("input");
+        input_temp.value = `{{public_url|safe}}/nps-lite/nps-lite-scale/Default4270/?brand_name=your_brand&product_name=your_product`;
+        document.body.appendChild(input_temp);
+        input_temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(input_temp);
+
+        clip.className = "bi bi-check2";
+        clip.style.color = "blue";
+        clip.style.cursor = "default";
+      }
+</script>
+{% endblock %}

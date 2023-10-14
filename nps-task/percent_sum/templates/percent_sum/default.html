@@ -1,0 +1,388 @@
+{% load i18n %}
+{% load  static %}
+<html lang="en">
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+      integrity="sha512-5PV92qsds/16vyYIJo3T/As4m2d8b6oWYfoqV+vtizRB6KhF1F9kYzWzQmsO6T3z3QG2Xdhrx7FQ+5R1LiQdUA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>VOC_Percent_Sum</title>
+    <style>
+     
+      .slidecontainer {
+            width: 100%; /* Width of the outside container */
+          }
+
+          /* The slider itself */
+          .slider {
+            -webkit-appearance: none;  /* Override default CSS styles */
+            appearance: none;
+            width: 100%; /* Full-width */
+            height: 10px;
+            border-radius: 50px;
+            background: #386CD6; /* blue background */
+            outline: none; /* Remove outline */
+            opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+            -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+            transition: opacity .2s;
+            float:left;
+          }
+
+          /* Mouse-over effects */
+          .slider:hover {
+            opacity: 1; /* Fully shown on mouse-over */
+          }
+
+          /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+          .slider::-webkit-slider-thumb {
+            -webkit-appearance: none; /* Override default look */
+            appearance: none;
+            width: 22px; /* Set a specific slider handle width */
+            height: 22px; /* Slider handle height */
+            background: rgb(255, 255, 255);
+            cursor: pointer; /* Cursor on hover */
+            border-radius: 50%;
+            border: 5px solid #000000;
+          }
+
+          .slider::-moz-range-thumb {
+            width: 22px; /* Set a specific slider handle width */
+            height: 22px; /* Slider handle height */
+            background: #04AA6D; /* Green background */
+            cursor: pointer; /* Cursor on hover */
+            border-radius: 50%;
+          }
+          #demo{
+            font-weight:italic;
+            font-size:20px:
+          }
+        #horizontal{
+           display: flex;
+           justify-content: space-between;
+           padding: 10px;
+       }
+
+       .url-clipboard {
+        padding: 10px;
+        border: 1px solid #ccc;
+        max-width: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 20px;
+        background-color: black;
+        border-radius: 5px;
+      }
+
+      input {
+        border: none;
+        outline: none;
+        width: 95%;
+        display: flex;
+        flex-wrap: wrap;
+        background-color: transparent;
+      }
+
+      i:hover {
+        color: lightblue;
+      }
+
+      i {
+          color: #fff;
+        cursor: pointer;
+        font-size: 2rem;
+      }
+
+
+       /* #labels{
+        display: flex;
+        justify-content: space-between;
+        font-weight:bold;
+        font-size:25px;
+        }*/
+
+        #countdown{
+        color: black;
+        float: right;
+        padding: 10px 20px;
+        font-size: 16px;
+        }
+
+        @media screen and (max-width: 600px) {
+
+
+           #labels{
+           font-size: 20px;
+           }
+        }
+
+        @media screen and (max-width: 995px) {
+            #horizontal{
+            padding: 10px;
+            }
+
+
+           #labels{
+           font-size: 14px;
+           }
+        }
+        @media screen and (max-width: 335px) {
+            #horizontal{
+            padding: 10px;
+            }
+
+
+           #labels{
+           font-size: 14px;
+           }
+        }
+
+
+        .Footer {
+          width: 100%;
+          margin: auto;
+          font-size: large;
+          font-weight: 800;
+        }
+        .rate {
+          margin: 0 auto;
+
+        }
+        #products{
+          font-weight:bold;
+          display:flex;
+          flex-direction:left;
+        }
+
+
+    </style>
+<script>
+
+$(document).ready(function() {
+    
+
+       
+
+
+    //output.innerHTML = slider.value + "%"; // Display the default slider value
+    // Update the current slider value (each time you drag the slider handle)
+    //slider.oninput = function() {
+    //output.innerHTML = this.value + "%";
+        
+
+    }
+
+
+)
+
+
+function postScore(score){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", 'https://100035.pythonanywhere.com/percent-sum-response/', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        score: parseInt(score),
+        scale_name: "default",
+        brand_name: "",
+        user: "",
+        email: "",
+    }));
+    window.location.replace("http://100014.pythonanywhere.com/main");
+
+
+  }
+
+
+</script>
+</head>
+<body style="display:flex; justify-content: center;flex-direction: column; align-items: center">
+    {% if user == "admin" %}
+    <div class="url-clipboard">
+      <p id="mytext"></p>
+      <!-- <button id="TextToCopy" ><img src="button_image.png"></button> -->
+      <i class="bi bi-clipboard" id="clip-icon" onclick="copy_function('mytext')"></i>
+    </div>
+    {% endif %}
+
+<div class="container " style="backgroundColor":"#ACD4EE">
+    <div class="row mt-4">
+        <div class="col-sm-2 {{bglight}}" style="{% if user == 'admin' %} {{left}} {% endif %}">
+            {% if user == "admin" %}
+            <div class="text-dark"><h2 align="center"><u>{{hist}}</u></h2></div>
+            <table>
+            {% for percent_sum in percentsumall %}
+                <tr>
+        <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{nps.template_name}}">{{nps.template_name}}</a></td>-->
+                    <td><a href="{{public_url}}/percent-sum/percent-sum-scale1/{{percent_sum.settings.template_name}}">{{percent_sum.settings.template_name}}</a></td>
+                </tr>
+            {% endfor %}
+            {% endif %}
+            </table>
+        </div>
+        <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3);backgroundColor:#ACD4EE">
+        <h1 align="center" class="text-danger"><b>Percent-Sum Scale</b></h1>
+        <br>
+          <div id="ProdValues">
+            <div id="doc-0">
+              <h3 class="head-0" align="center">Product 1</h3>
+              <div><input type="range" min="0" max="100" class="slider" id="myRange-0" value="0" style="background: rgb(62, 229, 16);"><br>
+                <div class="Footer text-center" id="Foot-0"><div id="left-0" style="float: left;">0%</div>
+                <div id="right-0" style="float: right;">100%</div><div id="demo-0" align="center">0</div>
+                <button type="submit" class="btn btn-info" id="but-0">Rate</button></div></div><hr></div><div id="doc-1">
+                  <h3 class="head-1" align="center">Product 2</h3>
+                  <div><input type="range" min="0" max="100" value="0" class="slider" id="myRange-1" disabled="" style="background: rgb(62, 229, 16);"><br>
+                    <div class="Footer text-center" id="Foot-1"><div id="left-1" style="float: left;">0%</div><div id="right-1" style="float: right;">100%</div>
+                    <div id="demo-1" align="center">0</div>
+                  <button type="submit" class="btn btn-info" id="but-1" disabled="">Rate</button></div></div><hr></div></div>
+                    {% if user == "admin" %}
+            <div class="pb-4">
+            <a style="float:right" href="{% url 'percent_sum:admin_page' %}" class="{{btn}}">{{urltext}}</a>
+           </div>
+        {% endif %}
+
+            </div>
+            </div>
+             
+            </div>
+           
+        <br>
+      </div>
+
+    </div>
+    <script>
+
+</script>
+
+<script>
+        var Arr = [0,0];
+        var responses=[];
+
+        document.getElementById("myRange-0").oninput = function () {
+          document.getElementById("demo-0").innerHTML = this.value;
+          Arr[0] = this.value;
+          document.getElementById("right-1").innerHTML = 100 - this.value;
+          document.getElementById("myRange-1").max = 100 - this.value;
+        };
+
+        document.getElementById("myRange-1").oninput = function () {
+          document.getElementById("demo-1").innerHTML = this.value;
+          Arr[1] = this.value;
+
+        };
+
+        document.getElementById("but-0").onclick = function () {
+          if (Arr[0] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else {
+            document.getElementById("but-0").className = "btn btn-success";
+            document.getElementById("but-0").innerHTML = "Submitted";
+            document.getElementById("myRange-0").disabled = "true";
+            document.getElementById("but-1").disabled = false;
+            document.getElementById("myRange-1").disabled = false;
+            responses.push(document.getElementById("myRange-0").value)
+            console.log(responses)
+          }
+
+        };
+
+        document.getElementById("but-1").onclick = function () {
+
+          if (Arr[1] == 0) {
+            alert("Ratings Can't be Zero , if stuck try reloading the page");
+          }
+          else if (Arr[1] != 100 - Arr[0]) {
+            alert("Ratings Sum should be 100");
+          }
+          else {
+            document.getElementById("but-1").className = "btn btn-success";
+            document.getElementById("but-1").innerHTML = "Submitted";
+            document.getElementById("myRange-1").disabled = "true";
+            responses.push(document.getElementById("myRange-1").value)
+            console.log(responses)
+          }
+
+        };
+
+
+
+  //rating = document.getElementById('submit')
+  //rating.addEventListener("click",postScore(slider.value))
+  function copy_function(id){
+    x = getCookieValue('url')
+    b = x.replaceAll('"','')
+    var clip = document.getElementById("clip-icon");
+    var value = document.getElementById(id).innerHTML;
+    var input_temp = document.createElement("input");
+    input_temp.value = `{{public_url|safe}}${b}?brand_name=your brand&product_name=your product`;
+    document.body.appendChild(input_temp);
+    input_temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(input_temp);
+
+    clip.className = "bi bi-check2";
+    clip.style.color = "blue";
+    clip.style.cursor = "default";
+  }
+
+    //let time = 600;
+    const countdownEl = document.getElementById("countdown");
+    score = document.getElementsByClassName("number");
+<!--  -->
+
+    //setInterval(updateCountdown, 1000)
+
+    function updateCountdown(){
+        const minutes = Math.floor(time/60);
+        let seconds = time % 60;
+
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        countdownEl.innerHTML = `${minutes}:${seconds}`
+        seconds < 10  && minutes == 0 ? countdownEl.style.color = "red" : countdownEl.style.color = "black" ;
+        time--;
+        time = time < 0 ? redirectMain() : time;
+    }
+
+    function redirectMain(){
+        window.location.replace("http://100014.pythonanywhere.com/main")}
+
+    function codeAddress() {
+        var copyText = document.getElementById('mytext')
+        copyText.style.color = "#ccc";
+        copyText.style.fontSize = "14px";
+        copyText.style.fontWeight = "400";
+        copyText.innerHTML = `{{public_url|safe}}/percent-sum/percent-sum-scale1/default_percent-sum_scale6787?brand_name=your_brand&product_name=your_product`
+        }
+      window.onload = codeAddress;
+
+
+    function copy_function(id){
+        var clip = document.getElementById("clip-icon");
+        var value = document.getElementById(id).innerHTML;
+        var input_temp = document.createElement("input");
+        input_temp.value = `{{public_url|safe}}/percent-sum/percent-sum-scale1/Default623?brand_name=your brand&product_name=your product`;
+        document.body.appendChild(input_temp);
+        input_temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(input_temp);
+
+        clip.className = "bi bi-check2";
+        clip.style.color = "blue";
+        clip.style.cursor = "default";
+      }
+</script>
+</body>
+</html>

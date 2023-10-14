@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+{% block title %}List of Responses{% endblock %}
+{% block content %}
+
+    <h1 style="margin-top: 5%;">List of Responses</h1>
+    <ul>
+    {% if responses %}
+        {% for response in responses %}
+        <li>
+            <strong>Scale Score:</strong> {{ response}}<br>
+
+        </li>
+        {% endfor %}
+    {% else %}
+        <p>No responses found</p>
+    {% endif %}
+    </ul>
+
+{% endblock %}
+

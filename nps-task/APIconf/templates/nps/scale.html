@@ -1,0 +1,252 @@
+{% extends "index.html" %}
+{% block title %}NPS Scale{% endblock %}
+{% block content %}
+    <style>
+        #horizontal{
+           display: flex;
+           justify-content: space-between;
+<!--           background: blue;-->
+       }
+
+        #horizontal p{
+        font-size: 30px;
+        padding: 5px;
+        height: 60px;
+        width: 60px;
+        border-radius: 50%;
+        margin: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        }
+
+        #labels-vert{
+        display: none;
+        justify-content: space-between;
+        flex-direction: column;
+        }
+
+        #countdown{
+        color: black;
+        float: right;
+        padding: 10px 20px;
+        font-size: 16px;
+        }
+
+        @media screen and (max-width: 600px) {
+          #horizontal p{
+            font-size: 16px;
+            padding: 5px;
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            margin: 0.5px;
+            }
+
+           #labels{
+           font-size: 20px;
+           }
+        }
+
+        @media screen and (max-width: 995px) {
+            #horizontal{
+            padding: 10px;
+            }
+          #horizontal p{
+            font-size: 18px;
+            padding: 5px;
+            height: 40px;
+            width: 40px;
+            margin: .5px'
+            }
+
+           #labels{
+           font-size: 14px;
+           }
+        }
+        @media screen and (max-width: 335px) {
+            #horizontal{
+            padding: 10px;
+            }
+          #horizontal p{
+            font-size: 12px;
+            padding: 5px;
+            height: 30px;
+            width: 30px;
+            margin: .5px'
+            }
+
+           #labels{
+           font-size: 14px;
+           }
+        }
+    </style>
+<script>
+    var mbuttons =[];
+
+$(document).ready(function() {
+
+    // Get mbuttons list
+    mbuttons = document.getElementsByClassName("number");
+    console.log(mbuttons);
+
+
+    if (mbuttons.length > 0) {
+        for (var i = 0; i < mbuttons.length; i++) {
+            mbuttons[i].addEventListener("click", function() {
+
+               console.log(this.id);
+               setrating(this.id);
+            //   postScore(this.id)
+            //   para = document.getElementById("lg").innerHTML=this.id;
+            //   document.getElementById("myText").value=this.id
+
+            });
+        }
+
+    }
+
+});
+
+function postScore(score){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '{{public_url|safe}}/nps-response/', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        score: parseInt(score),
+        scale_name: "{{default.name|safe}}",
+        brand_name: "",
+        user: "",
+        email: "",
+    }));
+    window.location.replace("http://100014.pythonanywhere.com/main")
+}
+
+setrating = function(id) {
+    for (var i = 0; i < mbuttons.length; i++) {
+        if (+id >= +mbuttons[i].id) {
+            mbuttons[i].style.color = "white";
+            mbuttons[i].style.background = "#5cb85c";
+        }else {
+            mbuttons[i].style.color = "red";
+            mbuttons[i].style.background = "#fff";
+        }
+
+    }
+}
+</script>
+
+<div class="container ">
+    <div class="row mt-4">
+        <div class="col-sm-2 {{bglight}}" style="{{left}}">
+            <div class="text-dark"><h2 align="center"><u>{{hist}}</u></h2></div>
+            <table>
+            {% if user == "admin" %}
+            {% for nps in npsall %}
+                <tr>
+        <!--            <td><a href="https://100014.pythonanywhere.com/nps/dowellscale/{{nps.template_name}}">{{nps.template_name}}</a></td>-->
+                    <td><a href="{{public_url}}/nps-scale/{{nps.template_name}}">{{nps.template_name}}</a></td>
+                </tr>
+            {% endfor %}
+            {% endif %}
+            </table>
+        </div>
+        <div class="col-sm-8 bg-light" style="border:silver 2px solid; box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)" >
+            <h1 align="center" class="text-danger"><b>{{default.name}}</b><span id="countdown"></span></h1><br>
+            <div id="scale-container">
+                <div id="horizontal" ></div>
+                <div class="pl-3" id="labels-vert" style="font-size:2em">
+                    <div>{{text.0}}</div>
+                    <div>{{text.2}}</div>
+                    <div>{{text.1}}</div>
+                </div>
+            </div>
+<!--        <div id="horizontal" ></div>-->
+            <div class="pl-3" id="labels" style="font-size:2em">
+                   <div style="float: left">{{text.0}}</div>
+                    <div style="float: right">{{text.2}}</div>
+                    <div style="margin: 0 auto; width: 30%;">{{text.1}}</div>
+            </div>
+        <br>
+        {% if user == "admin" %}
+        <div class="pb-4">
+            <a style="float:right" href="{% url 'APIconf:admin_page' %}" class="{{btn}}">{{urltext}}</a>
+            <br>
+        </div>
+        {% endif %}
+    </div>
+    <script>
+                var vert="vertical";
+                var hori="horizontal";
+                var name="number";
+                var n=10;
+
+                var scale_bg = document.getElementById("horizontal")
+                var sca_vert = document.getElementById("labels-vert")
+                var scale_cont = document.getElementById("scale-container")
+                var labels = document.getElementById("labels")
+                scale_bg.style.background = '{{default.scalecolor|safe}}';
+                scale_bg.style.padding = "20px 20px";
+                console.log('{{default.fomat|safe}}')
+                star = '{{default.fomat|safe}}'
+
+                if ('{{default.orientation|safe}}' ==="vertical" ){
+
+                    scale_bg.style.flexDirection = "column";
+                    labels.style.display = "none";
+                    scale_bg.style.width = "100px";
+                    scale_bg.style.margin = "auto";
+                    scale_cont.style.display = "flex";
+                    sca_vert.style.display = "flex";
+                    scale_cont.style.width = "300px";
+                    scale_cont.style.margin = "auto";
+                }
+                for (let i = 1; i <= n; i++) {
+                    const para = document.createElement("p");
+
+                    if (star==="stars"){
+                       para.innerHTML = '<i class="fa fa-star"></i>';
+                    }
+                    else if(star==="emoji"){
+                        para.innerHTML = '<i class="far fa-grin"></i>';
+                    }
+                    else{
+                        para.innerHTML = i;
+                    }
+                    para.id=i
+                    para.classList.add("number");
+                    document.getElementById("horizontal").appendChild(para);
+<!--                    document.getElementById(i).innerHTML = i;-->
+                    document.getElementById(i).style.background ='{{default.roundcolor|safe}}';
+                    document.getElementById(i).style.color ="{{default.fontcolor|safe }}";
+                }
+                </script>
+        <script>
+            let time = {{default.time|safe}};
+
+            const countdownEl = document.getElementById("countdown");
+
+            setInterval(updateCountdown, 1000)
+
+            function updateCountdown(){
+                const minutes = Math.floor(time/60);
+                let seconds = time % 60;
+
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                countdownEl.innerHTML = `${minutes}:${seconds}`
+                seconds < 10 && minutes == 0 ? countdownEl.style.color = "red" : countdownEl.style.color = "black" ;
+                time--;
+                time = time < 0 ? redirectMain() : time;
+            }
+
+            function redirectMain(){
+                window.location.replace("http://100014.pythonanywhere.com/main")
+            }
+        </script>
+    <div class="col-sm-2"></div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

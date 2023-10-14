@@ -1,0 +1,585 @@
+{% load i18n %}
+{% load  static %}
+<html lang="en">
+<head>
+	<title>Likert Scale</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+
+	<style id="fa-main" media="all">
+  /*!
+   * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
+   * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+   */
+
+
+   .switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+   #snackbar {
+                visibility: hidden;
+                min-width: 250px;
+                margin-left: -125px;
+                background-color: green;
+                color: #fff;
+                text-align: center;
+                border-radius: 2px;
+                padding: 16px;
+                position: fixed;
+                z-index: 1;
+                right: 10%;
+                top: 30px;
+                font-size: 17px;
+              }
+
+              #snackbar.show {
+                visibility: visible;
+                -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+              }
+
+              @-webkit-keyframes fadein {
+                from {top: 0; opacity: 0;}
+                to {top: 30px; opacity: 1;}
+              }
+
+              @keyframes fadein {
+                from {top: 0; opacity: 0;}
+                to {top: 30px; opacity: 1;}
+              }
+
+              @-webkit-keyframes fadeout {
+                from {top: 30px; opacity: 1;}
+                to {top: 0; opacity: 0;}
+              }
+
+              @keyframes fadeout {
+                from {top: 30px; opacity: 1;}
+                to {top: 0; opacity: 0;}
+              }
+
+   #horizontal h6{
+       font-size: 18px;
+       font-weight:bold;
+       padding: 5px;
+       min-height: 50px;
+       display: flex;
+       flex-wrap:wrap;
+       align-items: center;
+       justify-content: center;
+       width: 120px;
+       border-radius: 25px;
+       margin: 5px;
+       cursor: pointer;
+   }
+
+
+
+    #vertical h6{
+        font-size: 18px;
+        font-weight:bold;
+        width: 120px;
+        min-height: 50px;
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    #vertical {
+      font-size:2em;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        width: 100px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    #labels-vert{
+        display: none;
+        justify-content: space-between;
+        flex-direction: column;
+        }
+
+<!--   #horizontal h6{-->
+<!--       font-size: 30px;-->
+<!--       padding: 10px;-->
+<!--       border-radius: 50%;-->
+<!--       margin: 5px;-->
+<!--   }-->
+
+    #labels-vert{
+        /*display: none;*/
+        justify-content: space-between;
+        flex-direction: column;
+        }
+
+
+   #horizontal{
+       display: flex;
+       flex-wrap:wrap;
+       justify-content: center;
+   }
+
+   #timeInput{
+   display: none;
+   }
+
+
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body class=".bg-secondary">
+<div id="snackbar"></div>
+<div class="container">
+	<div class="row" style="margin-top: 3%;">
+		<div class="col-lg-1 col-md-2 d-sm-none"></div>
+		<div class="col-lg-10 clo-md-8 col-sm-12 bg-info" style="border:silver 2px solid;box-shadow:2px 2px 2px 2px rgba(0,0,0,0.3)">
+			<form action="" id="myform" method="POST">
+				{% csrf_token %}
+				<h2 align="center"><u>Customize your scale</u></h2>
+				<div class="form-group col-md-6">
+					<label for="head">Name of Scale</label>
+					<input class="form-control" id="head" name="nameofscale" placeholder="Name of scale" required type="text">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="head">Number of Scales</label>
+					<input
+							class="form-control"
+							id="head"
+							name="numberofscale"
+							placeholder="Number of scale"
+							required
+							type="text"
+					/>
+				</div>
+				<div class="form-group col-md-6">
+					<label for="orientation">Orientation</label>
+					<select class="form-control" id="orientation" name="orientation" required>
+						<option selected="">Choose...</option>
+						<option value="horizontal">Horizontal</option>
+						<option value="vertical">Vertical</option>
+					</select>
+				</div>
+				<div class="form-group col-md-6">
+					<label for="rcolor">Round Color</label>
+					<input class="form-control" id="rcolor" name="rcolor" placeholder="Font Color" required type="color">
+				</div>
+				<div class="form-group col-md-6">
+					<label for="fcolor">Font Color</label>
+					<input class="form-control" id="fcolor" name="fcolor" placeholder="Scale Color" required type="color">
+				</div>
+
+				<div class="form-group col-md-6">
+					<label for="Likert">Label Type</label>
+					<select class="form-control" id="likert" name="labeltype" required>
+						<option value="0">Select Label Type</option>
+						<option value="1">Text</option>
+						<option value="2">Image</option>
+					</select>
+				</div>
+				<div class="form-group col-md-3">
+					<label for="Likert">Label Scale Selection</label>
+					<select class="form-control" id="likert_scale_selection" name="likert" required>
+						<option value="1">--Select Choice--</option>
+						<option value="2">Yes/No</option>
+						<option value="3">3 Points Scale</option>
+						<option value="4">4 Points Scale</option>
+						<option value="5">5 Points Scale</option>
+						<option value="7">7 Points Scale</option>
+						<option value="9">9 Points Scale</option>
+					</select>
+				</div>
+				<div class="form-group col-md-3 "
+				     style="display: flex; align-items: center; justify-content: center; margin-top: 25px">
+					<label class="switch">
+						<input id="checkbox" type="checkbox">
+						<span class="slider round"></span>
+					</label>
+					<span style="font-weight: bold">Toggle to set Time</span>
+				</div>
+				<div class="form-group col-md-3" id="timeInput">
+					<label for="time">Time (sec)</label>
+					<input class="form-control" id="time" value="0" min="0" name="time" onchange="myTime()"
+					       placeholder="Time"
+					       type="number">
+				</div>
+				<div class="form-group col-md-6" id="scale_input" name="Scale_Input"></div>
+
+
+				<div class="form-group col-md-12 text-right p-15">
+
+					<button class="btn btn-primary" form="myform" type="submit">Save</button>
+					<a class="btn btn-primary" data-target="#exampleModalCenter" data-toggle="modal" onclick="preview();">Preview</a>
+				</div>
+			</form>
+		</div>
+		<div class="col-lg-1 col-md-2 d-sm-none" id="ghost">
+			<!--<img src="https://100014.pythonanywhere.com/media/brandlogos/thumbnails/" width="90%" height="100%" style="height:150px" alt="your logo"><hr>-->
+			<!--               	<div style="font-size:20px">Considering your experience with <b></b>, how likely would you be to recommend <b></b> to your friend or colleague<br></div><hr>-->
+			<!--                   <div class="horizontal d-flex justify-content-center" id="red"></div>-->
+			<!--                   <center><div class="d-flex justify-content-center" id="horizontal"></div></center>-->
+			<!--                   <hr>-->
+			<!--                   <br>-->
+		</div>
+
+		<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter" role="dialog" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h2 align="center" class="modal-title" id="exampleModalLongTitle"></h2>
+						<button aria-label="Close" class="close" data-dismiss="modal" type="button">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+					<div class="modal-body" id="modal-body">
+						<div class="horizontal d-flex justify-content-center" id="red"></div>
+						<center>
+							<div id="horizontal"></div>
+						</center>
+						<br>
+					</div>
+
+					<!--<div class="pl-3" id="labels-vert" style="font-size:2em">-->
+					<!--  <div></div>-->
+					<!--  <div></div>-->
+					<!--  <div></div>-->
+					<!--</div>-->
+				</div>
+				<div class="modal-footer">
+
+					<button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+					<!--<button type="button" class="btn btn-primary">Save changes</button>-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</body>
+</html>
+
+<script>
+                  var vert="vertical";
+                  var hori="horizontal";
+
+                  let head_name;
+                  let orient;
+                  let rcolor;
+                  let fcolor;
+                  let time;
+                  let labels;
+
+                  let checkbox = document.getElementById("checkbox");
+			      checkbox.addEventListener( "change", () => {
+			         if ( checkbox.checked ) {
+			            document.getElementById("timeInput").style.display = "block";
+			         } else {
+			            document.getElementById("timeInput").style.display = "none";
+			         }
+			      });
+
+                  function myName() {
+                      head_name = document.getElementById("head").value;
+                  }
+                  function myRcolor() {
+                      rcolor = document.getElementById("rcolor").value;
+                  }
+                  function myFcolor() {
+                      fcolor = document.getElementById("fcolor").value;
+                  }
+                  function myTime() {
+                      time = document.getElementById("time").value;
+                  }
+                  function myLabel() {
+                    labels = document.getElementById("likert").value;
+                }
+                function myScale() {
+                  likert_scale_selection = document.getElementById("likert_scale_selection").value;}
+                  var e = document.getElementById("orientation");
+                  function onChange() { orient = e.value};
+                  e.onchange = onChange;
+                  onChange();
+            function preview(){
+
+              if (head_name === "undefined" || orient === "Choose..."|| rcolor === "undefined" || time === "undefined" ){
+                alert("Fields can't be empty")
+                return document.getElementById("modalContent").style.display = "none"}
+
+                  var scale_bg = document.getElementById("horizontal")
+                  var orientation = document.getElementById("orientation")
+                  var vert = document.getElementById("vert-div")
+                  //scale_bg.style.background = $("#rcolor").val();
+                  //scale_bg.style.padding = "20px 20px";
+                  var lab_hor= document.getElementById("lab-hor");
+                  var modal= document.getElementById("modal-body");
+                  var e = document.getElementById("orientation");
+                  var value = e.value;
+                 
+
+                 // if (value ==="vertical" ){
+                 //       scale_bg.style.flexDirection = "column";
+                  //      scale_bg.style.width = "100px";
+                 //       scale_bg.style.margin = "auto";
+                  //      modal.style.display = "flex";
+                 //       modal.style.justifyContent = "center";
+                 //     }
+                 // else {
+                        //scale_bg.style.flexDirection = "row";
+                 //       modal.style.flexDirection = "column";
+                        //scale_bg.style.width = "unset";
+                  //    }
+                  var named = document.getElementById("scale_input");
+                  
+                  var tags = named.getElementsByTagName("input");
+                  const inputArray =[...tags].map(tag => tag.value);
+
+
+                  document.getElementById("exampleModalLongTitle").innerHTML=$("#head").val();
+                  $("#red").attr('class', $("#orientation").val());
+                  $('#horizontal').attr("id", $("#orientation").val());
+                  em=$("#orientation").val();
+                  $('#'+em).empty();
+                  $('#red').css({"backgroundColor": "#FFFFFF"})
+
+                  var name = $('#likert').val();
+                  n = Number(setScale())
+                  var mbuttons =[];
+
+                  $(document).ready(function() {
+                  mbuttons = document.getElementsByClassName("input");
+                 // mbuttons.style.backgroundColor= $("#rcolor").val();
+                  if (mbuttons.length >= 0) {
+                      for (var i = 0; i < mbuttons.length; i++) {
+                          mbuttons[i].style.cursor = 'pointer'
+                          mbuttons[i].style.backgroundColor=$("#rcolor").val();
+                          mbuttons[i].onclick = function(){
+                              this.style.backgroundColor = 'red';
+                              console.log(this.innerHTML)}
+                          mbuttons[i].ondblclick = function(){
+                              this.style.backgroundColor = 'white';
+                                  }
+                          mbuttons[i].onmouseover = function(){
+                              //this.style.backgroundColor = $("#rcolor").val();
+                              this.style.backgroundColor = "green";
+                              }
+                          mbuttons[i].onmouseout = function(){
+                              if (this.style.backgroundColor === 'red'){
+                              this.style.backgroundColor = 'red';}
+                              else{
+                                  this.style.backgroundColor = $("#rcolor").val();
+                              } }
+
+            }}});
+                  ram(name, n, inputArray);
+}
+
+                 const image= document.getElementById('likert')
+                 image.addEventListener('change', clearAll);
+                 function clearAll(){
+                  if (image.value==='2'||image.value==='0'){
+                    var container = document.getElementById("scale_input");
+                    // Remove every children it had before
+                    while (container.hasChildNodes()) {
+                        container.removeChild(container.lastChild);
+                    }
+                  }
+                 };
+
+                  function ram(star,num, input){
+                        for (let i = 0; i < num; i++) {
+                        const para = document.createElement("h6");
+                        para.id=i
+                        para.classList.add("input");
+                        document.getElementById($("#orientation").val()).appendChild(para);
+
+
+                        if(star==="2" && num===2){
+                          const emoji=["&#x1F603","&#128532"];
+                          document.getElementById(i).innerHTML = emoji[i];
+                        }
+                        else if(star==="2" && num===3){
+                          const emoji=["&#128532","&#128578","&#x1F603"];
+                          document.getElementById(i).innerHTML = emoji[i];
+                        }
+                        else if(star==="2" && num===4){
+                          const emoji=["&#128545","&#128532","&#128522","&#x1F603"];
+                          document.getElementById(i).innerHTML = emoji[i];
+                        }
+                        else if(star==="2" && num===5){
+                          const emoji=["&#128545","&#128532","&#128578","&#128522","&#x1F603"];
+                          document.getElementById(i).innerHTML = emoji[i];
+                        }
+                        else if(star==="2" && num===7){
+                          const emoji=["&#128545","&#128530","&#128533","&#128578","&#128522","&#128512","&#x1F603"];
+                          document.getElementById(i).innerHTML = emoji[i];
+                        }
+                        else if(star==="2" && num===9){
+                          const emoji=["&#128545","&#128534","&#128530","&#128533","&#128578","&#128512","&#128516","&#x1F603","&#128525"];
+                          document.getElementById(i).innerHTML = emoji[i];
+                        }
+                         else{
+                             document.getElementById(i).innerHTML = input[i];
+                             //document.getElementById(i).style.backgroundColor = $("#rcolor").val();
+                             document.getElementById(i).style.backgroundColor = "#FFFFFF";
+                         }
+
+
+                       document.getElementById(i).style.color = $("#fcolor").val();
+                    }
+                    }
+
+
+                  const select = document.getElementById('likert_scale_selection')
+                  var label = document.getElementById('numberof')
+                  select.addEventListener('change', setScale);
+                  function setScale(){
+                    const choice = select.value;
+                    if (choice==="2"){
+                      if (image.value==='1'){
+                        label = "2";
+                        addFields(num=Number(label));}
+                      else if(image.value==='2'){
+                        label = "2";}
+
+                      return label;
+
+                    }
+                    else if (choice==="3"){
+                      if (image.value==='1'){
+                        label = "3";
+                        addFields(num=Number(label));}
+                      else if(image.value==='2'){
+                        label = "3";}
+
+                      return label;
+
+                    }
+                    else if (choice==="4"){
+                      if (image.value==='1'){
+                        label = "4";
+                        addFields(num=Number(label));}
+                      else if(image.value==='2'){
+                        label = "4";}
+
+                      return label;
+                    }
+                    else if (choice==="5"){
+                      if (image.value==='1'){
+                        label = "5";
+                        addFields(num=Number(label));}
+                      else if(image.value==='2'){
+                        label = "5";}
+
+                      return label;
+                    }
+                    else if (choice==="7"){
+                      if (image.value==='1'){
+                        label = "7";
+                        addFields(num=Number(label));}
+                      else if(image.value==='2'){
+                        label = "7";}
+
+                      return label;
+                    }
+                    else if (choice==="9"){
+                      if (image.value==='1'){
+                        label = "9";
+                        addFields(num=Number(label));}
+                      else if(image.value==='2'){
+                        label = "9";}
+
+                      return label;
+                    }
+                  }
+                  function addFields(num){
+                    // Generate a dynamic number of inputs
+                    var number = num;
+                    // Get the element where the inputs will be added to
+                    var container = document.getElementById("scale_input");
+                    // Remove every children it had before
+                    while (container.hasChildNodes()) {
+                    container.removeChild(container.lastChild);
+                    }
+                    for (i=0;i<number;i++){
+                        // Append a node with a random text
+                        container.appendChild(document.createTextNode("Label Input " + (i+1)));
+                        // Create an <input> element, set its type and name attributes
+                        var input = document.createElement("input");
+                        input.type = "text";
+                        input.name = "scale_choice " + i;
+                        input.class = "form-control"
+                        input.id = "head1";
+                        container.appendChild(input);
+                        // Append a line break
+                        container.appendChild(document.createElement("br"));
+
+                    }
+                }
+
+
+
+</script>
