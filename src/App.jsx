@@ -10,8 +10,19 @@ import SingleScaleResponse from './pages/SingleScaleResponse';
 import CreateResponse from './pages/CreateResponse';
 import SingleScaleSettings from './pages/SingleScaleSettings';
 import UpdateScaleSettings from './pages/UpdateScaleSettings';
-import { Scales, ScalesDetail, ScalesSettings, CreateScales, CreateScale, AvailableScales } from './pages/scales';
+import {
+  Scales,
+  ScalesDetail,
+  ScalesSettings,
+  CreateScales,
+  CreateScale,
+  AvailableScales,
+} from './pages/scales';
 import { Stages } from './pages/test';
+import PairedScale from './pages/PairedScale';
+import PerceptualScale from './pages/PerceptualScale';
+import SinglePerceptualScaleSettings from './pages/SinglePerceptualScaleSettings';
+import CreatePerceptualScaleSettings from './pages/CreatePerceptualScaleSettings';
 
 function App() {
   return (
@@ -27,13 +38,33 @@ function App() {
             <Route path="/available-scales" element={<AvailableScales />} />
             <Route path="/all-scales/:slug" element={<ScalesDetail />} />
             <Route path="/scales-settings/:slug" element={<ScalesSettings />} />
+            <Route path="/paired-scale-comparison" element={<PairedScale />} />
+            <Route
+              path="/perceptual-mapping-scale"
+              element={<PerceptualScale />}
+            />
+            <Route path="/:slug" element={<ScalesDetail />} />
             <Route path="/create-scales" element={<CreateScales />} />
             <Route path="/create-scale" element={<CreateScale />} />
-            <Route path="/create-scale-settings" element={<CreateSettings />} />
-            <Route path="/create-scale-response/:id" element={<CreateResponse />} />
+            <Route
+              path="/create-scale-settings"
+              element={<CreateSettings />}
+            />
+            <Route
+              path="/create-perceptual-scale-settings"
+              element={<CreatePerceptualScaleSettings />}
+            />
+            <Route
+              path="/create-scale-response/:id"
+              element={<CreateResponse />}
+            />
             <Route
               path="/single-scale-settings/:id"
               element={<SingleScaleSettings />}
+            />
+            <Route
+              path="/single-perceptual-scale-settings/:id"
+              element={<SinglePerceptualScaleSettings />}
             />
             <Route
               path="/update-scale-settings/:id"
@@ -45,8 +76,6 @@ function App() {
             />
           </Routes>
         </Suspense>
-
-
       </div>
     </>
   );
