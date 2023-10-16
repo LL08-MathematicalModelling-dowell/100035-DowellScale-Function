@@ -29,7 +29,7 @@ const ScalesSettings = ()=>{
     const [subInputsValue, setSubInputsValue] = useState([]);
     const [subItems, setSubItems] = useState([]);
     const [subItemsValue, setSubItemsValue] = useState([]);
-    const [inputCount, setInputCount] = useState(1);
+    const [inputCount, setInputCount] = useState(null);
     const [itemListCount, setItemListCount] = useState(1);
 
     console.log(subInputsValue, 'subInputsValue')
@@ -124,6 +124,7 @@ const ScalesSettings = ()=>{
     const handleAddInputArea = ()=>{
         setInputCount(prev => prev + 1);
         setSubInputs([...subInputs, inputCount])
+
         setUpdateFormData((prev)=>({
             ...prev,
             num_of_stages:prev.num_of_stages + 1
@@ -138,14 +139,23 @@ const ScalesSettings = ()=>{
 
     const removeStagesSubinput = (item)=>{
         setInputCount(prev => prev - 1);
-        setUpdateFormData({ ...updateFormData,  num_of_stages:inputCount});
-        const newInputItems = subInputs.filter((input)=> input !== item);
-        setSubInputs(newInputItems);
+        // const newInputItems = subInputs.filter((input)=> input !== item);
+        // setSubInputs(newInputItems);
+        setSubInputs(prev => prev.filter(input => input !== item));
+        setUpdateFormData(prev => ({
+            ...prev,
+            num_of_stages: prev.num_of_stages - 1
+          }));
     }
 
     const removeInputValueItem = (item)=>{
         const newInputItems = subInputsValue.filter((value)=> value !== item);
         setSubInputsValue(newInputItems);
+        setInputCount(prev => prev - 1);
+        setUpdateFormData(prev => ({
+            ...prev,
+            num_of_stages: prev.num_of_stages - 1
+          }));
     }
 
 
@@ -198,11 +208,11 @@ const ScalesSettings = ()=>{
         }
     },[updateFormData.stages]);
 
-    // useEffect(()=>{
-    //     if(updateFormData.num_of_stages){
-    //         setInputCount(updateFormData.num_of_stages);
-    //     }
-    // },[updateFormData.num_of_stages]);
+    useEffect(()=>{
+        if(updateFormData.num_of_stages){
+            setInputCount(updateFormData.num_of_stages);
+        }
+    },[updateFormData.num_of_stages]);
 
       
 
