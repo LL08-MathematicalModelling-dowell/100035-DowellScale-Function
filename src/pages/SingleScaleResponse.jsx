@@ -38,6 +38,15 @@ const CreateResponse = () => {
       ctx.fillText('South', -20, centerY - 10);
       ctx.fillText('West', -centerX + 10, 10);
       ctx.fillText('East', centerX - 30, 10);
+
+      // Display coordinates
+      ctx.font = '10px Arial';
+      ctx.fillStyle = 'blue';
+      ctx.fillText('(0, 0)', 5, -5); // Center
+      ctx.fillText('(10, 60)', 10, 60);
+      ctx.fillText('(-70, 30)', -70, 30);
+      ctx.fillText('(-20, 80)', -20, 80);
+      ctx.fillText('(-70, 30)', -70, 30);
     }
   }, [ctx]);
   const { id } = useParams(); // Get the 'id' parameter from the route
