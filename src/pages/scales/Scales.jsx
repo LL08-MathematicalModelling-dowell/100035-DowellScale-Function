@@ -1,8 +1,11 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { useFetchUserContext } from '../../contexts/fetchUserContext';
 
 const Scales = () => {
+    const { fetchSessionId } = useFetchUserContext();
+
+   
     const scaleTypes = [
         {
             name:'linkert scale',
@@ -23,6 +26,10 @@ const Scales = () => {
     ]
 
     const navigateTo = useNavigate();
+
+    useEffect(()=>{
+        fetchSessionId();
+    },[])
   return (
     <div className='h-screen flex flex-cols justify-center items-center'>
         <div className='w-6/12 grid grid-cols-2 gap-4'>

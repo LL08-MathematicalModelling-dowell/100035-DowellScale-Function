@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik, Form } from 'formik';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useFetchUserContext } from "../../contexts/fetchUserContext";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
 import { Button } from "../../components/button";
 import Fallback from "../../components/Fallback";
@@ -24,6 +25,10 @@ const CreateScale = ()=>{
     const [inputCount, setInputCount] = useState(1);
     const [itemListCount, setItemListCount] = useState(1);
     const navigateTo = useNavigate();
+
+    const { fetchSessionId, user  } = useFetchUserContext();
+
+  
 
     
 
@@ -65,6 +70,10 @@ const CreateScale = ()=>{
   
 
     console.log(subInputs, 'subInputs');
+
+    useEffect(()=>{
+        fetchSessionId();
+    },[])
 
     const handleChange = (e)=>{
         const { name, value } = e.target;
@@ -162,7 +171,7 @@ const CreateScale = ()=>{
     const handleSubmitScales = async()=>{
         const payload = {
             user: formData.user,
-            username: formData.username,
+            username: user.username,
             scalename:formData.scalename,
             num_of_stages:Number(formData.num_of_stages),
             num_of_substages:formData.num_of_stages,
@@ -203,7 +212,6 @@ const CreateScale = ()=>{
 
         try {
             await createScale('ranking-scale', payload);
-            console.log(scaleData?.data?.scale_id, 'daaaaa**')
             if(scaleData.status===201){
                 toast.success(scaleData.data.success);
                 setTimeout(()=>{

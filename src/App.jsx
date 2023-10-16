@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
+import { FetchUserContextProvider } from './contexts/fetchUserContext';
 import CreateSettings from './pages/CreateSettings';
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
@@ -20,28 +21,30 @@ function App() {
         <ToastContainer />
         <Suspense fallback={<Fallback />}>
           <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/all-scales" element={<Scales />} />
-            <Route path="/available-scales" element={<AvailableScales />} />
-            <Route path="/all-scales/:slug" element={<ScalesDetail />} />
-            <Route path="/scales-settings/:slug" element={<ScalesSettings />} />
-            <Route path="/create-scale" element={<CreateScale />} />
-            <Route path="/create-scale-settings" element={<CreateSettings />} />
-            <Route path="/create-scale-response" element={<CreateResponse />} />
-            <Route
-              path="/single-scale-settings/:id"
-              element={<SingleScaleSettings />}
-            />
-            <Route
-              path="/update-scale-settings/:id"
-              element={<UpdateScaleSettings />}
-            />
-            <Route
-              path="/single-scale-response/:id"
-              element={<SingleScaleResponse />}
-            />
-          </Routes>
+          <FetchUserContextProvider>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/all-scales" element={<Scales />} />
+              <Route path="/available-scales" element={<AvailableScales />} />
+              <Route path="/all-scales/:slug" element={<ScalesDetail />} />
+              <Route path="/scales-settings/:slug" element={<ScalesSettings />} />
+              <Route path="/create-scale" element={<CreateScale />} />
+              <Route path="/create-scale-settings" element={<CreateSettings />} />
+              <Route path="/create-scale-response" element={<CreateResponse />} />
+              <Route
+                path="/single-scale-settings/:id"
+                element={<SingleScaleSettings />}
+              />
+              <Route
+                path="/update-scale-settings/:id"
+                element={<UpdateScaleSettings />}
+              />
+              <Route
+                path="/single-scale-response/:id"
+                element={<SingleScaleResponse />}
+              />
+            </Routes>
+          </FetchUserContextProvider>
         </Suspense>
 
         {/* <Navbar />

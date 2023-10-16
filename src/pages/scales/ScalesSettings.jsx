@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 import { useParams, useNavigate } from "react-router-dom";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
+import { useFetchUserContext } from "../../contexts/fetchUserContext";
 import useGetSingleScale from "../../hooks/useGetSingleScale";
 import { useUpdateResponse } from "../../hooks/useUpdateResponse";
 import Fallback from "../../components/Fallback";
@@ -32,7 +33,10 @@ const ScalesSettings = ()=>{
     const [inputCount, setInputCount] = useState(1);
     const [itemListCount, setItemListCount] = useState(1);
 
-    console.log(subInputsValue, 'subInputsValue')
+    const { fetchSessionId, user  } = useFetchUserContext();
+
+    console.log(user, 'uuuu')
+
 
 
     const scalename = settings?.scalename;
@@ -84,7 +88,7 @@ const ScalesSettings = ()=>{
     const updatePayload = {
             scale_id:_id,
             user: true,
-            username: "Joel",
+            username: user?.username,
             scalename:updateFormData.scalename,
             num_of_stages:updateFormData.num_of_stages, 
             num_of_substages:updateFormData.num_of_substages, 
@@ -217,6 +221,9 @@ const ScalesSettings = ()=>{
         }
     }
 
+    useEffect(()=>{
+        fetchSessionId();
+    },[])
 
     useEffect(() => {
         const fetchData = async () => {
