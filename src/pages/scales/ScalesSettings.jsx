@@ -35,8 +35,6 @@ const ScalesSettings = ()=>{
 
     const { fetchSessionId, user  } = useFetchUserContext();
 
-    console.log(user, 'uuuu')
-
 
 
     const scalename = settings?.scalename;
