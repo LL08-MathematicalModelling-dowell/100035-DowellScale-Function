@@ -10,7 +10,7 @@ import CustomTextInput from "../../components/forms/inputs/CustomTextInput";
 import { Button } from "../../components/button";
 import { fontStyles } from "../../utils/constants/fontStyles";
 
-import { InputsModal } from "../../modals";
+import { InputsModal, ItemListInputModal } from "../../modals";
 
 const ScalesSettings = ()=>{
     const { slug } = useParams();
@@ -29,7 +29,7 @@ const ScalesSettings = ()=>{
     const [subInputsValue, setSubInputsValue] = useState([]);
     const [subItems, setSubItems] = useState([]);
     const [subItemsValue, setSubItemsValue] = useState([]);
-    const [inputCount, setInputCount] = useState(null);
+    const [inputCount, setInputCount] = useState(1);
     const [itemListCount, setItemListCount] = useState(1);
 
     console.log(subInputsValue, 'subInputsValue')
@@ -111,6 +111,13 @@ const ScalesSettings = ()=>{
         handleToggleInputModal();
     }
 
+    const handleCreateItems = ()=>{
+        setSubItems([...Array(Number(updateFormData?.item_count))].map((_, i) => i + 1));
+        handleToggleItemListInputModal();
+
+        console.log('toggled')
+    }
+
     const handleToggleInputModal = ()=>{
         setShowStagesInputModal(!showStagesInputModal);
     }
@@ -157,6 +164,45 @@ const ScalesSettings = ()=>{
             num_of_stages: prev.num_of_stages - 1
           }));
     }
+
+
+    
+    // all functions for item list
+    const handleToggleItemListInputModal = ()=>{
+        setShowItemListInputModal(!showItemListInputModal);
+    }
+
+    const handleItemListValueChange = (index, value)=>{
+        const updatedValues = [...subItemsValue];
+        updatedValues[index] = value;
+        setSubItemsValue(updatedValues);
+    }
+    
+    const handleAddItemListInputArea = ()=>{
+        setItemListCount(prev => prev + 1);
+        setUpdateFormData(prev =>({ ...prev, item_count:prev.item_count + 1}))
+        setSubItems([...subItems, itemListCount]);
+    };
+
+    const handleSubmitItemListSubinputs = ()=>{
+        setSubItems([]);
+        setSubItemsValue([...subItemsValue]);
+        handleToggleItemListInputModal();
+    }
+
+    const removeItemListSubinput = (item)=>{
+        setItemListCount(prev => prev - 1);
+        const newInputItems = subItems.filter((input)=> input !== item);
+        setSubItems(newInputItems);
+        setUpdateFormData(prev => ({ ...prev, item_count:prev.item_count - 1 }))
+    }
+
+    const removeItemListValue = (item)=>{
+        const newInputItems = subItemsValue.filter((value)=> value !== item);
+        setSubItemsValue(newInputItems);
+        setUpdateFormData(prev => ({ ...prev, item_count:prev.item_count - 1 }))
+    }
+
 
 
     const handleToggleTime = ()=>{
@@ -213,6 +259,18 @@ const ScalesSettings = ()=>{
             setInputCount(updateFormData.num_of_stages);
         }
     },[updateFormData.num_of_stages]);
+
+    useEffect(()=>{
+        if(updateFormData.item_count){
+            setItemListCount(updateFormData.item_count);
+        }
+    },[updateFormData.item_count]);
+
+    useEffect(()=>{
+        if(updateFormData.item_list){
+            setSubItemsValue(updateFormData.item_list);
+        }
+    },[updateFormData.item_list]);
 
       
 
@@ -286,8 +344,20 @@ const ScalesSettings = ()=>{
                         handleChange={handleChange}
                         type="number"
                         placeholder="item count"
+
+                        onClick={()=>{
+                            handleCreateItems();
+                        }}
                     />
-                  
+                  <div className="">
+                    {subItemsValue.map((value)=>(
+                        <button 
+                            onClick={()=>removeItemListValue(value)}
+                            className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
+                            {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span>
+                        </button>
+                    ))}
+                </div>
                 </div>
                 <CustomTextInput 
                     label='number of substages'
@@ -421,7 +491,16 @@ const ScalesSettings = ()=>{
             removeSubinput={removeStagesSubinput}
         />)
         }
-        
+        {showItemListInputModal && (<ItemListInputModal 
+            handleToggleItemListInputModal={handleToggleItemListInputModal}
+            handleSubmitStagesSubinputs={handleSubmitItemListSubinputs}
+            subItems={subItems}
+            subItemsValue={subItemsValue}
+            handleInputsValueChange={handleItemListValueChange}
+            handleAddInputArea={handleAddItemListInputArea}
+            removeSubinput={removeItemListSubinput}
+        />)
+        }
     </div>
     )
 }
