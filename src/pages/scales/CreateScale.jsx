@@ -97,7 +97,9 @@ const CreateScale = ()=>{
     
     const handleAddInputArea = ()=>{
         setInputCount(prev => prev + 1);
-        setFormData({ ...formData,  num_of_stages:inputCount});
+        setFormData((prev)=>({
+            ...prev, num_of_stages:prev.num_of_stages + 1
+        }))
         setSubInputs([...subInputs, inputCount])
     };
 
@@ -134,7 +136,8 @@ const CreateScale = ()=>{
     
     const handleAddItemListInputArea = ()=>{
         setItemListCount(prev => prev + 1);
-        setFormData({ ...formData,  item_count:itemListCount});
+        // setFormData({ ...formData,  item_count:itemListCount});
+        setFormData(prev =>({ ...prev, item_count:prev.item_count + 1}))
         setSubItems([...subItems, itemListCount]);
     };
 

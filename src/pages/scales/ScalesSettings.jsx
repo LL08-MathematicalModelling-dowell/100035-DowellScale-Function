@@ -10,6 +10,8 @@ import CustomTextInput from "../../components/forms/inputs/CustomTextInput";
 import { Button } from "../../components/button";
 import { fontStyles } from "../../utils/constants/fontStyles";
 
+import { InputsModal } from "../../modals";
+
 const ScalesSettings = ()=>{
     const { slug } = useParams();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
@@ -18,6 +20,19 @@ const ScalesSettings = ()=>{
     const [isLoading, setIsLoading] = useState(false);
     const updateResponse = useUpdateResponse();
     const navigateTo = useNavigate();
+
+
+    const [showStagesInputModal, setShowStagesInputModal] = useState(false);
+    const [showItemListInputModal, setShowItemListInputModal] = useState(false);
+
+    const [subInputs, setSubInputs] = useState([]);
+    const [subInputsValue, setSubInputsValue] = useState([]);
+    const [subItems, setSubItems] = useState([]);
+    const [subItemsValue, setSubItemsValue] = useState([]);
+    const [inputCount, setInputCount] = useState(1);
+    const [itemListCount, setItemListCount] = useState(1);
+
+    console.log(subInputsValue, 'subInputsValue')
 
 
     const scalename = settings?.scalename;
@@ -36,11 +51,6 @@ const ScalesSettings = ()=>{
     const stages_arrangement = settings?.stages_arrangement;
     const display_ranks = settings?.display_ranks;
         
-    //item_list:["item 1","item 2"],
-    //stages_arrangement: "",
-    //orientation: "",
-    //ranking_method_stages: "Unique Ranking",
-    //reference: "",
 
     const [updateFormData, setUpdateFormData] = useState(
         Object.assign({}, { 
@@ -64,9 +74,11 @@ const ScalesSettings = ()=>{
         })
     );
 
-    const updateOrientation = ['Vertical', 'Horizontal']
-    const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled']
-    const ranking_reference = ['Overall Ranking', 'StageWise Ranking']
+    const updateOrientation = ['Vertical', 'Horizontal'];
+    const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled'];
+    const ranking_reference = ['Overall Ranking', 'StageWise Ranking'];
+
+    
     
 
     const updatePayload = {
@@ -76,7 +88,7 @@ const ScalesSettings = ()=>{
             scalename:updateFormData.scalename,
             num_of_stages:updateFormData.num_of_stages, 
             num_of_substages:updateFormData.num_of_substages, 
-            stages:updateFormData.stages, 
+            stages:subInputsValue, 
             item_count:updateFormData.item_count, 
             item_list:updateFormData.item_list,
             scalecolor:updateFormData.scalecolor, 
@@ -90,12 +102,56 @@ const ScalesSettings = ()=>{
             display_ranks:updateFormData.display_ranks 
     }
 
+    console.log(updatePayload, '****updatePayload')
+
+
+
+    const handleCreateStages = ()=>{
+        setSubInputs([...Array(Number(updateFormData?.num_of_stages))].map((_, i) => i + 1));
+        handleToggleInputModal();
+    }
+
+    const handleToggleInputModal = ()=>{
+        setShowStagesInputModal(!showStagesInputModal);
+    }
+
+    const handleInputsValueChange = (index, value)=>{
+        const updatedValues = [...subInputsValue];
+        updatedValues[index] = value;
+        setSubInputsValue(updatedValues);
+    }
+
+    const handleAddInputArea = ()=>{
+        setInputCount(prev => prev + 1);
+        setSubInputs([...subInputs, inputCount])
+        setUpdateFormData((prev)=>({
+            ...prev,
+            num_of_stages:prev.num_of_stages + 1
+        }));
+    }; 
+
+    const handleSubmitStagesSubinputs = ()=>{
+        setSubInputs([]);
+        setSubInputsValue([...subInputsValue]);
+        handleToggleInputModal();
+    }
+
+    const removeStagesSubinput = (item)=>{
+        setInputCount(prev => prev - 1);
+        setUpdateFormData({ ...updateFormData,  num_of_stages:inputCount});
+        const newInputItems = subInputs.filter((input)=> input !== item);
+        setSubInputs(newInputItems);
+    }
+
+    const removeInputValueItem = (item)=>{
+        const newInputItems = subInputsValue.filter((value)=> value !== item);
+        setSubInputsValue(newInputItems);
+    }
+
 
     const handleToggleTime = ()=>{
         setTimeOn(!timeOn);
     }
-
-   
 
     const handleFetchSingleScale = async (scaleId) => {
         try {
@@ -117,10 +173,10 @@ const ScalesSettings = ()=>{
         if (settings) {
           setUpdateFormData({
             scalename: settings?.scalename || '',
-            num_of_stages: settings.num_of_stages || '',
-            num_of_substages: settings.num_of_substages || 0,
-            stages: settings.stages || '',
-            item_count: settings.item_count || '',
+            num_of_stages: Number(settings.num_of_stages) || 0,
+            num_of_substages: Number(settings.num_of_substages) || 0,
+            stages: settings.stages || [],
+            item_count: settings.item_count || 0,
             item_list: settings.item_list || [],
             scalecolor: settings.scalecolor || '',
             fontcolor: settings.fontcolor || '',
@@ -132,8 +188,22 @@ const ScalesSettings = ()=>{
             stages_arrangement: settings?.stages_arrangement || '',
             display_ranks: settings.display_ranks || ''
           });
+          
         }
       }, [settings]);
+
+    useEffect(()=>{
+        if(updateFormData.stages){
+            setSubInputsValue([...updateFormData.stages]);
+        }
+    },[updateFormData.stages]);
+
+    // useEffect(()=>{
+    //     if(updateFormData.num_of_stages){
+    //         setInputCount(updateFormData.num_of_stages);
+    //     }
+    // },[updateFormData.num_of_stages]);
+
       
 
     const handleChange = (e)=>{
@@ -179,11 +249,24 @@ const ScalesSettings = ()=>{
                     <CustomTextInput 
                         label='number of stages'
                         name='num_of_stages'
-                        value={updateFormData.num_of_stages}
+                        value={updateFormData?.num_of_stages}
                         type='number'
                         handleChange={handleChange}
                         placeholder='enter number of stages'
+
+                        onClick={()=>{
+                            handleCreateStages();
+                        }}
                     />
+                    <div className="">
+                        {subInputsValue.map((value)=>(
+                            <button 
+                                onClick={()=>removeInputValueItem(value)}
+                                className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
+                                {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
                 <div className="">
                     <CustomTextInput
@@ -318,6 +401,16 @@ const ScalesSettings = ()=>{
         </div>
         <Button primary width={'full'} onClick={handleUpdateRankingScale}>Update scale</Button>
         </div>
+        {showStagesInputModal && (<InputsModal 
+            handleToggleInputModal={handleToggleInputModal}
+            handleSubmitStagesSubinputs={handleSubmitStagesSubinputs}
+            subInputs={subInputs}
+            subInputsValue={subInputsValue}
+            handleInputsValueChange={handleInputsValueChange}
+            handleAddInputArea={handleAddInputArea}
+            removeSubinput={removeStagesSubinput}
+        />)
+        }
         
     </div>
     )

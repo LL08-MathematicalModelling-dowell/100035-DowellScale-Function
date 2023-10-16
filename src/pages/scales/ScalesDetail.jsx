@@ -18,18 +18,18 @@ const ScalesDetail = () => {
     const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
     const [currentStage, setCurrentStage] = useState(0);
 
-    console.log(scaleData[112], '*** scaleData')
+    // console.log(scaleData[112], '*** scaleData')
 
 
 
-    const dataStages = sigleScaleData?.map((scale)=>{
+    const dataStages = sigleScaleData && sigleScaleData?.map((scale)=>{
         const stages = scale?.settings?.stages.map((stage)=>{
             return stage;
         })
         return stages;
     });
 
-    const dataItems = sigleScaleData?.map((scale)=>{
+    const dataItems = sigleScaleData && sigleScaleData?.map((scale)=>{
         const itemList = scale?.settings?.item_list.map((list)=>{
             return list;
         })
@@ -41,9 +41,9 @@ const ScalesDetail = () => {
 
     
     
-    const stages = dataStages ? dataStages[0] : ['City 5', 'City 6'];
+    const stages = sigleScaleData ? [...dataStages] : ['City 5', 'City 6'];
     console.log(stages, 'stages')
-    const itemsAvailable = dataItems ? dataItems[0] : ['item 111', 'item 222'];
+    const itemsAvailable = dataItems ? [...dataItems] : ['item 111', 'item 222'];
     const rankings = [0, 1];
 
     const [itemsAvailableSchema, setItemsAvailableSchema] = useState(
@@ -71,18 +71,6 @@ const ScalesDetail = () => {
     const navigateTo = useNavigate();
 
     
-
-    // const handleNext = ()=>{
-    //     const updatedDb = [...db, {
-    //         stage: `Stage ${currentStage + 1}`,
-    //         items: itemsAvailableSchema.map(item => ({
-    //             itemName: item.item,
-    //             rank: item.option
-    //         }))
-    //     }];
-    //     setDb(updatedDb);
-    //     setCurrentStage(prev => prev + 1);
-    // }
     const handlePrev = ()=>{
         if(currentStage > 0){
             setCurrentStage(prev => prev - 1);
@@ -144,7 +132,6 @@ const ScalesDetail = () => {
         fetchScaleData(slug);
     },[]);
     
-    console.log(sigleScaleData && sigleScaleData[0].settings.scalecolor, 'sigleScaleData[0]')
 
     
 
