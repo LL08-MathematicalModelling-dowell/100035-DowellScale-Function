@@ -41,9 +41,10 @@ const ScalesDetail = () => {
 
     
     
-    const stages = sigleScaleData ? [...dataStages] : ['City 5', 'City 6'];
-    console.log(stages, 'stages')
-    const itemsAvailable = dataItems ? [...dataItems] : ['item 111', 'item 222'];
+    const stages = sigleScaleData ? dataStages[0] : ['City 5', 'City 6'];
+    // console.log(stages, 'stages')
+    const itemsAvailable = dataItems ? dataItems[0] : ['item 111', 'item 222'];
+    // console.log(itemsAvailable, 'itemsAvailable')
     const rankings = [0, 1];
 
     const [itemsAvailableSchema, setItemsAvailableSchema] = useState(
