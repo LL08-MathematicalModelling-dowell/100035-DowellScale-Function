@@ -116,10 +116,11 @@ def response_submit_api_view(request):
             "unfavourable": 0,
             "neutral": 0
         }
+        cut_off_percentage = settings.get('cut_off_percentage', 0.5)
         for statement in standardized_score_list:
-            if statement < 0.5:
+            if statement < cut_off_percentage:
                 response_attitude['unfavourable'] += 1
-            elif statement > 0.5:
+            elif statement > cut_off_percentage:
                 response_attitude['favourable'] += 1
             else:
                 response_attitude['neutral'] += 1
