@@ -224,9 +224,9 @@ const CreateScale = ()=>{
         }
     }
     return(
-        <div className="h-screen w-full flex flex-col items-center justify-center">
-            <div className="w-7/12 m-auto border p-10">
-                <h2 className="capitalize text-center text-lg mb-7">set up your Ranking Scale</h2>
+        <div className="h-screen w-full flex flex-col items-center justify-center font-Montserrat">
+            <div className="w-7/12 m-auto border border-primary p-10">
+                <h2 className="capitalize text-center text-sm font-medium mb-7">set up your Ranking Scale</h2>
             <div>
                 <div className='grid grid-cols-3 gap-3 mb-10'>
                     <CustomTextInput 

@@ -31,7 +31,7 @@ const Scales = () => {
         fetchSessionId();
     },[])
   return (
-    <div className='h-screen flex flex-cols justify-center items-center'>
+    <div className='h-screen flex flex-cols justify-center items-center font-Montserrat'>
         <div className='w-6/12 grid grid-cols-2 gap-4'>
             {scaleTypes.map((scale)=>(
                 <button onClick={()=>navigateTo(`/all-scales/${scale.slug}`)} key={scale.slug} 

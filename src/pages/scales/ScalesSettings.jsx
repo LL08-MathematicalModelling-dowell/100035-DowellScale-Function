@@ -305,7 +305,7 @@ const ScalesSettings = ()=>{
         return <Fallback />
     }
     return(
-        <div className="h-screen w-full flex flex-col items-center justify-center">
+        <div className="h-screen w-full flex flex-col items-center justify-center font-Montserrat">
         <div className="w-7/12 m-auto border border-2 p-10">
             <h2 className="capitalize text-center text-lg mb-7">update <span className="text-primary font-xl border-b">{scalename}</span></h2>
         <div>

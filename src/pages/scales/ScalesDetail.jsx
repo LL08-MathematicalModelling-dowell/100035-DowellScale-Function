@@ -141,17 +141,19 @@ const ScalesDetail = () => {
         return <Fallback />;
     }
   return (
-    <div className='h-screen  flex flex-col items-center justify-center border'>
-        <div className='border w-full lg:w-8/12 m-auto py-4 px-10'>
-            <h2 className='text-center py-3'>Ranking Scale Name: {sigleScaleData ?
-                                    sigleScaleData?.map((scale)=>(
-                                        <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
-                                    )) : (scaleData[0]?.settings?.scalename || scaleData[0]?.settings?.scale_name)
-                            }</h2>
+    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat'>
+        <div className='border border-primary w-full lg:w-8/12 m-auto py-4 px-10'>
+            <h2 className='text-center py-3'>Ranking Scale Name:  
+            <span className='font-medium text-sm'>{sigleScaleData ?
+                        sigleScaleData?.map((scale)=>(
+                            <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
+                        )) : (scaleData[0]?.settings?.scalename || scaleData[0]?.settings?.scale_name)
+                }</span>
+            </h2>
             <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}>
-                <div className='h-full w-full lg:w-3/12 border overflow-y-auto  p-'>
-                    <h2 className='p-2 flex gap-2 items-center'>
-                        <span>
+                <div className={`h-full w-full lg:w-3/12 border overflow-y-auto ${currentStage > 0 && 'hidden'}`}>
+                    <h2 className='p-2 flex gap-2 items-center font-medium'>
+                        <span className=''>
                         <MdManageHistory className='text-primary'/>
                         </span> Scale History
                     </h2>
@@ -173,7 +175,7 @@ const ScalesDetail = () => {
                             </button>
                             {/* <Button width={'1/2'} onClick={handlePrev} disabled={currentStage===0}>Previous</Button> */}
                             <h2 className='w-3/12 border text-center py-2'>stage {currentStage + 1} of {stages.length}</h2>
-                            <h2 className='text-xl capitalize border w-6/12 py-1 text-center'>
+                            <h2 className='text-sm capitalize border w-6/12 py-1 text-center'>
                                 {/* {slug.split('-').join(' ')} */}
                                 {stages[currentStage]}
                                 {/* {sigleScaleData ?
@@ -223,7 +225,7 @@ const ScalesDetail = () => {
                     )}
                     <div className='flex items-center gap-3 mt-10'>
                     
-                        <Button width={'full'} primary onClick={handleSubmit}>{(currentStage === stages.length - 1) ? 'submit' : 'save and proceed'}</Button>
+                        <Button width={'full'} primary onClick={handleSubmit}>{(currentStage === stages.length - 1) ? 'submit scale' : 'save and proceed'}</Button>
                     
                     </div>
                     {sigleScaleData && sigleScaleData.map((scale, index)=>(
@@ -231,11 +233,10 @@ const ScalesDetail = () => {
                             <Button width={'full'} onClick={()=>navigateTo(`/scales-settings/${scale._id}`)} key={index}>update scale</Button>
                         </>
                     ))}
-                    {/* <Button width={'full'}>update scale</Button> */}
                 </div>
             </div>
-            <div className='w-full lg:w-8/12 flex items-center justify-end my-4'>
-                <Button primary width={'full'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
+            <div className='w-full flex items-center justify-end my-4'>
+                <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
             </div>
         </div>
     </div>
