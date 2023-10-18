@@ -32,11 +32,13 @@ def settings_api_view_create(request):
                 allow_resp = False
             topic = response.get('topic')
             statement_count = response.get('statement_count')
-            statements = response.get('stements')
+            statements = response.get('statements')
             sorting_order = response.get('sorting_order').lower()
             if sorting_order not in ["random", "alphabetical", "custom", "no order"]:
                 return Response({"error": "sorting_order must be one of random, alphabetical, custom or no order"}, status=status.HTTP_400_BAD_REQUEST)
-            percentage_accuracy = response.get('response.get')
+            percentage_accuracy = response.get('percentage_accuracy')
+            if not 0 <= int(percentage_accuracy) <= 100:
+                return Response({"error": "percentage_accuracy must be between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)    
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
         if statement_count != len(statements):
@@ -44,10 +46,21 @@ def settings_api_view_create(request):
         if sorting_order == "random":
             statements = dowellshuffling_function(statements)  
         elif sorting_order == "alphabetical":
-            statements = lambda statements: [string.capitalize() for string in statements]
-            statements = sorted(statements)
+            capitalize_list = lambda statements: [string.capitalize() for string in statements]
+            statements = sorted(capitalize_list(statements))
+
         elif sorting_order == "custom":
-            statements = lambda statements: sorted(statements, key=lambda x: x[0])
+            for statement in statements:
+                if len(statement) != 2:
+                    return Response({"error": "You must add a sorting index in each statement when using custom sort"}, status=status.HTTP_400_BAD_REQUEST)
+                if type(statement[0]) is not int:
+                                        return Response({"error": "Sorting index when using custom sort must be an integer"}, status=status.HTTP_400_BAD_REQUEST)
+            index_sort = lambda statements: sorted(statements, key=lambda x: x[0])
+            statementsList = index_sort(statements)
+            statements = []
+            for statement in statementsList:
+                 statements.append(statement[1])
+
         min_allowed_score = 1
         max_allowed_score = 11
         eventID = get_event_id()
@@ -76,12 +89,12 @@ def settings_api_view_create(request):
             params = request.GET
             scale_id = params.get("scale_id")
             if not scale_id:
-                field_add = {"settings.scale-category": "thurstone"}
+                field_add = {"settings.scale_category": "thurstone scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
 
-            field_add = {"_id": scale_id, "settings.scale-category": "perceptual mapping"}
+            field_add = {"_id": scale_id, "settings.scale_category": "thurstone scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -103,6 +116,10 @@ def settings_api_view_create(request):
         settings = settings_json['data'][0]['settings']
         for key in settings.keys():
             if key in response:
+                if key == "percentage_accuracy":
+                    percentage_accuracy = response.get('percentage_accuracy')
+                    if not 0 <= int(percentage_accuracy) <= 100:
+                        return Response({"error": "percentage_accuracy must be between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)                       
                 settings[key] = response[key]
         statements = settings.get("statements")
         sorting_order = settings.get("sorting_order")
@@ -115,13 +132,24 @@ def settings_api_view_create(request):
                 return Response({"error": "statement_count must be equal to length of statements"}, status=status.HTTP_400_BAD_REQUEST)
 
         if "sorting_order" in response:
-            if sorting_order == "random":
-                statements = dowellshuffling_function(statements)  
-            elif sorting_order == "alphabetical":
-                statements = lambda statements: [string.capitalize() for string in statements]
-                statements = sorted(statements)
-            elif sorting_order == "custom":
-                statements = lambda statements: sorted(statements, key=lambda x: x[0])
+            if sorting_order not in ["random", "alphabetical", "custom", "no order"]:
+                return Response({"error": "sorting_order must be one of random, alphabetical, custom or no order"}, status=status.HTTP_400_BAD_REQUEST)
+        if sorting_order == "random":
+            statements = dowellshuffling_function(statements)  
+        elif sorting_order == "alphabetical":
+            capitalize_list = lambda statements: [string.capitalize() for string in statements]
+            statements = sorted(capitalize_list(statements))
+        elif sorting_order == "custom":
+            for statement in statements:
+                if len(statement) != 2:
+                    return Response({"error": "You must add a sorting index in each statement when using custom sort"}, status=status.HTTP_400_BAD_REQUEST)
+                if type(statement[0]) is not int:
+                                        return Response({"error": "Sorting index when using custom sort must be an integer"}, status=status.HTTP_400_BAD_REQUEST)
+            index_sort = lambda statements: sorted(statements, key=lambda x: x[0])
+            statementsList = index_sort(statements)
+            statements = []
+            for statement in statementsList:
+                 statements.append(statement[1])
 
         settings["statements"] = statements
         settings["statement_count"] = statement_count
