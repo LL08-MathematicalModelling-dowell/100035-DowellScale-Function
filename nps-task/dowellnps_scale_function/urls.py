@@ -37,6 +37,7 @@ urlpatterns = [
     path('qsort/', include('Qsort.urls')),
     path('paired-comparison/', include('paired_comparison.urls')),
     path('perceptual-mapping/', include('perceptual_mapping.urls')),
+    path('thurstone/', include('thurstone.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
