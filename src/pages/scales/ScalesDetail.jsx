@@ -159,7 +159,8 @@ const ScalesDetail = () => {
                     </h2>
                     {scaleData && scaleData.map((scale, index)=>(
                         <>
-                            <Button width={'full'} onClick={()=>handleFetchSingleScale(scale._id)} key={index}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button>
+                            {/* <Button width={'full'} onClick={()=>handleFetchSingleScale(scale._id)} key={index}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button> */}
+                            <Button width={'full'} onClick={()=>navigateTo(`/scales-settings/${scale._id}`)} key={index}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button>
                         </>
                     ))}
                 </div>

@@ -13,10 +13,11 @@ import CustomTextInput from "../../components/forms/inputs/CustomTextInput";
 import { fontStyles } from "../../utils/constants/fontStyles";
 
 const CreateScale = ()=>{
-    const { isLoading, scaleData, createScale } = useCreateScale();
+    
     const [timeOn, setTimeOn] = useState(false);
     const [showStagesInputModal, setShowStagesInputModal] = useState(false);
     const [showItemListInputModal, setShowItemListInputModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [subInputs, setSubInputs] = useState([]);
     const [subInputsValue, setSubInputsValue] = useState([]);
@@ -27,6 +28,7 @@ const CreateScale = ()=>{
     const navigateTo = useNavigate();
 
     const { fetchSessionId, user  } = useFetchUserContext();
+    const createScale  = useCreateScale();
 
   
 
@@ -145,7 +147,6 @@ const CreateScale = ()=>{
     
     const handleAddItemListInputArea = ()=>{
         setItemListCount(prev => prev + 1);
-        // setFormData({ ...formData,  item_count:itemListCount});
         setFormData(prev =>({ ...prev, item_count:prev.item_count + 1}))
         setSubItems([...subItems, itemListCount]);
     };
@@ -189,7 +190,6 @@ const CreateScale = ()=>{
             display_ranks: true
         }
 
-        console.log(payload, 'payload here')
         for (const field of requiredFields) {
             if (!formData[field]) {
                 toast.error(`Please complete the "${field.replace(/_/g, ' ')}" field.`);
@@ -211,16 +211,20 @@ const CreateScale = ()=>{
         }
 
         try {
-            await createScale('ranking-scale', payload);
-            if(scaleData.status===201){
-                toast.success(scaleData.data.success);
+            setIsLoading(true);
+            const response = await createScale('ranking-scale', payload);
+            console.log(response, '**** response')
+            if(response.status===201){
+                toast.success(response.data.success);
                 setTimeout(()=>{
-                    navigateTo(`/scales-settings/${scaleData?.data?.scale_id}`)
+                    navigateTo(`/scales-settings/${response?.data?.scale_id}`)
                 },2000)
             }
         } catch (error) {
-            console.log('error')
+            console.log(error);
             toast.success('an error occured');
+        }finally{
+            setIsLoading(false);
         }
     }
     return(
