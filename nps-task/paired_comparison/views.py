@@ -179,7 +179,7 @@ def settings_api_view_create(request):
                 image_paths[image_name] = path
             settings["image_paths"] = image_paths
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                                 field_add, settings)
+                                 field_add, {"settings":settings})
             return Response({"success": "Successfully Updated ", "data": settings})
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
