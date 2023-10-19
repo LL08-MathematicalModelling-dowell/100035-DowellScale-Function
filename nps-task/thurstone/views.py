@@ -217,9 +217,10 @@ def response_submit_api_view(request):
             if not isinstance(process_id, str):
                 return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
             
-            for response in document_responses:
-                scale_id = response['scale_id']
-                statements = response['statements']
+            results = []
+            for resp in document_responses:
+                scale_id = resp['scale_id']
+                statements = resp['statements']
                 document_data = {"details": {"action": response.get('action', ""),
                                             "authorized": response.get('authorized', ""),
                                             "cluster": response.get('cluster', ""),
@@ -243,8 +244,18 @@ def response_submit_api_view(request):
                                             "user_type": response.get('user_type', ""),
                                             "id": response.get('_id')}
                                 }
+                responses = {
+                    "scale_id": scale_id,
+                    "statements": statements,
+                    "brand_name": brand_name
+                }
+                result = response_submit_loop(username, scale_id, responses, instance_id, process_id, document_data)
+                result = result.data
+                results.append(result)
+                if result.get('error', None):
+                    return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            return Response(results)
                 
-                response_submit_loop(username, scale_id, response, instance_id, process_id, document_data)
         else:
             instance_id = response.get('instance_id')
             try:
@@ -264,9 +275,6 @@ def response_submit_api_view(request):
             result = response_submit_loop(username, scale_id, response, instance_id)
             result = result.data
             return Response(result)
-             
-        
-        
 
     
     
@@ -359,16 +367,11 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
     }
     
     # Calculate overall user attitude
-    if attitude_percentage['favourable'] == attitude_percentage['unfavourable']:
-        overall_user_attitude = "Cannot be decided"
-    elif attitude_percentage['favourable'] == attitude_percentage['neutral']:
-        overall_user_attitude = "Cannot be decided"
-    elif attitude_percentage['neutral'] == attitude_percentage['unfavourable']:
+    if attitude_percentage['favourable'] == attitude_percentage['neutral'] == attitude_percentage['unfavourable']:
         overall_user_attitude = "Cannot be decided"
     else:
         overall_user_attitude = max(attitude_percentage, key=attitude_percentage.get)
         
-    # Insert response into database
     field_add = {
         "event_id": event_id,
         "scale_data": {
@@ -399,4 +402,3 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
     response  = json.loads(x)
     field_add["inserted_id"] = response["inserted_id"]
     return Response({"success": True, "data": field_add }, status=status.HTTP_200_OK)
-    
