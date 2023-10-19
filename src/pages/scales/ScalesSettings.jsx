@@ -1,227 +1,124 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
+import { BsArrowLeft} from 'react-icons/bs';
 import { useParams, useNavigate } from "react-router-dom";
-import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
-import { useFetchUserContext } from "../../contexts/fetchUserContext";
 import useGetSingleScale from "../../hooks/useGetSingleScale";
-import { useUpdateResponse } from "../../hooks/useUpdateResponse";
 import Fallback from "../../components/Fallback";
-import CustomTextInput from "../../components/forms/inputs/CustomTextInput";
 import { Button } from "../../components/button";
-import { fontStyles } from "../../utils/constants/fontStyles";
 
-import { InputsModal, ItemListInputModal } from "../../modals";
 
 const ScalesSettings = ()=>{
     const { slug } = useParams();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
-    const [timeOn, setTimeOn] = useState(false);
-    const { _id, settings } = (sigleScaleData && sigleScaleData[0]) || {};
-    const [isLoading, setIsLoading] = useState(false);
-    const updateResponse = useUpdateResponse();
-    const navigateTo = useNavigate();
+    const [currentStage, setCurrentStage] = useState(0);
 
 
-    const [showStagesInputModal, setShowStagesInputModal] = useState(false);
-    const [showItemListInputModal, setShowItemListInputModal] = useState(false);
+    const dataStages = sigleScaleData && sigleScaleData?.map((scale)=>{
+        const stages = scale?.settings?.stages.map((stage)=>{
+            return stage;
+        })
+        return stages;
+    });
 
-    const [subInputs, setSubInputs] = useState([]);
-    const [subInputsValue, setSubInputsValue] = useState([]);
-    const [subItems, setSubItems] = useState([]);
-    const [subItemsValue, setSubItemsValue] = useState([]);
-    const [inputCount, setInputCount] = useState(1);
-    const [itemListCount, setItemListCount] = useState(1);
+    const dataItems = sigleScaleData && sigleScaleData?.map((scale)=>{
+        const itemList = scale?.settings?.item_list.map((list)=>{
+            return list;
+        })
+        return itemList;
+    })
 
-    const { fetchSessionId, user  } = useFetchUserContext();
+    // console.log(dataItems[0], 'dataItems')
 
 
+    
+    
+    const stages = sigleScaleData ? dataStages[0] : ['City 5', 'City 6'];
+    // console.log(stages, 'stages')
+    const itemsAvailable = dataItems ? dataItems[0] : ['item 111', 'item 222'];
+    // console.log(itemsAvailable, 'itemsAvailable')
+    const rankings = [0, 1];
 
-    const scalename = settings?.scalename;
-    const num_of_stages = settings?.num_of_stages;
-    const num_of_substages = settings?.num_of_substages;
-    const stages = settings?.stages;
-    const item_count = settings?.item_count;
-    const item_list = settings?.item_list;
-    const scalecolor = settings?.scalecolor;
-    const fontcolor = settings?.fontcolor;
-    const fontstyle = settings?.fontstyle;
-    const orientation = settings?.orientation;
-    const ranking_method_stages = settings?.ranking_method_stages;
-    const start_with_zero = settings?.start_with_zero;
-    const reference = settings?.reference;
-    const stages_arrangement = settings?.stages_arrangement;
-    const display_ranks = settings?.display_ranks;
-        
-
-    const [updateFormData, setUpdateFormData] = useState(
-        Object.assign({}, { 
-            user: true,
-            username: "Joel",
-            scalename,
-            num_of_stages, 
-            num_of_substages, 
-            stages, 
-            item_count, 
-            item_list,
-            scalecolor, 
-            fontcolor, 
-            fontstyle, 
-            orientation,
-            ranking_method_stages,
-            start_with_zero, 
-            reference,
-            stages_arrangement,
-            display_ranks 
+    const [itemsAvailableSchema, setItemsAvailableSchema] = useState(
+        (dataItems ? dataItems[0] : itemsAvailable).map((item)=>{
+            const updatedItems = {
+                item:item,
+                option:0
+            }
+            return updatedItems
         })
     );
 
-    const updateOrientation = ['Vertical', 'Horizontal'];
-    const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled'];
-    const ranking_reference = ['Overall Ranking', 'StageWise Ranking'];
+    console.log(itemsAvailableSchema, 'itemsAvailableSchema')
+    const [db, setDb] = useState([
+        {
+            stage_name: stages[currentStage],
+            stage_rankings: itemsAvailableSchema.map(item => ({
+                name: item.item,
+                rank: item.option
+            }))
+        }
+    ]);
+
+
+    const navigateTo = useNavigate();
 
     
-    
-
-    const updatePayload = {
-            scale_id:_id,
-            user: true,
-            username: user?.username,
-            scalename:updateFormData.scalename,
-            num_of_stages:updateFormData.num_of_stages, 
-            num_of_substages:updateFormData.num_of_substages, 
-            stages:subInputsValue, 
-            item_count:updateFormData.item_count, 
-            item_list:updateFormData.item_list,
-            scalecolor:updateFormData.scalecolor, 
-            fontcolor:updateFormData.fontcolor, 
-            fontstyle:updateFormData.fontstyle, 
-            orientation:updateFormData.orientation,
-            ranking_method_stages:updateFormData.ranking_method_stages,
-            start_with_zero:updateFormData.start_with_zero, 
-            reference:updateFormData.reference,
-            stages_arrangement:updateFormData.stages_arrangement,
-            display_ranks:updateFormData.display_ranks 
-    }
-
-    console.log(updatePayload, '****updatePayload')
-
-
-
-    const handleCreateStages = ()=>{
-        setSubInputs([...Array(Number(updateFormData?.num_of_stages))].map((_, i) => i + 1));
-        handleToggleInputModal();
-    }
-
-    const handleCreateItems = ()=>{
-        setSubItems([...Array(Number(updateFormData?.item_count))].map((_, i) => i + 1));
-        handleToggleItemListInputModal();
-
-        console.log('toggled')
-    }
-
-    const handleToggleInputModal = ()=>{
-        setShowStagesInputModal(!showStagesInputModal);
-    }
-
-    const handleInputsValueChange = (index, value)=>{
-        const updatedValues = [...subInputsValue];
-        updatedValues[index] = value;
-        setSubInputsValue(updatedValues);
-    }
-
-    const handleAddInputArea = ()=>{
-        setInputCount(prev => prev + 1);
-        setSubInputs([...subInputs, inputCount])
-
-        setUpdateFormData((prev)=>({
-            ...prev,
-            num_of_stages:prev.num_of_stages + 1
-        }));
-    }; 
-
-    const handleSubmitStagesSubinputs = ()=>{
-        setSubInputs([]);
-        setSubInputsValue([...subInputsValue]);
-        handleToggleInputModal();
-    }
-
-    const removeStagesSubinput = (item)=>{
-        setInputCount(prev => prev - 1);
-        // const newInputItems = subInputs.filter((input)=> input !== item);
-        // setSubInputs(newInputItems);
-        setSubInputs(prev => prev.filter(input => input !== item));
-        setUpdateFormData(prev => ({
-            ...prev,
-            num_of_stages: prev.num_of_stages - 1
-          }));
-    }
-
-    const removeInputValueItem = (item)=>{
-        const newInputItems = subInputsValue.filter((value)=> value !== item);
-        setSubInputsValue(newInputItems);
-        setInputCount(prev => prev - 1);
-        setUpdateFormData(prev => ({
-            ...prev,
-            num_of_stages: prev.num_of_stages - 1
-          }));
-    }
-
-
-    
-    // all functions for item list
-    const handleToggleItemListInputModal = ()=>{
-        setShowItemListInputModal(!showItemListInputModal);
-    }
-
-    const handleItemListValueChange = (index, value)=>{
-        const updatedValues = [...subItemsValue];
-        updatedValues[index] = value;
-        setSubItemsValue(updatedValues);
-    }
-    
-    const handleAddItemListInputArea = ()=>{
-        setItemListCount(prev => prev + 1);
-        setUpdateFormData(prev =>({ ...prev, item_count:prev.item_count + 1}))
-        setSubItems([...subItems, itemListCount]);
-    };
-
-    const handleSubmitItemListSubinputs = ()=>{
-        setSubItems([]);
-        setSubItemsValue([...subItemsValue]);
-        handleToggleItemListInputModal();
-    }
-
-    const removeItemListSubinput = (item)=>{
-        setItemListCount(prev => prev - 1);
-        const newInputItems = subItems.filter((input)=> input !== item);
-        setSubItems(newInputItems);
-        setUpdateFormData(prev => ({ ...prev, item_count:prev.item_count - 1 }))
-    }
-
-    const removeItemListValue = (item)=>{
-        const newInputItems = subItemsValue.filter((value)=> value !== item);
-        setSubItemsValue(newInputItems);
-        setUpdateFormData(prev => ({ ...prev, item_count:prev.item_count - 1 }))
-    }
-
-
-
-    const handleToggleTime = ()=>{
-        setTimeOn(!timeOn);
-    }
-
-    const handleFetchSingleScale = async (scaleId) => {
-        try {
-            await fetchSingleScaleData(scaleId);
-        } catch (error) {
-            console.error("Error fetching single scale data:", error);
+    const handlePrev = ()=>{
+        if(currentStage > 0){
+            setCurrentStage(prev => prev - 1);
         }
     }
 
-    useEffect(()=>{
-        fetchSessionId();
-    },[])
+    const handleSelectOption = (e, index) => {
+        const selectedOption = e.target.value;
+    
+        setItemsAvailableSchema(prevSchema => {
+            const updatedSchema = [...prevSchema];
+            updatedSchema[index].option = selectedOption;
+            return updatedSchema;
+        });
+    };
+    
+
+    const handleSubmit = async() => {
+        const selectedOptions = itemsAvailableSchema.map(item => item.option);
+        const isDuplicate = new Set(selectedOptions).size !== selectedOptions.length;
+        if (isDuplicate) {
+            toast.error('Please assign unique ranks to each item');
+            return;
+        }
+        const updatedDb = [...db];
+        updatedDb[currentStage] = {
+            stage_name: stages[`${currentStage}`],
+            stage_rankings: itemsAvailableSchema.map(item => ({
+                name: item.item,
+                rank: Number(item.option)
+            }))
+        };
+        setDb(updatedDb);
+    
+        if (currentStage === stages.length - 1) {
+            const payload =  {
+                scale_id: "651bd7295c8f069f1f078ed5",
+                brand_name: "New Brand",
+                product_name:"New Product",
+                num_of_stages: 2,
+                num_of_substages:0,
+                username: "natan",
+                rankings:updatedDb
+              }
+            await CreateRankingScalesResponse(payload)
+            
+        } else {
+            setCurrentStage(prev => prev + 1);
+        }
+    }
+    
+
+    const handleFetchSingleScale = async(scaleId)=>{
+        await fetchSingleScaleData(scaleId);
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -229,283 +126,96 @@ const ScalesSettings = ()=>{
         }
         fetchData();
     }, [slug]);
+    
 
-    useEffect(() => {
-        if (settings) {
-          setUpdateFormData({
-            scalename: settings?.scalename || '',
-            num_of_stages: Number(settings.num_of_stages) || 0,
-            num_of_substages: Number(settings.num_of_substages) || 0,
-            stages: settings.stages || [],
-            item_count: settings.item_count || 0,
-            item_list: settings.item_list || [],
-            scalecolor: settings.scalecolor || '',
-            fontcolor: settings.fontcolor || '',
-            fontstyle: settings.fontstyle || '',
-            orientation: settings.orientation || '',
-            ranking_method_stages: settings.ranking_method_stages || '',
-            start_with_zero: settings.start_with_zero || '',
-            reference: settings.reference || '',
-            stages_arrangement: settings?.stages_arrangement || '',
-            display_ranks: settings.display_ranks || ''
-          });
-          
-        }
-      }, [settings]);
 
-    useEffect(()=>{
-        if(updateFormData.stages){
-            setSubInputsValue([...updateFormData.stages]);
-        }
-    },[updateFormData.stages]);
-
-    useEffect(()=>{
-        if(updateFormData.num_of_stages){
-            setInputCount(updateFormData.num_of_stages);
-        }
-    },[updateFormData.num_of_stages]);
-
-    useEffect(()=>{
-        if(updateFormData.item_count){
-            setItemListCount(updateFormData.item_count);
-        }
-    },[updateFormData.item_count]);
-
-    useEffect(()=>{
-        if(updateFormData.item_list){
-            setSubItemsValue(updateFormData.item_list);
-        }
-    },[updateFormData.item_list]);
-
-      
-
-    const handleChange = (e)=>{
-        const { name, value } = e.target;
-        setUpdateFormData({ ...updateFormData, [name]:value });
-    }
-
-    const handleUpdateRankingScale = async()=>{
-        console.log(updatePayload)
-        try {
-            setIsLoading(true);
-            const response = await updateResponse(updatePayload);
-            // console.log(response, 'updated response')
-            toast.success('successfully updated');
-            setTimeout(()=>{
-                navigateTo(`/all-scales/${'ranking-scale'}`);
-            },2000)
-        } catch (error) {
-            console.log(error)
-        }finally{
-            setIsLoading(false)
-        }
-    }
-
-    if(loading || isLoading){
-        return <Fallback />
+    if (loading) {
+        return <Fallback />;
     }
     return(
-        <div className="h-screen w-full flex flex-col items-center justify-center font-Montserrat">
-        <div className="w-7/12 m-auto border border-2 p-10">
-            <h2 className="capitalize text-center text-lg mb-7">update <span className="text-primary font-xl border-b">{scalename}</span></h2>
-        <div>
-            <div className='grid grid-cols-3 gap-3 mb-10'>
-                <CustomTextInput 
-                    label='scale name'
-                    name='scalename'
-                    value={updateFormData?.scalename}
-                    type='text'
-                    handleChange={handleChange}
-                    placeholder='enter scale name'
-                />
-                <div>
-                    <CustomTextInput 
-                        label='number of stages'
-                        name='num_of_stages'
-                        value={updateFormData?.num_of_stages}
-                        type='number'
-                        handleChange={handleChange}
-                        placeholder='enter number of stages'
-
-                        onClick={()=>{
-                            handleCreateStages();
-                        }}
-                    />
-                    <div className="">
-                        {subInputsValue.map((value)=>(
+        <div className='h-screen  flex flex-col items-center justify-center font-Montserrat'>
+        <div className='border border-primary w-full lg:w-8/12 m-auto py-4 px-10'>
+            <h2 className='text-center py-3'>Ranking Scale Name:  
+            <span className='font-medium text-sm'>{sigleScaleData &&
+                        sigleScaleData?.map((scale)=>(
+                            <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
+                        ))
+                }</span>
+            </h2>
+            <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}>
+                <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
+                {loading ? <h3>...loading data</h3> : (
+                    <>
+                        <div className='w-full  flex items-center gap-5'>
                             <button 
-                                onClick={()=>removeInputValueItem(value)}
-                                className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
-                                {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span>
+                                onClick={handlePrev} disabled={currentStage===0}
+                                className='w-3/12 bg-primary text-white flex items-center justify-center gap-2 hover:bg-gray-700/50 py- px-2 py-2 my-1 capitalize'> 
+                                <BsArrowLeft className='text-white' />
+                                Go Back
                             </button>
-                        ))}
+                            <h2 className='w-3/12 border text-center py-2'>stage {currentStage + 1} of {stages.length}</h2>
+                            <h2 className='text-sm capitalize border w-6/12 py-1 text-center'>
+                                {stages[currentStage]}
+                            </h2>
+                        </div>
+                        <div className='w-full flex gap-3 flex-col md:flex-row'>
+                            <>
+                                <div className='w-full'>
+                                    <h2 className='border px-2 my-7'>Items available</h2>
+                                {
+                                    <ul>
+                                        {
+                                            itemsAvailableSchema.map((item, index)=>(
+                                                <li key={index} className='border px-3 py-1'>{item.item}</li>
+                                            ))
+                                        }
+                                    </ul>
+                                }
+                                </div>
+                                <div className='w-full'>
+                                    <h2 className='border px-2 my-7'>Select Rankings</h2>
+                                    {itemsAvailableSchema.map((item, index) => (
+                                    <div className='w-full' key={index}>
+                                        {/* <h2 className='border px-2 my-7'>{item.item}</h2> */}
+                                        <select
+                                            name={`ranking-${index}`}
+                                            value={item.option}
+                                            onChange={(e)=>handleSelectOption(e, index)}
+                                            className='w-full border px-3 py-1 outline-0'
+                                        >
+                                            {rankings.map((ranking) => (
+                                                <option key={ranking} value={ranking}>
+                                                    {ranking}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ))}
+                                </div>
+                            </>
+                        </div>
+                    </>
+                    )}
+                    <div className='flex items-center gap-3 mt-10'>
+                    
+                        <Button width={'full'} primary onClick={handleSubmit}>{(currentStage === stages.length - 1) ? 'submit scale' : 'save and proceed'}</Button>
+                    
                     </div>
-                </div>
-                <div className="">
-                    <CustomTextInput
-                        label='item count'
-                        name="item_count"
-                        value={updateFormData.item_count}
-                        handleChange={handleChange}
-                        type="number"
-                        placeholder="item count"
-
-                        onClick={()=>{
-                            handleCreateItems();
-                        }}
-                    />
-                  <div className="">
-                    {subItemsValue.map((value)=>(
-                        <button 
-                            onClick={()=>removeItemListValue(value)}
-                            className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
-                            {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span>
-                        </button>
-                    ))}
-                </div>
-                </div>
-                <CustomTextInput 
-                    label='number of substages'
-                    name='num_of_substages'
-                    value={updateFormData.num_of_substages}
-                    type='number'
-                    handleChange={handleChange}
-                    placeholder='enter number of substages'
-                />
-                <div>
-                    <label htmlFor="orientation" className="text-sm font-normal mb-1 ml-1">orientation</label>
-                    <select 
-                        label="Select a orientation" 
-                        name="orientation" 
-                        className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                        value={updateFormData.orientation}
-                        onChange={handleChange}
-                    >
-                        <option value={''}>-- Select orientation  --</option>
-                        {updateOrientation.map((orientation, i) => (
-                            <option key={i} >
-                                {orientation}
-                            </option>
+                    <div className="flex gap-3 justify-end">
+                        {sigleScaleData && sigleScaleData.map((scale, index)=>(
+                            <>
+                                <Button width={'3/4'} onClick={()=>navigateTo(`/scales-update-settings/${scale._id}`)} key={index}>update scale</Button>
+                            </>
                         ))}
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">arrangement</label>
-                    <select 
-                        label="Select arrangement" 
-                        name="stages_arrangement" 
-                        className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                        value={updateFormData.stages_arrangement}
-                        onChange={handleChange}
-                    >
-                        <option value={''}>-- Select stages arrangement  --</option>
-                            {stagesArrangement.map((stagesArrangement, i) => (
-                                <option key={i} >
-                                    {stagesArrangement}
-                                </option>
-                            ))}
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="reference" className="text-sm font-normal mb-1 ml-1">reference</label>
-                    <select label="Select a reference" 
-                        name="reference" 
-                        className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                        value={updateFormData.reference}
-                        onChange={handleChange}
-                    >
-                        <option value={''}>-- Select ranking reference  --</option>
-                            {ranking_reference.map((reference, i) => (
-                                <option key={i}>
-                                    {reference}
-                                </option>
-                            ))}
-                    </select>
-                </div>
-                <div className="w-full">
-                    <div className="flex items-center gap-3">
-                        {timeOn && <button onClick={handleToggleTime}><BsToggleOn className="text-primary h-6 w-6"/></button>}
-                        {!timeOn && <button  onClick={handleToggleTime}><BsToggleOff className="text-primary h-6 w-6"/></button>}
-                        <span>Toggle to set Time</span>
+                        <Button width={'3/4'} primary>Save Response</Button>
                     </div>
-                    {
-                        timeOn && (
-                            <CustomTextInput
-                                name="time"
-                                type="number"
-                                placeholder="enter a valid time"
-                            />
-                        )
-                    }
                     
                 </div>
-                <div className="flex flex-col gap-2">
-                    <label htmlFor='scalecolor'>scale color</label>
-                    <input 
-                        label='scale color'
-                        name="scalecolor"
-                        autoComplete="given-name"
-                        type="color"
-                        placeholder='scale color'
-                        value={updateFormData.scalecolor}
-                        onChange={handleChange}
-                        className="w-full"
-                    />
-                </div>
-                <div className="flex flex-col gap-2">
-                    <label htmlFor='fontcolor'>font color</label>
-                    <input 
-                        label='font color'
-                        name="fontcolor"
-                        autoComplete="given-name"
-                        type="color"
-                        placeholder='font color'
-                        value={updateFormData.fontcolor}
-                        onChange={handleChange}
-                        className="w-full"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">font style</label>
-                    <select 
-                        label="Select font style" 
-                        name="fontstyle" 
-                        className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                        value={updateFormData.fontstyle}
-                        onChange={handleChange}
-                    >
-                        <option value={''}>-- Select font style  --</option>
-                            {fontStyles.map((style, i) => (
-                                <option key={i} >
-                                    {style}
-                                </option>
-                            ))}
-                    </select>
-                </div>
             </div>
+            {/* <div className='w-full flex items-center justify-end my-4'>
+                <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
+            </div> */}
         </div>
-        <Button primary width={'full'} onClick={handleUpdateRankingScale}>Update scale</Button>
-        </div>
-        {showStagesInputModal && (<InputsModal 
-            handleToggleInputModal={handleToggleInputModal}
-            handleSubmitStagesSubinputs={handleSubmitStagesSubinputs}
-            subInputs={subInputs}
-            subInputsValue={subInputsValue}
-            handleInputsValueChange={handleInputsValueChange}
-            handleAddInputArea={handleAddInputArea}
-            removeSubinput={removeStagesSubinput}
-        />)
-        }
-        {showItemListInputModal && (<ItemListInputModal 
-            handleToggleItemListInputModal={handleToggleItemListInputModal}
-            handleSubmitStagesSubinputs={handleSubmitItemListSubinputs}
-            subItems={subItems}
-            subItemsValue={subItemsValue}
-            handleInputsValueChange={handleItemListValueChange}
-            handleAddInputArea={handleAddItemListInputArea}
-            removeSubinput={removeItemListSubinput}
-        />)
-        }
     </div>
     )
 }

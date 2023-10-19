@@ -230,7 +230,7 @@ const ScalesDetail = () => {
                     </div>
                     {sigleScaleData && sigleScaleData.map((scale, index)=>(
                         <>
-                            <Button width={'full'} onClick={()=>navigateTo(`/scales-settings/${scale._id}`)} key={index}>update scale</Button>
+                            <Button width={'full'} onClick={()=>navigateTo(`/scales-update-settings/${scale._id}`)} key={index}>update scale</Button>
                         </>
                     ))}
                 </div>
