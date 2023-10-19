@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Formik, Form } from 'formik';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useFetchUserContext } from "../../contexts/fetchUserContext";
@@ -213,7 +212,6 @@ const CreateScale = ()=>{
         try {
             setIsLoading(true);
             const response = await createScale('ranking-scale', payload);
-            console.log(response, '**** response')
             if(response.status===201){
                 toast.success(response.data.success);
                 setTimeout(()=>{
