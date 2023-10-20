@@ -284,6 +284,7 @@ const UpdateScale = ()=>{
         setUpdateFormData({ ...updateFormData, [name]:value });
     }
 
+
     const handleUpdateRankingScale = async()=>{
         console.log(updatePayload)
         try {
@@ -292,7 +293,7 @@ const UpdateScale = ()=>{
             // console.log(response, 'updated response')
             toast.success('successfully updated');
             setTimeout(()=>{
-                navigateTo(`/all-scales/${'ranking-scale'}`);
+                navigateTo(`/scales-settings/${sigleScaleData[0]?._id}`);
             },2000)
         } catch (error) {
             console.log(error)
@@ -301,6 +302,7 @@ const UpdateScale = ()=>{
         }
     }
 
+    
     if(loading || isLoading){
         return <Fallback />
     }

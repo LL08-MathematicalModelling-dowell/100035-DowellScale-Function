@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { BsArrowLeft} from 'react-icons/bs';
 import { useParams, useNavigate } from "react-router-dom";
 import useGetSingleScale from "../../hooks/useGetSingleScale";
+import useCreateRankingScalesResponse from "../../hooks/useCreateRankingScalesResponse";
 import Fallback from "../../components/Fallback";
 import { Button } from "../../components/button";
 
@@ -11,6 +12,7 @@ import { Button } from "../../components/button";
 const ScalesSettings = ()=>{
     const { slug } = useParams();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
+    const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
     const [currentStage, setCurrentStage] = useState(0);
 
 
@@ -108,7 +110,17 @@ const ScalesSettings = ()=>{
                 username: "natan",
                 rankings:updatedDb
               }
-            await CreateRankingScalesResponse(payload)
+            try {
+                const response = await CreateRankingScalesResponse(payload);
+                toast.success('successfully updated');
+                if(response.status===200){
+                    setTimeout(() => {
+                        navigateTo(`/all-scales/${'ranking-scale'}`)
+                    }, 2000);
+                }
+            } catch (error) {
+                console.log(error)   
+            }
             
         } else {
             setCurrentStage(prev => prev + 1);
