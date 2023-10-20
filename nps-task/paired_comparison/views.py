@@ -61,7 +61,7 @@ def settings_api_view_create(request):
         image_paths = {}
         for image_name in images_dict.keys():
             _, type = str(images_dict[image_name]).split(".")
-            path = default_storage.save(str(images_dict[image_name]), images_dict[image_name])
+            path = default_storage.save(uuid.uuidv4(), images_dict[image_name])
             image_paths[image_name] = path
         field_add = {
             "event_id": eventID,
@@ -124,7 +124,7 @@ def settings_api_view_create(request):
                 item_count = response.get('item_count')
                 if (item_list == None) or (item_count == None):
                     return Response({"error": "item_list and item_count have to be updated together"}, status=status.HTTP_400_BAD_REQUEST)
-                item_count, item_list = item_count[0], item_list[0]
+                item_count = int(item_count[0])
                 if item_count != len(item_list):
                     return Response({"error": "item count does not match length of item list"}, status=status.HTTP_400_BAD_REQUEST)
                 if item_count < 2:
@@ -148,6 +148,8 @@ def settings_api_view_create(request):
                 if key in response:
                     settings[key] = response[key][0]
             if "item_list" in response:
+                settings["item_list"] = item_list
+                settings["item_count"] = item_count
                 settings["paired_items"] = paired_items
                 settings["total_items"] = item_count
                 settings["total_pairs"] = total_pairs
@@ -177,7 +179,7 @@ def settings_api_view_create(request):
                 image_paths[image_name] = path
             settings["image_paths"] = image_paths
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                                 field_add, settings)
+                                 field_add, {"settings":settings})
             return Response({"success": "Successfully Updated ", "data": settings})
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
