@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Fallback from '../components/Fallback';
-import dowellLogo from '../assets/dowell-logo.png';
-import Button from '../components/button/Button';
+import Fallback from '../../components/Fallback';
+import dowellLogo from '../../assets/dowell-logo.png';
+import Button from '../../components/button/Button';
 import { Chart } from 'react-google-charts';
 const PerceptualScale = () => {
   // State variables
@@ -115,7 +115,7 @@ const PerceptualScale = () => {
               to="/create-perceptual-scale-settings"
               className="px-8 py-2 text-white bg-[#1A8753] rounded-lg focus:outline-none uppercase"
             >
-              Create new Scale 
+              Create new Scale
             </Link>
           </div>
         </div>

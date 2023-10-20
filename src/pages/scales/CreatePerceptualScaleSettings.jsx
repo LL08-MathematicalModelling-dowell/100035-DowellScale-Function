@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Fallback from '../components/Fallback';
+import Fallback from '../../components/Fallback';
 
 const CreatePerceptualScaleSettings = () => {
   const navigate = useNavigate();
@@ -348,42 +348,41 @@ const CreatePerceptualScaleSettings = () => {
             </select>
           </div>
           <div className="mb-4">
-            <div className='grid gap-2  md:grid-cols-2'>
+            <div className="grid gap-2  md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="item_count"
+                  className="font-semibold text-gray-600 "
+                >
+                  Number of Items:
+                </label>
+                <input
+                  type="number"
+                  name="item_count"
+                  id="item_count"
+                  value={itemCount || 0}
+                  onChange={handleInputChange}
+                  className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                />
+              </div>
 
-            <div>
-              <label
-                htmlFor="item_count"
-                className="font-semibold text-gray-600 "
-              >
-                Number of Items:
-              </label>
-              <input
-                type="number"
-                name="item_count"
-                id="item_count"
-                value={itemCount || 0}
-                onChange={handleInputChange}
-                className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-              />
-            </div>
-
-            <div>
-              {inputValues.map((value, index) => (
-                <div key={index} className="inline">
-                  <input
-                    // key={index}
-                    type="text"
-                    name="item_list"
-                    placeholder={`paired ${index + 1}`}
-                    value={value}
-                    className="inline w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                    onChange={(e) =>
-                      handleInputValueChange(index, e.target.value)
-                    }
-                  />
-                </div>
-              ))}
-            </div>
+              <div>
+                {inputValues.map((value, index) => (
+                  <div key={index} className="inline">
+                    <input
+                      // key={index}
+                      type="text"
+                      name="item_list"
+                      placeholder={`paired ${index + 1}`}
+                      value={value}
+                      className="inline w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                      onChange={(e) =>
+                        handleInputValueChange(index, e.target.value)
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
-import Fallback from '../components/Fallback';
+import Fallback from '../../components/Fallback';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 
 import axios from 'axios';
-const SingleScaleSettings = () => {
+const SinglePCScaleSettings = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -76,7 +76,7 @@ const SingleScaleSettings = () => {
     }
   };
 
-  const handleCreateResponse = () => {
+  const handleCreatePCResponse = () => {
     // Check if any pair is not selected
     const isAnyPairNotSelected = userPicks.some((pick) => pick === -1);
 
@@ -100,7 +100,7 @@ const SingleScaleSettings = () => {
           : 'No selection';
       });
 
-      // Navigate to the CreateResponse component and pass the selectedOptions as part of route state
+      // Navigate to the CreatePCResponse component and pass the selectedOptions as part of route state
       navigate(`/create-scale-response/${id}`, {
         state: { userSelections: selectedOptions },
       });
@@ -185,7 +185,7 @@ const SingleScaleSettings = () => {
                         }`}
                         onClick={() => handleButtonClick(pairIndex, 1)}
                       >
-                         {imagePaths ? (
+                        {imagePaths ? (
                           <img
                             src={
                               `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}` ||
@@ -219,13 +219,13 @@ const SingleScaleSettings = () => {
       <div className="flex justify-center w-full lg:justify-end lg:w-[90%]">
         <div className="flex flex-col items-end justify-between space-x-2 lg:flex-row">
           <Link
-            to={`/update-scale-settings/${id}`}
+            to={`/update-paired-scale-settings/${id}`}
             className="px-8 py-2 mt-6 text-white capitalize bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none "
           >
             Update Scale
           </Link>
           <button
-            onClick={handleCreateResponse}
+            onClick={handleCreatePCResponse}
             className="px-8 py-2 mt-6 text-white capitalize bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none "
           >
             Create Scale Response
@@ -236,4 +236,4 @@ const SingleScaleSettings = () => {
   );
 };
 
-export default SingleScaleSettings;
+export default SinglePCScaleSettings;

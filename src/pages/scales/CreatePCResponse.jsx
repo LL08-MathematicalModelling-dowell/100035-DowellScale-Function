@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Fallback from '../components/Fallback';
+import Fallback from '../../components/Fallback';
 
-const CreateResponse = () => {
+const CreatePCResponse = () => {
   // const { scale_id } = useParams();
   const cookies = new Cookies();
   const [isLoading, setIsLoading] = useState(true);
@@ -157,11 +157,11 @@ const CreateResponse = () => {
     <div className="mx-auto my-8 lg:container ">
       <div>
         <button
-            onClick={handleGoBack}
-            className="px-8 py-2 mt-4 mb-6 ml-2 text-white capitalize bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none"
-          >
-            &#60;&#60; Go Back
-          </button>
+          onClick={handleGoBack}
+          className="px-8 py-2 mt-4 mb-6 ml-2 text-white capitalize bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none"
+        >
+          &#60;&#60; Go Back
+        </button>
       </div>
       <form
         className="lg:w-[60%] w-full mx-auto border-4 border-gray-500 bg-[#d9edf7] shadow-md p-8"
@@ -239,4 +239,4 @@ const CreateResponse = () => {
   );
 };
 
-export default CreateResponse;
+export default CreatePCResponse;
