@@ -46,10 +46,7 @@ function App() {
             <Route path="/:slug" element={<ScalesDetail />} />
             <Route path="/create-scales" element={<CreateScales />} />
             <Route path="/create-scale" element={<CreateScale />} />
-            <Route
-              path="/create-scale-settings"
-              element={<CreateSettings />}
-            />
+            <Route path="/create-scale-settings" element={<CreateSettings />} />
             <Route
               path="/create-perceptual-scale-settings"
               element={<CreatePerceptualScaleSettings />}
