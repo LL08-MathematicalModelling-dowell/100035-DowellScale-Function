@@ -5,6 +5,5 @@ class ScalesPluginSerializer(serializers.Serializer):
     username = serializers.CharField()
     scale_id = serializers.CharField()
     instance_id = serializers.IntegerField()
-    page_id = serializers.CharField()
-    block_id = serializers.CharField()
+    position_data = serializers.JSONField()
     score = serializers.IntegerField(allow_null=True)
