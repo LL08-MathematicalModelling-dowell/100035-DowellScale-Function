@@ -989,7 +989,12 @@ def scales_plugins_function(request):
                         print("Ambrose", validated_data)
 
                         # Get scale settings
-                        scale_settings = get_scale_settings(scale_id)
+                        try:
+                            scale_settings = get_scale_settings(scale_id)
+                        except:
+                            return Response({"Error": f"Scale {scale_id} does not exist!"},
+                                            status=status.HTTP_400_BAD_REQUEST)
+
                         no_of_scales = scale_settings['no_of_scales']
 
                         if instance_id > no_of_scales:
@@ -1054,9 +1059,14 @@ def scales_plugins_function(request):
 
                             data = json.loads(fetch_responses)["data"]
                         except:
-                            return Response({"Error": "Scale does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"Error": f"Responses do not exists for this scale {scale_id}!"}, status=status.HTTP_400_BAD_REQUEST)
 
-                        scale_settings = get_scale_settings(scale_id)
+                        try:
+                            scale_settings = get_scale_settings(scale_id)
+                        except:
+                            return Response({"Error": f"Scale {scale_id} does not exist!"},
+                                            status=status.HTTP_400_BAD_REQUEST)
+
                         settings_event_id = scale_settings.get('event_id')
                         no_of_scales = scale_settings.get('no_of_scales')
 
