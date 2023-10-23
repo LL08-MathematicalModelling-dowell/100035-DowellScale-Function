@@ -1017,12 +1017,12 @@ def scales_plugins_function(request):
 
                 else:
                     error_message = api_resp['message']
-                    return error_response(request, {"success": False, "msg": error_message,
+                    return Response({"success": False, "msg": error_message,
                                                     "total credits": api_resp['total_credits']},
                                           status.HTTP_400_BAD_REQUEST)
             elif api_resp['success'] is False:
                 error_message = api_resp['message']
-                return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
+                return Response({"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             return Response({"error": f"Provide required fields"}, status=status.HTTP_400_BAD_REQUEST)
@@ -1035,6 +1035,7 @@ def scales_plugins_function(request):
             block_id = request.GET.get('block_id', None)
 
             api_resp = processApikey(api_key)
+            print('Hello', api_resp)
             if api_resp['success'] is True:
                 credit_count = api_resp['total_credits']
                 if credit_count > 0:
@@ -1050,13 +1051,11 @@ def scales_plugins_function(request):
                                                            "plugin_data",
                                                            "1249001", "ABCDE", "fetch", field_add, "nil")
 
-                        responses = json.loads(fetch_responses)
-
+                        data = json.loads(fetch_responses)["data"]
                         scale_settings = get_scale_settings(scale_id)
                         settings_event_id = scale_settings.get('event_id')
                         no_of_scales = scale_settings.get('no_of_scales')
 
-                        data = json.loads(fetch_responses)["data"]
                         instance_ids = [i['instance_id'] for i in data]
 
                         return Response(
@@ -1067,12 +1066,13 @@ def scales_plugins_function(request):
                         return Response({"Error": "Invalid fields!"}, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     error_message = api_resp['message']
-                    return error_response(request, {"success": False, "msg": error_message,
+                    return Response({"success": False, "msg": error_message,
                                                     "total credits": api_resp['total_credits']},
-                                          status.HTTP_400_BAD_REQUEST)
+                                          status.HTTP_403_FORBIDDEN)
             elif api_resp['success'] is False:
                 error_message = api_resp['message']
-                return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
+                return Response({"success": False, "msg": error_message}, status=status.HTTP_403_FORBIDDEN)
+
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
