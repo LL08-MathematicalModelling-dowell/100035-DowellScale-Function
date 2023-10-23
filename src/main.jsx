@@ -8,7 +8,11 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter
+      basename={
+        import.meta.env.DEV ? '/' : '/100035-DowellScale-Function/'
+      }
+    >
       <DndProvider backend={HTML5Backend}>
         <App />
       </DndProvider>
