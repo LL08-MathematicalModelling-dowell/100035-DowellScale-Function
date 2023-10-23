@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import Fallback from '../../components/Fallback';
-// import axios from 'axios';
+import axios from 'axios';
 
 const CreatePCSettings = () => {
   const navigate = useNavigate();
@@ -88,22 +88,18 @@ const CreatePCSettings = () => {
   }, []);
   const fetchuser = async () => {
     try {
-      var myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
       var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: JSON.stringify({
-          // session_id: sessionId,
-          session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
-        }),
-        redirect: 'follow',
+        session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
       };
-      const response = await fetch(
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      const response = await axios.post(
         `https://100014.pythonanywhere.com/api/userinfo/`,
-        requestOptions
+        requestOptions,
+        { headers }
       );
-      const data = await response.json();
+      const data = await response.data;
       setFormData({
         user_name: data.userinfo.username,
       });
@@ -114,89 +110,80 @@ const CreatePCSettings = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    const formDataObject = new FormData();
+  const formDataObject = new FormData();
 
-    // Append form fields to the FormData object
-    formDataObject.append('username', formData.user_name);
-    formDataObject.append('scale_name', formData.scale_name);
-    formDataObject.append('orientation', formData.orientation);
-    formDataObject.append('fontcolor', formData.fontcolor);
-    formDataObject.append('fontstyle', formData.fontstyle);
-    formDataObject.append('scalecolor', formData.scalecolor);
-    formDataObject.append('roundcolor', formData.roundcolor);
-    formDataObject.append('time', formData.time);
-    formDataObject.append('item_count', itemCount);
+  // Append form fields to the FormData object
+  formDataObject.append('username', formData.user_name);
+  formDataObject.append('scale_name', formData.scale_name);
+  formDataObject.append('orientation', formData.orientation);
+  formDataObject.append('fontcolor', formData.fontcolor);
+  formDataObject.append('fontstyle', formData.fontstyle);
+  formDataObject.append('scalecolor', formData.scalecolor);
+  formDataObject.append('roundcolor', formData.roundcolor);
+  formDataObject.append('time', formData.time);
+  formDataObject.append('item_count', itemCount);
 
-    inputValues.forEach((value) => {
-      formDataObject.append(`item_list`, value);
-    });
+  inputValues.forEach((value) => {
+    formDataObject.append(`item_list`, value);
+  });
 
-    inputValues.forEach((value, index) => {
-      const fileInput = document.querySelector(`#item_image_${index}`);
-      if (fileInput && fileInput.files.length > 0) {
-        const imageFile = picture[index]; // Get the corresponding image file
-        // console.log(imageFile);
-        if (imageFile) {
-          formDataObject.append(value, imageFile.pictureAsFile);
-        }
+  inputValues.forEach((value, index) => {
+    const fileInput = document.querySelector(`#item_image_${index}`);
+    if (fileInput && fileInput.files.length > 0) {
+      const imageFile = picture[index]; // Get the corresponding image file
+      if (imageFile) {
+        formDataObject.append(value, imageFile.pictureAsFile);
       }
-    });
-
-    var requestOptions = {
-      method: 'POST',
-      // headers: myHeaders,
-      body: formDataObject,
-      redirect: 'follow',
-    };
-    console.log(formDataObject);
-
-    try {
-      const data = await fetch(
-        'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/',
-        // '',
-        requestOptions
-      );
-      const result = await data.json();
-      console.log(result);
-
-      if (result.error) {
-        console.log(result);
-        toast.error(result.error);
-        setFormData({
-          user_name: '',
-          scale_name: '',
-          orientation: '',
-          fontcolor: '',
-          fontstyle: '',
-          scalecolor: '',
-          roundcolor: '',
-          time: 0,
-          item_list: inputValues,
-        });
-        setIsLoading(false);
-        return;
-      } else {
-        setIsLoading(false);
-        console.log(`${JSON.parse(result.success).inserted_id}`);
-        toast.success('Successfully Created');
-        const timeout = setTimeout(
-          () =>
-            navigate(
-              `/single-scale-settings/${JSON.parse(result.success).inserted_id}`
-            ),
-          3000
-        );
-        return () => clearTimeout(timeout);
-      }
-    } catch (error) {
-      setIsLoading(false);
-      console.log('Error', error);
     }
-  };
+  });
+
+  try {
+    const response = await axios.post(
+      'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/',
+      formDataObject,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+
+    const result = response.data;
+    console.log(result);
+
+    if (result.error) {
+      console.log(result);
+      toast.error(result.error);
+      setFormData({
+        user_name: '',
+        scale_name: '',
+        orientation: '',
+        fontcolor: '',
+        fontstyle: '',
+        scalecolor: '',
+        roundcolor: '',
+        time: 0,
+        item_list: inputValues,
+      });
+      setIsLoading(false);
+      return;
+    } else {
+      setIsLoading(false);
+      const insertedId = JSON.parse(result.success).inserted_id;
+      console.log(insertedId);
+      toast.success('Successfully Created');
+      const timeout = setTimeout(
+        () => navigate(`/single-scale-settings/${insertedId}`),
+        3000
+      );
+      return () => clearTimeout(timeout);
+    }
+  } catch (error) {
+    setIsLoading(false);
+    console.log('Error', error);
+  }
+};
+
 
   if (isLoading) {
     return <Fallback />;

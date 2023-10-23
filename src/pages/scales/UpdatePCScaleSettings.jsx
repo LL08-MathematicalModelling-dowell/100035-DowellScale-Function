@@ -37,6 +37,7 @@ const UpdatePCScaleSettings = () => {
 
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    username: '',
     scale_name: '',
     orientation: '',
     fontcolor: '',
@@ -86,10 +87,12 @@ const UpdatePCScaleSettings = () => {
 
       const results = response.data.success;
       setData(results);
+      console.log(results);
       setIsLoading(false);
       setInputValues([...results.item_list]);
       setFormData({
         scale_name: results.name,
+        username: results.user,
         orientation: results.orientation,
         fontcolor: results.fontcolor,
         fontstyle: results.fontstyle,
@@ -109,12 +112,29 @@ const UpdatePCScaleSettings = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
+    // var myHeaders = new Headers();
+    // myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
+    // var raw = JSON.stringify({
+    //   scale_id: id,
+    //   username: formData.user_name,
+    //   scale_name: formData.scale_name,
+    //   orientation: formData.orientation,
+    //   fontcolor: formData.fontcolor,
+    //   fontstyle: formData.fontstyle,
+    //   scalecolor: formData.scalecolor,
+    //   roundcolor: formData.roundcolor,
+    //   time: formData.time,
+    //   item_count: formData.item_count,
+    //   item_list: formData.item_list,
+    // });
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    var requestOptions = {
       scale_id: id,
-      username: formData.user_name,
+      username: formData.username,
       scale_name: formData.scale_name,
       orientation: formData.orientation,
       fontcolor: formData.fontcolor,
@@ -124,26 +144,22 @@ const UpdatePCScaleSettings = () => {
       time: formData.time,
       item_count: formData.item_count,
       item_list: formData.item_list,
-    });
-
-    var requestOptions = {
-      method: 'PUT',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow',
     };
+    console.log(requestOptions);
 
     try {
-      const data = await fetch(
+      const data = await axios.post(
         'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/',
         // '',
-        requestOptions
+        requestOptions,
+        { headers }
       );
-      const result = await data.json();
+      const result = await data.data;
 
       if (!result.success) {
         toast.error(result.error);
         setFormData({
+          username: datas.username,
           scale_name: datas.name,
           orientation: datas.orientation,
           fontcolor: datas.fontcolor,

@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import Fallback from '../../components/Fallback';
+import axios from 'axios';
 
 const CreatePCResponse = () => {
   // const { scale_id } = useParams();
@@ -54,22 +55,20 @@ const CreatePCResponse = () => {
   }, []);
   const fetchuser = async () => {
     try {
-      var myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
+      // var myHeaders = new Headers();
+      // myHeaders.append('Content-Type', 'application/json');
       var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: JSON.stringify({
-          // session_id: sessionId,
-          session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
-        }),
-        redirect: 'follow',
+        session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
       };
-      const response = await fetch(
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      const response = await axios.post(
         `https://100014.pythonanywhere.com/api/userinfo/`,
-        requestOptions
+        requestOptions,
+        { headers }
       );
-      const data = await response.json();
+      const data = await response.data;
       setFormData({
         user_name: data.userinfo.username,
         scale_id: formData.scale_id,
@@ -88,33 +87,40 @@ const CreatePCResponse = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
+    // var myHeaders = new Headers();
+    // myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
+    // var raw = JSON.stringify({
+    //   username: formData.user_name,
+    //   scale_id: formData.scale_id,
+    //   brand_name: formData.brand_name,
+    //   product_name: formData.product_name,
+    //   process_id: formData.process_id,
+    //   products_ranking: formData.products_ranking,
+    // });
+    // console.log(raw);
+
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    var requestData = {
       username: formData.user_name,
       scale_id: formData.scale_id,
       brand_name: formData.brand_name,
       product_name: formData.product_name,
       process_id: formData.process_id,
       products_ranking: formData.products_ranking,
-    });
-    console.log(raw);
-
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow',
     };
 
     try {
-      const data = await fetch(
+      const data = await axios.post(
         'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-submit-response/',
         // '',
-        requestOptions
+        requestData,
+        { headers }
       );
-      const result = await data.json();
+      const result = await data.data;
       console.log(result);
 
       // const response = JSON.parse(result);
