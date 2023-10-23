@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Fallback from '../components/Fallback';
+import Fallback from '../../components/Fallback';
+import axios from 'axios';
 
-const CreateResponse = () => {
+const CreatePCResponse = () => {
   // const { scale_id } = useParams();
   const cookies = new Cookies();
   const [isLoading, setIsLoading] = useState(true);
@@ -54,22 +55,20 @@ const CreateResponse = () => {
   }, []);
   const fetchuser = async () => {
     try {
-      var myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
+      // var myHeaders = new Headers();
+      // myHeaders.append('Content-Type', 'application/json');
       var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: JSON.stringify({
-          // session_id: sessionId,
-          session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
-        }),
-        redirect: 'follow',
+        session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
       };
-      const response = await fetch(
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      const response = await axios.post(
         `https://100014.pythonanywhere.com/api/userinfo/`,
-        requestOptions
+        requestOptions,
+        { headers }
       );
-      const data = await response.json();
+      const data = await response.data;
       setFormData({
         user_name: data.userinfo.username,
         scale_id: formData.scale_id,
@@ -88,33 +87,40 @@ const CreateResponse = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
+    // var myHeaders = new Headers();
+    // myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
+    // var raw = JSON.stringify({
+    //   username: formData.user_name,
+    //   scale_id: formData.scale_id,
+    //   brand_name: formData.brand_name,
+    //   product_name: formData.product_name,
+    //   process_id: formData.process_id,
+    //   products_ranking: formData.products_ranking,
+    // });
+    // console.log(raw);
+
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    var requestData = {
       username: formData.user_name,
       scale_id: formData.scale_id,
       brand_name: formData.brand_name,
       product_name: formData.product_name,
       process_id: formData.process_id,
       products_ranking: formData.products_ranking,
-    });
-    console.log(raw);
-
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow',
     };
 
     try {
-      const data = await fetch(
+      const data = await axios.post(
         'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-submit-response/',
         // '',
-        requestOptions
+        requestData,
+        { headers }
       );
-      const result = await data.json();
+      const result = await data.data;
       console.log(result);
 
       // const response = JSON.parse(result);
@@ -157,11 +163,11 @@ const CreateResponse = () => {
     <div className="mx-auto my-8 lg:container ">
       <div>
         <button
-            onClick={handleGoBack}
-            className="px-8 py-2 mt-4 mb-6 ml-2 text-white capitalize bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none"
-          >
-            &#60;&#60; Go Back
-          </button>
+          onClick={handleGoBack}
+          className="px-8 py-2 mt-4 mb-6 ml-2 text-white capitalize bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none"
+        >
+          &#60;&#60; Go Back
+        </button>
       </div>
       <form
         className="lg:w-[60%] w-full mx-auto border-4 border-gray-500 bg-[#d9edf7] shadow-md p-8"
@@ -239,4 +245,4 @@ const CreateResponse = () => {
   );
 };
 
-export default CreateResponse;
+export default CreatePCResponse;

@@ -1,10 +1,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import Fallback from '../components/Fallback';
+import Fallback from '../../components/Fallback';
 import axios from 'axios';
-import CustomCanvas from '../components/CustomCanvas';
-import { Box } from '../components/Box';
-
+import CustomCanvas from '../../components/CustomCanvas';
+import { Box } from '../../components/Box';
 
 const SinglePerceptualScaleSettings = () => {
   const { id } = useParams();
@@ -43,7 +42,7 @@ const SinglePerceptualScaleSettings = () => {
 
   const customCanva = useMemo(() => {
     // Perform some expensive computation based on data
-    return <CustomCanvas xAxisRange={8} yAxisRange={5}  />;
+    return <CustomCanvas xAxisRange={8} yAxisRange={5} />;
   }, []);
   if (isLoading) {
     return <Fallback />;

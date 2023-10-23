@@ -2,14 +2,13 @@ import { Routes, Route } from 'react-router-dom';
 import { Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
-import CreateSettings from './pages/CreateSettings';
+import CreatePCSettings from './pages/scales/CreatePCSettings';
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import Fallback from './components/Fallback';
-import SingleScaleResponse from './pages/SingleScaleResponse';
-import CreateResponse from './pages/CreateResponse';
-import SingleScaleSettings from './pages/SingleScaleSettings';
-import UpdateScaleSettings from './pages/UpdateScaleSettings';
+import CreatePCResponse from './pages/scales/CreatePCResponse';
+import SinglePCScaleSettings from './pages/scales/SinglePCScaleSettings';
+import UpdatePCScaleSettings from './pages/scales/UpdatePCScaleSettings';
 import {
   Scales,
   ScalesDetail,
@@ -19,10 +18,10 @@ import {
   AvailableScales,
 } from './pages/scales';
 import { Stages } from './pages/test';
-import PairedScale from './pages/PairedScale';
-import PerceptualScale from './pages/PerceptualScale';
-import SinglePerceptualScaleSettings from './pages/SinglePerceptualScaleSettings';
-import CreatePerceptualScaleSettings from './pages/CreatePerceptualScaleSettings';
+import PairedScale from './pages/scales/PairedScale';
+import PerceptualScale from './pages/scales/PerceptualScale';
+import SinglePerceptualScaleSettings from './pages/scales/SinglePerceptualScaleSettings';
+import CreatePerceptualScaleSettings from './pages/scales/CreatePerceptualScaleSettings';
 
 function App() {
   return (
@@ -46,30 +45,29 @@ function App() {
             <Route path="/:slug" element={<ScalesDetail />} />
             <Route path="/create-scales" element={<CreateScales />} />
             <Route path="/create-scale" element={<CreateScale />} />
-            <Route path="/create-scale-settings" element={<CreateSettings />} />
+            <Route
+              path="/create-paired-scale-settings"
+              element={<CreatePCSettings />}
+            />
             <Route
               path="/create-perceptual-scale-settings"
               element={<CreatePerceptualScaleSettings />}
             />
             <Route
               path="/create-scale-response/:id"
-              element={<CreateResponse />}
+              element={<CreatePCResponse />}
             />
             <Route
               path="/single-scale-settings/:id"
-              element={<SingleScaleSettings />}
+              element={<SinglePCScaleSettings />}
             />
             <Route
               path="/single-perceptual-scale-settings/:id"
               element={<SinglePerceptualScaleSettings />}
             />
             <Route
-              path="/update-scale-settings/:id"
-              element={<UpdateScaleSettings />}
-            />
-            <Route
-              path="/single-scale-response/:id"
-              element={<SingleScaleResponse />}
+              path="/update-paired-scale-settings/:id"
+              element={<UpdatePCScaleSettings />}
             />
           </Routes>
         </Suspense>

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Fallback from '../components/Fallback';
+import Fallback from '../../components/Fallback';
+import axios from 'axios';
 
 const CreatePerceptualScaleSettings = () => {
   const navigate = useNavigate();
@@ -70,30 +71,34 @@ const CreatePerceptualScaleSettings = () => {
     });
   };
 
+  // eslint-disable-next-line no-unused-vars
   const sessionId = cookies.get('sessionid');
   useEffect(() => {
     fetchuser();
   }, []);
   const fetchuser = async () => {
     try {
-      var myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
+      // var myHeaders = new Headers();
+      // myHeaders.append('Content-Type', 'application/json');
       var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: JSON.stringify({
-          // session_id: sessionId,
-          session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
-        }),
-        redirect: 'follow',
+        session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
       };
-      const response = await fetch(
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      const response = await axios.post(
         `https://100014.pythonanywhere.com/api/userinfo/`,
-        requestOptions
+        requestOptions,
+        { headers }
       );
-      const data = await response.json();
+      const data = await response.data;
       setFormData({
         user_name: data.userinfo.username,
+        scale_id: formData.scale_id,
+        brand_name: formData.brand_name,
+        product_name: formData.product_name,
+        process_id: formData.process_id,
+        products_ranking: formData.products_ranking,
       });
       setIsLoading(false);
     } catch (error) {
@@ -106,10 +111,40 @@ const CreatePerceptualScaleSettings = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
+    // var myHeaders = new Headers();
+    // myHeaders.append('Content-Type', 'application/json');
 
-    var raw = JSON.stringify({
+    // var raw = JSON.stringify({
+    //   username: formData.username,
+    //   scale_name: formData.scale_name,
+    //   orientation: formData.orientation,
+    //   fontcolor: formData.fontcolor,
+    //   fontstyle: formData.fontstyle,
+    //   time: formData.time,
+    //   scalecolor: formData.scalecolor,
+    //   roundcolor: formData.roundcolor,
+    //   item_count: itemCount,
+    //   item_list: formData.item_list,
+    //   no_of_scale: formData.no_of_scale,
+    //   allow_resp: formData.allow_resp,
+    //   X_upper_limit: formData.X_upper_limit,
+    //   Y_upper_limit: formData.Y_upper_limit,
+    //   X_left: formData.X_left,
+    //   X_right: formData.X_right,
+    //   Y_top: formData.Y_top,
+    //   Y_bottom: formData.Y_bottom,
+    //   marker_type: formData.marker_type,
+    //   marker_color: formData.marker_color,
+    //   X_spacing: formData.X_spacing,
+    //   Y_spacing: formData.Y_spacing,
+    // });
+    // console.log(raw);
+
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    var requestOptions = {
       username: formData.username,
       scale_name: formData.scale_name,
       orientation: formData.orientation,
@@ -132,23 +167,16 @@ const CreatePerceptualScaleSettings = () => {
       marker_color: formData.marker_color,
       X_spacing: formData.X_spacing,
       Y_spacing: formData.Y_spacing,
-    });
-    console.log(raw);
-
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow',
     };
 
     try {
       const data = await fetch(
         'https://100035.pythonanywhere.com/perceptual-mapping/perceptual-mapping-settings/',
         // '',
-        requestOptions
+        requestOptions,
+        { headers }
       );
-      const result = await data.json();
+      const result = await data.data;
       console.log(result);
 
       if (result.error) {
@@ -348,51 +376,50 @@ const CreatePerceptualScaleSettings = () => {
             </select>
           </div>
           <div className="mb-4">
-            <div className='grid gap-2  md:grid-cols-2'>
+            <div className="grid gap-2 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="item_count"
+                  className="font-semibold text-gray-600 "
+                >
+                  Number of Items:
+                </label>
+                <input
+                  type="number"
+                  name="item_count"
+                  id="item_count"
+                  value={itemCount || 0}
+                  onChange={handleInputChange}
+                  className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                />
+              </div>
 
-            <div>
-              <label
-                htmlFor="item_count"
-                className="font-semibold text-gray-600 "
-              >
-                Number of Items:
-              </label>
-              <input
-                type="number"
-                name="item_count"
-                id="item_count"
-                value={itemCount || 0}
-                onChange={handleInputChange}
-                className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-              />
-            </div>
-
-            <div>
-              {inputValues.map((value, index) => (
-                <div key={index} className="inline">
-                  <input
-                    // key={index}
-                    type="text"
-                    name="item_list"
-                    placeholder={`paired ${index + 1}`}
-                    value={value}
-                    className="inline w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                    onChange={(e) =>
-                      handleInputValueChange(index, e.target.value)
-                    }
-                  />
-                </div>
-              ))}
-            </div>
+              <div>
+                {inputValues.map((value, index) => (
+                  <div key={index} className="inline">
+                    <input
+                      // key={index}
+                      type="text"
+                      name="item_list"
+                      placeholder={`paired ${index + 1}`}
+                      value={value}
+                      className="inline w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                      onChange={(e) =>
+                        handleInputValueChange(index, e.target.value)
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           <div className="mb-4">
-            <div className="grid gap-0  md:grid-cols-1">
+            <div className="grid gap-0 md:grid-cols-1">
               <div>
                 <label
                   htmlFor="x_upper_limit"
-                  className="block font-semibold text-gray-600 text-center"
+                  className="block font-semibold text-center text-gray-600"
                 >
                   X asix limits
                 </label>
@@ -424,7 +451,7 @@ const CreatePerceptualScaleSettings = () => {
               <div>
                 <label
                   htmlFor="y_upper_limit"
-                  className="block font-semibold text-gray-600 text-center"
+                  className="block font-semibold text-center text-gray-600"
                 >
                   Y asix limits
                 </label>
@@ -512,7 +539,7 @@ const CreatePerceptualScaleSettings = () => {
             </select>
           </div>
           <div className="mb-4">
-            <div className="grid gap-2  md:grid-cols-2">
+            <div className="grid gap-2 md:grid-cols-2">
               <div>
                 <label
                   htmlFor="time"

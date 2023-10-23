@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Fallback from '../components/Fallback';
-import dowellLogo from '../assets/dowell-logo.png';
-import Button from '../components/button/Button';
+import Fallback from '../../components/Fallback';
+import dowellLogo from '../../assets/dowell-logo.png';
+import Button from '../../components/button/Button';
 import { Chart } from 'react-google-charts';
+import axios from 'axios';
 const PerceptualScale = () => {
   // State variables
   const [data, setData] = useState([]); // Holds the list of tasks
@@ -14,19 +15,19 @@ const PerceptualScale = () => {
   }, []);
 
   const fetchScales = async () => {
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    var requestOptions = {
-      method: 'GET',
-      headers: myHeaders,
-      redirect: 'follow',
-    };
+    // var myHeaders = new Headers();
+    // myHeaders.append('Content-Type', 'application/json');
+    // var requestOptions = {
+    //   method: 'GET',
+    //   headers: myHeaders,
+    //   redirect: 'follow',
+    // };
     try {
-      const response = await fetch(
+      const response = await axios.post(
         'https://100035.pythonanywhere.com/perceptual-mapping/perceptual-mapping-settings/',
-        requestOptions
+        // requestOptions
       );
-      const results = await response.json();
+      const results = await response.data;
       setData(results.data.data);
       setIsLoading(false);
     } catch (error) {
@@ -72,7 +73,7 @@ const PerceptualScale = () => {
         <img
           src={dowellLogo}
           alt="Dowell Logo"
-          className="cursor-pointer w-32"
+          className="w-32 cursor-pointer"
         />
         <p className="my-2 text-4xl text-[#1A8753]">
           Dowell Perceptual Mapping Scales Settings
@@ -115,7 +116,7 @@ const PerceptualScale = () => {
               to="/create-perceptual-scale-settings"
               className="px-8 py-2 text-white bg-[#1A8753] rounded-lg focus:outline-none uppercase"
             >
-              Create new Scale 
+              Create new Scale
             </Link>
           </div>
         </div>
