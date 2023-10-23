@@ -990,7 +990,7 @@ def scales_plugins_function(request):
 
                         # Get scale settings
                         try:
-                            scale_settings = get_scale_settings(scale_id)
+                            scale_settings, _ = get_scale_settings(scale_id)
                         except:
                             return Response({"Error": f"Scale {scale_id} does not exist!"},
                                             status=status.HTTP_400_BAD_REQUEST)
@@ -1062,7 +1062,7 @@ def scales_plugins_function(request):
                             return Response({"Error": f"Responses do not exists for this scale {scale_id}!"}, status=status.HTTP_400_BAD_REQUEST)
 
                         try:
-                            scale_settings = get_scale_settings(scale_id)
+                            scale_settings, settings_event_id = get_scale_settings(scale_id)
                         except:
                             return Response({"Error": f"Scale {scale_id} does not exist!"},
                                             status=status.HTTP_400_BAD_REQUEST)
@@ -1113,7 +1113,7 @@ def get_scale_settings(scale_id):
     field_add = {"_id": scale_id}
     response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE", "find", field_add, "nil")
-    return json.loads(response_data)['data']['settings']
+    return json.loads(response_data)['data']['settings'], json.loads(response_data)['data']['event_id']
 
 
 
