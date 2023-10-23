@@ -1047,11 +1047,15 @@ def scales_plugins_function(request):
                         elif block_id is not None:
                             field_add['block_id'] = block_id
 
-                        fetch_responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data",
-                                                           "plugin_data",
-                                                           "1249001", "ABCDE", "fetch", field_add, "nil")
+                        try:
+                            fetch_responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data",
+                                                               "plugin_data",
+                                                               "1249001", "ABCDE", "fetch", field_add, "nil")
 
-                        data = json.loads(fetch_responses)["data"]
+                            data = json.loads(fetch_responses)["data"]
+                        except:
+                            return Response({"Error": "Scale does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+
                         scale_settings = get_scale_settings(scale_id)
                         settings_event_id = scale_settings.get('event_id')
                         no_of_scales = scale_settings.get('no_of_scales')
