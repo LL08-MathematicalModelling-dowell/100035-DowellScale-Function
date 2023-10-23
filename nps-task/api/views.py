@@ -1067,15 +1067,13 @@ def scales_plugins_function(request):
                             return Response({"Error": f"Scale {scale_id} does not exist!"},
                                             status=status.HTTP_400_BAD_REQUEST)
 
-                        settings_event_id = scale_settings.get('event_id')
                         no_of_scales = scale_settings.get('no_of_scales')
 
                         instance_ids = [i['instance_id'] for i in data]
 
                         return Response(
-                            {"success": True, "scale_id": scale_id, "no_of_scales": no_of_scales, "event_id": settings_event_id,
+                            {"success": True, "scale_id": scale_id, "no_of_scales": no_of_scales, "event_id": get_event_id(),
                              "instances_used": len(instance_ids), "instance_ids": instance_ids}, status=status.HTTP_200_OK)
-
                     else:
                         return Response({"Error": "Invalid fields!"}, status=status.HTTP_400_BAD_REQUEST)
                 else:
