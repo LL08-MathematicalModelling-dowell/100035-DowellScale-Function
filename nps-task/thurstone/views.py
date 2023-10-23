@@ -160,3 +160,6 @@ def settings_api_view_create(request):
                                 field_add, {"settings":settings})
         return Response({"success": "Successfully Updated ", "data": settings})
 
+@api_view(['POST', 'GET'])
+def scale_response_api_view(request):
+    return
