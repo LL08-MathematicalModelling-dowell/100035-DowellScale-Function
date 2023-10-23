@@ -990,7 +990,7 @@ def scales_plugins_function(request):
 
                         # Get scale settings
                         try:
-                            scale_settings, _ = get_scale_settings(scale_id)
+                            scale_settings = get_scale_settings(scale_id)
                         except:
                             return Response({"Error": f"Scale {scale_id} does not exist!"},
                                             status=status.HTTP_400_BAD_REQUEST)
@@ -1062,20 +1062,18 @@ def scales_plugins_function(request):
                             return Response({"Error": f"Responses do not exists for this scale {scale_id}!"}, status=status.HTTP_400_BAD_REQUEST)
 
                         try:
-                            scale_settings, settings_event_id = get_scale_settings(scale_id)
+                            scale_settings = get_scale_settings(scale_id)
                         except:
                             return Response({"Error": f"Scale {scale_id} does not exist!"},
                                             status=status.HTTP_400_BAD_REQUEST)
 
-                        settings_event_id = scale_settings.get('event_id')
                         no_of_scales = scale_settings.get('no_of_scales')
 
                         instance_ids = [i['instance_id'] for i in data]
 
                         return Response(
-                            {"success": True, "scale_id": scale_id, "no_of_scales": no_of_scales, "event_id": settings_event_id,
+                            {"success": True, "scale_id": scale_id, "no_of_scales": no_of_scales, "event_id": get_event_id(),
                              "instances_used": len(instance_ids), "instance_ids": instance_ids}, status=status.HTTP_200_OK)
-
                     else:
                         return Response({"Error": "Invalid fields!"}, status=status.HTTP_400_BAD_REQUEST)
                 else:
@@ -1113,7 +1111,7 @@ def get_scale_settings(scale_id):
     field_add = {"_id": scale_id}
     response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE", "find", field_add, "nil")
-    return json.loads(response_data)['data']['settings'], json.loads(response_data)['data']['event_id']
+    return json.loads(response_data)['data']['settings']
 
 
 
