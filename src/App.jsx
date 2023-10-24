@@ -12,7 +12,6 @@ import UpdatePCScaleSettings from './pages/scales/UpdatePCScaleSettings';
 import {
   Scales,
   RankingScale,
-  ScalesSettings,
   CreateScale,
   AvailableScales,
 } from './pages/scales';
@@ -32,7 +31,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/all-scales" element={<Scales />} />
             <Route path="/available-scales" element={<AvailableScales />} />
-            <Route path="/scales-settings/:slug" element={<ScalesSettings />} />
             <Route path="/paired-scale-comparison" element={<PairedScale />} />
             <Route
               path="/perceptual-mapping-scale"
