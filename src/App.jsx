@@ -15,7 +15,7 @@ import {
   AvailableScales,
 } from './pages/scales';
 import { UpdateRankingScale } from './pages/scales/update';
-import { RankingScaleSettings } from './pages/settings';
+import { RankingScaleSettings } from './pages/scales/settings';
 import PairedScale from './pages/scales/PairedScale';
 import PerceptualScale from './pages/scales/PerceptualScale';
 import SinglePerceptualScaleSettings from './pages/scales/SinglePerceptualScaleSettings';

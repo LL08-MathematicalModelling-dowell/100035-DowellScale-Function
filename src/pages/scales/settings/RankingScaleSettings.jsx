@@ -3,10 +3,10 @@ import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 import { BsArrowLeft} from 'react-icons/bs';
 import { useParams, useNavigate } from "react-router-dom";
-import useGetSingleScale from "../../hooks/useGetSingleScale";
-import useCreateRankingScalesResponse from "../../hooks/useCreateRankingScalesResponse";
-import Fallback from "../../components/Fallback";
-import { Button } from "../../components/button";
+import useGetSingleScale from "../../../hooks/useGetSingleScale";
+import useCreateRankingScalesResponse from "../../../hooks/useCreateRankingScalesResponse";
+import Fallback from "../../../components/Fallback";
+import { Button } from "../../../components/button";
 
 
 const RankingScaleSettings = ()=>{
