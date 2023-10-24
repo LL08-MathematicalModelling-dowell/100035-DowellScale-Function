@@ -1070,10 +1070,11 @@ def scales_plugins_function(request):
                         no_of_scales = scale_settings.get('no_of_scales')
 
                         instance_ids = [i['instance_id'] for i in data]
+                        scores = [{i['instance_id']: i['score']} for i in data]
 
                         return Response(
                             {"success": True, "scale_id": scale_id, "no_of_scales": no_of_scales, "event_id": get_event_id(),
-                             "instances_used": len(instance_ids), "instance_ids": instance_ids}, status=status.HTTP_200_OK)
+                             "instances_used": len(instance_ids), "instance_ids": instance_ids, "scores": scores}, status=status.HTTP_200_OK)
                     else:
                         return Response({"Error": "Invalid fields!"}, status=status.HTTP_400_BAD_REQUEST)
                 else:
