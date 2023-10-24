@@ -57,3 +57,12 @@
       
     - Documentation: https://documenter.getpostman.com/view/link_for_qsort_scale_api_documentation
 
+- ## Thurstone Scale
+
+    Description: The Thurstone Scale is a psychometric method used to measure attitudes or opinions of individuals towards specific statements or items. It is a type of comparative rating scale that allows respondents to rate a statement on a numerical scale indicating their level of agreement or disagreement with the statement. This API allows users to create and manage Thurstone scales. It also provides endpoints for submitting responses to a Thurstone scale and retrieving the results of a Thurstone scale assessment.
+
+    Example: ![image]
+
+    Documentation: https://documenter.getpostman.com/view/link_for_thurstone_scale_api_documentation
+
+
