@@ -10,7 +10,6 @@ import CreatePCResponse from './pages/scales/CreatePCResponse';
 import SinglePCScaleSettings from './pages/scales/SinglePCScaleSettings';
 import UpdatePCScaleSettings from './pages/scales/UpdatePCScaleSettings';
 import {
-  Scales,
   RankingScale,
   CreateScale,
   AvailableScales,
@@ -29,7 +28,6 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/all-scales" element={<Scales />} />
             <Route path="/available-scales" element={<AvailableScales />} />
             <Route path="/paired-scale-comparison" element={<PairedScale />} />
             <Route
