@@ -17,7 +17,6 @@ import {
   CreateScale,
   AvailableScales,
 } from './pages/scales';
-import { Stages } from './pages/test';
 import PairedScale from './pages/scales/PairedScale';
 import PerceptualScale from './pages/scales/PerceptualScale';
 import SinglePerceptualScaleSettings from './pages/scales/SinglePerceptualScaleSettings';
@@ -33,7 +32,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/all-scales" element={<Scales />} />
-            <Route path="/stages" element={<Stages />} />
             <Route path="/available-scales" element={<AvailableScales />} />
             <Route path="/all-scales/:slug" element={<ScalesDetail />} />
             <Route path="/scales-settings/:slug" element={<ScalesSettings />} />
