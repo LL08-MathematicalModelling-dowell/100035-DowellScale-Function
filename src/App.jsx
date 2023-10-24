@@ -10,14 +10,10 @@ import CreatePCResponse from './pages/scales/CreatePCResponse';
 import SinglePCScaleSettings from './pages/scales/SinglePCScaleSettings';
 import UpdatePCScaleSettings from './pages/scales/UpdatePCScaleSettings';
 import {
-  Scales,
-  ScalesDetail,
-  ScalesSettings,
-  CreateScales,
+  RankingScale,
   CreateScale,
   AvailableScales,
 } from './pages/scales';
-import { Stages } from './pages/test';
 import PairedScale from './pages/scales/PairedScale';
 import PerceptualScale from './pages/scales/PerceptualScale';
 import SinglePerceptualScaleSettings from './pages/scales/SinglePerceptualScaleSettings';
@@ -32,18 +28,13 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/all-scales" element={<Scales />} />
-            <Route path="/stages" element={<Stages />} />
             <Route path="/available-scales" element={<AvailableScales />} />
-            <Route path="/all-scales/:slug" element={<ScalesDetail />} />
-            <Route path="/scales-settings/:slug" element={<ScalesSettings />} />
             <Route path="/paired-scale-comparison" element={<PairedScale />} />
             <Route
               path="/perceptual-mapping-scale"
               element={<PerceptualScale />}
             />
-            <Route path="/:slug" element={<ScalesDetail />} />
-            <Route path="/create-scales" element={<CreateScales />} />
+            <Route path="/:slug" element={<RankingScale />} />
             <Route path="/create-scale" element={<CreateScale />} />
             <Route
               path="/create-paired-scale-settings"
