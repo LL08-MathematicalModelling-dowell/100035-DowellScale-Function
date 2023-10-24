@@ -1,25 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-import { useNavigate } from 'react-router';
-import useCreateRankingScalesResponse from '../../hooks/useCreateRankingScalesResponse';
-import { MdManageHistory } from 'react-icons/md';
-import { BsArrowLeft} from 'react-icons/bs';
+
+import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
-import useGetScale from '../../hooks/useGetScale';
-import useGetSingleScale from '../../hooks/useGetSingleScale';
-import Fallback from '../../components/Fallback';
-import { Button } from '../../components/button';
+import { BsArrowLeft} from 'react-icons/bs';
+import { useParams, useNavigate } from "react-router-dom";
+import useGetSingleScale from "../../hooks/useGetSingleScale";
+import useCreateRankingScalesResponse from "../../hooks/useCreateRankingScalesResponse";
+import Fallback from "../../components/Fallback";
+import { Button } from "../../components/button";
 
 
-const RankingScale = () => {
+const RankingScaleSettings = ()=>{
     const { slug } = useParams();
-    const { isLoading, scaleData, fetchScaleData} = useGetScale();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
     const [currentStage, setCurrentStage] = useState(0);
-
-    // console.log(scaleData[112], '*** scaleData')
-
 
 
     const dataStages = sigleScaleData && sigleScaleData?.map((scale)=>{
@@ -116,7 +110,17 @@ const RankingScale = () => {
                 username: "natan",
                 rankings:updatedDb
               }
-            await CreateRankingScalesResponse(payload)
+            try {
+                const response = await CreateRankingScalesResponse(payload);
+                toast.success('successfully updated');
+                if(response.status===200){
+                    setTimeout(() => {
+                        navigateTo(`/all-scales/${'ranking-scale'}`)
+                    }, 2000);
+                }
+            } catch (error) {
+                console.log(error)   
+            }
             
         } else {
             setCurrentStage(prev => prev + 1);
@@ -128,42 +132,29 @@ const RankingScale = () => {
         await fetchSingleScaleData(scaleId);
     }
 
-
-    useEffect(()=>{
-        fetchScaleData(slug);
-    },[]);
+    useEffect(() => {
+        const fetchData = async () => {
+            await handleFetchSingleScale(slug);
+        }
+        fetchData();
+    }, [slug]);
     
 
-    
 
-
-    if (isLoading) {
+    if (loading) {
         return <Fallback />;
     }
-  return (
-    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat'>
+    return(
+        <div className='h-screen  flex flex-col items-center justify-center font-Montserrat'>
         <div className='border border-primary w-full lg:w-8/12 m-auto py-4 px-10'>
             <h2 className='text-center py-3'>Ranking Scale Name:  
-            <span className='font-medium text-sm'>{sigleScaleData ?
+            <span className='font-medium text-sm'>{sigleScaleData &&
                         sigleScaleData?.map((scale)=>(
                             <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
-                        )) : (scaleData[0]?.settings?.scalename || scaleData[0]?.settings?.scale_name)
+                        ))
                 }</span>
             </h2>
             <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}>
-                <div className={`h-full w-full lg:w-3/12 border overflow-y-auto ${currentStage > 0 && 'hidden'}`}>
-                    <h2 className='p-2 flex gap-2 items-center font-medium'>
-                        <span className=''>
-                        <MdManageHistory className='text-primary'/>
-                        </span> Scale History
-                    </h2>
-                    {scaleData && scaleData.map((scale, index)=>(
-                        <>
-                            {/* <Button width={'full'} onClick={()=>handleFetchSingleScale(scale._id)} key={index}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button> */}
-                            <Button width={'full'} onClick={()=>navigateTo(`/ranking-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button>
-                        </>
-                    ))}
-                </div>
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                 {loading ? <h3>...loading data</h3> : (
                     <>
@@ -174,16 +165,9 @@ const RankingScale = () => {
                                 <BsArrowLeft className='text-white' />
                                 Go Back
                             </button>
-                            {/* <Button width={'1/2'} onClick={handlePrev} disabled={currentStage===0}>Previous</Button> */}
                             <h2 className='w-3/12 border text-center py-2'>stage {currentStage + 1} of {stages.length}</h2>
                             <h2 className='text-sm capitalize border w-6/12 py-1 text-center'>
-                                {/* {slug.split('-').join(' ')} */}
                                 {stages[currentStage]}
-                                {/* {sigleScaleData ?
-                                    sigleScaleData?.map((scale)=>(
-                                        <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
-                                    )) : (scaleData[0]?.settings?.scalename || scaleData[0]?.settings?.scale_name)
-                            } */}
                             </h2>
                         </div>
                         <div className='w-full flex gap-3 flex-col md:flex-row'>
@@ -229,19 +213,23 @@ const RankingScale = () => {
                         <Button width={'full'} primary onClick={handleSubmit}>{(currentStage === stages.length - 1) ? 'submit scale' : 'save and proceed'}</Button>
                     
                     </div>
-                    {sigleScaleData && sigleScaleData.map((scale, index)=>(
-                        <>
-                            <Button width={'full'} onClick={()=>navigateTo(`/scales-update-settings/${scale._id}`)} key={index}>update scale</Button>
-                        </>
-                    ))}
+                    <div className="flex gap-3 justify-end">
+                        {sigleScaleData && sigleScaleData.map((scale, index)=>(
+                            <>
+                                <Button width={'3/4'} onClick={()=>navigateTo(`/ranking-scale-settings/${scale._id}`)} key={index}>update scale</Button>
+                            </>
+                        ))}
+                        <Button width={'3/4'} primary>Save Response</Button>
+                    </div>
+                    
                 </div>
             </div>
-            <div className='w-full flex items-center justify-end my-4'>
+            {/* <div className='w-full flex items-center justify-end my-4'>
                 <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
-            </div>
+            </div> */}
         </div>
     </div>
-  )
+    )
 }
 
-export default RankingScale
+export default RankingScaleSettings;

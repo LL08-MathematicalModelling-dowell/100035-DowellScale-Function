@@ -14,6 +14,8 @@ import {
   CreateScale,
   AvailableScales,
 } from './pages/scales';
+import { UpdateRankingScale } from './pages/scales/update';
+import { RankingScaleSettings } from './pages/settings';
 import PairedScale from './pages/scales/PairedScale';
 import PerceptualScale from './pages/scales/PerceptualScale';
 import SinglePerceptualScaleSettings from './pages/scales/SinglePerceptualScaleSettings';
@@ -44,6 +46,7 @@ function App() {
               path="/create-perceptual-scale-settings"
               element={<CreatePerceptualScaleSettings />}
             />
+            <Route path="/ranking-scale-settings/:slug" element={<RankingScaleSettings />} />
             <Route
               path="/create-scale-response/:id"
               element={<CreatePCResponse />}
@@ -60,6 +63,7 @@ function App() {
               path="/update-paired-scale-settings/:id"
               element={<UpdatePCScaleSettings />}
             />
+            <Route path="/update-ranking-scale/:slug" element={<UpdateRankingScale />} />
           </Routes>
         </Suspense>
       </div>
