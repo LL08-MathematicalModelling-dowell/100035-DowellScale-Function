@@ -92,7 +92,7 @@ const UpdatePCScaleSettings = () => {
       setInputValues([...results.item_list]);
       setFormData({
         scale_name: results.name,
-        username: results.user,
+        username: results.username[0],
         orientation: results.orientation,
         fontcolor: results.fontcolor,
         fontstyle: results.fontstyle,

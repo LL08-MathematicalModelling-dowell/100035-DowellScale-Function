@@ -157,15 +157,13 @@ const SinglePCScaleSettings = () => {
                         }`}
                         onClick={() => handleButtonClick(pairIndex, 0)}
                       >
-                        {imagePaths ? (
+                        {imagePaths && imagePaths.length > 0 ? (
                           <img
                             src={
-                              `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}` ||
-                              '/src/assets/avatar_img.jpg'
+                              `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}`
                             }
                             alt={
-                              `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}` ||
-                              '/src/assets/avatar_img.jpg'
+                              `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}`
                             }
                             className="w-10 h-10 p-0 mb-2 rounded-full"
                           />
@@ -185,15 +183,14 @@ const SinglePCScaleSettings = () => {
                         }`}
                         onClick={() => handleButtonClick(pairIndex, 1)}
                       >
-                        {imagePaths ? (
+                        
+                        {imagePaths && imagePaths.length > 0 ? (
                           <img
                             src={
-                              `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}` ||
-                              '/src/assets/avatar_img.jpg'
+                              `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}`
                             }
                             alt={
-                              `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}` ||
-                              '/src/assets/avatar_img.jpg'
+                              `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}`
                             }
                             className="w-10 h-10 p-0 mb-2 rounded-full"
                           />
