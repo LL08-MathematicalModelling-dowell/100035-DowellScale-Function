@@ -76,4 +76,4 @@
       The Thurstone scale is a psychometric measurement tool used to measure attitudes or opinions towards a particular issue or topic. The scale consists of a series of statements about the issue, each with a numerical value indicating how favorable or unfavorable it is judged to be. Respondents indicate which statements they agree with, and their attitude score is calculated as the sum of the values of the statements they agree with. The API provides endpoint for defining statements and assigning numerical values to statements, It also provides endpoint to receive responses and aggregate attitude score from respondents.
    - Example:
 
-   - Documentation: https://documenter.getpostman.com/view/27723419/2s9YRB3XUr
+   - Documentation: https://documenter.getpostman.com/view/21255221/2s9YRCXBWW
