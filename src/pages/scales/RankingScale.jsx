@@ -11,12 +11,15 @@ import Fallback from '../../components/Fallback';
 import { Button } from '../../components/button';
 
 
-const ScalesDetail = () => {
+const RankingScale = () => {
     const { slug } = useParams();
     const { isLoading, scaleData, fetchScaleData} = useGetScale();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
     const [currentStage, setCurrentStage] = useState(0);
+
+
+    console.log(slug, 'slug for scale');
 
 
     
@@ -231,4 +234,4 @@ const ScalesDetail = () => {
   )
 }
 
-export default ScalesDetail
+export default RankingScale

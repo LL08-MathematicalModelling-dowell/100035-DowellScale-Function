@@ -10,6 +10,8 @@ const PairedScale = () => {
   const [data, setData] = useState([]); // Holds the list of tasks
   const [isLoading, setIsLoading] = useState(true); // Indicates whether the data is being loaded
 
+  console.log('***')
+
   useEffect(() => {
     fetchScales();
   }, []);

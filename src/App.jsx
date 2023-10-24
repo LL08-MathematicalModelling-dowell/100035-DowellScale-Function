@@ -11,9 +11,8 @@ import SinglePCScaleSettings from './pages/scales/SinglePCScaleSettings';
 import UpdatePCScaleSettings from './pages/scales/UpdatePCScaleSettings';
 import {
   Scales,
-  ScalesDetail,
+  RankingScale,
   ScalesSettings,
-  CreateScales,
   CreateScale,
   AvailableScales,
 } from './pages/scales';
@@ -33,15 +32,13 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/all-scales" element={<Scales />} />
             <Route path="/available-scales" element={<AvailableScales />} />
-            <Route path="/all-scales/:slug" element={<ScalesDetail />} />
             <Route path="/scales-settings/:slug" element={<ScalesSettings />} />
             <Route path="/paired-scale-comparison" element={<PairedScale />} />
             <Route
               path="/perceptual-mapping-scale"
               element={<PerceptualScale />}
             />
-            <Route path="/:slug" element={<ScalesDetail />} />
-            <Route path="/create-scales" element={<CreateScales />} />
+            <Route path="/:slug" element={<RankingScale />} />
             <Route path="/create-scale" element={<CreateScale />} />
             <Route
               path="/create-paired-scale-settings"
