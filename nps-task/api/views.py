@@ -884,10 +884,12 @@ def redirect_view(request):
     scale_type = request.GET.get('type')
     scale_id = request.GET.get('scale_id')
 
-
     try:
+        print("Hello")
+        print("Hello", scaletype)
         # request_data = json.loads(request.body)
         api_resp = processApikey(api_key)
+        print(api_resp)
         if api_resp['success'] is True:
             credit_count = api_resp['total_credits']
             if credit_count > 0:
@@ -985,9 +987,6 @@ def scales_plugins_function(request):
                         if instance_exists(scale_id, instance_id):
                             return Response({"Error": "Response Exists", "score": get_instance_score(scale_id, instance_id)},
                                             status=status.HTTP_400_BAD_REQUEST)
-                        
-                        print("Ambrose", validated_data)
-
                         # Get scale settings
                         try:
                             scale_settings = get_scale_settings(scale_id)
@@ -1094,9 +1093,15 @@ def instance_exists(scale_id, instance_id):
     # Check if the instance exists in the database
     field_add = {"scale_id": scale_id, "instance_id": instance_id}
     response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
-                                     "1249001", "ABCDE", "fetch", field_add, "nil")
+                                     "1249001", "ABCDE", "find", field_add, "nil")
     # print(json.loads(response_data))
-    return "score" in json.loads(response_data)['data']
+    print("Ambro", response_data)
+    # print("Ambro","score" in json.loads(response_data)['data'])
+    data = json.loads(response_data)['data']
+    print(data)
+    if data:
+        return data
+    return False
 
 
 def get_instance_score(scale_id, instance_id):
