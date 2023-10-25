@@ -6,10 +6,15 @@ const useGetScale = () => {
     const [scaleData, setScaleData] = useState([]);
 
     const fetchScaleData = async (scaleType) => {
-        const endPoint = scaleType === 'ranking-scale' ? 'ranking_settings_create' : 'anoth'
+        
+        const endPoint = 
+        scaleType === 'ranking-scale' 
+        ? 'http://100035.pythonanywhere.com/ranking/api/ranking_settings_create'
+        : scaleType==='nps-scale' ? 'https://100035.pythonanywhere.com/api/nps_create' : 'anoth';
+        console.log(endPoint, 'endPoint')
         try {
             setIsLoading(true);
-            const response = await axios.get(`http://100035.pythonanywhere.com/ranking/api/${endPoint}`);
+            const response = await axios.get(`${endPoint}`);
             setScaleData(response.data); 
             // console.log(response, '**** resttt')
         } catch (error) {
