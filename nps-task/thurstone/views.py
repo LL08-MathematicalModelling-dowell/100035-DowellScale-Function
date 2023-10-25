@@ -45,6 +45,7 @@ def settings_api_view_create(request):
             return Response({"error": "statement count must be equal to length of statements"}, status=status.HTTP_400_BAD_REQUEST)
         if sorting_order == "random":
             statements = dowellshuffling_function(statements)  
+
             
         elif sorting_order == "alphabetical":
             capitalize_list = lambda statements: [string[-1].capitalize() for string in statements]
@@ -160,9 +161,6 @@ def settings_api_view_create(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                 field_add, {"settings":settings})
         return Response({"success": "Successfully Updated ", "data": settings})
-
-
-
 
 
 @api_view(['POST', 'GET'])
