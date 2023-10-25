@@ -46,6 +46,7 @@ def settings_api_view_create(request):
         if sorting_order == "random":
             statements = dowellshuffling_function(statements)  
 <<<<<<< HEAD
+<<<<<<< HEAD
         elif sorting_order == "alphabetical":
             capitalize_list = lambda statements: [string.capitalize() for string in statements]
 =======
@@ -53,6 +54,12 @@ def settings_api_view_create(request):
         elif sorting_order == "alphabetical":
             capitalize_list = lambda statements: [string[-1].capitalize() for string in statements]
 >>>>>>> c771535b9201b1329161d6c730713112d5d36c9a
+=======
+
+            
+        elif sorting_order == "alphabetical":
+            capitalize_list = lambda statements: [string[-1].capitalize() for string in statements]
+>>>>>>> 34d82b71ee80f1646bb340da759bcc2a5f97117b
             statements = sorted(capitalize_list(statements))
 
         elif sorting_order == "custom":
@@ -167,10 +174,13 @@ def settings_api_view_create(request):
         return Response({"success": "Successfully Updated ", "data": settings})
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 
+=======
+>>>>>>> 34d82b71ee80f1646bb340da759bcc2a5f97117b
 
 @api_view(['POST', 'GET'])
 def response_submit_api_view(request):
@@ -409,4 +419,7 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
     response  = json.loads(x)
     field_add["inserted_id"] = response["inserted_id"]
     return Response({"success": True, "data": field_add }, status=status.HTTP_200_OK)
+<<<<<<< HEAD
 >>>>>>> c771535b9201b1329161d6c730713112d5d36c9a
+=======
+>>>>>>> 34d82b71ee80f1646bb340da759bcc2a5f97117b
