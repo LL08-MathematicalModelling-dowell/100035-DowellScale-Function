@@ -14,11 +14,11 @@ jobs:
           node-version: "15.x"
       # - run: npm install -g npm
       - run: npm ci
-      - run: CI=false npm run build
+      - run: CI=false vite build
       - uses: actions/upload-artifact@v2
         with:
           name: production
-          path: ./build
+          path: ./dist
 
   deploy:
     needs: build
@@ -30,11 +30,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: production
-          path: ./build
+          path: ./dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy to GH pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          publish_dir: ./dist
