@@ -13,27 +13,28 @@ import { Button } from '../../../components/button';
 const NPSScale = () => {
     const { slug } = useParams();
     const { isLoading, scaleData, fetchScaleData } = useGetScale();
+    const [selectedScore, setSelectedScore] = useState(null);
     const navigateTo = useNavigate();
+
+    const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    
 
     useEffect(()=>{
         fetchScaleData(slug);
     },[]);
-    // console.log(scaleData.data.data)
+
+    const handleSelectScore = (score)=>{
+        setSelectedScore(score)
+    }
+    console.log(selectedScore, 'score **')
 
     if (isLoading) {
         return <Fallback />;
     }
   return (
     <div className='h-screen  flex flex-col items-center justify-center font-Montserrat'>
-        <div className='border border-primary w-full lg:w-8/12 m-auto py-4 px-10'>
-            <h2 className='text-center py-3'>Ranking Scale Name:  
-            {/* <span className='font-medium text-sm'>{sigleScaleData ?
-                        sigleScaleData?.map((scale)=>(
-                            <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
-                        )) : (scaleData[0]?.settings?.scalename || scaleData[0]?.settings?.scale_name)
-                }</span> */}
-            </h2>
-            <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
+        <div className='border border-primary w-full lg:w-10/12 m-auto py-4 px-10'>
+            <div className={`h-64 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             // style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}
             >
                 <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
@@ -49,13 +50,23 @@ const NPSScale = () => {
                     ))}
                 </div>
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
+                    <h3 className='text-center py-5'>SCALE</h3>
+                    <div className='flex items-center justify-center gap-5 bg-gray-300 py-6'>
+                        {scores.map((score, index)=>(
+                            <button 
+                                key={index}
+                                onClick={()=>handleSelectScore(score)}
+                                className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-12 w-12`}
+                            >{score}</button>
+                        ))}
+                    </div>
             
-                    
+                    <div className='w-full flex items-center justify-end my-4'>
+                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
+                    </div>
                 </div>
             </div>
-            <div className='w-full flex items-center justify-end my-4'>
-                <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
-            </div>
+            
         </div>
     </div>
   )
