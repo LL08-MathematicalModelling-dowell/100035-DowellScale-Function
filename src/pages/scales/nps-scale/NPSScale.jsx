@@ -32,9 +32,9 @@ const NPSScale = () => {
         return <Fallback />;
     }
   return (
-    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat'>
+    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
         <div className='border border-primary w-full lg:w-10/12 m-auto py-4 px-10'>
-            <div className={`h-64 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
+            <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             // style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}
             >
                 <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
@@ -51,7 +51,7 @@ const NPSScale = () => {
                 </div>
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5'>SCALE</h3>
-                    <div className='flex items-center justify-center gap-5 bg-gray-300 py-6'>
+                    <div className='grid grid-cols-4 md:grid-cols-11 gap-5 bg-gray-300 py-6 px-2 md:px-1'>
                         {scores.map((score, index)=>(
                             <button 
                                 key={index}
@@ -60,9 +60,14 @@ const NPSScale = () => {
                             >{score}</button>
                         ))}
                     </div>
+                    <div className='flex items-center justify-between my-3'>
+                        <h4>Very unlikely</h4>
+                        <h4>Select score</h4>
+                        <h4>Very likely</h4>
+                    </div>
             
                     <div className='w-full flex items-center justify-end my-4'>
-                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
+                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-nps-scale`)}>create new scale</Button>
                     </div>
                 </div>
             </div>

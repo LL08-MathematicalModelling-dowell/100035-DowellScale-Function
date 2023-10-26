@@ -1,2 +1,3 @@
 export { default as NPSScale } from './NPSScale';
-export { default as CreateNPSSCale } from './CreateNPSSCale';
+export { default as CreateNPSScale } from './CreateNPSScale';
+export { default as UpdateNPSScale } from './UpdateNPSScale';

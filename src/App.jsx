@@ -14,7 +14,7 @@ import {
   CreateScale,
   AvailableScales,
 } from './pages/scales';
-import { NPSScale } from './pages/scales/nps-scale';
+import { NPSScale, CreateNPSScale } from './pages/scales/nps-scale';
 import { UpdateRankingScale } from './pages/scales/update';
 import { RankingScaleSettings } from './pages/scales/settings';
 import PairedScale from './pages/scales/PairedScale';
@@ -47,6 +47,10 @@ function App() {
             <Route
               path="/create-perceptual-scale-settings"
               element={<CreatePerceptualScaleSettings />}
+            />
+            <Route
+              path="/create-nps-scale"
+              element={<CreateNPSScale />}
             />
             <Route path="/ranking-scale-settings/:slug" element={<RankingScaleSettings />} />
             <Route
