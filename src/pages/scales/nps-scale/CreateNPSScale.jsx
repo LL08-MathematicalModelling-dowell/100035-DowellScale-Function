@@ -1,31 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
-import CustomTextInput from '../../../components/forms/inputs/CustomTextInput'
+import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
+import { useCreateScale } from '../../../hooks/useCreateScale';
+import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
+import Fallback from '../../../components/Fallback';
 
 
 const CreateNPSScale = () => {
     const [timeOn, setTimeOn] = useState(false);
+    const { isLoading, scaleData, createScale } = useCreateScale();
+    
     const [formData, setFormData] = useState({
-    orientation: "horizontal",
-    scale_id: "64e8744218f0a24fb16b0ee2",
-    user: "yes",  //should be boolean
-    username: "Ndoneambrose",
-    scalecolor: "#FF5733",
-    numberrating: 10,
-    no_of_scales: 3,
-    roundcolor: "#FF5733",
-    fontcolor: "#FF5733",
-    fomat: "numbers",
-    time: 0,
-    template_name: "testing5350",
-    name: "scale_label",
-    text: "good+neutral+best",
-    left: "good",
-    right: "best",
-    center: "neutral",
-    // scale-category: "nps scale",
-    scaleCategory: "nps scale",
-    show_total_score: "true" //should be boolean
+          orientation: "horizontal",
+          scale_id: "64e8744218f0a24fb16b0ee2",
+          user: "yes",  //should be boolean
+          username: "Ndoneambrose",
+          scalecolor: "#FF5733",
+          numberrating: 10,
+          no_of_scales: 3,
+          roundcolor: "#FF5733",
+          fontcolor: "#FF5733",
+          fomat: "numbers",
+          time: 0,
+          template_name: "testing5350",
+          name: "scale_label",
+          text: "good+neutral+best",
+          left: "good",
+          right: "best",
+          center: "neutral",
+          // scale-category: "nps scale",
+          scaleCategory: "nps scale",
+          show_total_score: "true" //should be boolean
   })
 
   const handleChange = (e)=>{
@@ -39,6 +43,33 @@ const CreateNPSScale = () => {
 
   const orientation = ['Vertical', 'Horizontal']
   const format = ['Numbers', 'Emojis', 'Stars']
+
+  const handleSubmitNPSScale = ()=>{
+    const payload = {
+        orientation: formData.orientation,
+        scale_id: "64e8744218f0a24fb16b0ee2",
+        user: "yes",  //should be boolean
+        username: "Ndoneambrose",
+        scalecolor: formData.scalecolor,
+        numberrating: 10,
+        no_of_scales: formData.no_of_scales,
+        roundcolor: formData.roundcolor,
+        fontcolor: formData.fontcolor,
+        fomat: formData.fomat,
+        time: formData.time,
+        template_name: "testing5350",
+        name: formData.name,
+        text: "good+neutral+best",
+        left: formData.left,
+        right: formData.right,
+        center: formData.center,
+        // scale-category: "nps scale",
+        scaleCategory: "nps scale",
+        show_total_score: "true" //should be boolean
+    }
+
+    createScale('nps-scale', payload);
+}
 
   return (
     <div className='h-screen w-full flex flex-col items-center justify-center'>
@@ -189,7 +220,7 @@ const CreateNPSScale = () => {
           </div>
         </div>
         <div className='flex justify-end gap-3'>
-          <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>
+        {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
           <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button>
         </div>
       </div>

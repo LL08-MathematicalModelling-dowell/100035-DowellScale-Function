@@ -6,12 +6,14 @@ export const useCreateScale = () => {
     const [scaleData, setScaleData] = useState([]);
 
     const createScale = async (scaleType, payLoad) => {
-        const endPoint = scaleType === 'ranking-scale' ? 'ranking_settings_create' : 'anoth'
+        const endPoint = 
+        scaleType === 'ranking-scale' ? 'http://100035.pythonanywhere.com/ranking/api/ranking_settings_create'
+        ? scaleType==='nps-scale' : 'https://100035.pythonanywhere.com/api/nps_create/' : 'anoth'
         console.log(endPoint, '************')
         // http://100035.pythonanywhere.com/ranking/api/ranking_settings_create/
         try {
             setIsLoading(true);
-            const response = await axios.post(`http://100035.pythonanywhere.com/ranking/api/${endPoint}/`, payLoad);
+            const response = await axios.post(`${endPoint}/`, payLoad);
             console.log(response, 'res +++')
             // setScaleData(response.data); 
         } catch (error) {
