@@ -40,13 +40,13 @@ def CreateScale(request):
         payload = request.data
 
         for field in required_fields:
-            print(f"Checking for {field}")
+            # print(f"Checking for {field}")
             if field not in payload:
-                return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
 
         sort_order = payload['sort_order']
         if sort_order not in ['random', 'alphabetical', 'custom', 'custom_descending']:
-            return JsonResponse({"Error": "Invalid sort order"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Invalid sort_order"}, status=status.HTTP_400_BAD_REQUEST)
 
         statements = payload['statements']
         if sort_order == 'random':
@@ -55,7 +55,7 @@ def CreateScale(request):
             statements.sort()
         elif sort_order in ['custom', 'custom_descending']:
             if not all(isinstance(i, dict) for i in statements):
-                return JsonResponse({"Error": "Statements must be dictionaries for custom sort orders"},
+                return Response({"Error": "statements : must be dictionaries for custom sort orders"},
                                     status=status.HTTP_400_BAD_REQUEST)
             statements.sort(key=lambda x: x['id'], reverse=sort_order == 'custom_descending')
 
@@ -94,59 +94,62 @@ def CreateScale(request):
             }
         }
 
-        return JsonResponse({"Response": show_response}, status=status.HTTP_201_CREATED)
+        return Response({"Response": show_response}, status=status.HTTP_201_CREATED)
 
     if request.method == 'GET':
-        params = request.GET
-        scale_id = params.get("scale_id")
-        if not scale_id:
-            z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                 "fetch",
-                                 {"settings.scaletype": "qsort"}, "nil")
+        try:
+            params = request.GET
+            scale_id = params.get("scale_id")
+            if not scale_id:
+                z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                    "fetch",
+                                    {"settings.scaletype": "qsort"}, "nil")
 
-            z = json.loads(z)
-            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
-                                status=status.HTTP_200_OK)
-        else:
-            field_add = {"_id": scale_id}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
-                                 field_add, "nil")
-            x = json.loads(x)
-            print(x)
-            try:
-                if x[
-                    "error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
-                    z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                         "fetch",
-                                         {"settings.scaletype": "qsort"}, "nil")
-
-                    z = json.loads(z)
-                    return JsonResponse({"Response": x, "Avalaible Scales": z["data"]}, status=status.HTTP_200_OK)
-            except:
-                return JsonResponse({"Success": x, "data": field_add}, status=status.HTTP_200_OK)
+                z = json.loads(z)
+                return Response({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
+                                    status=status.HTTP_200_OK)
+            else:
+                field_add = {"_id": scale_id}
+                # print(x)
+                
+                x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+                                        field_add, "nil")
+                settings_json = json.loads(x)
+                if not settings_json.get('data'):
+                    return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"Success": x, "Response": field_add}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'PUT':
         fields = ['sort_order', 'scale_id', 'product_name', 'scalecolor', 'fontstyle', 'fontcolor']
-        payload = request.data
-        for field in fields:
-            if field not in payload:
-                return JsonResponse({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            
+            payload = request.data
+            for field in fields:
+                if field not in payload:
+                    return Response({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
+            field_add = {"scale_id": payload["scale_id"]}
+            update_field = {
+                "sort_order": payload["sort_order"],
+                "scalecolor": payload["scalecolor"],
+                "fontstyle": payload["fontstyle"],
+                "fontcolor": payload["fontcolor"]
+            }
+            all_fields = {"product_name": payload["product_name"], "scale_id": payload["scale_id"], 
+                        "sort_order": payload["sort_order"], "scalecolor": payload["scalecolor"], 
+                        "fontstyle": payload["fontstyle"], "fontcolor": payload[
+                            "fontcolor"]}
 
-        field_add = {"scale_id": payload["id"]}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
+                                field_add, update_field)
+            settings_json = json.loads(x)
+            if not settings_json.get('data'):
+                return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        update_field = {
-            "sort_order": payload["sort_order"],
-            "scalecolor": payload["scalecolor"],
-            "fontstyle": payload["fontstyle"],
-            "fontcolor": payload["fontcolor"]
-        }
-
-        x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
-                             field_add, update_field)
-
-        return JsonResponse({"Success": "Settings were successfully updated", "data": field_add},
-                            status=status.HTTP_200_OK)
-
+            return Response({"Success": "Settings were successfully updated", "Response": all_fields}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST', 'GET'])
 def ResponseAPI(request):
@@ -185,9 +188,9 @@ def ResponseAPI(request):
                     # except:
                     required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor',
                                        'fontstyle', 'fontcolor']
-                    print(sum(
-                        [len(data["statements"]) for key, data in payload.items() if
-                         key in ["disagree", "neutral", "agree"]]))
+                    # print(sum(
+                    #     [len(data["statements"]) for key, data in payload.items() if
+                    #      key in ["disagree", "neutral", "agree"]]))
                     total_statements = sum(
                         [len(data["statements"]) for key, data in payload.items() if
                          key in ["disagree", "neutral", "agree"]])
@@ -290,7 +293,7 @@ def ResponseAPI(request):
                                                    key=lambda x: str(x['card']).split('-')[1] if '-' in str(
                                                        x['card']) else x[
                                                        'card'])
-                        print(statements)
+                        # print(statements)
                         # Assign scores to statements based on their card numbers, but maintain the original order for output
                         scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in
                                              statements]

@@ -63,6 +63,6 @@
 
     Example: ![image]
 
-    Documentation: https://documenter.getpostman.com/view/link_for_thurstone_scale_api_documentation
+    Documentation: https://documenter.getpostman.com/view/27723419/2s9YRB3XUr
 
 
