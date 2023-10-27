@@ -22,6 +22,7 @@ const RankingScale = () => {
 
 
 
+
     const dataStages = sigleScaleData && sigleScaleData?.map((scale)=>{
         const stages = scale?.settings?.stages.map((stage)=>{
             return stage;
