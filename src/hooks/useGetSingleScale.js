@@ -6,6 +6,14 @@ const useGetSingleScale = () => {
     const [sigleScaleData, setSingleScaleData] = useState(null);
 
     const fetchSingleScaleData = async (scaleId) => {
+
+        console.log(scaleId, '***')
+
+        // const endPoint = 
+        // scaleType === 'ranking-scale' 
+        // ? 'http://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id='
+        // : scaleType==='nps-scale' ? 'https://100035.pythonanywhere.com/api/nps_create' : 'anoth';
+
         try {
             setLoading(true);
             const response = await axios.get(`http://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id=${scaleId}`);

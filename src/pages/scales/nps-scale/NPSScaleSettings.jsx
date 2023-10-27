@@ -1,54 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
-import { useNavigate } from 'react-router';
-import { MdManageHistory } from 'react-icons/md';
-import { BsArrowLeft} from 'react-icons/bs';
+import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
-import useGetScale from '../../../hooks/useGetScale';
-import useGetSingleScale from '../../../hooks/useGetSingleScale';
-import Fallback from '../../../components/Fallback';
-import { Button } from '../../../components/button';
+import { useParams, useNavigate } from "react-router-dom";
+import useGetSingleScale from "../../../hooks/useGetSingleScale";
+import useCreateRankingScalesResponse from "../../../hooks/useCreateRankingScalesResponse";
+import Fallback from "../../../components/Fallback";
+import { Button } from "../../../components/button";
 
-
-const NPSScale = () => {
+const NPSScaleSettings = () => {
     const { slug } = useParams();
-    const { isLoading, scaleData, fetchScaleData } = useGetScale();
+    const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
+
     const [selectedScore, setSelectedScore] = useState(null);
-    const navigateTo = useNavigate();
 
     const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    
 
-    useEffect(()=>{
-        fetchScaleData('nps-scale');
-    },[]);
+    console.log(sigleScaleData, '*** sigleScaleData');
+    console.log(slug, '*** slug');
 
     const handleSelectScore = (score)=>{
-        setSelectedScore(score)
-    }
-    console.log(selectedScore, 'score **')
+      setSelectedScore(score)
+  }
 
-    if (isLoading) {
-        return <Fallback />;
-    }
+    const handleFetchSingleScale = async(scaleId)=>{
+      await fetchSingleScaleData(scaleId);
+  }
+
+  useEffect(() => {
+      const fetchData = async () => {
+          await handleFetchSingleScale(slug);
+      }
+      fetchData();
+  }, [slug]);
+
+
+  if (loading) {
+    return <Fallback />;
+  }
   return (
     <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium font-Montserrat'>
-        <div className='border border-primary w-full lg:w-10/12 m-auto py-4 px-5'>
+        <div className='border border-primary w-full lg:w-9/12 m-auto py-4 px-5'>
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             // style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}
             >
-                <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
-                    <h2 className='p-2 flex gap-2 items-center font-medium'>
-                        <span className=''>
-                        <MdManageHistory className='text-primary'/>
-                        </span> Scale History
-                    </h2>
-                    {scaleData && scaleData?.data?.data.map((scale, index)=>(
-                        <>
-                            <Button width={'full'} onClick={()=>navigateTo(`/nps-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.name}</Button>
-                        </>
-                    ))}
-                </div>
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>SCALE</h3>
                     <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
@@ -77,4 +70,4 @@ const NPSScale = () => {
   )
 }
 
-export default NPSScale
+export default NPSScaleSettings
