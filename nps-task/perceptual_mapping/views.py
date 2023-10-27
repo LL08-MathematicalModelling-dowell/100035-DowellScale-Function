@@ -89,12 +89,12 @@ def settings_api_view_create(request):
             params = request.GET
             scale_id = params.get("scale_id")
             if not scale_id:
-                field_add = {"settings.scale-category": "perceptual mapping"}
+                field_add = {"settings.scale_category": "perceptual_mapping scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
 
-            field_add = {"_id": scale_id, "settings.scale-category": "perceptual mapping"}
+            field_add = {"_id": scale_id, "settings.scale_category": "perceptual_mapping scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -313,7 +313,7 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
     scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
                              "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
     scale = json.loads(scale)
-    if not scale['data']:
+    if not scale.get('data, none'):
         return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
     if scale['data'][0]['settings']['scale_category'] != 'perceptual_mapping scale':
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)

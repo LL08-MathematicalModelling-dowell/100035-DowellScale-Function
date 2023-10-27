@@ -18,6 +18,7 @@ import ranking.views as ranking
 import Qsort.views as Qsort
 import paired_comparison.views as paired_comparison
 import perceptual_mapping.views as perceptual_mapping
+import thurstone.views as thurstone
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
@@ -936,10 +937,14 @@ def redirect_view(request):
                     return Qsort.CreateScale(request)
                 elif "qsort" in scaletype and "response" in scale_type:
                     return Qsort.ResponseAPI(request)
-                elif "perceptual_mapping" in scale_type and "settings" in scale_type:
+                elif "perceptual_mapping" in scaletype and "settings" in scale_type:
                     return perceptual_mapping.settings_api_view_create(request)
-                elif "perceptual_mapping" in scale_type and "settings" in scale_type:
+                elif "perceptual_mapping" in scaletype and "response" in scale_type:
                     return perceptual_mapping.response_submit_api_view(request)
+                elif "thurstone" in scaletype and "settings" in scale_type:
+                    return thurstone.settings_api_view_create(request)
+                elif "thurstone" in scaletype and "response" in scale_type:
+                    return thurstone.scale_response_api_view(request)
                 else:
                     return error_response(request, {"success": False, "message": "Scale will be available soon."},
                                           status.HTTP_404_NOT_FOUND)

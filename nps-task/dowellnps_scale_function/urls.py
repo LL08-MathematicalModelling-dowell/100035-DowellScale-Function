@@ -40,6 +40,7 @@ urlpatterns = [
     path('paired-comparison/', include('paired_comparison.urls')),
     path("paired-comparison/", TemplateView.as_view(template_name="index1.html")),
     path('perceptual-mapping/', include('perceptual_mapping.urls')),
+    path('thurstone/', include('thurstone.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
