@@ -30,50 +30,49 @@ function App() {
         <ToastContainer />
         <Suspense fallback={<Fallback />}>
           <Navbar />
-          <FetchUserContextProvider>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/available-scales" element={<AvailableScales />} />
-              <Route path="/paired-scale-comparison" element={<PairedScale />} />
-              <Route
-                path="/perceptual-mapping-scale"
-                element={<PerceptualScale />}
-              />
-              <Route path="/:slug" element={<NPSScale />} />
-              <Route path="/:slug" element={<RankingScale />} />
-              <Route path="/create-scale" element={<CreateScale />} />
-              <Route
-                path="/create-paired-scale-settings"
-                element={<CreatePCSettings />}
-              />
-              <Route
-                path="/create-perceptual-scale-settings"
-                element={<CreatePerceptualScaleSettings />}
-              />
-              <Route
-                path="/create-nps-scale"
-                element={<CreateNPSScale />}
-              />
-              <Route path="/ranking-scale-settings/:slug" element={<RankingScaleSettings />} />
-              <Route
-                path="/create-scale-response/:id"
-                element={<CreatePCResponse />}
-              />
-              <Route
-                path="/single-scale-settings/:id"
-                element={<SinglePCScaleSettings />}
-              />
-              <Route
-                path="/single-perceptual-scale-settings/:id"
-                element={<SinglePerceptualScaleSettings />}
-              />
-              <Route
-                path="/update-paired-scale-settings/:id"
-                element={<UpdatePCScaleSettings />}
-              />
-              <Route path="/update-ranking-scale/:slug" element={<UpdateRankingScale />} />
-            </Routes>
-            </FetchUserContextProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/available-scales" element={<AvailableScales />} />
+            <Route path="/paired-scale-comparison" element={<PairedScale />} />
+            <Route
+              path="/perceptual-mapping-scale"
+              element={<PerceptualScale />}
+            />
+            <Route path="/ranking-scale" element={<RankingScale />} />
+            <Route path="/nps-scale" element={<NPSScale />} />
+            
+            <Route path="/create-scale" element={<CreateScale />} />
+            <Route
+              path="/create-paired-scale-settings"
+              element={<CreatePCSettings />}
+            />
+            <Route
+              path="/create-perceptual-scale-settings"
+              element={<CreatePerceptualScaleSettings />}
+            />
+            <Route
+              path="/create-nps-scale"
+              element={<CreateNPSScale />}
+            />
+            <Route path="/ranking-scale-settings/:slug" element={<RankingScaleSettings />} />
+            <Route
+              path="/create-scale-response/:id"
+              element={<CreatePCResponse />}
+            />
+            <Route
+              path="/single-scale-settings/:id"
+              element={<SinglePCScaleSettings />}
+            />
+            <Route
+              path="/single-perceptual-scale-settings/:id"
+              element={<SinglePerceptualScaleSettings />}
+            />
+            <Route
+              path="/update-paired-scale-settings/:id"
+              element={<UpdatePCScaleSettings />}
+            />
+            <Route path="/update-ranking-scale/:slug" element={<UpdateRankingScale />} />
+          </Routes>
         </Suspense>
       </div>
     </>

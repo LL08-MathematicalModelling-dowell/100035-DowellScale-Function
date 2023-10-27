@@ -20,7 +20,7 @@ const NPSScale = () => {
     
 
     useEffect(()=>{
-        fetchScaleData(slug);
+        fetchScaleData('nps-scale');
     },[]);
 
     const handleSelectScore = (score)=>{
