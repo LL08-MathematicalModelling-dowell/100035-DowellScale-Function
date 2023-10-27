@@ -519,6 +519,9 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
                                      "find", field_add, "nil")
     data = json.loads(default_scale)
 
+    if 0 < int(score) > 10:
+        return Response({"Error": "Score limit exceeded"}, status=status.HTTP_400_BAD_REQUEST)
+
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
     settings = data['data']['settings']
@@ -884,13 +887,8 @@ def redirect_view(request):
     scaletype = request.GET.get('scale_type')
     scale_type = request.GET.get('type')
     scale_id = request.GET.get('scale_id')
-
     try:
-        print("Hello")
-        print("Hello", scaletype)
-        # request_data = json.loads(request.body)
         api_resp = processApikey(api_key)
-        print(api_resp)
         if api_resp['success'] is True:
             credit_count = api_resp['total_credits']
             if credit_count > 0:
@@ -962,148 +960,41 @@ def redirect_view(request):
     except Exception as e:
         return error_response(request, {"success": False, "error": f"Provide required fields"}, status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(['POST', 'GET', ])
 def scales_plugins_function(request):
-    if request.method == "POST":
-        try:
-            response = request.data
-            scale_type = request.GET.get('scale_type')
-            type = request.GET.get('type')
-            api_key = response.get('api_key')
-
-            api_resp = processApikey(api_key)
-            if api_resp['success'] is True:
-                credit_count = api_resp['total_credits']
-                if credit_count > 0:
-                    serializer = ScalesPluginSerializer(data=request.data)
-
-                    if serializer.is_valid():
-                        validated_data = serializer.validated_data
-                        
-
-                        position_data = response.get('position_data')
-                        event_id = get_event_id()
-
-                        scale_id = response.get('scale_id')
-                        instance_id = response.get('instance_id')
-                        score = response.get('score', '')
-                        # Check if the instance exists
-                        if instance_exists(scale_id, instance_id):
-                            return Response({"Error": "Response Exists", "score": get_instance_score(scale_id, instance_id)},
-                                            status=status.HTTP_400_BAD_REQUEST)
-                        # Get scale settings
-                        try:
-                            scale_settings = get_scale_settings(scale_id)
-                        except:
-                            return Response({"Error": f"Scale {scale_id} does not exist!"},
-                                            status=status.HTTP_400_BAD_REQUEST)
-
-                        no_of_scales = scale_settings['no_of_scales']
-
-                        if instance_id > no_of_scales:
-                            return Response({"Error": "Instance does not exist"}, status=status.HTTP_400_BAD_REQUEST)
-
-                        field_add = {
-                            "event_id": event_id,
-                            "username": response.get('username'),
-                            "scale_id": scale_id,
-                            "score": score,
-                            "instance_id": instance_id,
-                            "position_data": position_data
-                        }
-
-                        save_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data",
-                                                         "plugin_data",
-                                                         "1249001", "ABCDE", "insert", field_add, "nil")
-
-                        inserted_id = json.loads(save_response)['inserted_id']
-                        return Response(
-                            {"success": True, "event_id": event_id, "scale_id": scale_id, "inserted_id": inserted_id,
-                             "score": score}, status=status.HTTP_200_OK)
-                    else:
-                        return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-                else:
-                    error_message = api_resp['message']
-                    return Response({"success": False, "msg": error_message,
-                                                    "total credits": api_resp['total_credits']},
-                                          status.HTTP_400_BAD_REQUEST)
-            elif api_resp['success'] is False:
+    try:
+        scaletype = request.GET.get('scale_type')
+        scale_type = request.GET.get('type')
+        api_key = request.GET.get('api_key')
+        print(api_key)
+        api_resp = processApikey(api_key)
+        if api_resp['success'] is True:
+            credit_count = api_resp['total_credits']
+            if credit_count > 0:
+                if "nps" in scaletype and "settings" in scale_type:
+                    return nps_plugins_create_settings(request, api_key)
+                elif "nps" in scaletype and "response" in scale_type:
+                    return nps_plugins_create_response(request)
+            else:
                 error_message = api_resp['message']
-                return Response({"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
+                return error_response(request, {"success": False, "msg": error_message,
+                                                "total credits": api_resp['total_credits']},
+                                      status.HTTP_400_BAD_REQUEST)
+        elif api_resp['success'] is False:
+            error_message = api_resp['message']
+            return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
 
-        except Exception as e:
-            return Response({"error": f"Provide required fields"}, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == "GET":
-        try:
-            api_key = request.GET.get('api_key')
-            scale_id = request.GET.get('scale_id')
-            page_id = request.GET.get('page_id', None)
-            block_id = request.GET.get('block_id', None)
-
-            api_resp = processApikey(api_key)
-            print('Hello', api_resp)
-            if api_resp['success'] is True:
-                credit_count = api_resp['total_credits']
-                if credit_count > 0:
-                    if api_key and scale_id:
-                        field_add = {'scale_id': scale_id}
-
-                        if page_id is not None:
-                            field_add['page_id'] = page_id
-                        elif block_id is not None:
-                            field_add['block_id'] = block_id
-
-                        try:
-                            fetch_responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data",
-                                                               "plugin_data",
-                                                               "1249001", "ABCDE", "fetch", field_add, "nil")
-
-                            data = json.loads(fetch_responses)["data"]
-                        except:
-                            return Response({"Error": f"Responses do not exists for this scale {scale_id}!"}, status=status.HTTP_400_BAD_REQUEST)
-
-                        try:
-                            scale_settings = get_scale_settings(scale_id)
-                        except:
-                            return Response({"Error": f"Scale {scale_id} does not exist!"},
-                                            status=status.HTTP_400_BAD_REQUEST)
-
-                        no_of_scales = scale_settings.get('no_of_scales')
-
-                        instance_ids = [i['instance_id'] for i in data]
-                        scores = [{i['instance_id']: i['score']} for i in data]
-
-                        return Response(
-                            {"success": True, "scale_id": scale_id, "no_of_scales": no_of_scales, "event_id": get_event_id(),
-                             "instances_used": len(instance_ids), "instance_ids": instance_ids, "scores": scores}, status=status.HTTP_200_OK)
-                    else:
-                        return Response({"Error": "Invalid fields!"}, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    error_message = api_resp['message']
-                    return Response({"success": False, "msg": error_message,
-                                                    "total credits": api_resp['total_credits']},
-                                          status.HTTP_403_FORBIDDEN)
-            elif api_resp['success'] is False:
-                error_message = api_resp['message']
-                return Response({"success": False, "msg": error_message}, status=status.HTTP_403_FORBIDDEN)
-
-        except Exception as e:
-            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return error_response(request, {"success": False, "error": f"Provide required fields"},
+                              status.HTTP_400_BAD_REQUEST)
 
 
 def instance_exists(scale_id, instance_id):
     # Check if the instance exists in the database
     field_add = {"scale_id": scale_id, "instance_id": instance_id}
-    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
-                                     "1249001", "ABCDE", "find", field_add, "nil")
-    # print(json.loads(response_data))
-    print("Ambro", response_data)
-    # print("Ambro","score" in json.loads(response_data)['data'])
+    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+                         "ABCDE", "find", field_add, "nil")
+
     data = json.loads(response_data)['data']
-    print(data)
     if data:
         return data
     return False
@@ -1112,19 +1003,334 @@ def instance_exists(scale_id, instance_id):
 def get_instance_score(scale_id, instance_id):
     # Retrieve the score for an existing instance
     field_add = {"scale_id": scale_id, "instance_id": instance_id}
-    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
-                                     "1249001", "ABCDE", "find", field_add, "nil")
+    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+                         "ABCDE", "find", field_add, "nil")
     return json.loads(response_data)['data']['score']
 
 
 def get_scale_settings(scale_id):
     # Retrieve the scale settings
     field_add = {"_id": scale_id}
-    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                     "ABCDE", "find", field_add, "nil")
+    response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
+                                     "1249001", "ABCDE", "find", field_add, "nil")
     return json.loads(response_data)['data']['settings']
 
+@api_view(['POST', 'GET', 'PUT'])
+def nps_plugins_create_settings(request, api_key):
+    if request.method == 'POST':
+        try:
+            response = request.data
+            username = response['username']
+            user = response['user']
+            left = response['left']
+            center = response['center']
+            fontstyle = response.get(
+                'fontstyle', "Arial, Helvetica, sans-serif")
+            right = response['right']
+            text = f"{left}+{center}+{right}"
+            rand_num = random.randrange(1, 10000)
+            name = response['name']
+            time = response.get('time', "")
+            template_name = f"{name.replace(' ', '')}{rand_num}"
+            fomat = response.get('fomat')
+            no_of_scales = int(response.get('no_of_scales', 1))
+
+            event_ID = get_event_id()
+            field_add = {
+                "event_id": event_ID,
+                "settings": {
+                    "user": user,
+                    "orientation": response.get('orientation'),
+                    "scalecolor": response.get('scalecolor'),
+                    "numberrating": 10,
+                    "no_of_scales": no_of_scales,
+                    "roundcolor": response.get('roundcolor'),
+                    "fontcolor": response.get('fontcolor'),
+                    "fomat": fomat,
+                    "time": time,
+                    "fontstyle": fontstyle,
+                    "template_name": template_name,
+                    "name": name,
+                    "text": text,
+                    "left": left,
+                    "right": right,
+                    "center": center,
+                    "allow_resp": response.get('allow_resp', True),
+                    "scale_category": "nps scale",
+                    "api_key": api_key,
+                    "show_total_score": response.get('show_total_score', True),
+                    # "position": [{"page": response.get('page', " "),"block" : response.get('block', "")}],
+                    "position": response.get('position', []),
+                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+            }
+
+            if no_of_scales < 1:
+                return Response({"no_of_scales": "Out of range"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if fomat == "emoji":
+                field_add['settings']['custom_emoji_format'] = response.get('custom_emoji_format', {})
+            elif fomat == "image":
+                image_label_format = response.get('image_label_format', {})
+                field_add['settings']['image_label_format'] = response.get('image_label_format', {})
+
+                def save_image(key, image_data):
+                    try:
+                        # Decode the base64-encoded image data
+                        image_bytes = base64.b64decode(image_data)
+                    except ValueError:
+                        # Handle invalid base64 data
+                        return
+
+                    # Determine the file extension based on the image format
+                    image_format = imghdr.what('', h=image_bytes)
+                    if image_format is None:
+                        # Handle unsupported or unknown image formats
+                        return
+
+                    # Define a unique path for each image
+                    image_path = f'images/{key}.{image_format}'
+                    default_storage.save(image_path, image_bytes)
+                    image_label_format[key] = image_path
+
+                with ThreadPoolExecutor() as executor:
+                    futures = [executor.submit(save_image, key, image_data) for key, image_data in
+                               image_label_format.items()]
+                    # Wait for all image saving tasks to complete
+                    for future in futures:
+                        future.result()
 
 
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
+                                     "1249001", "ABCDE", "insert", field_add, "nil")
+            scale_id= json.loads(response_data)['inserted_id']
+            # Should be inserted in a thread
+            details = {"scale_id": scale_id, "event_id": event_ID, "username": username}
+            user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                            "ABCDE",
+                                            "insert", details, "nil")
 
+            return Response({"success": True, "scale_id": scale_id,"scale_settings": field_add}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "PUT":
+        try:
+            response = request.data
+            scale_id = response['scale_id']
+            if not scale_id:
+                return Response({"error": "Scale ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+            field_add = {"_id": scale_id}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                 "find", field_add, "nil")
+            settings_json = json.loads(x)
+            if not settings_json['data']:
+                return Response({"error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
+            settings = settings_json['data']['settings']
+            if settings['user'].lower() == "no":
+                return Response({"error": "Cannot modify scale settings"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            left = response.get('left', settings["left"])
+            center = response.get('center', settings["center"])
+            right = response.get('right', settings["right"])
+            text = f"{left}+{center}+{right}"
+            name = response.get('name', settings["name"])
+            time = response.get('time', settings["time"]) or 0
+            template_name = settings["template_name"]
+            orientation = response.get('orientation', settings["orientation"])
+            scalecolor = response.get('scalecolor', settings["scalecolor"])
+            roundcolor = response.get('roundcolor', settings["roundcolor"])
+            fontcolor = response.get('fontcolor', settings["fontcolor"])
+            allow_resp = response.get('allow_resp', settings["allow_resp"])
+            show_total_score = response.get(
+                'show_total_score', settings["show_total_score"])
+            fomat = response.get('fomat', settings["fomat"])
+            no_of_scales = int(response.get(
+                'no_of_scales', settings["no_of_scales"]))
+            fontstyle = response.get('fontstyle', settings["fontstyle"])
+            event_ID = get_event_id()
+
+            update_field = {
+                "event_id": event_ID,
+                "settings": {
+                    "user": response['user'],
+                    "orientation": orientation,
+                    "scalecolor": scalecolor,
+                    "numberrating": 10,
+                    "no_of_scales": no_of_scales,
+                    "roundcolor": roundcolor,
+                    "fontcolor": fontcolor,
+                    "fomat": fomat,
+                    "time": time,
+                    "template_name": template_name,
+                    "name": name,
+                    "text": text,
+                    "left": left,
+                    "right": right,
+                    "center": center,
+                    "allow_resp": allow_resp,
+                    "show_total_score": show_total_score,
+                    "scale_category": "nps scale",
+                    "fontstyle": fontstyle,
+                    "position": response.get('position', settings["position"]),
+                    "date_created": settings["date_created"],
+                    "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+            }
+
+
+            if no_of_scales > 100 or no_of_scales < 1:
+                return Response({"no_of_scales": "Out of range"}, status=status.HTTP_400_BAD_REQUEST)
+            if fomat == "emoji":
+                update_field['settings']['custom_emoji_format'] = response.get(
+                    'custom_emoji_format', settings["custom_emoji_format"])
+            elif fomat == "image":
+                update_field['settings']['image_label_format'] = response.get(
+                    'image_label_format', settings["image_label_format"])
+                image_label_format = response.get(
+                                    'image_label_format', settings["image_label_format"])
+
+                def save_image(key, image_data):
+                    try:
+                        # Decode the base64-encoded image data
+                        image_bytes = base64.b64decode(image_data)
+                    except ValueError:
+                        # Handle invalid base64 data
+                        return
+
+                    # Determine the file extension based on the image format
+                    image_format = imghdr.what('', h=image_bytes)
+                    if image_format is None:
+                        # Handle unsupported or unknown image formats
+                        return
+
+                    # Define a unique path for each image
+                    image_path = f'images/{key}.{image_format}'
+                    default_storage.save(image_path, image_bytes)
+                    image_label_format[key] = image_path
+
+                with ThreadPoolExecutor() as executor:
+                    futures = [executor.submit(save_image, key, image_data) for key, image_data in
+                               image_label_format.items()]
+                    # Wait for all image saving tasks to complete
+                    for future in futures:
+                        future.result()
+
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
+                                     "1249001", "ABCDE", "update", field_add, "nil")
+            return Response({"success": response_data, "data": update_field})
+        except Exception as e:
+            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        try:
+            params = request.GET
+            page = params.get('page_id')
+            block = params.get('block_id')
+
+            field_add = {"settings.position": {"$elemMatch": {"page": int(page)}}, "settings.api_key": api_key, "settings.position": {"$elemMatch": {"block": int(block)}},}
+            settings_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
+                                 "1249001", "ABCDE", "find", field_add, "nil")
+            print(settings_data)
+            if not json.loads(settings_data).get('data'):
+                return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"scale_id": json.loads(settings_data)['data']['_id'], "scale_settings": json.loads(settings_data)['data']['settings']}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"Error": "Invalid Params!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({"error": "method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(['POST', 'GET'])
+def nps_plugins_create_response(request):
+    if request.method == "POST":
+        response = request.data
+        serializer = ScalesPluginSerializer(data=request.data)
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+
+            position_data = response.get('position_data')
+            event_id = get_event_id()
+
+            scale_id = response.get('scale_id')
+            instance_id = response.get('instance_id')
+            score = response.get('score', '')
+            if 0 < int(score) > 10:
+                return Response({"Error": "Score limit exceeded"}, status=status.HTTP_400_BAD_REQUEST)
+            # Check if the instance exists
+
+            if instance_exists(scale_id, instance_id):
+                return Response(
+                    {"Error": "Response Exists", "score": get_instance_score(scale_id, instance_id)},
+                    status=status.HTTP_400_BAD_REQUEST)
+            # Get scale settings
+            try:
+                scale_settings = get_scale_settings(scale_id)
+            except:
+                return Response({"Error": f"Scale {scale_id} does not exist!"},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            no_of_scales = scale_settings['no_of_scales']
+
+            if instance_id > no_of_scales:
+                return Response({"Error": "Instance does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+
+            field_add = {
+                "event_id": event_id,
+                "username": response.get('username'),
+                "scale_id": scale_id,
+                "score": score,
+                "instance_id": instance_id,
+                "position_data": position_data
+            }
+
+            save_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+                         "ABCDE", "insert", field_add, "nil")
+
+            inserted_id = json.loads(save_response)['inserted_id']
+            return Response(
+                {"success": True, "event_id": event_id, "scale_id": scale_id, "inserted_id": inserted_id,
+                 "score": score}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == "GET":
+            scale_id = request.GET.get('scale_id')
+            page_id = request.GET.get('page_id', None)
+            block_id = request.GET.get('block_id', None)
+            print(block_id)
+            if scale_id:
+                field_add = {'scale_id': scale_id}
+
+                if page_id is not None:
+                    field_add['position_data.page_id'] = int(page_id)
+                elif block_id is not None and page_id is not None:
+                    field_add['position_data.block_id'] =int(block_id)
+                    field_add['position_data.page_id'] = int(page_id)
+
+                print(field_add)
+                try:
+                    fetch_responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
+                         "ABCDE", "fetch", field_add, "nil")
+
+                    data = json.loads(fetch_responses)["data"]
+                    print(data)
+                except:
+                    return Response({"Error": f"Responses do not exists for this scale {scale_id}!"}, status=status.HTTP_400_BAD_REQUEST)
+
+                try:
+                    scale_settings = get_scale_settings(scale_id)
+                except:
+                    return Response({"Error": f"Scale {scale_id} does not exist!"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+                no_of_scales = scale_settings.get('no_of_scales')
+
+                instance_ids = [i['instance_id'] for i in data]
+                scores = [{i['instance_id']: i['score']} for i in data]
+
+                return Response(
+                    {"success": True, "scale_id": scale_id, "no_of_scales": no_of_scales, "event_id": get_event_id(),
+                     "instances_used": len(instance_ids), "instance_ids": instance_ids, "scores": scores}, status=status.HTTP_200_OK)
+            else:
+                return Response({"Error": "Invalid fields!"}, status=status.HTTP_400_BAD_REQUEST)
 

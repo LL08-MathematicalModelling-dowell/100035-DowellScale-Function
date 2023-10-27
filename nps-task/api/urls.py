@@ -22,7 +22,7 @@ urlpatterns = [
 	# Combined URL pattern
 	re_path(r'^scales/$', csrf_exempt(redirect_view), name="combined_api"),
 	# Individual URL patterns
-	path('plugins/',scales_plugins_function, name="plugin endpoint"),
+	path('plugins/',csrf_exempt(scales_plugins_function), name="plugin endpoint"),
 	path('nps_create_instance',dynamic_scale_instances, name="dynamic_instance"),
 	path('nps_settings_create/', settings_api_view_create,name="create_scale_settings_api"),
 	path('nps_custom_data/', custom_configuration_view, name="custom_configs"),
