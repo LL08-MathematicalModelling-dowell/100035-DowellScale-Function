@@ -14,11 +14,11 @@ const CreateNPSScale = () => {
           scale_id: "64e8744218f0a24fb16b0ee2",
           user: "yes",  //should be boolean
           username: "Ndoneambrose",
-          scalecolor: "#FF5733",
+          scalecolor: "#E5E7E8",
           numberrating: 10,
           no_of_scales: 3,
-          roundcolor: "#FF5733",
-          fontcolor: "#FF5733",
+          roundcolor: "#E5E7E8",
+          fontcolor: "#E5E7E8",
           fomat: "numbers",
           time: 0,
           template_name: "testing5350",
@@ -72,10 +72,10 @@ const CreateNPSScale = () => {
 }
 
   return (
-    <div className='h-screen w-full flex flex-col items-center justify-center'>
+    <div className='h-screen w-full flex flex-col items-center justify-center font-Montserrat'>
       <div className='w-full md:w-7/12 border p-5'>
         <div className='w-7/12 m-auto'>
-            <h2 className="capitalize text-center text-lg">set up your Ranking</h2>
+            <h2 className="capitalize text-center text-sm font-medium mb-3">set up your Ranking</h2>
         </div>
         <div className='grid grid-cols-2 md:grid-cols-3 gap-3 mb-10'>
           <div className='w-full'>
