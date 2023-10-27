@@ -293,7 +293,7 @@ const UpdateRankingScale = ()=>{
             // console.log(response, 'updated response')
             toast.success('successfully updated');
             setTimeout(()=>{
-                navigateTo(`/scales-settings/${sigleScaleData[0]?._id}`);
+                navigateTo(`/ranking-scale-settings/${sigleScaleData[0]?._id}`);
             },2000)
         } catch (error) {
             console.log(error)

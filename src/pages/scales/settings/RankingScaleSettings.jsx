@@ -216,7 +216,7 @@ const RankingScaleSettings = ()=>{
                     <div className="flex gap-3 justify-end">
                         {sigleScaleData && sigleScaleData.map((scale, index)=>(
                             <>
-                                <Button width={'3/4'} onClick={()=>navigateTo(`/ranking-scale-settings/${scale._id}`)} key={index}>update scale</Button>
+                                <Button width={'3/4'} onClick={()=>navigateTo(`/update-ranking-scale/${scale._id}`)} key={index}>update scale</Button>
                             </>
                         ))}
                         <Button width={'3/4'} primary>Save Response</Button>
