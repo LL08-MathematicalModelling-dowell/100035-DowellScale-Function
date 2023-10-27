@@ -14,6 +14,7 @@ const RankingScaleSettings = ()=>{
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
     const [currentStage, setCurrentStage] = useState(0);
+    const [itemsAvailableSchema, setItemsAvailableSchema] = useState([]);
 
 
     const dataStages = sigleScaleData && sigleScaleData?.map((scale)=>{
@@ -28,30 +29,31 @@ const RankingScaleSettings = ()=>{
             return list;
         })
         return itemList;
-    })
+    });
 
-    // console.log(dataItems[0], 'dataItems')
+    console.log(sigleScaleData && sigleScaleData[0]?.settings?.item_list)
+
+   
 
 
     
     
     const stages = sigleScaleData ? dataStages[0] : ['City 5', 'City 6'];
-    // console.log(stages, 'stages')
+    console.log(stages, 'stages')
     const itemsAvailable = dataItems ? dataItems[0] : ['item 111', 'item 222'];
-    // console.log(itemsAvailable, 'itemsAvailable')
     const rankings = [0, 1];
 
-    const [itemsAvailableSchema, setItemsAvailableSchema] = useState(
-        (dataItems ? dataItems[0] : itemsAvailable).map((item)=>{
-            const updatedItems = {
-                item:item,
-                option:0
-            }
-            return updatedItems
-        })
-    );
+    // const [itemsAvailableSchema, setItemsAvailableSchema] = useState(
+    //     stages.map((item)=>{
+    //         const updatedItems = {
+    //             item:item,
+    //             option:0
+    //         }
+    //         return updatedItems
+    //     })
+    // );
 
-    console.log(itemsAvailableSchema, 'itemsAvailableSchema')
+    // console.log(itemsAvailableSchema, 'itemsAvailableSchema')
     const [db, setDb] = useState([
         {
             stage_name: stages[currentStage],
@@ -115,7 +117,7 @@ const RankingScaleSettings = ()=>{
                 toast.success('successfully updated');
                 if(response.status===200){
                     setTimeout(() => {
-                        navigateTo(`/all-scales/${'ranking-scale'}`)
+                        navigateTo(`/${'ranking-scale'}`)
                     }, 2000);
                 }
             } catch (error) {
@@ -138,6 +140,13 @@ const RankingScaleSettings = ()=>{
         }
         fetchData();
     }, [slug]);
+
+    useEffect(() => {
+        if (sigleScaleData && sigleScaleData[0]) {
+          const items = sigleScaleData[0].settings.item_list.map(item => item);
+          setItemsAvailableSchema(items.map(item => ({ item, option: 0 })));
+        }
+      }, [sigleScaleData]);
     
 
 

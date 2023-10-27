@@ -9,7 +9,7 @@ const useCreateRankingScalesResponse = () => {
         try {
             setIsLoading(true);
             const response = await axios.post('http://100035.pythonanywhere.com/ranking/api/ranking_response_submit/', payload);
-            console.log(response, 'response data');
+            return response
         } catch (error) {
             console.log(error);
         }finally{
