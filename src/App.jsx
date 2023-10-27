@@ -30,6 +30,7 @@ function App() {
         <ToastContainer />
         <Suspense fallback={<Fallback />}>
           <Navbar />
+          <FetchUserContextProvider>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/available-scales" element={<AvailableScales />} />
@@ -73,6 +74,7 @@ function App() {
             />
             <Route path="/update-ranking-scale/:slug" element={<UpdateRankingScale />} />
           </Routes>
+          </FetchUserContextProvider>
         </Suspense>
       </div>
     </>
