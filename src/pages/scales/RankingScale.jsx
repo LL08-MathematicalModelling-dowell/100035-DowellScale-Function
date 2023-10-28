@@ -131,7 +131,7 @@ const RankingScale = () => {
 
 
     useEffect(()=>{
-        fetchScaleData(slug);
+        fetchScaleData('ranking-scale');
     },[]);
     
 

@@ -1,57 +1,94 @@
-import React, { useState } from "react";
-import { Formik, Form } from 'formik';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useFetchUserContext } from "../../contexts/fetchUserContext";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
 import { Button } from "../../components/button";
 import Fallback from "../../components/Fallback";
 import { useCreateScale } from "../../hooks/useCreateScale";
-import { InputsModal } from "../../modals";
+import { InputsModal, ItemListInputModal } from "../../modals";
 import CustomTextInput from "../../components/forms/inputs/CustomTextInput";
 
+import { fontStyles } from "../../utils/fontStyles";
+
 const CreateScale = ()=>{
-    const { isLoading, scaleData, createScale } = useCreateScale();
+    
     const [timeOn, setTimeOn] = useState(false);
-    const [showInputModal, setShowInputModal] = useState(false);
+    const [showStagesInputModal, setShowStagesInputModal] = useState(false);
+    const [showItemListInputModal, setShowItemListInputModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [subInputs, setSubInputs] = useState([]);
     const [subInputsValue, setSubInputsValue] = useState([]);
+    const [subItems, setSubItems] = useState([]);
+    const [subItemsValue, setSubItemsValue] = useState([]);
     const [inputCount, setInputCount] = useState(1);
+    const [itemListCount, setItemListCount] = useState(1);
+    const navigateTo = useNavigate();
+
+    const { fetchSessionId, user  } = useFetchUserContext();
+    const createScale  = useCreateScale();
+
+  
+
+    
 
 
     const [formData, setFormData] = useState({
         user: true,
         username: "Joel",
-        scalename: "car ranking",
-        num_of_stages:0,
+        scalename: "",
+        num_of_stages:1,
         num_of_substages:3,
         stages: [],
-        item_count:2,
-        item_list:["item 1","item 2"],
+        item_count:1,
+        item_list:[],
         stages_arrangement: "",
-        scalecolor: "",
+        scalecolor: "#e3e3e3",
         fontcolor:"#FF5733",
         fontstyle: "",
         orientation: "",
         ranking_method_stages: "Unique Ranking",
         start_with_zero: true,
         reference: "",
-        display_ranks: true
+        display_ranks: true,
+        time:0
     })
 
+    const requiredFields = [
+        'scalename', 
+        'num_of_stages', 
+        'item_count', 
+        'num_of_substages', 
+        'orientation', 
+        'stages_arrangement', 
+        'reference',
+        'fontstyle',
+    ];
     const orientation = ['Vertical', 'Horizontal']
     const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled']
     const ranking_reference = ['Overall Ranking', 'StageWise Ranking']
-    const fontStyles = ['segoe print', 'times new romans', 'franklin gothic']
+  
 
     console.log(subInputs, 'subInputs');
+
+    useEffect(()=>{
+        fetchSessionId();
+    },[])
 
     const handleChange = (e)=>{
         const { name, value } = e.target;
         setFormData({ ...formData, [name]:value });
     }
 
-    const handleBlur = ()=>{
+    const handleCreateStages = ()=>{
         setSubInputs([...Array(Number(formData.num_of_stages))].map((_, i) => i + 1));
         handleToggleInputModal();
+    }
+
+    const handleCreateItems = ()=>{
+        setSubItems([...Array(Number(formData.item_count))].map((_, i) => i + 1));
+        handleToggleItemListInputModal();
     }
 
     const handleToggleTime = ()=>{
@@ -59,8 +96,9 @@ const CreateScale = ()=>{
     }
 
     const handleToggleInputModal = ()=>{
-        setShowInputModal(!showInputModal);
+        setShowStagesInputModal(!showStagesInputModal);
     }
+
     const handleInputsValueChange = (index, value)=>{
         const updatedValues = [...subInputsValue];
         updatedValues[index] = value;
@@ -69,17 +107,21 @@ const CreateScale = ()=>{
     
     const handleAddInputArea = ()=>{
         setInputCount(prev => prev + 1);
+        setFormData((prev)=>({
+            ...prev, num_of_stages:prev.num_of_stages + 1
+        }))
         setSubInputs([...subInputs, inputCount])
     };
 
-    const handleSubmitSubinputs = ()=>{
-        console.log(subInputsValue,  '***** inputs')
+    const handleSubmitStagesSubinputs = ()=>{
         setSubInputs([]);
-        setSubInputsValue([...subInputsValue, '']);
+        setSubInputsValue([...subInputsValue]);
         handleToggleInputModal();
     }
 
-    const removeSubinputItem = (item)=>{
+    const removeStagesSubinput = (item)=>{
+        setInputCount(prev => prev - 1);
+        setFormData({ ...formData,  num_of_stages:inputCount});
         const newInputItems = subInputs.filter((input)=> input !== item);
         setSubInputs(newInputItems);
     }
@@ -89,16 +131,53 @@ const CreateScale = ()=>{
         setSubInputsValue(newInputItems);
     }
 
-    const handleSubmitScales = ()=>{
+    
+
+    // all functions for item list
+    const handleToggleItemListInputModal = ()=>{
+        setShowItemListInputModal(!showItemListInputModal);
+    }
+
+    const handleItemListValueChange = (index, value)=>{
+        const updatedValues = [...subItemsValue];
+        updatedValues[index] = value;
+        setSubItemsValue(updatedValues);
+    }
+    
+    const handleAddItemListInputArea = ()=>{
+        setItemListCount(prev => prev + 1);
+        setFormData(prev =>({ ...prev, item_count:prev.item_count + 1}))
+        setSubItems([...subItems, itemListCount]);
+    };
+
+    const handleSubmitItemListSubinputs = ()=>{
+        setSubItems([]);
+        setSubItemsValue([...subItemsValue]);
+        handleToggleItemListInputModal();
+    }
+
+    const removeItemListSubinput = (item)=>{
+        setItemListCount(prev => prev - 1);
+        setFormData({ ...formData,  item_count:itemListCount});
+        const newInputItems = subItems.filter((input)=> input !== item);
+        setSubItems(newInputItems);
+    }
+
+    const removeItemListValue = (item)=>{
+        const newInputItems = subItemsValue.filter((value)=> value !== item);
+        setSubItemsValue(newInputItems);
+    }
+
+    const handleSubmitScales = async()=>{
         const payload = {
             user: formData.user,
-            username: formData.username,
+            username: user.username,
             scalename:formData.scalename,
-            num_of_stages:formData.num_of_stages,
+            num_of_stages:Number(formData.num_of_stages),
             num_of_substages:formData.num_of_stages,
             stages: subInputsValue,
-            item_count:formData.item_count,
-            item_list:formData.item_list,
+            item_count:Number(formData.item_count),
+            item_list:subItemsValue,
             stages_arrangement: formData.stages_arrangement,
             scalecolor:formData.scalecolor,
             fontcolor:formData.fontcolor,
@@ -110,13 +189,46 @@ const CreateScale = ()=>{
             display_ranks: true
         }
 
-        createScale('ranking-scale', payload);
-        console.table(payload, '**** payload');
+        for (const field of requiredFields) {
+            if (!formData[field]) {
+                toast.error(`Please complete the "${field.replace(/_/g, ' ')}" field.`);
+                return;
+            }
+        }
+
+        if (timeOn===true && (formData.time < 9)) {
+            toast.error('Time cannot be empty, please set a time greater than 9');
+            return;
+        }
+        if (payload.stages.length === 0) {
+            toast.error('Click on number of stages to provide at least one stage item.');
+            return;
+        }
+        if (payload.item_list.length === 0) {
+            toast.error('Click on item count to add at least one item in the list.');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            const response = await createScale('ranking-scale', payload);
+            if(response.status===201){
+                toast.success(response.data.success);
+                setTimeout(()=>{
+                    navigateTo(`/ranking-scale-settings/${response?.data?.scale_id}`)
+                },2000)
+            }
+        } catch (error) {
+            console.log(error);
+            toast.success('an error occured');
+        }finally{
+            setIsLoading(false);
+        }
     }
     return(
-        <div className="h-screen w-full flex flex-col items-center justify-center">
-            <div className="w-7/12 m-auto">
-                <h2 className="capitalize text-center text-lg">set up your Ranking</h2>
+        <div className="h-screen w-full flex flex-col items-center justify-center font-Montserrat">
+            <div className="w-7/12 m-auto border border-primary p-10">
+                <h2 className="capitalize text-center text-sm font-medium mb-7">set up your Ranking Scale</h2>
             <div>
                 <div className='grid grid-cols-3 gap-3 mb-10'>
                     <CustomTextInput 
@@ -127,7 +239,7 @@ const CreateScale = ()=>{
                         handleChange={handleChange}
                         placeholder='enter scale name'
                     />
-                    <div>
+                    <div className="w-full">
                         <CustomTextInput 
                             label='number of stages'
                             name='num_of_stages'
@@ -136,11 +248,9 @@ const CreateScale = ()=>{
                             handleChange={handleChange}
                             placeholder='enter number of stages'
 
-                            // onClick={()=>{
-                            //     setSelectedInputType('stages');
-                            //     handleToggleInputModal();
-                            // }}
-                            onBlur={handleBlur}
+                            onClick={()=>{
+                                handleCreateStages();
+                            }}
                         />
                         <div className="">
                             {subInputsValue.map((value)=>(
@@ -152,27 +262,29 @@ const CreateScale = ()=>{
                             ))}
                         </div>
                     </div>
-                    <div className="flex items-center justify-center">
+
+                    {/* create items count input */}
+                    <div className="w-full">
                         <CustomTextInput
                             label='item count'
                             name="item_count"
+                            value={formData.item_count}
                             type="number"
                             placeholder="item count"
-                            
-                        />
-                        {/* <button className="bg-primary text-white px-1 py-1" 
+                            // className='w-full outline-0 border py-1 px-1 rounded-sm text-gray-700'
                             onClick={()=>{
-                                handleToggleInputModal();
+                                handleCreateItems();
                             }}
-                        >Add Stage</button> */}
-                        {/* <div className="">
-                            {(selectedInputType === 'item_count') && subInputsValue && subInputsValue.map((value)=>(
+                        />
+                        <div className="">
+                            {subItemsValue.map((value)=>(
                                 <button 
-                                    onClick={()=>removeInputValueItem(value)}
+                                    onClick={()=>removeItemListValue(value)}
                                     className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
-                                    {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span></button>
+                                    {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span>
+                                </button>
                             ))}
-                        </div> */}
+                        </div>
                     </div>
                     <CustomTextInput 
                         label='number of substages'
@@ -200,7 +312,7 @@ const CreateScale = ()=>{
                         </select>
                     </div>
                     <div>
-                        <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">arrangement</label>
+                        <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">stages arrangement</label>
                         <select 
                             label="Select arrangement" 
                             name="stages_arrangement" 
@@ -240,11 +352,15 @@ const CreateScale = ()=>{
                         </div>
                         {
                             timeOn && (
-                                <CustomTextInput
+                                <input
                                     name="time"
                                     type="number"
                                     placeholder="enter a valid time"
+                                    value={formData.time}
+                                    onChange={handleChange}
+                                    className='w-full outline-0 border py-1 px-1 rounded-sm text-gray-700'
                                 />
+
                             )
                         }
                         
@@ -295,17 +411,27 @@ const CreateScale = ()=>{
                 </div>
             </div>
             <div>
-                {isLoading ? <Fallback/> : <Button type="submit" width={'3/12'} primary onClick={handleSubmitScales}>Save</Button>}
+                {isLoading ? <Fallback/> : <Button type="submit" width={'full'} primary onClick={handleSubmitScales}>Save</Button>}
             </div>
             </div>
-            {showInputModal && (<InputsModal 
+            {showStagesInputModal && (<InputsModal 
                 handleToggleInputModal={handleToggleInputModal}
-                handleSubmitSubinputs={handleSubmitSubinputs}
+                handleSubmitStagesSubinputs={handleSubmitStagesSubinputs}
                 subInputs={subInputs}
                 subInputsValue={subInputsValue}
                 handleInputsValueChange={handleInputsValueChange}
                 handleAddInputArea={handleAddInputArea}
-                removeSubinputItem={removeSubinputItem}
+                removeSubinput={removeStagesSubinput}
+            />)
+            }
+            {showItemListInputModal && (<ItemListInputModal 
+                handleToggleItemListInputModal={handleToggleItemListInputModal}
+                handleSubmitStagesSubinputs={handleSubmitItemListSubinputs}
+                subItems={subItems}
+                subItemsValue={subItemsValue}
+                handleInputsValueChange={handleItemListValueChange}
+                handleAddInputArea={handleAddItemListInputArea}
+                removeSubinput={removeItemListSubinput}
             />)
             }
         </div>

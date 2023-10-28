@@ -6,8 +6,8 @@ const InputsModal = ({
     subInputsValue, 
     handleInputsValueChange, 
     handleAddInputArea, 
-    handleSubmitSubinputs,
-    removeSubinputItem
+    handleSubmitStagesSubinputs,
+    removeSubinput
 }) => {
   return (
     <div className='h-screen w-full flex flex-col justify-center fixed top-0 left-0 bg-primary/40'>
@@ -32,7 +32,7 @@ const InputsModal = ({
                             onChange={(e)=>handleInputsValueChange(index, e.target.value)}
                             className='w-full border border-2 outline-0 p-2'
                         />
-                        <button className='bg-red-400 absolute top-0 right-0 py-[10px] px-2 text-white' onClick={()=>removeSubinputItem(content)}>remove</button>
+                        <button className='bg-red-400 absolute top-0 right-0 py-[10px] px-2 text-white' onClick={()=>removeSubinput(content)}>remove</button>
                     </div>
                 ))}
             </div>
@@ -40,7 +40,7 @@ const InputsModal = ({
                 {subInputs.length > 0 && (
                     <button 
                     className='bg-primary flex items-center gap-5 px-5 py-2 text-white my-5'
-                    onClick={handleSubmitSubinputs}>
+                    onClick={handleSubmitStagesSubinputs}>
                     submit
                     <span>--</span>
                 </button>
