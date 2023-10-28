@@ -26,7 +26,7 @@ const NPSScale = () => {
     const handleSelectScore = (score)=>{
         setSelectedScore(score)
     }
-    console.log(selectedScore, 'score **')
+    
 
     if (isLoading) {
         return <Fallback />;

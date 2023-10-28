@@ -75,7 +75,6 @@ const CreateNPSScale = () => {
     try {
         setIsLoading(true);
         const response = await createScale('nps-scale', payload);
-        console.log(response, 'res===')
         if(response.status===201){
             toast.success('scale created');
             setTimeout(()=>{
