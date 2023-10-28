@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { useCreateScale } from '../../../hooks/useCreateScale';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
@@ -7,7 +9,10 @@ import Fallback from '../../../components/Fallback';
 
 const CreateNPSScale = () => {
     const [timeOn, setTimeOn] = useState(false);
-    const { isLoading, scaleData, createScale } = useCreateScale();
+    const [isLoading, setIsLoading] = useState(false);
+    const createScale  = useCreateScale();
+
+    const navigateTo = useNavigate();
     
     const [formData, setFormData] = useState({
           orientation: "horizontal",
@@ -44,7 +49,7 @@ const CreateNPSScale = () => {
   const orientation = ['Vertical', 'Horizontal']
   const format = ['Numbers', 'Emojis', 'Stars']
 
-  const handleSubmitNPSScale = ()=>{
+  const handleSubmitNPSScale = async()=>{
     const payload = {
         orientation: formData.orientation,
         scale_id: "64e8744218f0a24fb16b0ee2",
@@ -67,8 +72,22 @@ const CreateNPSScale = () => {
         scaleCategory: "nps scale",
         show_total_score: "true" //should be boolean
     }
-
-    createScale('nps-scale', payload);
+    try {
+        setIsLoading(true);
+        const response = await createScale('nps-scale', payload);
+        console.log(response, 'res===')
+        if(response.status===201){
+            toast.success('scale created');
+            setTimeout(()=>{
+                navigateTo(`/nps-scale-settings/${response?.data?.scale_id}`)
+            },2000)
+        }
+    } catch (error) {
+        console.log(error);
+        toast.success('an error occured');
+    }finally{
+        setIsLoading(false);
+    }
 }
 
   return (
