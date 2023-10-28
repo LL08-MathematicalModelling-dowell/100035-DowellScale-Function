@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 import { useParams, useNavigate } from "react-router-dom";
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
-import useCreateRankingScalesResponse from "../../../hooks/useCreateRankingScalesResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
 
@@ -40,7 +39,6 @@ const NPSScaleSettings = () => {
     <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium font-Montserrat'>
         <div className='border border-primary w-full lg:w-9/12 m-auto py-4 px-5'>
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
-            // style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>SCALE</h3>
@@ -59,9 +57,9 @@ const NPSScaleSettings = () => {
                         <h4>Very likely</h4>
                     </div>
             
-                    <div className='w-full flex items-center justify-end my-4'>
+                    {/* <div className='w-full flex items-center justify-end my-4'>
                         <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-nps-scale`)}>create new scale</Button>
-                    </div>
+                    </div> */}
                 </div>
             </div>
             
