@@ -18,7 +18,6 @@ import ranking.views as ranking
 import Qsort.views as Qsort
 import paired_comparison.views as paired_comparison
 import perceptual_mapping.views as perceptual_mapping
-import thurstone.views as thurstone
 from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
@@ -937,14 +936,10 @@ def redirect_view(request):
                     return Qsort.CreateScale(request)
                 elif "qsort" in scaletype and "response" in scale_type:
                     return Qsort.ResponseAPI(request)
-                elif "perceptual_mapping" in scaletype and "settings" in scale_type:
+                elif "perceptual_mapping" in scale_type and "settings" in scale_type:
                     return perceptual_mapping.settings_api_view_create(request)
-                elif "perceptual_mapping" in scaletype and "response" in scale_type:
+                elif "perceptual_mapping" in scale_type and "settings" in scale_type:
                     return perceptual_mapping.response_submit_api_view(request)
-                elif "thurstone" in scaletype and "settings" in scale_type:
-                    return thurstone.settings_api_view_create(request)
-                elif "thurstone" in scaletype and "response" in scale_type:
-                    return thurstone.scale_response_api_view(request)
                 else:
                     return error_response(request, {"success": False, "message": "Scale will be available soon."},
                                           status.HTTP_404_NOT_FOUND)
@@ -965,7 +960,6 @@ def scales_plugins_function(request):
         scaletype = request.GET.get('scale_type')
         scale_type = request.GET.get('type')
         api_key = request.GET.get('api_key')
-        print(api_key)
         api_resp = processApikey(api_key)
         if api_resp['success'] is True:
             credit_count = api_resp['total_credits']
@@ -1121,8 +1115,8 @@ def nps_plugins_create_settings(request, api_key):
             if not scale_id:
                 return Response({"error": "Scale ID is required"}, status=status.HTTP_400_BAD_REQUEST)
             field_add = {"_id": scale_id}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
-                                 "find", field_add, "nil")
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
+                                     "1249001", "ABCDE", "insert", field_add, "nil")
             settings_json = json.loads(x)
             if not settings_json['data']:
                 return Response({"error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
@@ -1228,10 +1222,9 @@ def nps_plugins_create_settings(request, api_key):
             page = params.get('page_id')
             block = params.get('block_id')
 
-            field_add = {"settings.position": {"$elemMatch": {"page": int(page)}}, "settings.api_key": api_key, "settings.position": {"$elemMatch": {"block": int(block)}},}
+            field_add = {"settings.position": {"$elemMatch": {"page": page}}, "settings.api_key": api_key, "settings.position": {"$elemMatch": {"block": block}},}
             settings_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
                                  "1249001", "ABCDE", "find", field_add, "nil")
-            print(settings_data)
             if not json.loads(settings_data).get('data'):
                 return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
             return Response({"scale_id": json.loads(settings_data)['data']['_id'], "scale_settings": json.loads(settings_data)['data']['settings']}, status=status.HTTP_200_OK)
@@ -1297,23 +1290,20 @@ def nps_plugins_create_response(request):
             scale_id = request.GET.get('scale_id')
             page_id = request.GET.get('page_id', None)
             block_id = request.GET.get('block_id', None)
-            print(block_id)
             if scale_id:
                 field_add = {'scale_id': scale_id}
 
                 if page_id is not None:
-                    field_add['position_data.page_id'] = int(page_id)
+                    field_add['position_data.page_id'] = page_id
                 elif block_id is not None and page_id is not None:
-                    field_add['position_data.block_id'] =int(block_id)
-                    field_add['position_data.page_id'] = int(page_id)
+                    field_add['position_data.block_id'] = block_id
+                    field_add['position_data.page_id'] = page_id
 
-                print(field_add)
                 try:
                     fetch_responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
                          "ABCDE", "fetch", field_add, "nil")
 
                     data = json.loads(fetch_responses)["data"]
-                    print(data)
                 except:
                     return Response({"Error": f"Responses do not exists for this scale {scale_id}!"}, status=status.HTTP_400_BAD_REQUEST)
 
