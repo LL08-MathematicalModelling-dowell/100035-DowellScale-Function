@@ -129,7 +129,14 @@ def CreateScale(request):
             for field in fields:
                 if field not in payload:
                     return Response({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                            "fetch", field_add, "nil")
             field_add = {"scale_id": payload["scale_id"]}
+            settings_json = json.loads(x)
+            
+            if not settings_json.get('data', None):
+                return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
             update_field = {
                 "sort_order": payload["sort_order"],
                 "scalecolor": payload["scalecolor"],
@@ -143,9 +150,6 @@ def CreateScale(request):
 
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                 field_add, update_field)
-            settings_json = json.loads(x)
-            if not settings_json.get('data'):
-                return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
 
             return Response({"Success": "Settings were successfully updated", "Response": all_fields}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -156,6 +160,8 @@ def ResponseAPI(request):
     payload = request.data
 
     if request.method == 'POST':
+        if not payload.get("scale_id", None):
+            return Response({"Error": "Missing required field: scale_id"}, status=status.HTTP_400_BAD_REQUEST)          
         field_add = {"_id": payload["scale_id"]}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "find",
                              field_add, "nil")
@@ -168,17 +174,17 @@ def ResponseAPI(request):
         try:
             if x[
                 "error"]:  # You might need to modify this condition based on how your connection function handles non-existing scales
-                return JsonResponse({"Error": "Scale does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"Error": "Scale does not exist"}, status=status.HTTP_400_BAD_REQUEST)
         except:
             if type != "qsort":
-                return JsonResponse({"Error": "Scale is not a qsort"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"Error": "Scale is not a qsort"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                      "1094", "ABCDE", "find",
                                      field_add, "nil")
                 x = json.loads(x)
                 if x["isSuccess"] == 'True':
-                    return JsonResponse({"Success": "Scale response Already exists", "data": x["data"][0]["responses"]},
+                    return Response({"Success": "Scale response Already exists", "data": x["data"][0]["responses"]},
                                         status=status.HTTP_200_OK)
                 else:
                     # try:
@@ -196,7 +202,7 @@ def ResponseAPI(request):
                          key in ["disagree", "neutral", "agree"]])
 
                     if not total_statements in range(60, 141):
-                        return JsonResponse(
+                        return Response(
                             {"Error": "Invalid number of total statements. Must be between 60 and 140 inclusive."},
                             status=status.HTTP_400_BAD_REQUEST)
                     # Check for continuous card numbers
@@ -205,15 +211,15 @@ def ResponseAPI(request):
                         if group in payload:
                             all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
                     all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
-
+                    
                     if all_cards != list(range(1, total_statements + 1)):
-                        return JsonResponse({"Error": "Card numbers are not continuous or missing."},
+                        return Response({"Error": "Card numbers are not continuous or missing."},
                                             status=status.HTTP_400_BAD_REQUEST)
 
                     payload = request.data
                     for field in required_fields:
                         if field not in payload:
-                            return JsonResponse({"Error": f"Missing required field: {field}"},
+                            return Response({"Error": f"Missing required field: {field}"},
                                                 status=status.HTTP_400_BAD_REQUEST)
 
                     if "document_responses" in payload:
@@ -353,12 +359,12 @@ def ResponseAPI(request):
                     if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
 
                         results = move_last_to_start(user_info)
-                        return JsonResponse({"Success": data_dict}, status=status.HTTP_200_OK)
+                        return Response({"Success": data_dict}, status=status.HTTP_200_OK)
                     elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][
                                                                                                   0:6] == 'E11000':
-                        return JsonResponse({"Error": "Response Already Exists"}, status=status.HTTP_400_BAD_REQUEST)
+                        return Response({"Error": "Response Already Exists"}, status=status.HTTP_400_BAD_REQUEST)
                     else:
-                        return JsonResponse({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+                        return Response({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         params = request.GET
@@ -369,7 +375,7 @@ def ResponseAPI(request):
                                         "1094", "ABCDE", "fetch", {"settings.scaletype": "qsort"}, "nil")
 
             z = json.loads(z)
-            return JsonResponse({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
+            return Response({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
                                 status=status.HTTP_200_OK)
         else:
             field_add = {"_id": id}
