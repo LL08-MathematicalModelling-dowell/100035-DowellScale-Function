@@ -286,10 +286,9 @@ const UpdateRankingScale = ()=>{
 
 
     const handleUpdateRankingScale = async()=>{
-        console.log(updatePayload)
         try {
             setIsLoading(true);
-            const response = await updateResponse(updatePayload);
+            const response = await updateResponse('ranking-scale', updatePayload);
             // console.log(response, 'updated response')
             toast.success('successfully updated');
             setTimeout(()=>{

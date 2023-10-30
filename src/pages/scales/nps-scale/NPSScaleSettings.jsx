@@ -8,13 +8,10 @@ import { Button } from "../../../components/button";
 const NPSScaleSettings = () => {
     const { slug } = useParams();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
-
     const [selectedScore, setSelectedScore] = useState(null);
+    const navigateTo = useNavigate();
 
     const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    console.log(sigleScaleData, '*** sigleScaleData');
-    console.log(slug, '*** slug');
 
     const handleSelectScore = (score)=>{
       setSelectedScore(score)
@@ -57,9 +54,14 @@ const NPSScaleSettings = () => {
                         <h4>Very likely</h4>
                     </div>
             
-                    {/* <div className='w-full flex items-center justify-end my-4'>
-                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-nps-scale`)}>create new scale</Button>
-                    </div> */}
+                    <div className="flex gap-3 justify-end">
+                        {sigleScaleData && sigleScaleData.map((scale, index)=>(
+                            <>
+                                <Button width={'3/4'} onClick={()=>navigateTo(`/update-nps-scale/${scale._id}`)} key={index}>update scale</Button>
+                            </>
+                        ))}
+                        <Button width={'3/4'} primary>Save Response</Button>
+                    </div>
                 </div>
             </div>
             
