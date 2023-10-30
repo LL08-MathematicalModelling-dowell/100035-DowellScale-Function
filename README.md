@@ -6,6 +6,10 @@
        ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/01523429-2351-45e2-b06b-54bd46344bfa)
    - API documentation:
         https://documenter.getpostman.com/view/27726703/2s9Y5bQ1hk
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 34d82b71ee80f1646bb340da759bcc2a5f97117b
 
 - ## NPSLite scale
    - Description: This is a basic NPS scale with only 3 inputs, a negative option, a neutral option and a positive option.
@@ -76,4 +80,8 @@
       The Thurstone scale is a psychometric measurement tool used to measure attitudes or opinions towards a particular issue or topic. The scale consists of a series of statements about the issue, each with a numerical value indicating how favorable or unfavorable it is judged to be. Respondents indicate which statements they agree with, and their attitude score is calculated as the sum of the values of the statements they agree with. The API provides endpoint for defining statements and assigning numerical values to statements, It also provides endpoint to receive responses and aggregate attitude score from respondents.
    - Example:
 
+<<<<<<< HEAD
+>>>>>>> c771535b9201b1329161d6c730713112d5d36c9a
+=======
    - Documentation: https://documenter.getpostman.com/view/21255221/2s9YRCXBWW
+>>>>>>> 34d82b71ee80f1646bb340da759bcc2a5f97117b
