@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
+import { FetchUserContextProvider } from './contexts/fetchUserContext';
 import CreatePCSettings from './pages/scales/CreatePCSettings';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -11,6 +12,7 @@ import CreatePCResponse from './pages/scales/CreatePCResponse';
 import SinglePCScaleSettings from './pages/scales/SinglePCScaleSettings';
 import UpdatePCScaleSettings from './pages/scales/UpdatePCScaleSettings';
 import { RankingScale, CreateScale, AvailableScales } from './pages/scales';
+import { NPSScale, CreateNPSScale, NPSScaleSettings } from './pages/scales/nps-scale';
 import { UpdateRankingScale } from './pages/scales/update';
 import { RankingScaleSettings } from './pages/scales/settings';
 import PairedScale from './pages/scales/PairedScale';
@@ -32,6 +34,7 @@ function App() {
         <ToastContainer />
         <Suspense fallback={<Fallback />}>
           <Navbar />
+          <FetchUserContextProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route element={<PrivateRoutes />}>
@@ -45,7 +48,9 @@ function App() {
                 path="/perceptual-mapping-scale"
                 element={<PerceptualScale />}
               />
-              <Route path="/:slug" element={<RankingScale />} />
+              <Route path="/ranking-scale" element={<RankingScale />} />
+            <Route path="/nps-scale" element={<NPSScale />} />
+            
               <Route path="/create-scale" element={<CreateScale />} />
               <Route
                 path="/create-paired-scale-settings"
@@ -55,6 +60,10 @@ function App() {
                 path="/create-perceptual-scale-settings"
                 element={<CreatePerceptualScaleSettings />}
               />
+            <Route
+              path="/create-nps-scale"
+              element={<CreateNPSScale />}
+            />
               <Route
                 path="/ranking-scale-settings/:slug"
                 element={<RankingScaleSettings />}
@@ -71,6 +80,10 @@ function App() {
                 path="/single-perceptual-scale-settings/:id"
                 element={<SinglePerceptualScaleSettings />}
               />
+            <Route
+              path="/nps-scale-settings/:slug"
+              element={<NPSScaleSettings />}
+            />
               <Route
                 path="/update-paired-scale-settings/:id"
                 element={<UpdatePCScaleSettings />}
@@ -81,6 +94,7 @@ function App() {
               />
             </Route>
           </Routes>
+          </FetchUserContextProvider>
         </Suspense>
       </div>
     </>

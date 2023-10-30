@@ -5,8 +5,25 @@ export default {
   darkMode: 'media', // or 'media' or 'class'
   theme: {
     fontFamily: {
+      Montserrat: 'Montserrat, sans-serif',
       display: ['Open Sans', 'sans-serif'],
       body: ['Open Sans', 'sans-serif'],
+    },
+    fontSize: {
+      sm: '1.1rem',
+      xsm: '14px',
+      lg: '3.1rem',
+      xl: '4.0rem',
+    },
+    fontWeight: {
+      thin: 200,
+      semiLight: 300,
+      light: 400,
+      normal: 500,
+      medium: 600,
+      bold: 700,
+      smbold: 800,
+      xbold: 900,
     },
   
     extend: {
