@@ -1,20 +1,16 @@
 import random
 import datetime
 import json
-import requests
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from nps.dowellconnection import dowellconnection
 from rest_framework import status
 from nps.login import get_user_profile
-import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
-from itertools import count
-import random
+import re
 
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -64,7 +60,9 @@ def settings_api_view_create(request):
             return Response({"error": "Number of items does not match length of items list."},
                             status=status.HTTP_400_BAD_REQUEST)
         if stages_arrangement == 'Alphabetically ordered':
-            stages.sort()
+            stages = sorted(stages)
+    
+            
         elif stages_arrangement == 'Shuffled (Randomly)':
             random.shuffle(stages)
         elif stages_arrangement == 'Using ID numbers':
@@ -131,10 +129,10 @@ def settings_api_view_create(request):
                 field_add = {"_id": scale_id}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "fetch", field_add, "nil")
-
-                return Response(json.loads(x)['data'], status=status.HTTP_200_OK)
+                setting = json.loads(x)['data'][0]
+                return Response(setting, status=status.HTTP_200_OK)
             except Exception as e:
-                return Response({"error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Scale does not exist."}, status=status.HTTP_404_NOT_FOUND)
         else:
             field_add = {"settings.scale_category": "ranking scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -168,6 +166,7 @@ def settings_api_view_create(request):
         stages = settings['stages']
         if settings['stages_arrangement'] == 'Alphabetically ordered':
             list(stages).sort()
+    
         elif settings['stages_arrangement'] == 'Shuffled (Randomly)':
             random.shuffle(stages)
         elif settings['stages_arrangement'] == 'Using ID numbers':
@@ -394,6 +393,10 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
     except Exception as e:
         print(e)
         return Response({"Success": False, "Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
 
 def dowell_scale_admin(request):
