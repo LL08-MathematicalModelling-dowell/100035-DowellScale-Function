@@ -17,7 +17,6 @@ const UpdateNPSScale = () => {
   const [isLoading, setIsLoading] = useState(false);
   const updateResponse = useUpdateResponse();
 
-  console.log(settings, 'set')
 
     const orientation = settings?.orientation
     const scale_id = settings?.scale_id
