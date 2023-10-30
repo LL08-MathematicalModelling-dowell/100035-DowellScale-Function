@@ -1,5 +1,15 @@
 import { useNavigate } from 'react-router';
+import Cookies from 'universal-cookie';
 const Home = () => {
+  // const cookies = new Cookies();
+  // const sessionId = cookies.get('sessionid');
+  // console.log('====================================');
+  // console.log(sessionId);
+  // console.log('====================================');
+  // const navigate = useNavigate();
+  // if (!sessionId) {
+  //   navigate('/login');
+  // }
   const scaleTypes = [
     {
       name: 'linkert scale',
@@ -30,13 +40,13 @@ const Home = () => {
   const navigateTo = useNavigate();
 
   return (
-    <div className="h-screen flex flex-cols justify-center items-center">
-      <div className="w-6/12 grid grid-cols-2 gap-4">
+    <div className="flex items-center justify-center h-screen flex-cols">
+      <div className="grid w-6/12 grid-cols-2 gap-4">
         {scaleTypes.map((scale) => (
           <button
             onClick={() => navigateTo(`/${scale.slug}`)}
             key={scale.slug}
-            className="w-full bg-primary text-white hover:bg-gray-700/50 py-1 px-2 py-2 my-1 capitalize"
+            className="w-full px-2 py-1 py-2 my-1 text-white capitalize bg-primary hover:bg-gray-700/50"
           >
             {scale.name}
           </button>
