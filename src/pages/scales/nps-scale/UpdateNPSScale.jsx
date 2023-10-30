@@ -17,9 +17,11 @@ const UpdateNPSScale = () => {
   const [isLoading, setIsLoading] = useState(false);
   const updateResponse = useUpdateResponse();
 
+  console.log(settings, 'set')
+
     const orientation = settings?.orientation
     const scale_id = settings?.scale_id
-    const user = settings?.user
+    // const user = settings?.user
     const username = settings?.username
     const scalecolor = settings?.scalecolor
     const numberrating = settings?.numberrating
@@ -35,6 +37,7 @@ const UpdateNPSScale = () => {
     const right = settings?.right
     const center = settings?.center
     const show_total_score = settings?.show_total_score
+    
 
   const [updateFormData, setUpdateFormData] = useState(
       Object.assign({}, { 
@@ -56,6 +59,7 @@ const UpdateNPSScale = () => {
         right,
         center,
         show_total_score,
+        scale_category: "nps scale"
       })
   );
 
@@ -115,7 +119,7 @@ const UpdateNPSScale = () => {
       setUpdateFormData({
         orientation: settings?.orientation || '',
         scale_id: _id || '',
-        user: "yes", 
+        user: true, 
         username: settings?.username || '',
         scalecolor: settings?.scalecolor || '',
         numberrating: settings?.numberrating || 0,
@@ -143,10 +147,12 @@ const UpdateNPSScale = () => {
         setIsLoading(true);
         const response = await updateResponse('nps-scale', updatePayload);
         console.log(response, 'updated response')
-        toast.success('successfully updated');
-        // setTimeout(()=>{
-        //     navigateTo(`/nps-scale-settings/${sigleScaleData[0]?._id}`);
-        // },2000)
+        // if(response.status===200){
+        //   toast.success('successfully updated');
+        //   setTimeout(()=>{
+        //       navigateTo(`/nps-scale-settings/${sigleScaleData[0]?._id}`);
+        //   },2000)
+        // }
     } catch (error) {
         console.log(error)
     }finally{

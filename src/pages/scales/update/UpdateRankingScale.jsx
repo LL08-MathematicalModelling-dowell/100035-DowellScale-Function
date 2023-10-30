@@ -80,9 +80,6 @@ const UpdateRankingScale = ()=>{
     const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled'];
     const ranking_reference = ['Overall Ranking', 'StageWise Ranking'];
 
-    
-    
-
     const updatePayload = {
             scale_id:_id,
             user: true,
