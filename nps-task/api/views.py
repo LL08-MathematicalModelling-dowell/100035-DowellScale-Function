@@ -1116,8 +1116,9 @@ def nps_plugins_create_settings(request, api_key):
                 return Response({"error": "Scale ID is required"}, status=status.HTTP_400_BAD_REQUEST)
             field_add = {"_id": scale_id}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
-                                     "1249001", "ABCDE", "insert", field_add, "nil")
+                                     "1249001", "ABCDE", "find", field_add, "nil")
             settings_json = json.loads(x)
+            print("Ambrose", settings_json)
             if not settings_json['data']:
                 return Response({"error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -1174,7 +1175,7 @@ def nps_plugins_create_settings(request, api_key):
             }
 
 
-            if no_of_scales > 100 or no_of_scales < 1:
+            if no_of_scales < 1:
                 return Response({"no_of_scales": "Out of range"}, status=status.HTTP_400_BAD_REQUEST)
             if fomat == "emoji":
                 update_field['settings']['custom_emoji_format'] = response.get(
@@ -1213,7 +1214,7 @@ def nps_plugins_create_settings(request, api_key):
 
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
                                      "1249001", "ABCDE", "update", field_add, "nil")
-            return Response({"success": response_data, "data": update_field})
+            return Response({"success": True, "data": update_field})
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
