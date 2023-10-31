@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
-import Fallback from '../../components/Fallback';
+import Fallback from '../../../components/Fallback';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 
@@ -157,21 +157,21 @@ const SinglePCScaleSettings = () => {
                         }`}
                         onClick={() => handleButtonClick(pairIndex, 0)}
                       >
-                        {imagePaths && imagePaths.length > 0 ? (
+                        {imagePaths ? (
                           <img
-                            src={
-                              `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}`
-                            }
-                            alt={
-                              `https://100035.pythonanywhere.com/static/images/${imagePaths[0]}`
-                            }
-                            className="w-10 h-10 p-0 mb-2 rounded-full"
+                            src={`https://100035.pythonanywhere.com/static/images/${
+                              Object.values(imagePaths)[0]
+                            }`}
+                            alt={`https://100035.pythonanywhere.com/static/images/${
+                              Object.values(imagePaths)[0]
+                            }`}
+                            className="object-contain w-10 h-10 p-0 mb-2 bg-white rounded-full"
                           />
                         ) : (
                           <img
                             src={'/src/assets/avatar_img.jpg'}
                             alt={'/src/assets/avatar_img.jpg'}
-                            className="w-10 h-10 p-0 mb-2 rounded-full"
+                            className="object-contain w-10 h-10 p-0 mb-2 bg-white rounded-full"
                           />
                         )}
 
@@ -183,22 +183,17 @@ const SinglePCScaleSettings = () => {
                         }`}
                         onClick={() => handleButtonClick(pairIndex, 1)}
                       >
-                        
-                        {imagePaths && imagePaths.length > 0 ? (
+                        {imagePaths ? (
                           <img
-                            src={
-                              `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}`
-                            }
-                            alt={
-                              `https://100035.pythonanywhere.com/static/images/${imagePaths[1]}`
-                            }
-                            className="w-10 h-10 p-0 mb-2 rounded-full"
+                            src={`https://100035.pythonanywhere.com/static/images/${Object.values(imagePaths)[1]}`}
+                            alt={`https://100035.pythonanywhere.com/static/images/${Object.values(imagePaths)[1]}`}
+                            className="object-contain w-10 h-10 p-0 mb-2 bg-white rounded-full"
                           />
                         ) : (
                           <img
                             src={'/src/assets/avatar_img.jpg'}
                             alt={'/src/assets/avatar_img.jpg'}
-                            className="w-10 h-10 p-0 mb-2 rounded-full"
+                            className="object-contain w-10 h-10 p-0 mb-2 bg-white rounded-full"
                           />
                         )}
 

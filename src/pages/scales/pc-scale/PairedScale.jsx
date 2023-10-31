@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Fallback from '../../components/Fallback';
-import dowellLogo from '../../assets/dowell-logo.png';
-import Button from '../../components/button/Button';
+import Fallback from '../../../components/Fallback';
+import dowellLogo from '../../../assets/dowell-logo.png';
+import Button from '../../../components/button/Button';
 import axios from 'axios';
 
 const PairedScale = () => {
@@ -49,12 +49,12 @@ const PairedScale = () => {
           alt="Dowell Logo"
           className="cursor-pointer w-52"
         />
-        <p className="my-4 text-4xl text-[#1A8753]">
+        <p className="my-4 text-sm text-[#1A8753]">
           Dowell Paired Comparison Scales Settings
         </p>
         <div className="flex flex-col  lg:flex-row border-2 border-black w-full lg:w-[60%] h-3/5">
           <div className="p-4 overflow-scroll overflow-x-hidden lg:w-1/4 h-60">
-            <h1 className="text-xl font-medium text-center underline">
+            <h1 className="text-sm font-medium text-center underline">
               Scale History
             </h1>
             <div className="flex flex-col">
