@@ -256,12 +256,12 @@ def ResponseAPI(request):
                                                                 "id": payload['_id']} 
                                                 }
                             
-                        # Define fixed pile ranges
-                        pile_ranges = {
-                            "disagree": [-5, -4, -3, -2, -1],
-                            "neutral": [0],
-                            "agree": [1, 2, 3, 4, 5]
-                        }
+                    # Define fixed pile ranges
+                    pile_ranges = {
+                        "disagree": [-5, -4, -3, -2, -1],
+                        "neutral": [0],
+                        "agree": [1, 2, 3, 4, 5]
+                    }
 
                     # Function to dynamically distribute scores
                     def assign_to_piles(statements, pile_range):
@@ -346,8 +346,8 @@ def ResponseAPI(request):
                     if "process_id" in payload:
                         add["process_id"] = payload["process_id"]
                         
-                    if document_data:
-                        add["document_data"] = document_data
+                    if 'document_data' in  payload:
+                        add["document_data"] = payload['document_data']
                     
                     x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                          "1094", "ABCDE", "insert",
