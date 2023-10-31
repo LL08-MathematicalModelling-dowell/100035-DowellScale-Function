@@ -35,6 +35,7 @@ def settings_api_view_create(request):
                 fontstyle = response["fontstyle"]
                 font_color = response['font_color']
                 round_color = response['round_color']
+                scale_color = response["scale_color"]
                 fomat = response['fomat']
                 user = response['user']
                 label_selection = response['label_scale_selection']
@@ -60,7 +61,7 @@ def settings_api_view_create(request):
                                       "no_of_scales": number_of_scales,
                                       "time": time, "name": name, "scale_category": "likert scale", "user": user,
                                       "round_color": round_color, "fomat": fomat, "label_selection": label_selection,
-                                      "fontstyle": fontstyle,
+                                      "fontstyle": fontstyle, "scalecolor" : scale_color,
                                       "label_input": label_input, "user": user,
                                       "custom_emoji_format": custom_emoji_format,
                                       "allow_resp": response.get('allow_resp', True),
@@ -79,7 +80,7 @@ def settings_api_view_create(request):
                                             "insert", details, "nil")
             return Response({"success": x, "data": field_add})
         except Exception as e:
-            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "An error occured!", "Exception": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     elif request.method == 'GET':
         try:
             params = request.GET
@@ -107,8 +108,9 @@ def settings_api_view_create(request):
             response = request.data
             if "scale_id" not in response:
                 return Response({"error": "scale_id missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
-            if response["fomat"] != "text" and response["fomat"] != "emoji":
-                return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
+            if "fomat" in response:
+                if response["fomat"] != "text" and response["fomat"] != "emoji":
+                    return Response({"error": "Label type should be text or emoji"}, status=status.HTTP_400_BAD_REQUEST)
             if "label_input" in response:
                 label_selection = response["label_scale_selection"]
                 label_input = response["label_scale_input"]
@@ -136,7 +138,7 @@ def settings_api_view_create(request):
                                  field_add, update_field)
             return Response({"success": "Successfully Updated ", "data": settings})
         except Exception as e:
-            return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "An error occured", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST', 'GET'])
