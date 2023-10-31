@@ -15,8 +15,8 @@ const CreateNPSScale = () => {
     const navigateTo = useNavigate();
     
     const [formData, setFormData] = useState({
-          orientation: "horizontal",
-          scale_id: "64e8744218f0a24fb16b0ee2",
+          orientation: "",
+        //   scale_id: "64e8744218f0a24fb16b0ee2",
           user: "yes",  //should be boolean
           username: "Ndoneambrose",
           scalecolor: "#E5E7E8",
@@ -27,11 +27,11 @@ const CreateNPSScale = () => {
           fomat: "numbers",
           time: 0,
           template_name: "testing5350",
-          name: "scale_label",
+          name: "",
           text: "good+neutral+best",
-          left: "good",
-          right: "best",
-          center: "neutral",
+          left: "",
+          right: "",
+          center: "",
           // scale-category: "nps scale",
           scaleCategory: "nps scale",
           show_total_score: "true" //should be boolean
@@ -78,7 +78,7 @@ const CreateNPSScale = () => {
         if(response.status===201){
             toast.success('scale created');
             setTimeout(()=>{
-                navigateTo(`/nps-scale-settings/${response?.data?.scale_id}`)
+                navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
             },2000)
         }
     } catch (error) {

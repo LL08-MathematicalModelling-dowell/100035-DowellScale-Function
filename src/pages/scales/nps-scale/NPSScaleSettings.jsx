@@ -15,6 +15,7 @@ const NPSScaleSettings = () => {
     const navigateTo = useNavigate();
 
     const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    console.log(slug, '**')
 
     const handleSelectScore = (score)=>{
       setSelectedScore(score)
