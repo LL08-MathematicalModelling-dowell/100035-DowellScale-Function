@@ -43,11 +43,32 @@ const NPSScale = () => {
                         <MdManageHistory className='text-primary'/>
                         </span> Scale History
                     </h2>
-                    {scaleData && scaleData?.data?.data.map((scale, index)=>(
+                    {/* {scaleData && scaleData?.data?.data.map((scale, index)=>(
                         <>
                             <Button width={'full'} onClick={()=>navigateTo(`/nps-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.name}</Button>
                         </>
-                    ))}
+                    ))} */}
+
+                    {scaleData && scaleData?.data?.data
+                    .slice()
+                    .sort((a, b) => {
+                        const nameA = a?.settings?.name.toLowerCase();
+                        const nameB = b?.settings?.name.toLowerCase();
+                        if (nameA < nameB) return -1;
+                        if (nameA > nameB) return 1;
+                        return 0;
+                    })
+                    .map((scale, index) => (
+                        <Button
+                        width={'full'}
+                        onClick={() => navigateTo(`/nps-scale-settings/${scale._id}`)}
+                        key={index}
+                        >
+                        {scale?.settings?.name}
+                        </Button>
+                    ))
+                    }
+
                 </div>
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>SCALE</h3>

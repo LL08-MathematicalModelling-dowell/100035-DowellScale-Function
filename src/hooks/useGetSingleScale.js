@@ -7,8 +7,6 @@ const useGetSingleScale = () => {
 
     const fetchSingleScaleData = async (scaleId) => {
 
-        console.log(scaleId, '***')
-
         // const endPoint = 
         // scaleType === 'ranking-scale' 
         // ? 'http://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id='
@@ -18,7 +16,6 @@ const useGetSingleScale = () => {
             setLoading(true);
             const response = await axios.get(`http://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id=${scaleId}`);
             setSingleScaleData(response.data); 
-            console.log(response, '**** resttt')
         } catch (error) {
             console.error(error);
         } finally {
