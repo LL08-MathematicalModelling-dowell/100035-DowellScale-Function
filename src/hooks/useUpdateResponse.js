@@ -9,7 +9,7 @@ export const useUpdateResponse = () => {
     ? 'https://100035.pythonanywhere.com/api/nps_create/' : 'no endpoint'
     try {
       const response = await axios.put(endPoint, payload);
-      console.log(response, 'update response');
+      return response
     } catch (error) {
       console.log(error)
     }

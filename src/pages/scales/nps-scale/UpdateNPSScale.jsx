@@ -17,9 +17,12 @@ const UpdateNPSScale = () => {
   const [isLoading, setIsLoading] = useState(false);
   const updateResponse = useUpdateResponse();
 
+  const navigateTo = useNavigate();
+
+  
 
     const orientation = settings?.orientation
-    const scale_id = settings?.scale_id
+    // const scale_id = settings?.scale_id
     // const user = settings?.user
     const username = settings?.username
     const scalecolor = settings?.scalecolor
@@ -41,8 +44,6 @@ const UpdateNPSScale = () => {
   const [updateFormData, setUpdateFormData] = useState(
       Object.assign({}, { 
         orientation,
-        scale_id,
-        user,
         username,
         scalecolor,
         numberrating,
@@ -62,25 +63,28 @@ const UpdateNPSScale = () => {
       })
   );
 
+  console.log(_id, 'id')
+
   const updatePayload = {
+    scale_id: _id,
+    user: "yes",
+    username: "Ndoneambrose",
     orientation:updateFormData.orientation,
-    scale_id:updateFormData.scale_id,
-    user:true,
-    username:'Michael',
     scalecolor:updateFormData.scalecolor,
     numberrating:updateFormData.numberrating,
     no_of_scales:updateFormData.no_of_scales,
     roundcolor:updateFormData.roundcolor,
     fontcolor:updateFormData.fontcolor,
     fomat:updateFormData.fomat,
-    time:updateFormData.time,
+    time: updateFormData.time,
     template_name:updateFormData.template_name,
     name:updateFormData.name,
     text:updateFormData.text,
     left:updateFormData.left,
     right:updateFormData.right,
-    center:updateFormData.right,
-    show_total_score:updateFormData.show_total_score,
+    center: updateFormData.center,
+    // scale-category: "nps scale",
+    show_total_score: updateFormData.show_total_score
   }
 
 
@@ -144,14 +148,13 @@ const UpdateNPSScale = () => {
     console.log(updatePayload, 'payload ****')
     try {
         setIsLoading(true);
-        const response = await updateResponse('nps-scale', updatePayload);
-        console.log(response, 'updated response')
-        // if(response.status===200){
-        //   toast.success('successfully updated');
-        //   setTimeout(()=>{
-        //       navigateTo(`/nps-scale-settings/${sigleScaleData[0]?._id}`);
-        //   },2000)
-        // }
+        const { status, data } = await updateResponse('nps-scale', updatePayload);
+        if(status===200){
+          toast.success('successfully updated');
+          setTimeout(()=>{
+              navigateTo(`/nps-scale-settings/${sigleScaleData[0]?._id}`);
+          },2000)
+        }
     } catch (error) {
         console.log(error)
     }finally{
