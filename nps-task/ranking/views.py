@@ -211,13 +211,13 @@ def response_submit_api_view(request):
                                      "scale_reports",
                                      "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(scale)
-            if data.get('data') is None:
-                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            if not data.get('data', None):
+                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_404_NOT_FOUND)
             return Response({"data": data['data']}, status=status.HTTP_200_OK)
         else:
             # Return all ranking scale responses
             field_add = {"settings.scale_category": "ranking scale"}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                                  field_add, "nil")
             settings_list = []
             for item in json.loads(x)['data']:
@@ -239,7 +239,7 @@ def response_submit_api_view(request):
                 return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 username = response['username']
-                brand_name = response['brand_name'],
+                brand_name = response['brand_name']
                 product_name = response['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
@@ -281,7 +281,7 @@ def response_submit_api_view(request):
                 results.append(result)
                 if result.get('error', None):
                     return Response(result, status=status.HTTP_400_BAD_REQUEST)
-            return Response(results)
+            return Response(results, status=status.HTTP_201_CREATED)
         else:
             instance_id = response.get('instance_id')
             try:
@@ -309,7 +309,9 @@ def response_submit_api_view(request):
 
             result = response_submit_loop(username, scale_id, responses, instance_id)
             result = result.data
-            return Response(result)
+            if result.get('error', None):
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            return Response(result, status=status.HTTP_201_CREATED)
 
 
 def response_submit_loop(username, scale_id, responses, instance_id, process_id=None, document_data=None):
@@ -397,7 +399,9 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
                                         {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
                                          "username": username}, "nil")
         response_id = json.loads(x)['inserted_id']
-        return Response({"success": True, "response_id": response_id, "payload": field_add})
+        
+        # renamed the response data variable to data
+        return Response({"success": True, "response_id": response_id, "data": field_add})
 
 
     except Exception as e:

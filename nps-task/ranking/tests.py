@@ -192,7 +192,6 @@ class CreateScaleSettingsTestCase(TestCase):
         
         
         
-        
     def test_create_scale_settings_with_max_num_of_stages(self):
         url = reverse('ranking:ranking_create_scale_settings_api')
         payload = {
@@ -260,7 +259,7 @@ class CreateScaleSettingsTestCase(TestCase):
     def test_retrieve_scale_settings_all(self):
         # Create multiple scale settings objects for testing
         settings1 = {
-            'username': 'natalia',
+            'username': 'natan',
             'scalename': 'Scale002',
             'num_of_stages': 3,
             'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
@@ -374,7 +373,7 @@ class CreateScaleSettingsTestCase(TestCase):
     def test_update_scale_settings_invalid_scale_id(self):
         # Create a scale settings object for testing
         settings = {
-            'username': 'natalia',
+            'username': 'natan',
             'scalename': 'Scale003',
             'num_of_stages': 9,
             'stages': ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6', 'Stage 7', 'Stage 8', 'Stage 9'],
@@ -442,7 +441,7 @@ class CreateScaleSettingsTestCase(TestCase):
         self.assertEqual(response.data['data']['stages'], updated_fields['stages'])
     def test_update_scale_settings_change_number_of_stages_without_changing_stages(self):
         settings = {
-            'username': 'natanem',
+            'username': 'natan',
             'scalename': 'Scale004',
             'num_of_stages': 3,
             'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
@@ -478,7 +477,7 @@ class CreateScaleSettingsTestCase(TestCase):
         
     def test_update_scale_settings_change_item_count_without_changing_the_items(self):
         settings = {
-            'username': 'natanem',
+            'username': 'natan',
             'scalename': 'Scale004',
             'num_of_stages': 3,
             'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
@@ -514,9 +513,391 @@ class CreateScaleSettingsTestCase(TestCase):
         
 
 # Test Response endpoints
+class ResponseTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        
+        
+    
+    def test_retrieve_specific_response(self):
+        # Create a scale settings object for testing
+        settings = {
+            'username': 'natan',
+            'scalename': 'Scale001',
+            'num_of_stages': 3,
+            'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
+            'stages_arrangement': 'Using ID numbers',
+            'item_count': 3,
+            'item_list': ['Item A', 'Item B', 'Item C'],
+            'orientation': 'horizontal',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Sans-serif',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+        }
+        created_settings = self.client.post(reverse('ranking:ranking_create_scale_settings_api'), data=settings, format='json')
+        scale_id = created_settings.data['scale_id']
+        
+        # Create a scale response object for testing
+        response = {
+            'username': 'natan',
+            'scale_id': scale_id,
+            'brand_name': 'Test Brand',
+            'product_name': 'Test Product',
+            'num_of_stages': 2,
+            'num_of_substages': 0,
+            'instance_id': 1,
+            'rankings': [
+                {
+                    'stage_name': 'Stage 1',
+                    'stage_rankings': [
+                        {'name': 'Item A', 'rank': 1},
+                        {'name': 'Item B', 'rank': 2},
+                        {'name': 'Item C', 'rank': 3},
+                    ]
+                },
+                {
+                    'stage_name': 'Stage 2',
+                    'stage_rankings': [
+                        {'name': 'Item A', 'rank': 1},
+                        {'name': 'Item B', 'rank': 2},
+                        {'name': 'Item C', 'rank': 3},
+                    ]
+                }
+            ]
+        }
+        
+        new_response = self.client.post(reverse('ranking:ranking_response_submit_api'), data=response, format='json')
+        response_id = new_response.data['response_id']
+        
+        url = reverse('ranking:ranking_response_submit_api')
+
+        # Send a GET request to the endpoint
+        response = self.client.get(f'{url}?id={response_id}')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['data'][0]['_id'], response_id)
+        self.assertEqual(response.data['data'][0]['scale_data']['scale_id'], scale_id)
+        
+       
+    
+    def test_retrieve_scale_response_all(self):
+        # Create a scale settings object for testing
+        settings = {
+            'username': 'natan',
+            'scalename': 'Scale001',
+            'num_of_stages': 3,
+            'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
+            'stages_arrangement': 'Using ID numbers',
+            'item_count': 3,
+            'item_list': ['Item A', 'Item B', 'Item C'],
+            'orientation': 'horizontal',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Sans-serif',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+        }
+        created_settings = self.client.post(reverse('ranking:ranking_create_scale_settings_api'), data=settings, format='json')
+        scale_id = created_settings.data['scale_id']
+            
+        # Create multiple scale response objects for testing
+        response1 = {
+            'username': 'natan',
+            'scale_id': scale_id,
+            'brand_name': 'Test Brand 1',
+            'product_name': 'Test Product 1',
+            'num_of_stages': 3,
+            'num_of_substages': 0,
+            'instance_id': 1,
+            'rankings': [
+                {
+                    'stage_name': 'Stage 1',
+                    'stage_rankings': [
+                        {'name': 'Item 1', 'rank': 1},
+                        {'name': 'Item 2', 'rank': 2},
+                        {'name': 'Item 3', 'rank': 3},
+                    ]
+                },
+                {
+                    'stage_name': 'Stage 2',
+                    'stage_rankings': [
+                        {'name': 'Item 1', 'rank': 1},
+                        {'name': 'Item 2', 'rank': 2},
+                        {'name': 'Item 3', 'rank': 3},
+                    ]
+                },
+                {
+                    'stage_name': 'Stage 3',
+                    'stage_rankings': [
+                        {'name': 'Item 1', 'rank': 1},
+                        {'name': 'Item 2', 'rank': 2},
+                        {'name': 'Item 3', 'rank': 3},
+                    ]
+                }
+            ]
+        }
+        response2 = {
+            'username': 'natan',
+            'scale_id': scale_id,
+            'brand_name': 'Brand 2',
+            'product_name': 'Product 2',
+            'num_of_stages': 2,
+            'num_of_substages': 0,
+            'instance_id': 1,
+            'rankings': [
+                {
+                    'stage_name': 'Stage 1',
+                    'stage_rankings': [
+                        {'name': 'Item 1', 'rank': 1},
+                        {'name': 'Item 2', 'rank': 2},
+                        {'name': 'Item 3', 'rank': 3},
+                    ]
+                },
+                {
+                    'stage_name': 'Stage 2',
+                    'stage_rankings': [
+                        {'name': 'Item 1', 'rank': 1},
+                        {'name': 'Item 2', 'rank': 2},
+                        {'name': 'Item 3', 'rank': 3},
+                    ]
+                }
+            ]
+        }
+        
+        self.client.post(reverse('ranking:ranking_response_submit_api'), data=response1, format='json')
+        self.client.post(reverse('ranking:ranking_response_submit_api'), data=response2, format='json')
+        
+        # Retrieve all scale responses
+        url = reverse('ranking:ranking_response_submit_api')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertGreaterEqual(len(response.data['data']), 2)
+        
+    
+    def test_response_valid_scale_id_and_data(self):
+        # Create a scale settings object for testing
+        settings = {
+            'username': 'natan',
+            'scalename': 'Scale001',
+            'num_of_stages': 3,
+            'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
+            'stages_arrangement': 'Alphabetically ordered',
+            'item_count': 3,
+            'item_list': ['Item A', 'Item B', 'Item C'],
+            'orientation': 'horizontal',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Sans-serif',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+            
+        }
+        url = reverse('ranking:ranking_create_scale_settings_api')
+        created_settings = self.client.post(url, data=settings, format='json')
+        scale_id = created_settings.data['scale_id']
+
+        # Send a response to the scale settings endpoint with a valid scale_id
+        url = reverse('ranking:ranking_response_submit_api')
+        payload = {
+            'username': 'natan',
+            'scale_id': scale_id,
+            'brand_name': 'Test Brand',
+            'product_name': 'Test Product',
+            'num_of_stages': 3,
+            'num_of_substages': 0,
+            'instance_id': 1,
+            'rankings': [
+                {
+                    'stage_name': 'Stage 1',
+                    'stage_rankings': [
+                        {'name': 'Item 1', 'rank': 1},
+                        {'name': 'Item 2', 'rank': 2},
+                        {'name': 'Item 3', 'rank': 3},
+                    ]
+                },
+                {
+                    'stage_name': 'Stage 2',
+                    'stage_rankings': [
+                        {'name': 'Item 1', 'rank': 1},
+                        {'name': 'Item 2', 'rank': 2},
+                        {'name': 'Item 3', 'rank': 3},
+                    ]
+                },
+                {
+                    'stage_name': 'Stage 3',
+                    'stage_rankings': [
+                        {'name': 'Item 1', 'rank': 1},
+                        {'name': 'Item 2', 'rank': 2},
+                        {'name': 'Item 3', 'rank': 3},
+                    ]
+                }
+            ]
+        }
+        response = self.client.post(url, data=payload, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response_data = response.data['data']
+
+        self.assertEqual(response_data['scale_data']['scale_id'], payload['scale_id'])
+        self.assertEqual(response_data['brand_data']['brand_name'], payload['brand_name'])
+        self.assertEqual(response_data['brand_data']['product_name'], payload['product_name'])
+        self.assertEqual(response_data['rankings'], payload['rankings'])
+
+        
+    def test_retrieve_invalid_response_id(self):
+        # Trying to retrieve a response with an invalid response_id
+        response_id = 'invalid_response_id'
+        url = reverse('ranking:ranking_response_submit_api')
+        response = self.client.get(f'{url}?id={response_id}')
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
+    
+    def test_submit_multiple_document_responses(self):
+        # Create a scale settings object for testing
+        settings = {
+            'username': 'natan',
+            'scalename': 'Scale001',
+            'num_of_stages': 2,
+            'stages': ['city 1', 'city 2'],
+            'stages_arrangement': 'Alphabetically ordered',
+            'item_count': 4,
+            'item_list': ['Item 1', 'Item 2', 'Item 3', 'Item 4'],
+            'orientation': 'horizontal',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Sans-serif',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+        }
+        settings2 = {
+            'username': 'natan',
+            'scalename': 'Scale002',
+            'num_of_stages': 3,
+            'stages': ['city 1', 'city 2', 'city 3'],
+            'stages_arrangement': 'Alphabetically ordered',
+            'item_count': 3,
+            'item_list': ['Item 1', 'Item 2', 'Item 3'],
+            'orientation': 'horizontal',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Sans-serif',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+        }
+        created_settings = self.client.post(reverse('ranking:ranking_create_scale_settings_api'), data=settings, format='json')
+        created_settings2 = self.client.post(reverse('ranking:ranking_create_scale_settings_api'), data=settings2, format='json')
+        scale_id = created_settings.data['scale_id']
+        scale_id2 = created_settings2.data['scale_id']    
+        # Define the payload with valid response data for multiple document responses
+        payload = {
+                "instance_id": 1,
+                "process_id": "1",
+                "brand_name": "Test Brand",
+                "product_name": "Test Product",
+                "num_of_stages": 2,
+                "num_of_substages": 0,
+                "username": "natan",
+                "document_responses" : [
+                    {
+                        'num_of_stages': 2,
+                        'num_of_substages': 0,
+                        'scale_id': scale_id,
+                        'rankings': [
+                            {
+                                'stage_name': 'city 1',
+                                'stage_rankings': [
+                                    {'name': 'Item 1', 'rank': 1},
+                                    {'name': 'Item 2', 'rank': 2},
+                                    {'name': 'Item 3', 'rank': 3},
+                                    {'name': 'Item 4', 'rank': 4},
+                                ]
+                            },
+                            {
+                                'stage_name': 'city 2',
+                                'stage_rankings': [
+                                    {'name': 'Item 1', 'rank': 1},
+                                    {'name': 'Item 2', 'rank': 2},
+                                    {'name': 'Item 3', 'rank': 3},
+                                    {'name': 'Item 4', 'rank': 4},
+                                ]
+                            }
+                        ]
+                     },
+                    {
+                        'num_of_stages': 3,
+                        'num_of_substages': 0,
+                        'scale_id': scale_id2,
+                        'rankings': [
+                            {
+                                'stage_name': 'city 1',
+                                'stage_rankings': [
+                                    {'name': 'Item 1', 'rank': 1},
+                                    {'name': 'Item 2', 'rank': 2},
+                                    {'name': 'Item 3', 'rank': 3},
+                                ]
+                            },
+                            {
+                                'stage_name': 'city 2',
+                                'stage_rankings': [
+                                    {'name': 'Item 1', 'rank': 1},
+                                    {'name': 'Item 2', 'rank': 2},
+                                    {'name': 'Item 3', 'rank': 3},
+                                ]
+                            },
+                            {
+                                'stage_name': 'city 3',
+                                'stage_rankings': [
+                                    {'name': 'Item 1', 'rank': 1},
+                                    {'name': 'Item 2', 'rank': 2},
+                                    {'name': 'Item 3', 'rank': 3},
+                                ]
+                            }
+                        ]
+                    }
+                ]
+                    
+                
+            }
+           
+        
 
+        url = reverse('ranking:ranking_response_submit_api') 
+
+        
+        response = self.client.post(url, data=payload, format='json')
+        
+     
+        self.assertIn(response.status_code, [status.HTTP_200_OK, status.HTTP_201_CREATED])
+
+        response_data = response.data
+        payload_data = payload['document_responses']
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), len(payload_data))
+        for resp, payl in zip(response_data, payload_data):
+            
+            self.assertEqual(resp['data']['scale_data']['scale_id'], payl['scale_id'])
+            self.assertEqual(resp['data']['brand_data']['brand_name'], payload['brand_name'])
+            self.assertEqual(resp['data']['brand_data']['product_name'], payload['product_name'])
+            self.assertEqual(resp['data']['rankings'], payl['rankings'])
+        
+
+        
+            
+            
 
         
 # Invalid requests test cases        
@@ -524,7 +905,7 @@ class InvalidRequestsTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-
+    # Create settings endpoint 
     def test_invalid_http_method_delete(self):
         # Send an invalid HTTP method (DELETE ) and ensure it returns the expected error response
         url = reverse('ranking:ranking_create_scale_settings_api')
@@ -544,6 +925,30 @@ class InvalidRequestsTestCase(TestCase):
     def test_invalid_endpoint(self):
         # Send a request to an invalid or non-existent endpoint and ensure it returns the expected error response
         url = reverse('ranking:ranking_create_scale_settings_api') + 'invalid_endpoint/'
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    # Submite response endpoint 
+    def test_invalid_http_method_delete(self):
+        # Send an invalid HTTP method (DELETE ) and ensure it returns the expected error response
+        url = reverse('ranking:ranking_response_submit_api')
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertIn('Method "DELETE" not allowed', response.data['detail'])
+        
+    def test_invalid_http_method_patch(self):
+        # Send an invalid HTTP method (PATCH ) and ensure it returns the expected error response
+        url = reverse('ranking:ranking_response_submit_api')
+        response = self.client.patch(url)
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertIn('Method "PATCH" not allowed', response.data['detail'])
+        
+    def test_invalid_endpoint(self):
+        # Send a request to an invalid or non-existent endpoint and ensure it returns the expected error response
+        url = reverse('ranking:ranking_response_submit_api') + 'invalid_endpoint/'
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
