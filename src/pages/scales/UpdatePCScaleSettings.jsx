@@ -53,7 +53,7 @@ const UpdatePCScaleSettings = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: name === 'time' ? parseFloat(value) : value,
     });
   };
 
@@ -111,23 +111,6 @@ const UpdatePCScaleSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // var myHeaders = new Headers();
-    // myHeaders.append('Content-Type', 'application/json');
-
-    // var raw = JSON.stringify({
-    //   scale_id: id,
-    //   username: formData.user_name,
-    //   scale_name: formData.scale_name,
-    //   orientation: formData.orientation,
-    //   fontcolor: formData.fontcolor,
-    //   fontstyle: formData.fontstyle,
-    //   scalecolor: formData.scalecolor,
-    //   roundcolor: formData.roundcolor,
-    //   time: formData.time,
-    //   item_count: formData.item_count,
-    //   item_list: formData.item_list,
-    // });
     const headers = {
       'Content-Type': 'application/json',
     };
@@ -148,7 +131,7 @@ const UpdatePCScaleSettings = () => {
     console.log(requestOptions);
 
     try {
-      const data = await axios.post(
+      const data = await axios.put(
         'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/',
         // '',
         requestOptions,
