@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Fallback from '../../components/Fallback';
+import Fallback from '../../../components/Fallback';
 import axios from 'axios';
 
 const CreatePerceptualScaleSettings = () => {
@@ -72,7 +72,7 @@ const CreatePerceptualScaleSettings = () => {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const sessionId = cookies.get('sessionid');
+  const sessionId = cookies.get('session_id');
   useEffect(() => {
     fetchuser();
   }, []);
@@ -81,7 +81,7 @@ const CreatePerceptualScaleSettings = () => {
       // var myHeaders = new Headers();
       // myHeaders.append('Content-Type', 'application/json');
       var requestOptions = {
-        session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
+        session_id: sessionId,
       };
       const headers = {
         'Content-Type': 'application/json',

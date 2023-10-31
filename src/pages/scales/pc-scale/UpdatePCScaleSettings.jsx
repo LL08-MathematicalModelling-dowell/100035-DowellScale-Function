@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
-import Fallback from '../../components/Fallback';
+import Fallback from '../../../components/Fallback';
 
 const UpdatePCScaleSettings = () => {
   const { id } = useParams();
@@ -53,12 +53,13 @@ const UpdatePCScaleSettings = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: name === 'time' ? parseFloat(value) : value,
     });
   };
 
   const handleInputValueChange = (index, value) => {
     const newItemList = [...formData.item_list];
+    console.log(newItemList);
 
     newItemList[index] = value;
     setFormData({
@@ -92,7 +93,7 @@ const UpdatePCScaleSettings = () => {
       setInputValues([...results.item_list]);
       setFormData({
         scale_name: results.name,
-        username: results.username[0],
+        username: results.username,
         orientation: results.orientation,
         fontcolor: results.fontcolor,
         fontstyle: results.fontstyle,
@@ -112,47 +113,30 @@ const UpdatePCScaleSettings = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // var myHeaders = new Headers();
-    // myHeaders.append('Content-Type', 'application/json');
+    console.log(formData.username);
+    const formDataObject = new FormData();
+    formDataObject.append('scale_id', id);
+    formDataObject.append('username', formData.username);
+    formDataObject.append('scale_name', formData.scale_name);
+    formDataObject.append('orientation', formData.orientation);
+    formDataObject.append('fontcolor', formData.fontcolor);
+    formDataObject.append('fontstyle', formData.fontstyle);
+    formDataObject.append('scalecolor', formData.scalecolor);
+    formDataObject.append('roundcolor', formData.roundcolor);
+    formDataObject.append('time', formData.time);
+    formDataObject.append('item_count', formData.item_count);
+    // formDataObject.append('item_list', formData.item_list);
 
-    // var raw = JSON.stringify({
-    //   scale_id: id,
-    //   username: formData.user_name,
-    //   scale_name: formData.scale_name,
-    //   orientation: formData.orientation,
-    //   fontcolor: formData.fontcolor,
-    //   fontstyle: formData.fontstyle,
-    //   scalecolor: formData.scalecolor,
-    //   roundcolor: formData.roundcolor,
-    //   time: formData.time,
-    //   item_count: formData.item_count,
-    //   item_list: formData.item_list,
-    // });
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-
-    var requestOptions = {
-      scale_id: id,
-      username: formData.username,
-      scale_name: formData.scale_name,
-      orientation: formData.orientation,
-      fontcolor: formData.fontcolor,
-      fontstyle: formData.fontstyle,
-      scalecolor: formData.scalecolor,
-      roundcolor: formData.roundcolor,
-      time: formData.time,
-      item_count: formData.item_count,
-      item_list: formData.item_list,
-    };
-    console.log(requestOptions);
+    formData.item_list.forEach((value) => {
+      formDataObject.append(`item_list`, value);
+    });
 
     try {
-      const data = await axios.post(
+      const data = await axios.put(
         'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-settings/',
         // '',
-        requestOptions,
-        { headers }
+        formDataObject,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
       const result = await data.data;
 
@@ -185,6 +169,7 @@ const UpdatePCScaleSettings = () => {
       }
     } catch (error) {
       setIsLoading(false);
+      console.log(formData.item_list);
       console.log('Error', error);
     }
   };

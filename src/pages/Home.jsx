@@ -19,24 +19,24 @@ const Home = () => {
     },
     {
       name: 'paired scale comparison',
-      slug: 'paired-scale-comparison',
+      slug: 'pc-scale',
     },
     {
       name: 'perceptual mapping scale',
-      slug: 'perceptual-mapping-scale',
+      slug: 'pm-scale',
     },
   ];
 
   const navigateTo = useNavigate();
 
   return (
-    <div className="h-screen flex flex-cols justify-center items-center">
-      <div className="w-6/12 grid grid-cols-2 gap-4">
+    <div className="flex items-center justify-center h-screen flex-cols">
+      <div className="grid w-6/12 grid-cols-2 gap-4">
         {scaleTypes.map((scale) => (
           <button
             onClick={() => navigateTo(`/${scale.slug}`)}
             key={scale.slug}
-            className="w-full bg-primary text-white hover:bg-gray-700/50 py-1 px-2 py-2 my-1 capitalize"
+            className="w-full px-2 py-1 my-1 text-white capitalize bg-primary hover:bg-gray-700/50"
           >
             {scale.name}
           </button>
