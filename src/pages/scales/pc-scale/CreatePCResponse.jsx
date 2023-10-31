@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import Fallback from '../../components/Fallback';
+import Fallback from '../../../components/Fallback';
 import axios from 'axios';
 
 const CreatePCResponse = () => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
-import Fallback from '../../components/Fallback';
+import Fallback from '../../../components/Fallback';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 

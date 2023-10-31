@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Fallback from '../../components/Fallback';
-import dowellLogo from '../../assets/dowell-logo.png';
-import Button from '../../components/button/Button';
+import Fallback from '../../../components/Fallback';
+import dowellLogo from '../../../assets/dowell-logo.png';
+import Button from '../../../components/button/Button';
 import axios from 'axios';
 
 const PairedScale = () => {

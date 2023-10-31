@@ -29,7 +29,7 @@ const Home = () => {
     },
     {
       name: 'paired scale comparison',
-      slug: 'paired-scale-comparison',
+      slug: 'pc-scale',
     },
     {
       name: 'perceptual mapping scale',
