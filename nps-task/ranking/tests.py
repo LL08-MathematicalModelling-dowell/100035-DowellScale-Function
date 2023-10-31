@@ -310,3 +310,241 @@ class CreateScaleSettingsTestCase(TestCase):
         
         
         
+    # Test PUT requests
+    
+    def test_update_scale_settings_valid_scale_id_and_fields(self):
+        # Create a scale settings object for testing
+        settings = {
+            'username': 'natan',
+            'scalename': 'Scale001',
+            'num_of_stages': 3,
+            'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
+            'stages_arrangement': 'Alphabetically ordered',
+            'item_count': 3,
+            'item_list': ['Item 1', 'Item 2', 'Item 3'],
+            'orientation': 'horizontal',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Sans-serif',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+            
+        }
+        created_settings = self.client.post(reverse('ranking:ranking_create_scale_settings_api'), data=settings, format='json')
+        scale_id = created_settings.data['scale_id']
+
+        # Update the scale settings with valid fields
+        url = reverse('ranking:ranking_create_scale_settings_api')
+        updated_fields = {
+            'scale_id': scale_id,
+            'scalename': 'UpdatedScale001',
+            'num_of_stages': 4,
+            'stages': {'1': 'Stage A', '2': 'Stage B', '3': 'Stage C', '4': 'Stage D'},
+            'stages_arrangement': 'Using ID numbers',
+            
+        }
+        response = self.client.put(url, data=updated_fields, format='json')
+        scale_id = response.data['scale_id']
+        settings = response.data['data']
+ 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(scale_id, updated_fields['scale_id'])
+        self.assertEqual(settings['scalename'], updated_fields['scalename'])
+        self.assertEqual(settings['num_of_stages'], updated_fields['num_of_stages'])
+        self.assertEqual(settings['stages'], updated_fields['stages'])
+        self.assertEqual(settings['stages_arrangement'], updated_fields['stages_arrangement'])
+        
+        
+
+    def test_update_scale_settings_missing_or_misspelled_scale_id(self):
+        # Trying to update scale settings with a missing or misspelled scale_id
+        url = reverse('ranking:ranking_create_scale_settings_api')
+        updated_fields = {
+            'scalename': 'UpdatedScale002',
+            'num_of_stages': 3,
+            'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
+            'stages_arrangement': 'Alphabetically ordered',
+        }
+        response = self.client.put(url, data=updated_fields, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_scale_settings_invalid_scale_id(self):
+        # Create a scale settings object for testing
+        settings = {
+            'username': 'natalia',
+            'scalename': 'Scale003',
+            'num_of_stages': 9,
+            'stages': ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6', 'Stage 7', 'Stage 8', 'Stage 9'],
+            'stages_arrangement': 'Shuffled (Randomly)',
+            'item_count': 6,
+            'item_list': ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6'],
+            'orientation': 'vertical',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Arial',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+            
+        }
+        created_settings = self.client.post(reverse('ranking:ranking_create_scale_settings_api'), data=settings, format='json')
+
+        # Trying to update scale settings with an invalid or non-existent scale_id
+        url = reverse('ranking:ranking_create_scale_settings_api')
+        updated_fields = {
+            'scale_id': 'invalid_scale_id',
+            'scalename': 'Updated Scale',
+            # other fields to update
+        }
+        response = self.client.put(url, data=updated_fields, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_scale_settings_change_stages_arrangement(self):
+        # Create a scale settings object for testing
+        settings = {
+            'username': 'john_doe',
+            'scalename': 'My Scale',
+            'num_of_stages': 5,
+            'stages': ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5'],
+            'stages_arrangement': 'Alphabetically ordered',
+            'item_count': 6,
+            'item_list': ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6'],
+            'orientation': 'vertical',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Arial',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+            
+        }
+        created_settings = self.client.post(reverse('ranking:ranking_create_scale_settings_api'), data=settings, format='json')
+        scale_id = created_settings.data['scale_id']
+
+        # Update the scale settings by changing the stages arrangement method
+        url = reverse('ranking:ranking_create_scale_settings_api')
+        updated_fields = {
+            'scale_id': scale_id,
+            'stages_arrangement': 'Using ID numbers',
+            'stages': {'1': 'Stage A', '2': 'Stage B', '3': 'Stage C', '4': 'Stage D', '5': 'Stage E'},
+            
+        }
+        response = self.client.put(url, data=updated_fields, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['data']['stages_arrangement'], updated_fields['stages_arrangement'])
+        self.assertEqual(response.data['data']['stages'], updated_fields['stages'])
+    def test_update_scale_settings_change_number_of_stages_without_changing_stages(self):
+        settings = {
+            'username': 'natanem',
+            'scalename': 'Scale004',
+            'num_of_stages': 3,
+            'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
+            'stages_arrangement': 'Alphabetically ordered',
+            'item_count': 3,
+            'item_list': ['Item A', 'Item B', 'Item C'],
+            'orientation': 'horizontal',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Sans-serif',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+            
+        }
+        url = reverse('ranking:ranking_create_scale_settings_api')
+        created_settings = self.client.post(url, data=settings, format='json')
+        scale_id = created_settings.data['scale_id']
+        
+        # Update the scale settings by changing the number of stages without changing the stages
+        updated_fields = {
+            'scale_id': scale_id,
+            'num_of_stages': 9,
+            
+        }
+        
+        response = self.client.put(url, data=updated_fields, format='json')
+  
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('Number of stages does not match', response.data['error'])
+        
+        
+    def test_update_scale_settings_change_item_count_without_changing_the_items(self):
+        settings = {
+            'username': 'natanem',
+            'scalename': 'Scale004',
+            'num_of_stages': 3,
+            'stages': ['Stage 1', 'Stage 2', 'Stage 3'],
+            'stages_arrangement': 'Alphabetically ordered',
+            'item_count': 3,
+            'item_list': ['Item A', 'Item B', 'Item C'],
+            'orientation': 'horizontal',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Sans-serif',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
+            
+            
+        }
+        url = reverse('ranking:ranking_create_scale_settings_api')
+        created_settings = self.client.post(url, data=settings, format='json')
+        scale_id = created_settings.data['scale_id']
+        
+        # Update the scale settings by changing the item count without changing the items
+        
+        updated_fields = {
+            'scale_id': scale_id,
+            'item_count': 6,
+            
+        }
+        response = self.client.put(url, data=updated_fields, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('Number of items does not match', response.data['error'])
+        
+        
+
+# Test Response endpoints
+
+
+
+
+        
+# Invalid requests test cases        
+class InvalidRequestsTestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+
+    def test_invalid_http_method_delete(self):
+        # Send an invalid HTTP method (DELETE ) and ensure it returns the expected error response
+        url = reverse('ranking:ranking_create_scale_settings_api')
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertIn('Method "DELETE" not allowed', response.data['detail'])
+    
+    def test_invalid_http_method_patch(self):
+        # Send an invalid HTTP method (PATCH ) and ensure it returns the expected error response
+        url = reverse('ranking:ranking_create_scale_settings_api')
+        response = self.client.patch(url)
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertIn('Method "PATCH" not allowed', response.data['detail'])
+
+    def test_invalid_endpoint(self):
+        # Send a request to an invalid or non-existent endpoint and ensure it returns the expected error response
+        url = reverse('ranking:ranking_create_scale_settings_api') + 'invalid_endpoint/'
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        

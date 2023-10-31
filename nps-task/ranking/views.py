@@ -158,12 +158,22 @@ def settings_api_view_create(request):
                                  field_add, "nil")
             settings = json.loads(x)['data'][0]['settings']
         except Exception as e:
-            return Response({"error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Scale does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
         for key in settings.keys():
             if key in data:
                 settings[key] = data[key]
         stages = settings['stages']
+        num_of_stages = settings['num_of_stages']
+        item_count = settings['item_count']
+        item_list = settings['item_list']
+        
+        if len(stages) != num_of_stages:
+            return Response({"error": "Number of stages does not match length of stages list."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if item_count != len(item_list):
+            return Response({"error": "Number of items does not match length of items list."},
+                            status=status.HTTP_400_BAD_REQUEST)
         if settings['stages_arrangement'] == 'Alphabetically ordered':
             list(stages).sort()
     
