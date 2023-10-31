@@ -80,9 +80,6 @@ const UpdateRankingScale = ()=>{
     const stagesArrangement = ['Alpherbetically ordered', 'Using ID Numbers', 'Shuffled'];
     const ranking_reference = ['Overall Ranking', 'StageWise Ranking'];
 
-    
-    
-
     const updatePayload = {
             scale_id:_id,
             user: true,
@@ -286,10 +283,9 @@ const UpdateRankingScale = ()=>{
 
 
     const handleUpdateRankingScale = async()=>{
-        console.log(updatePayload)
         try {
             setIsLoading(true);
-            const response = await updateResponse(updatePayload);
+            const response = await updateResponse('ranking-scale', updatePayload);
             // console.log(response, 'updated response')
             toast.success('successfully updated');
             setTimeout(()=>{
