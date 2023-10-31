@@ -82,14 +82,14 @@ const CreatePCSettings = () => {
     }
   };
 
-  const sessionId = cookies.get('sessionid');
+  const sessionId = cookies.get('session_id');
   useEffect(() => {
     fetchuser();
   }, []);
   const fetchuser = async () => {
     try {
       var requestOptions = {
-        session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
+        session_id: sessionId,
       };
       const headers = {
         'Content-Type': 'application/json',

@@ -24,7 +24,6 @@ const Login = () => {
   const setCookies = async (session_id) => {
     cookies.set('session_id', session_id);
     const userinfo = await getUserInfoFromLogin(session_id);
-    cookies.set('userinfo', userinfo);
   };
 
   const handleEmailChange = (e) => {

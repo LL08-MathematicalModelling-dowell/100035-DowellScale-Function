@@ -49,7 +49,7 @@ const CreatePCResponse = () => {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const sessionId = cookies.get('sessionid');
+  const sessionId = cookies.get('session_id');
   useEffect(() => {
     fetchuser();
   }, []);
@@ -58,7 +58,7 @@ const CreatePCResponse = () => {
       // var myHeaders = new Headers();
       // myHeaders.append('Content-Type', 'application/json');
       var requestOptions = {
-        session_id: 'zeien1pcnhb1zzgo6qwu71u4epfjv93u',
+        session_id: sessionId,
       };
       const headers = {
         'Content-Type': 'application/json',

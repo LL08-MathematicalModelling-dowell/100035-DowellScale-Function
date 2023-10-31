@@ -23,8 +23,8 @@ const PerceptualScale = () => {
     //   redirect: 'follow',
     // };
     try {
-      const response = await axios.post(
-        'https://100035.pythonanywhere.com/perceptual-mapping/perceptual-mapping-settings/',
+      const response = await axios.get(
+        'https://100035.pythonanywhere.com/perceptual-mapping/perceptual-mapping-settings',
         // requestOptions
       );
       const results = await response.data;
@@ -80,7 +80,7 @@ const PerceptualScale = () => {
         </p>
         <div className="flex flex-col  lg:flex-row border-2 border-black w-full lg:w-[60%] h-2/5">
           <div className="p-4 overflow-scroll overflow-x-hidden lg:w-1/4 ">
-            <h1 className="text-xl font-medium text-center underline">
+            <h1 className="text-sm font-medium text-center underline">
               Scale History
             </h1>
             <div className="flex flex-col">
