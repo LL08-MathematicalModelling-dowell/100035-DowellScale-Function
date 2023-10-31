@@ -166,6 +166,7 @@ const CustomCanvas = ({ xAxisRange, yAxisRange }) => {
         width={400}
         height={400}
         style={{ border: '1px solid black', padding: 40 }}
+        className='xl:w-[600px] xl:h-[600px] w-full h-full'
       ></canvas>
       {draggedItem && (
         <p>

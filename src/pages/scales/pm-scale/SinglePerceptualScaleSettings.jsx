@@ -52,25 +52,24 @@ const SinglePerceptualScaleSettings = () => {
       <h1 className="text-2xl font-bold text-center uppercase">
         Your Perceptual Mapping Scale
       </h1>
-      <div className="flex flex-col items-center justify-center m-10 border-2 border-black">
+      <div className="flex flex-col items-center justify-center px-20 m-10 border-2 border-black lg:px-0">
         <h1 className="p-4 text-2xl font-bold text-center uppercase">
-          {data.settings.name} Perception
-          {/* {data.settings.x_range[0]}  */}
+          {data.settings.name}
         </h1>
-        <div className="flex flex-col lg:flex-row border-2 border-black rounded-lg w-full lg:w-[60%] h-3/5">
+        <div className="flex flex-col lg:flex-row border-2 border-black rounded-lg w-full xl:w-[60%] lg:w-[80%] h-3/5 ">
           <div className="flex flex-wrap items-center justify-center p-4 mx-auto lg:w-3/4">
             {customCanva}
           </div>
-          <div className="flex flex-col flex-wrap items-center p-4 mx-auto border border-black lg:w-1/4">
+          <div className="flex flex-col flex-wrap items-center w-full p-4 mx-auto border border-black lg:w-1/4">
             <h1 className="mt-4 text-2xl font-medium text-center underline">
               AVAILABLE ITEMS
             </h1>
             <div className="flex flex-col ">
               {Object.values(data.settings.item_list).map((e, index) => (
-                <p key={index} className="my-4 text-xl">
-                  {e}
+                <div key={index} className="my-4 ">
+                  {/* {e} */}
                   <Box name={e} />
-                </p>
+                </div>
               ))}
             </div>
           </div>
