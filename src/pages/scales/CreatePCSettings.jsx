@@ -443,49 +443,8 @@ const CreatePCSettings = () => {
             </div>
           </div>
 
-          {/* <div className=""> */}
 
-          {/* </div> */}
-          {/* {inputValues.map((value, index) => (
-                <>
-                  <input
-                    key={index}
-                  type="file"
-                  name={value}
-                  className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                />
-                </>
-              ))} */}
-          {/* <div key={index} className="mb-4">
-                <input
-                  type="file"
-                  id={`item_image_${index}`}
-                  name="value"
-                  className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                />
-              </div> */}
-          {/* {inputValues.map((value, index) => (
-                <div key={index}>
-                  <input
-                    type="text"
-                    placeholder={`paired ${index + 1}`}
-                    value={value}
-                    className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                    onChange={(e) =>
-                      handleInputValueChange(index, e.target.value)
-                    }
-                  />
-                  <div className="mb-4">
-                    <input
-                      type="file"
-                      id={`item_image_${index}`}
-                      name={`item_image_${index}`}
-                      className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
-                      onChange={(e) => handleFileInputChange(index, e)}
-                    />
-                  </div>
-                </div>
-              ))} */}
+
         </div>
         <div className="flex mt-4 lg:justify-end">
           <button
