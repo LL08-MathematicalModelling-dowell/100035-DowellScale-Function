@@ -13,7 +13,7 @@ import { Button } from '../../../components/button';
 const NPSScale = () => {
     const { slug } = useParams();
     const { isLoading, scaleData, fetchScaleData } = useGetScale();
-    const [selectedScore, setSelectedScore] = useState(null);
+    const [selectedScore, setSelectedScore] = useState(-1);
     const navigateTo = useNavigate();
 
     const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
