@@ -1,15 +1,5 @@
 import { useNavigate } from 'react-router';
-import Cookies from 'universal-cookie';
 const Home = () => {
-  // const cookies = new Cookies();
-  // const sessionId = cookies.get('sessionid');
-  // console.log('====================================');
-  // console.log(sessionId);
-  // console.log('====================================');
-  // const navigate = useNavigate();
-  // if (!sessionId) {
-  //   navigate('/login');
-  // }
   const scaleTypes = [
     {
       name: 'linkert scale',
@@ -33,7 +23,7 @@ const Home = () => {
     },
     {
       name: 'perceptual mapping scale',
-      slug: 'perceptual-mapping-scale',
+      slug: 'pm-scale',
     },
   ];
 
@@ -46,7 +36,7 @@ const Home = () => {
           <button
             onClick={() => navigateTo(`/${scale.slug}`)}
             key={scale.slug}
-            className="w-full px-2 py-1 py-2 my-1 text-white capitalize bg-primary hover:bg-gray-700/50"
+            className="w-full px-2 py-1 my-1 text-white capitalize bg-primary hover:bg-gray-700/50"
           >
             {scale.name}
           </button>

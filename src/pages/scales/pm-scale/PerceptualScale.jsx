@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Fallback from '../../components/Fallback';
-import dowellLogo from '../../assets/dowell-logo.png';
-import Button from '../../components/button/Button';
+import Fallback from '../../../components/Fallback';
+import dowellLogo from '../../../assets/dowell-logo.png';
+import Button from '../../../components/button/Button';
 import { Chart } from 'react-google-charts';
 import axios from 'axios';
 const PerceptualScale = () => {
@@ -24,7 +24,7 @@ const PerceptualScale = () => {
     // };
     try {
       const response = await axios.get(
-        'https://100035.pythonanywhere.com/perceptual-mapping/perceptual-mapping-settings',
+        'https://100035.pythonanywhere.com/perceptual-mapping/perceptual-mapping-settings'
         // requestOptions
       );
       const results = await response.data;
@@ -56,11 +56,11 @@ const PerceptualScale = () => {
     legend: 'none',
     trendlines: { 0: {} },
     colors: ['#000000'],
-    animation: {
-      startup: true,
-      duration: 1000,
-      easing: 'out',
-    },
+    // animation: {
+    //   startup: true,
+    //   duration: 1000,
+    //   easing: 'out',
+    // },
     crosshair: { trigger: 'both' },
   };
 
@@ -95,10 +95,10 @@ const PerceptualScale = () => {
             </div>
           </div>
 
-          <div className="flex flex-col flex-wrap items-center justify-center p-4 mx-auto border border-black lg:w-3/4">
+          <div className="flex flex-col flex-wrap items-center justify-center mx-auto border border-black lg:p-4 lg:w-3/4">
             <div
               className="flex flex-row flex-wrap justify-center h-[350px] "
-              style={{ zoom: 2 }}
+              style={{ zoom: 1 }}
             >
               <Chart
                 chartType="ScatterChart"

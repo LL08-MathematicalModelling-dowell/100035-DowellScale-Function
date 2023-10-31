@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import Fallback from '../../components/Fallback';
+import Fallback from '../../../components/Fallback';
 import axios from 'axios';
-import CustomCanvas from '../../components/CustomCanvas';
-import { Box } from '../../components/Box';
+import CustomCanvas from '../../../components/CustomCanvas';
+import { Box } from '../../../components/Box';
 
 const SinglePerceptualScaleSettings = () => {
   const { id } = useParams();

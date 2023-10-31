@@ -21,11 +21,14 @@ import {
   SinglePCScaleSettings,
   CreatePCResponse,
 } from './pages/scales/pc-scale';
+import {
+  PerceptualScale,
+  CreatePerceptualScaleSettings,
+  SinglePerceptualScaleSettings,
+  UpdatePMSSettings,
+} from './pages/scales/pm-scale';
 import { UpdateRankingScale } from './pages/scales/update';
 import { RankingScaleSettings } from './pages/scales/settings';
-import PerceptualScale from './pages/scales/PerceptualScale';
-import SinglePerceptualScaleSettings from './pages/scales/SinglePerceptualScaleSettings';
-import CreatePerceptualScaleSettings from './pages/scales/CreatePerceptualScaleSettings';
 import PrivateRoutes from './components/PrivateRoute/PrivateRoute';
 
 function App() {
@@ -43,7 +46,7 @@ function App() {
                 <Route path="/available-scales" element={<AvailableScales />} />
                 <Route path="/pc-scale" element={<PairedScale />} />
                 <Route
-                  path="/perceptual-mapping-scale"
+                  path="/pm-scale"
                   element={<PerceptualScale />}
                 />
                 <Route path="/ranking-scale" element={<RankingScale />} />
@@ -82,6 +85,10 @@ function App() {
                 <Route
                   path="/update-paired-scale-settings/:id"
                   element={<UpdatePCScaleSettings />}
+                />
+                <Route
+                  path="/update-perceptual-scale-settings/:id"
+                  element={<UpdatePMSSettings />}
                 />
                 <Route
                   path="/update-ranking-scale/:slug"
