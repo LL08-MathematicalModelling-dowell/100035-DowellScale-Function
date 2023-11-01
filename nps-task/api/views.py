@@ -1219,16 +1219,40 @@ def nps_plugins_create_settings(request, api_key):
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
         try:
-            params = request.GET
-            page = params.get('page_id')
-            block = params.get('block_id')
+            page_id = request.GET.get('page_id', None)
+            block_id = request.GET.get('block_id', None)
 
-            field_add = {"settings.position": {"$elemMatch": {"page": page}}, "settings.api_key": api_key, "settings.position": {"$elemMatch": {"block": block}},}
-            settings_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
-                                 "1249001", "ABCDE", "find", field_add, "nil")
+            field_add = {}
+
+            if api_key:
+                field_add["settings.api_key"] = api_key
+
+            if page_id is not None:
+                field_add["settings.position"] = {"$elemMatch": {"page": page_id}}
+
+            if block_id is not None:
+                if "settings.position" in field_add:
+                    field_add["settings.position"]["$elemMatch"]["block"] = block_id
+                else:
+                    field_add["settings.position"] = {
+                        "$elemMatch": {"block": block_id}
+                    }
+
+
+            print(field_add)
+
+            settings_data = dowellconnection(
+                "dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
+                "1249001", "ABCDE", "fetch", field_add, "nil"
+            )
+
+            print(settings_data)
+
             if not json.loads(settings_data).get('data'):
                 return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
-            return Response({"scale_id": json.loads(settings_data)['data']['_id'], "scale_settings": json.loads(settings_data)['data']['settings']}, status=status.HTTP_200_OK)
+            if len(json.loads(settings_data)['data']) > 1:
+                return Response({"scale_settings": json.loads(settings_data)['data']}, status=status.HTTP_200_OK)
+            return Response({"scale_id": json.loads(settings_data)['data'][0]['_id'], "scale_settings": json.loads(settings_data)['data'][0]['settings']}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"Error": "Invalid Params!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
