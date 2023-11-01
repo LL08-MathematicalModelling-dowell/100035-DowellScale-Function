@@ -7,13 +7,17 @@ import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
 
 import { EmojiPalette } from '../../../components/emoji-pellet';
+import { StarPalette } from '../../../components/stars-pellet';
 
 const CreateNPSScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedEmojis, setSelectedEmojis] = useState(Array(11).fill(false));
+    const [selectedStars, setSelectedStars] = useState(Array(5).fill(false));
     const [showEmojiPalette, setShowEmojiPalette] = useState(false);
+    const [showStarPalette, setShowStarPalette] = useState(false);
     const emojis = ['😊', '😄', '😃', '😁', '🙂', '😐', '😕', '😔', '😟', '😞', '😢'];
+    
 
     const createScale  = useCreateScale();
 
@@ -44,14 +48,28 @@ const CreateNPSScale = () => {
           show_total_score: "true" //should be boolean
   })
 
+  const handleToggleEmojiPellete = ()=>{
+    setShowEmojiPalette(!showEmojiPalette)
+  }
+
+  const handleToggleStarsPellete = ()=>{
+    setShowStarPalette(!showStarPalette)
+  }
+
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setFormData({ ...formData, [name]:value });
     if (name === 'fomat' && value === 'Emojis') {
         console.log('fomat selected:', value)
-        setShowEmojiPalette(true);
+        handleToggleEmojiPellete();
       } else {
         setShowEmojiPalette(false);
+      }
+
+    if (name === 'fomat' && value === 'Stars') {
+        handleToggleStarsPellete();
+      } else {
+        setShowStarPalette(false);
       }
   }
 
@@ -59,6 +77,12 @@ const CreateNPSScale = () => {
     const newSelectedEmojis = [...selectedEmojis];
     newSelectedEmojis[index] = !newSelectedEmojis[index];
     setSelectedEmojis(newSelectedEmojis);
+  };
+
+  const handleStarSelect = (index) => {
+    const newSelectedStars = [...selectedStars];
+    newSelectedStars[index] = !newSelectedStars[index];
+    setSelectedStars(newSelectedStars);
   };
 
   const handleToggleTime = ()=>{
@@ -270,7 +294,15 @@ const CreateNPSScale = () => {
         <EmojiPalette
             selectedEmojis={selectedEmojis}
             handleEmojiSelect={handleEmojiSelect}
+            handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
+        )}
+        {showStarPalette && (
+            <StarPalette
+                selectedStars={selectedStars}
+                handleStarSelect={handleStarSelect}
+                handleToggleStarsPellete={handleToggleStarsPellete}
+            />
         )}
     </div>
   )
