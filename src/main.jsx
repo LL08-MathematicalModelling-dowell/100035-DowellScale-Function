@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter
       basename={
-        import.meta.env.DEV ? '/' : '/100035-DowellScale-Function/'
+        import.meta.env.DEV ? '' : '/100035-DowellScale-Function/'
       }
     >
       <DndProvider backend={HTML5Backend}>

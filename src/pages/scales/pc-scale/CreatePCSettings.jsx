@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import Fallback from '../../../components/Fallback';
 import axios from 'axios';
 
 const CreatePCSettings = () => {
   const navigate = useNavigate();
   const [inputValues, setInputValues] = useState([]);
+  const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
+  console.log(userinfo.userinfo.username);
   const [formData, setFormData] = useState({
-    user_name: '',
+    user_name: userinfo.userinfo.username || '',
     scale_name: '',
     orientation: '',
     fontcolor: '',
@@ -20,8 +21,7 @@ const CreatePCSettings = () => {
     // item_count: 0,
     item_list: inputValues,
   });
-  const cookies = new Cookies();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isInputVisible, setInputVisible] = useState(false);
   const [isImageVisible, setIsImageVisible] = useState(false);
   const [itemCount, setItemCount] = useState(0);
@@ -82,34 +82,6 @@ const CreatePCSettings = () => {
     }
   };
 
-  const sessionId = cookies.get('session_id');
-  useEffect(() => {
-    fetchuser();
-  }, []);
-  const fetchuser = async () => {
-    try {
-      var requestOptions = {
-        session_id: sessionId,
-      };
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      const response = await axios.post(
-        `https://100014.pythonanywhere.com/api/userinfo/`,
-        requestOptions,
-        { headers }
-      );
-      const data = await response.data;
-      setFormData({
-        user_name: data.userinfo.username,
-      });
-      setIsLoading(false);
-    } catch (error) {
-      console.log('Error fetching user:', error.message);
-      setIsLoading(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -156,7 +128,7 @@ const CreatePCSettings = () => {
         console.log(result);
         toast.error(result.error);
         setFormData({
-          user_name: '',
+          user_name: userinfo.userinfo.username || '',
           scale_name: '',
           orientation: '',
           fontcolor: '',
@@ -442,9 +414,6 @@ const CreatePCSettings = () => {
               ))}
             </div>
           </div>
-
-
-
         </div>
         <div className="flex mt-4 lg:justify-end">
           <button

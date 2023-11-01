@@ -15,13 +15,6 @@ const PerceptualScale = () => {
   }, []);
 
   const fetchScales = async () => {
-    // var myHeaders = new Headers();
-    // myHeaders.append('Content-Type', 'application/json');
-    // var requestOptions = {
-    //   method: 'GET',
-    //   headers: myHeaders,
-    //   redirect: 'follow',
-    // };
     try {
       const response = await axios.get(
         'https://100035.pythonanywhere.com/perceptual-mapping/perceptual-mapping-settings'

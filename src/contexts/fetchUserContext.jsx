@@ -1,14 +1,11 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import axios from 'axios'; 
-import Cookies from 'universal-cookie';
 
 const FetchUserContext = createContext();
 
 export const FetchUserContextProvider = ({ children }) => {
-  const cookies = new Cookies();
   const [userSessionId, setUserSessionId] = useState(null);
   const [user, setUser] = useState(null);
-  // const sessionId = cookies.get('session_id');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +27,7 @@ export const FetchUserContextProvider = ({ children }) => {
 
   const fetchSessionId = ()=>{
     try {
-      const sessionId = cookies.get('session_id') || '5x7yhetbwdp9n6nre0hxosxj87yno3o6';
+      const sessionId = sessionStorage.getItem('session_id') || '5x7yhetbwdp9n6nre0hxosxj87yno3o6';
       if(sessionId){
           setUserSessionId(sessionId);
       }
