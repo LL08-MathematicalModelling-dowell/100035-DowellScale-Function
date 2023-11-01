@@ -22,6 +22,8 @@ const UpdateRankingScale = ()=>{
     const updateResponse = useUpdateResponse();
     const navigateTo = useNavigate();
 
+    
+
 
     const [showStagesInputModal, setShowStagesInputModal] = useState(false);
     const [showItemListInputModal, setShowItemListInputModal] = useState(false);

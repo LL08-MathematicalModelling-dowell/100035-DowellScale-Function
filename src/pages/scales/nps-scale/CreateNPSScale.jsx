@@ -6,13 +6,20 @@ import { useCreateScale } from '../../../hooks/useCreateScale';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
 
+import { EmojiPalette } from '../../../components/emoji-pellet';
 
 const CreateNPSScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedEmojis, setSelectedEmojis] = useState(Array(11).fill(false));
+    const [showEmojiPalette, setShowEmojiPalette] = useState(false);
+    const emojis = ['😊', '😄', '😃', '😁', '🙂', '😐', '😕', '😔', '😟', '😞', '😢'];
+
     const createScale  = useCreateScale();
 
     const navigateTo = useNavigate();
+
+    console.log(selectedEmojis)
     
     const [formData, setFormData] = useState({
           orientation: "",
@@ -40,7 +47,19 @@ const CreateNPSScale = () => {
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setFormData({ ...formData, [name]:value });
+    if (name === 'fomat' && value === 'Emojis') {
+        console.log('fomat selected:', value)
+        setShowEmojiPalette(true);
+      } else {
+        setShowEmojiPalette(false);
+      }
   }
+
+  const handleEmojiSelect = (index) => {
+    const newSelectedEmojis = [...selectedEmojis];
+    newSelectedEmojis[index] = !newSelectedEmojis[index];
+    setSelectedEmojis(newSelectedEmojis);
+  };
 
   const handleToggleTime = ()=>{
     setTimeOn(!timeOn);
@@ -50,6 +69,9 @@ const CreateNPSScale = () => {
   const format = ['Numbers', 'Emojis', 'Stars']
 
   const handleSubmitNPSScale = async()=>{
+
+    const selectedEmojisArray = selectedEmojis.map((isSelected, index) => isSelected ? emojis[index] : '');
+
     const payload = {
         orientation: formData.orientation,
         scale_id: "64e8744218f0a24fb16b0ee2",
@@ -60,7 +82,7 @@ const CreateNPSScale = () => {
         no_of_scales: formData.no_of_scales,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
-        fomat: formData.fomat,
+        fomat: formData.fomat === 'Emojis' ? selectedEmojisArray : formData.fomat,
         time: formData.time,
         template_name: "testing5350",
         name: formData.name,
@@ -72,6 +94,8 @@ const CreateNPSScale = () => {
         scaleCategory: "nps scale",
         show_total_score: "true" //should be boolean
     }
+
+    console.log(payload)
     try {
         setIsLoading(true);
         const response = await createScale('nps-scale', payload);
@@ -242,6 +266,12 @@ const CreateNPSScale = () => {
           <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button>
         </div>
       </div>
+      {showEmojiPalette && (
+        <EmojiPalette
+            selectedEmojis={selectedEmojis}
+            handleEmojiSelect={handleEmojiSelect}
+        />
+        )}
     </div>
   )
 }

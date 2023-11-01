@@ -63,7 +63,7 @@ const UpdateNPSScale = () => {
       })
   );
 
-  console.log(_id, 'id')
+
 
   const updatePayload = {
     scale_id: _id,
@@ -145,7 +145,7 @@ const UpdateNPSScale = () => {
   }, [settings]);
 
   const handleUpdateNPSScale = async()=>{
-    console.log(updatePayload, 'payload ****')
+
     try {
         setIsLoading(true);
         const { status, data } = await updateResponse('nps-scale', updatePayload);
