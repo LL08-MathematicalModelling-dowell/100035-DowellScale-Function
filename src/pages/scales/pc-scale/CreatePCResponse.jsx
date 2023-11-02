@@ -1,17 +1,15 @@
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import Fallback from '../../../components/Fallback';
 import axios from 'axios';
 
 const CreatePCResponse = () => {
-  // const { scale_id } = useParams();
-  const cookies = new Cookies();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
+  const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
   const userSelections = location.state?.userSelections || [];
   // console.log(userSelections);
   const selectedOptions =
@@ -28,7 +26,7 @@ const CreatePCResponse = () => {
     });
   };
   const [formData, setFormData] = useState({
-    user_name: '',
+    user_name: userinfo.userinfo.username || '',
     scale_id: id,
     brand_name: '',
     product_name: '',
@@ -48,57 +46,11 @@ const CreatePCResponse = () => {
     });
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const sessionId = cookies.get('session_id');
-  useEffect(() => {
-    fetchuser();
-  }, []);
-  const fetchuser = async () => {
-    try {
-      // var myHeaders = new Headers();
-      // myHeaders.append('Content-Type', 'application/json');
-      var requestOptions = {
-        session_id: sessionId,
-      };
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      const response = await axios.post(
-        `https://100014.pythonanywhere.com/api/userinfo/`,
-        requestOptions,
-        { headers }
-      );
-      const data = await response.data;
-      setFormData({
-        user_name: data.userinfo.username,
-        scale_id: formData.scale_id,
-        brand_name: formData.brand_name,
-        product_name: formData.product_name,
-        process_id: formData.process_id,
-        products_ranking: formData.products_ranking,
-      });
-      setIsLoading(false);
-    } catch (error) {
-      console.log('Error fetching user:', error.message);
-      setIsLoading(false);
-    }
-  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // var myHeaders = new Headers();
-    // myHeaders.append('Content-Type', 'application/json');
-
-    // var raw = JSON.stringify({
-    //   username: formData.user_name,
-    //   scale_id: formData.scale_id,
-    //   brand_name: formData.brand_name,
-    //   product_name: formData.product_name,
-    //   process_id: formData.process_id,
-    //   products_ranking: formData.products_ranking,
-    // });
-    // console.log(raw);
 
     const headers = {
       'Content-Type': 'application/json',

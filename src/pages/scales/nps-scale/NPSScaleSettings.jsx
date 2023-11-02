@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
+import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveResponse } from "../../../hooks/useSaveResponse";
@@ -8,13 +9,27 @@ import { Button } from "../../../components/button";
 
 const NPSScaleSettings = () => {
     const { slug } = useParams();
-    const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
+    // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
+    const [scale, setScale] = useState(null);
     const [selectedScore, setSelectedScore] = useState(-1);
     const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const saveResponse = useSaveResponse();
     const navigateTo = useNavigate();
 
-    const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+   
+
+    
+
+
+    // if(scale && (scale[0]?.settings?.fomat) ){
+    //     scores = scale[0].settings.fomat
+    // }else{
+    //     scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    // }
+
 
 
     const handleSelectScore = (score)=>{
@@ -65,7 +80,7 @@ const NPSScaleSettings = () => {
     }
 
     try {
-        setIsLoading(false);
+        setIsLoading(true);
         const response = await saveResponse(payload);
         console.log(response)
         // if(status===200){
@@ -83,7 +98,16 @@ const NPSScaleSettings = () => {
 
   useEffect(() => {
       const fetchData = async () => {
-          await handleFetchSingleScale(slug);
+        //   await handleFetchSingleScale(slug);
+        try {
+            setLoading(true);
+            const response = await axios.get(`http://100035.pythonanywhere.com/ranking/api/ranking_settings_create?scale_id=${slug}`);
+            setScale(response.data); 
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
       }
       fetchData();
   }, [slug]);
@@ -98,7 +122,7 @@ const NPSScaleSettings = () => {
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
-                    <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {sigleScaleData?.[0].settings.name}</h3>
+                    <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {scale?.[0].settings.name}</h3>
                     <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
                         {scores.map((score, index)=>(
                             <button 
@@ -115,7 +139,7 @@ const NPSScaleSettings = () => {
                     </div>
             
                     <div className="flex gap-3 justify-end">
-                        {sigleScaleData && sigleScaleData.map((scale, index)=>(
+                        {scale && scale.map((scale, index)=>(
                             <Button width={'3/4'} onClick={()=>navigateTo(`/update-nps-scale/${scale._id}`)} key={index}>update scale</Button>
                         ))}
                         <Button 

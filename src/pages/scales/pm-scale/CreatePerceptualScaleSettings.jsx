@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import Fallback from '../../../components/Fallback';
 import axios from 'axios';
 
 const CreatePerceptualScaleSettings = () => {
   const navigate = useNavigate();
   const [inputValues, setInputValues] = useState([]);
+  const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
   const [formData, setFormData] = useState({
-    username: '',
+    username: userinfo.userinfo.username || '',
     scale_name: '',
     orientation: '',
     fontcolor: '',
@@ -31,8 +31,8 @@ const CreatePerceptualScaleSettings = () => {
     X_spacing: 0,
     Y_spacing: 0,
   });
-  const cookies = new Cookies();
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const [isLoading, setIsLoading] = useState(false);
   const [isInputVisible, setInputVisible] = useState(false);
   const [itemCount, setItemCount] = useState(0);
   const toggleInput = () => {
@@ -48,16 +48,10 @@ const CreatePerceptualScaleSettings = () => {
   const handleInputChange = (e) => {
     const value = parseInt(e.target.value);
 
-    // Check if the value is a positive integer
     if (!isNaN(value) && value > 0) {
       setItemCount(value);
-      // setFormData({
-      //   item_count: value,
-      // });
       setInputValues(Array(value).fill(''));
     } else {
-      // Handle invalid input, e.g., show an error message or prevent setting state
-      // For simplicity, I'm setting numItems to 0 here
       setItemCount();
       setInputValues([]);
     }
@@ -71,78 +65,10 @@ const CreatePerceptualScaleSettings = () => {
     });
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const sessionId = cookies.get('session_id');
-  useEffect(() => {
-    fetchuser();
-  }, []);
-  const fetchuser = async () => {
-    try {
-      // var myHeaders = new Headers();
-      // myHeaders.append('Content-Type', 'application/json');
-      var requestOptions = {
-        session_id: sessionId,
-      };
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      const response = await axios.post(
-        `https://100014.pythonanywhere.com/api/userinfo/`,
-        requestOptions,
-        { headers }
-      );
-      const data = await response.data;
-      setFormData({
-        user_name: data.userinfo.username,
-        scale_id: formData.scale_id,
-        brand_name: formData.brand_name,
-        product_name: formData.product_name,
-        process_id: formData.process_id,
-        products_ranking: formData.products_ranking,
-      });
-      setIsLoading(false);
-    } catch (error) {
-      console.log('Error fetching user:', error.message);
-      setIsLoading(false);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // var myHeaders = new Headers();
-    // myHeaders.append('Content-Type', 'application/json');
-
-    // var raw = JSON.stringify({
-    //   username: formData.username,
-    //   scale_name: formData.scale_name,
-    //   orientation: formData.orientation,
-    //   fontcolor: formData.fontcolor,
-    //   fontstyle: formData.fontstyle,
-    //   time: formData.time,
-    //   scalecolor: formData.scalecolor,
-    //   roundcolor: formData.roundcolor,
-    //   item_count: itemCount,
-    //   item_list: formData.item_list,
-    //   no_of_scale: formData.no_of_scale,
-    //   allow_resp: formData.allow_resp,
-    //   X_upper_limit: formData.X_upper_limit,
-    //   Y_upper_limit: formData.Y_upper_limit,
-    //   X_left: formData.X_left,
-    //   X_right: formData.X_right,
-    //   Y_top: formData.Y_top,
-    //   Y_bottom: formData.Y_bottom,
-    //   marker_type: formData.marker_type,
-    //   marker_color: formData.marker_color,
-    //   X_spacing: formData.X_spacing,
-    //   Y_spacing: formData.Y_spacing,
-    // });
-    // console.log(raw);
-
-    const headers = {
-      'Content-Type': 'application/json',
-    };
 
     var requestOptions = {
       username: formData.username,
@@ -170,11 +96,11 @@ const CreatePerceptualScaleSettings = () => {
     };
 
     try {
-      const data = await fetch(
+      const data = await axios.post(
         'https://100035.pythonanywhere.com/perceptual-mapping/perceptual-mapping-settings/',
         // '',
         requestOptions,
-        { headers }
+        { headers: { 'Content-Type': 'application/json' } }
       );
       const result = await data.data;
       console.log(result);
@@ -183,7 +109,7 @@ const CreatePerceptualScaleSettings = () => {
         console.log(result);
         toast.error(result.error);
         setFormData({
-          user_name: '',
+          user_name: userinfo.userinfo.username || '',
           scale_name: '',
           orientation: '',
           fontcolor: '',
