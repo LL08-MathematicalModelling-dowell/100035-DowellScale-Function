@@ -24,7 +24,7 @@ const PrivateRoutes = () => {
           ? window.location.replace(
               'https://100014.pythonanywhere.com/?redirect_url=http://localhost:3000/'
             )
-          : 'https://100014.pythonanywhere.com/?redirect_url=https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/%23'
+          : 'https://100014.pythonanywhere.com/?redirect_url=https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/'
       }
     />
   );

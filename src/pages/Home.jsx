@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+// import Cookies from 'universal-cookie';
 
 const Home = () => {
+  // const cookie = new Cookies();
   const scaleTypes = [
     {
       name: 'linkert scale',
@@ -84,10 +86,11 @@ const Home = () => {
       // }
     }
     if (!localSession && !session_id) {
+      // cookie.remove('sessionid');
       window.location.replace(
         import.meta.env.DEV
           ? 'https://100014.pythonanywhere.com/?redirect_url=http://localhost:3000/'
-          : 'https://100014.pythonanywhere.com/?redirect_url=https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/%23'
+          : 'https://100014.pythonanywhere.com/?redirect_url=https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/'
       );
     }
   }, [localSession, searchParams]);
