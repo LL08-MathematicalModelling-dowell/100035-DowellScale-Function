@@ -158,7 +158,7 @@ class TestLikertScaleAPI(TestCase):
     def test_update_scale_invalid_id(self):
         """
         Test updating a scale with an invalid ID.
-"""
+        """
         # Using non existent scale ID
         scale_id = '653fa827grhfaebeb1b342b9f'
         url = reverse('likert:settings_api_view_create')
@@ -190,5 +190,53 @@ class TestLikertScaleAPI(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('scale_id missing or mispelt', response.data['error'])
 
+    def test_create_scale_response_success(self):
+        url = reverse('likert:submit_response')
+        payload = {
+                    "scale_id":"653fa827a0eaebeb1b342b9f",
+                    "score": 0,
+                    "instance_id":1,
+                    "process_id": "1",
+                    "brand_name":"question",
+                    "product_name":"answer",
+                    "username": "ndoneambrose"
+                }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("response_id", response.data)
 
+    def test_create_scale_response_missing_fields(self):
+        url = reverse('likert:submit_response')
+        payload = {
+            "scale_id":"653fa827a0eaebeb1b342b9f",
+            "score": 0,
+            "instance_id":1,
+            "process_id": "1",
+            "brand_name":"question",
+            "product_name":"answer",
+            # Missing required field: username
+        }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Missing required parameter username", response.data["error"])
 
+    def test_create_scale_response_for_non_existent_scale(self):
+        url = reverse('likert:submit_response')
+        payload = {
+            "scale_id":"653fa827a0eaeb342b9f", # Non existent scale_id
+            "score": 0,
+            "instance_id":1,
+            "process_id": "1",
+            "brand_name":"question",
+            "product_name":"answer",
+            "username": "ndoneambrose"
+        }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIn("Scale does not exist", response.data["Error"])
+
+    def test_fetch_scale_response_by_id(self):
+        scale_id = "64ae7b831842d4dffe54f3b0"
+        url = reverse('likert:submit_response')
+        response = self.client.get(f'{url}?scale_id={scale_id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
