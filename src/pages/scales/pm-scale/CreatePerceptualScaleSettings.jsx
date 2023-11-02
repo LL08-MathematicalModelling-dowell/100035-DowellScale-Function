@@ -181,7 +181,7 @@ const CreatePerceptualScaleSettings = () => {
               name="scale_name"
               value={formData.scale_name || ''}
               onChange={handleChange}
-              className="w-full px-4 py-2 mt-4 border rounded-lg focus:outline-none"
+              className="w-full px-4 py-5 mt-4 border rounded-lg focus:outline-none"
               // required
             />
           </div>
@@ -301,7 +301,7 @@ const CreatePerceptualScaleSettings = () => {
               <option value="Baskerville, serif">Baskerville, serif</option>
             </select>
           </div>
-          <div className="mb-4">
+          <div className="mb-2">
             <div className="grid gap-2 md:grid-cols-2">
               <div>
                 <label
@@ -316,7 +316,7 @@ const CreatePerceptualScaleSettings = () => {
                   id="item_count"
                   value={itemCount || 0}
                   onChange={handleInputChange}
-                  className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                  className="px-4 py-5 mt-4 border rounded-lg focus:outline-none"
                 />
               </div>
 
@@ -329,7 +329,7 @@ const CreatePerceptualScaleSettings = () => {
                       name="item_list"
                       placeholder={`paired ${index + 1}`}
                       value={value}
-                      className="inline w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                      className="inline w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                       onChange={(e) =>
                         handleInputValueChange(index, e.target.value)
                       }
@@ -357,7 +357,7 @@ const CreatePerceptualScaleSettings = () => {
                       name="x_upper_limit"
                       value={formData.X_upper_limit || 0}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                      className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                       // required
                     />
                   </div>
@@ -368,7 +368,7 @@ const CreatePerceptualScaleSettings = () => {
                       name="x_upper_limit"
                       value={formData.X_upper_limit || 0}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                      className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                       // required
                     />
                   </div>
@@ -389,7 +389,7 @@ const CreatePerceptualScaleSettings = () => {
                       name="y_upper_limit"
                       value={formData.Y_upper_limit || 0}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                      className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                       // required
                     />
                   </div>
@@ -400,7 +400,7 @@ const CreatePerceptualScaleSettings = () => {
                       name="y_upper_limit"
                       value={formData.Y_upper_limit || 0}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                      className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                       // required
                     />
                   </div>
@@ -423,7 +423,7 @@ const CreatePerceptualScaleSettings = () => {
                   name="x_spacing"
                   value={formData.X_spacing || 0}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                  className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                   // required
                 />
               </div>
@@ -440,7 +440,7 @@ const CreatePerceptualScaleSettings = () => {
                   name="y_spacing"
                   value={formData.Y_spacing || 0}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                  className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                   // required
                 />
               </div>
@@ -458,7 +458,7 @@ const CreatePerceptualScaleSettings = () => {
               name="marker_type" // Add the name attribute
               value={formData.marker_type}
               onChange={handleChange}
-              className="bg-gray-50 border focus:outline-none text-gray-900 text-sm rounded-lg  block w-full p-2.5 mt-4"
+              className="bg-gray-50 border focus:outline-none text-gray-900 text-sm rounded-lg  block w-full p-2.5 mt-2"
             >
               <option value="">Choose...</option>
               <option value="dot">Dot</option>
@@ -499,7 +499,7 @@ const CreatePerceptualScaleSettings = () => {
                     name="time"
                     value={formData.time || 0}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                    className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                     // required
                   />
                 </div>
@@ -518,7 +518,7 @@ const CreatePerceptualScaleSettings = () => {
               name="marker_color" // Add the name attribute
               value={formData.marker_color}
               onChange={handleChange}
-              className="bg-gray-50 border focus:outline-none text-gray-900 text-sm rounded-lg  block w-full p-2.5 mt-4"
+              className="bg-gray-50 border focus:outline-none text-gray-900 text-sm rounded-lg  block w-full p-2.5 mt-2"
             >
               <option value="">Choose...</option>
               <option value="red">Red</option>
