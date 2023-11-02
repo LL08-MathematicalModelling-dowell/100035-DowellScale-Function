@@ -96,13 +96,13 @@ const Home = () => {
   }, [localSession, searchParams]);
 
   return (
-    <div className="flex items-center justify-center h-screen flex-cols">
-      <div className="grid w-6/12 grid-cols-2 gap-4">
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="grid w-6/12 grid-cols-1 gap-4 lg:grid-cols-2">
         {scaleTypes.map((scale) => (
           <button
             onClick={() => navigateTo(`/${scale.slug}`)}
             key={scale.slug}
-            className="w-full px-2 py-1 my-1 text-white capitalize bg-primary hover:bg-gray-700/50"
+            className="w-full px-2 py-8 my-1 text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
           >
             {scale.name}
           </button>
