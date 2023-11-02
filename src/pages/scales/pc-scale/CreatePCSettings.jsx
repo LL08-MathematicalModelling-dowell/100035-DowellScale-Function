@@ -186,7 +186,7 @@ const CreatePCSettings = () => {
               name="scale_name"
               value={formData.scale_name || ''}
               onChange={handleChange}
-              className="w-full px-4 py-2 mt-4 border rounded-lg focus:outline-none"
+              className="w-full px-4 py-5 mt-4 border rounded-lg focus:outline-none"
               // required
             />
           </div>
@@ -349,7 +349,7 @@ const CreatePCSettings = () => {
                 name="time"
                 value={formData.time || 0}
                 onChange={handleChange}
-                className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                 // required
               />
             )}
@@ -367,7 +367,7 @@ const CreatePCSettings = () => {
               id="item_count"
               value={itemCount || 0}
               onChange={handleInputChange}
-              className="px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+              className="px-4 py-5 mt-2 border rounded-lg focus:outline-none"
             />
 
             <div>
@@ -393,7 +393,7 @@ const CreatePCSettings = () => {
                     name="item_list"
                     placeholder={`paired ${index + 1}`}
                     value={value}
-                    className="inline w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                    className="inline w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
                     onChange={(e) =>
                       handleInputValueChange(index, e.target.value)
                     }
@@ -405,7 +405,7 @@ const CreatePCSettings = () => {
                         id={`item_image_${index}`}
                         type="file"
                         name={value}
-                        className="inline w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                        className="inline w-full px-4 pt-4 pb-8 border rounded-lg focus:outline-none"
                         onChange={(e) => uploadPicture(e, index)}
                       />
                     </div>

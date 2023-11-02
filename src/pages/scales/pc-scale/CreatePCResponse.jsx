@@ -1,4 +1,4 @@
-import {  useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Fallback from '../../../components/Fallback';
@@ -45,8 +45,6 @@ const CreatePCResponse = () => {
       item_list: newProductRanking,
     });
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,7 +96,29 @@ const CreatePCResponse = () => {
       }
     } catch (error) {
       setIsLoading(false);
-      console.log('Error', error);
+
+      const { location_faulty_pair, segmented_ranking } = error.response.data;
+      // const array = [location_faulty_pair[1], location_faulty_pair[2]];
+
+      if (
+        location_faulty_pair[1] >= 0 &&
+        location_faulty_pair[1] < segmented_ranking.length &&
+        location_faulty_pair[2] >= 0 &&
+        location_faulty_pair[2] <
+          segmented_ranking[location_faulty_pair[1]].length
+      ) {
+        const targetPair =
+          segmented_ranking[location_faulty_pair[1]][location_faulty_pair[2]];
+        // console.log(`Target Pair: ${JSON.stringify(targetPair)}`);
+        toast.error(
+          `${error.response.data.error} \n Pair: ${targetPair.join(',')}`
+        );
+      } else {
+        console.log('Invalid index. Pair not found in segmented_ranking');
+      }
+      // console.log(array);
+
+      console.log('Error', error.response.data);
     }
   };
   // console.log(userSelections);
@@ -144,8 +164,8 @@ const CreatePCResponse = () => {
               name="brand_name"
               value={formData.brand_name}
               onChange={handleChange}
-              className="w-full px-4 py-2 mt-4 border rounded-lg focus:outline-none"
-              // required
+              className="w-full px-4 py-5 mt-4 border rounded-lg focus:outline-none"
+              required
             />
           </div>
           <div className="mb-4">
@@ -161,8 +181,8 @@ const CreatePCResponse = () => {
               name="product_name"
               value={formData.product_name}
               onChange={handleChange}
-              className="w-full px-4 py-2 mt-4 border rounded-lg focus:outline-none"
-              // required
+              className="w-full px-4 py-5 mt-4 border rounded-lg focus:outline-none"
+              required
             />
           </div>
           <div className="mb-4">
@@ -178,7 +198,8 @@ const CreatePCResponse = () => {
                 type="text"
                 placeholder={`Product Ranking ${index + 1}`}
                 value={value}
-                className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none"
+                disabled
+                className="w-full px-4 py-5 mt-2 bg-white border rounded-lg focus:outline-none"
                 onChange={(e) => handleInputValueChange(index, e.target.value)}
               />
             ))}
