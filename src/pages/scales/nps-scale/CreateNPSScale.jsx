@@ -8,6 +8,7 @@ import Fallback from '../../../components/Fallback';
 
 import { EmojiPalette } from '../../../components/emoji-pellet';
 import { StarPalette } from '../../../components/stars-pellet';
+import { EmojiPicker } from '../../../components/emoji-picher';
 
 const CreateNPSScale = () => {
     const [timeOn, setTimeOn] = useState(false);
@@ -291,9 +292,9 @@ const CreateNPSScale = () => {
         </div>
       </div>
       {showEmojiPalette && (
-        <EmojiPalette
-            selectedEmojis={selectedEmojis}
-            handleEmojiSelect={handleEmojiSelect}
+        <EmojiPicker
+            // selectedEmojis={selectedEmojis}
+            // handleEmojiSelect={handleEmojiSelect}
             handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
         )}
