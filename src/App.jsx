@@ -40,8 +40,8 @@ function App() {
           <Navbar />
           <FetchUserContextProvider>
             <Routes>
-              {/* <Route path="/login" element={<Login />} /> */}
-              {/* <Route element={<PrivateRoutes />}> */}
+              <Route path="/login" element={<Login />} />
+              <Route element={<PrivateRoutes />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/available-scales" element={<AvailableScales />} />
                 <Route path="/pc-scale" element={<PairedScale />} />
@@ -98,7 +98,7 @@ function App() {
                   path="/update-nps-scale/:slug"
                   element={<UpdateNPSScale />}
                 />
-              {/* </Route> */}
+              </Route>
             </Routes>
           </FetchUserContextProvider>
         </Suspense>
