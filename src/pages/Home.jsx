@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+// import Cookies from 'universal-cookie';
 
 const Home = () => {
+  // const cookie = new Cookies();
   const scaleTypes = [
     {
       name: 'linkert scale',
@@ -84,22 +86,23 @@ const Home = () => {
       // }
     }
     if (!localSession && !session_id) {
+      // cookie.remove('sessionid');
       window.location.replace(
         import.meta.env.DEV
           ? 'https://100014.pythonanywhere.com/?redirect_url=http://localhost:3000/'
-          : 'https://100014.pythonanywhere.com/?redirect_url=https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/%23'
+          : 'https://100014.pythonanywhere.com/?redirect_url=https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/'
       );
     }
   }, [localSession, searchParams]);
 
   return (
-    <div className="flex items-center justify-center h-screen flex-cols">
-      <div className="grid w-6/12 grid-cols-2 gap-4">
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div className="grid w-6/12 grid-cols-1 gap-4 lg:grid-cols-2">
         {scaleTypes.map((scale) => (
           <button
             onClick={() => navigateTo(`/${scale.slug}`)}
             key={scale.slug}
-            className="w-full px-2 py-1 my-1 text-white capitalize bg-primary hover:bg-gray-700/50"
+            className="w-full px-2 py-8 my-1 text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
           >
             {scale.name}
           </button>
