@@ -956,37 +956,30 @@ def redirect_view(request):
         return error_response(request, {"success": False, "error": f"Provide required fields"}, status.HTTP_400_BAD_REQUEST)
 
 def scales_plugins_function(request):
-    api_key = request.GET.get('api_key')
-    scaletype = request.GET.get('scale_type')
-    scale_type = request.GET.get('type')
-    if "nps" in scaletype and "settings" in scale_type:
-        return nps_plugins_create_settings(request, api_key)
-    elif "nps" in scaletype and "response" in scale_type:
-        return nps_plugins_create_response(request)
-    # try:
-    #     scaletype = request.GET.get('scale_type')
-    #     scale_type = request.GET.get('type')
-    #     api_key = request.GET.get('api_key')
-    #     api_resp = processApikey(api_key)
-    #     if api_resp['success'] is True:
-    #         credit_count = api_resp['total_credits']
-    #         if credit_count > 0:
-    #             if "nps" in scaletype and "settings" in scale_type:
-    #                 return nps_plugins_create_settings(request, api_key)
-    #             elif "nps" in scaletype and "response" in scale_type:
-    #                 return nps_plugins_create_response(request)
-    #         else:
-    #             error_message = api_resp['message']
-    #             return error_response(request, {"success": False, "msg": error_message,
-    #                                             "total credits": api_resp['total_credits']},
-    #                                   status.HTTP_400_BAD_REQUEST)
-    #     elif api_resp['success'] is False:
-    #         error_message = api_resp['message']
-    #         return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
-    #
-    # except Exception as e:
-    #     return error_response(request, {"success": False, "error": f"Provide required fields"},
-    #                           status.HTTP_400_BAD_REQUEST)
+    try:
+        scaletype = request.GET.get('scale_type')
+        scale_type = request.GET.get('type')
+        api_key = request.GET.get('api_key')
+        api_resp = processApikey(api_key)
+        if api_resp['success'] is True:
+            credit_count = api_resp['total_credits']
+            if credit_count > 0:
+                if "nps" in scaletype and "settings" in scale_type:
+                    return nps_plugins_create_settings(request, api_key)
+                elif "nps" in scaletype and "response" in scale_type:
+                    return nps_plugins_create_response(request)
+            else:
+                error_message = api_resp['message']
+                return error_response(request, {"success": False, "msg": error_message,
+                                                "total credits": api_resp['total_credits']},
+                                      status.HTTP_400_BAD_REQUEST)
+        elif api_resp['success'] is False:
+            error_message = api_resp['message']
+            return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return error_response(request, {"success": False, "error": f"Provide required fields"},
+                              status.HTTP_400_BAD_REQUEST)
 
 
 def instance_exists(scale_id, instance_id):
@@ -1342,7 +1335,6 @@ def nps_plugins_create_response(request):
             try:
                 fetch_responses = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094","ABCDE", "fetch", field_add, "nil"))
                 data = fetch_responses["data"]
-                print(data)
             except:
                 return Response({"Error": f"Responses do not exists for this scale {scale_id}!"}, status=status.HTTP_400_BAD_REQUEST)
 
