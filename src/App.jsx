@@ -27,7 +27,7 @@ import {
   SinglePerceptualScaleSettings,
   UpdatePMSSettings,
 } from './pages/scales/pm-scale';
-import { StapleScale, CreateStapleScale } from './pages/scales/staple-scale';
+import { StapleScale, CreateStapleScale, StapleScaleSettings } from './pages/scales/staple-scale';
 import { UpdateRankingScale } from './pages/scales/update';
 import { RankingScaleSettings } from './pages/scales/settings';
 import PrivateRoutes from './components/PrivateRoute/PrivateRoute';
@@ -68,6 +68,10 @@ function App() {
                 <Route
                   path="/create-staple-scale"
                   element={<CreateStapleScale />}
+                />
+                <Route
+                  path="/staple-scale-settings/:slug"
+                  element={<StapleScaleSettings />}
                 />
 
                 {/* staple scale end */}

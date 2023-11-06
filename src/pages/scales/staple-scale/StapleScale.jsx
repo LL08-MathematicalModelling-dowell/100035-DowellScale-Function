@@ -17,6 +17,7 @@ const StapleScale = () => {
     const navigateTo = useNavigate();
 
     const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    // const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 5, 5];
 
     console.log(scaleData?.data, 'staple scale')
     
@@ -45,25 +46,16 @@ const StapleScale = () => {
                         <MdManageHistory className='text-primary'/>
                         </span> Scale History
                     </h2>
-                    {/* {scaleData && scaleData?.data?.data
-                    .slice()
-                    .sort((a, b) => {
-                        const nameA = a?.settings?.name.toLowerCase();
-                        const nameB = b?.settings?.name.toLowerCase();
-                        if (nameA < nameB) return -1;
-                        if (nameA > nameB) return 1;
-                        return 0;
-                    })
-                    .map((scale, index) => (
+                    {scaleData && scaleData?.data?.map((scale, index) => (
                         <Button
                         width={'full'}
-                        onClick={() => navigateTo(`/nps-scale-settings/${scale._id}`)}
+                        onClick={() => navigateTo(`/staple-scale-settings/${scale._id}`)}
                         key={index}
                         >
                         {scale?.settings?.name}
                         </Button>
                     ))
-                    } */}
+                    }
 
                 </div>
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>

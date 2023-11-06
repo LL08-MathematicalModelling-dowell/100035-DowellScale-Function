@@ -60,7 +60,6 @@ const CreateNPSScale = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]:value });
     if (name === 'fomat' && value === 'Emojis') {
-        console.log('fomat selected:', value)
         handleToggleEmojiPellete();
       } else {
         setShowEmojiPalette(false);
