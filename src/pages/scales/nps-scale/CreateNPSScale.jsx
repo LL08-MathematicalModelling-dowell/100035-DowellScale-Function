@@ -10,8 +10,9 @@ import { EmojiPicker } from '../../../components/emoji-picker';
 const CreateNPSScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedEmojis, setSelectedEmojis] = useState(Array(11).fill(false));
+    const [selectedEmojis, setSelectedEmojis] = useState([]);
     const [showEmojiPalette, setShowEmojiPalette] = useState(false);
+    
 
     
 
@@ -59,11 +60,6 @@ const CreateNPSScale = () => {
       }
   }
 
-  const handleEmojiSelect = (index) => {
-    const newSelectedEmojis = [...selectedEmojis];
-    newSelectedEmojis[index] = !newSelectedEmojis[index];
-    setSelectedEmojis(newSelectedEmojis);
-  };
 
   const handleToggleTime = ()=>{
     setTimeOn(!timeOn);
@@ -271,7 +267,8 @@ const CreateNPSScale = () => {
       </div>
       {showEmojiPalette && (
         <EmojiPicker
-            // selectedEmojis={selectedEmojis}
+            setSelectedEmojis={setSelectedEmojis}
+            selectedEmojis={selectedEmojis}
             // handleEmojiSelect={handleEmojiSelect}
             handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
