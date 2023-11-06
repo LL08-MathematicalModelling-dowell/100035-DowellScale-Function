@@ -21,7 +21,13 @@ const CreateNPSScale = () => {
     const navigateTo = useNavigate();
     let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    console.log(selectedEmojis)
+    const requiredFields = [
+        'name',
+        'left',
+        'right',
+        'center',
+        'orientation'
+    ]
     
     const [formData, setFormData] = useState({
           orientation: "",
@@ -71,6 +77,8 @@ const CreateNPSScale = () => {
 
   const handleSubmitNPSScale = async()=>{
 
+    
+
     const payload = {
         orientation: formData.orientation,
         scale_id: "64e8744218f0a24fb16b0ee2",
@@ -95,6 +103,13 @@ const CreateNPSScale = () => {
     }
 
     console.log(payload)
+
+    for(const field of requiredFields){
+        if(!formData[field]){
+            toast.error(`Please complete the "${field}" field.`);
+            return;
+        }
+    }
     try {
         setIsLoading(true);
         const response = await createScale('nps-scale', payload);
