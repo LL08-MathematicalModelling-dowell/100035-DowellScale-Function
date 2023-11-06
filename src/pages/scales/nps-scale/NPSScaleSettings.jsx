@@ -112,6 +112,8 @@ const NPSScaleSettings = () => {
       fetchData();
   }, [slug]);
 
+  console.log(scale, 'scale scale')
+
 
   if (loading) {
     return <Fallback />;
@@ -124,7 +126,7 @@ const NPSScaleSettings = () => {
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {scale?.[0].settings.name}</h3>
                     <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
-                        {scores.map((score, index)=>(
+                        {scale && scale?.[0].settings?.fomat?.map((score, index)=>(
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score)}

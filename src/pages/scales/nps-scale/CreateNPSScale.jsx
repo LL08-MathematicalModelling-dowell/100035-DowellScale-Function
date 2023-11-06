@@ -19,6 +19,7 @@ const CreateNPSScale = () => {
     const createScale  = useCreateScale();
 
     const navigateTo = useNavigate();
+    let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     console.log(selectedEmojis)
     
@@ -70,8 +71,6 @@ const CreateNPSScale = () => {
 
   const handleSubmitNPSScale = async()=>{
 
-    const selectedEmojisArray = selectedEmojis.map((isSelected, index) => isSelected ? emojis[index] : '');
-
     const payload = {
         orientation: formData.orientation,
         scale_id: "64e8744218f0a24fb16b0ee2",
@@ -82,7 +81,7 @@ const CreateNPSScale = () => {
         no_of_scales: formData.no_of_scales,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
-        fomat: formData.fomat === 'Emojis' ? selectedEmojisArray : formData.fomat,
+        fomat: formData.fomat === 'Emojis' ? selectedEmojis : scores,
         time: formData.time,
         template_name: "testing5350",
         name: formData.name,

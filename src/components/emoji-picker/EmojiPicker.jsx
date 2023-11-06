@@ -4,8 +4,6 @@ import { toast } from 'react-toastify';
 import Picker  from 'emoji-picker-react';
 
 const EmojiPicker = ({ handleToggleEmojiPellete, selectedEmojis, setSelectedEmojis}) =>{
-  // const [selectedEmojis, setSelectedEmojis] = useState([]);
-  const [currentEmoji, setCurrentEmoji] = useState(null)
 
   const handleEmojiClick = (e) => {
     if(selectedEmojis.includes(e.emoji)){
@@ -19,12 +17,12 @@ const EmojiPicker = ({ handleToggleEmojiPellete, selectedEmojis, setSelectedEmoj
   };
 
   const handleSubmit = () => {
-    
-    if(selectedEmojis.length < 11){
+    if(selectedEmojis.length < 10){
       toast.error('selected number of emojis cannot be less than 11');
       return;
     }
     console.log('Selected emojis:', selectedEmojis);
+    handleToggleEmojiPellete();
   };
 
   return (
