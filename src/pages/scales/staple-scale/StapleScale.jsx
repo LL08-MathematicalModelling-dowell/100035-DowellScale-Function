@@ -13,11 +13,11 @@ import { Button } from '../../../components/button';
 const StapleScale = () => {
     const { slug } = useParams();
     const { isLoading, scaleData, fetchScaleData } = useGetScale();
-    const [selectedScore, setSelectedScore] = useState(-1);
+    const [selectedScore, setSelectedScore] = useState(-6);
     const navigateTo = useNavigate();
 
-    const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    // const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 5, 5];
+    // const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
 
     console.log(scaleData?.data, 'staple scale')
     
@@ -65,7 +65,7 @@ const StapleScale = () => {
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={`rounded-full ${index - 5  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
                             >{score}</button>
                         ))}
                     </div>
