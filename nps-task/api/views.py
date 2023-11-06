@@ -1118,7 +1118,7 @@ def nps_plugins_create_settings(request, api_key):
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
                                      "1249001", "ABCDE", "find", field_add, "nil")
             settings_json = json.loads(x)
-            print("Ambrose", settings_json)
+            print(settings_json)
             if not settings_json['data']:
                 return Response({"error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -1217,44 +1217,32 @@ def nps_plugins_create_settings(request, api_key):
             return Response({"success": True, "data": update_field})
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
     elif request.method == 'GET':
         try:
+            api_key = request.GET.get('api_key', None)
             page_id = request.GET.get('page_id', None)
             block_id = request.GET.get('block_id', None)
 
-            field_add = {}
+            if api_key and page_id and block_id:
+                field_add = {"settings.api_key":api_key,"settings.position.page":int(page_id),"settings.position.block":block_id}
+            elif api_key and page_id:
+                field_add = {"settings.api_key":api_key,"settings.position.page":int(page_id)}
+            elif api_key and block_id:
+                field_add = {"settings.api_key":api_key,"settings.position.block":block_id}
+            else:
+                field_add = {"settings.api_key":api_key}
+            print("ACTIVE FILTER IS...", field_add)
 
-            if api_key:
-                field_add["settings.api_key"] = api_key
+            settings_data = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data","1249001", "ABCDE", "fetch", field_add, "nil"))
 
-            if page_id is not None:
-                field_add["settings.position"] = {"$elemMatch": {"page": page_id}}
-
-            if block_id is not None:
-                if "settings.position" in field_add:
-                    field_add["settings.position"]["$elemMatch"]["block"] = block_id
-                else:
-                    field_add["settings.position"] = {
-                        "$elemMatch": {"block": block_id}
-                    }
-
-
-            print(field_add)
-
-            settings_data = dowellconnection(
-                "dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
-                "1249001", "ABCDE", "fetch", field_add, "nil"
-            )
-
-            print(settings_data)
-
-            if not json.loads(settings_data).get('data'):
+            if not settings_data['data']:
                 return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
-            if len(json.loads(settings_data)['data']) > 1:
-                return Response({"scale_settings": json.loads(settings_data)['data']}, status=status.HTTP_200_OK)
-            return Response({"scale_id": json.loads(settings_data)['data'][0]['_id'], "scale_settings": json.loads(settings_data)['data'][0]['settings']}, status=status.HTTP_200_OK)
+            if len((settings_data)['data']) > 1:
+                return Response({"scale_settings": settings_data['data']}, status=status.HTTP_200_OK)
+            return Response({"scale_id": settings_data['data'][0]['_id'], "scale_settings":settings_data['data'][0]['settings']}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"Error": "Invalid Params!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"Error": "Error occuered", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response({"error": "method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -1311,41 +1299,57 @@ def nps_plugins_create_response(request):
                  "score": score}, status=status.HTTP_200_OK)
         else:
             return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
     elif request.method == "GET":
-            scale_id = request.GET.get('scale_id')
-            page_id = request.GET.get('page_id', None)
-            block_id = request.GET.get('block_id', None)
-            if scale_id:
-                field_add = {'scale_id': scale_id}
 
-                if page_id is not None:
-                    field_add['position_data.page_id'] = page_id
-                elif block_id is not None and page_id is not None:
-                    field_add['position_data.block_id'] = block_id
-                    field_add['position_data.page_id'] = page_id
+        scale_id = request.GET.get('scale_id')
+        page_id = request.GET.get('page_id', None)
+        block_id = request.GET.get('block_id', None)
 
-                try:
-                    fetch_responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",
-                         "ABCDE", "fetch", field_add, "nil")
+        if scale_id:
+            field_add = {"scale_id":scale_id}
 
-                    data = json.loads(fetch_responses)["data"]
-                except:
-                    return Response({"Error": f"Responses do not exists for this scale {scale_id}!"}, status=status.HTTP_400_BAD_REQUEST)
+            if scale_id and page_id:
+                field_add = {"scale_id":scale_id,"position_data.page_id":int(page_id)}
+            elif scale_id and block_id:
+                field_add = {"scale_id":scale_id,"position_data.block_id":block_id}
+            elif page_id and block_id:
+                field_add = {"position_data.page_id":int(page_id),"position_data.block_id":block_id}
+            elif page_id:
+                field_add = {"position_data.page_id":int(page_id)}
+            elif block_id:
+               field_add = {"position_data.block_id":block_id}
+        # if scale_id:
+        #     field_add = {'scale_id': scale_id}
+        #     print("fields to be fetched 1----->",field_add)
+        #     if page_id is not None:
+        #         field_add['position_data.page_id'] = page_id
+        #         print("fields to be fetched 2----->",field_add)
+        #     elif block_id is not None and page_id is not None:
+        #         field_add['position_data.block_id'] = block_id
+        #         field_add['position_data.page_id'] = page_id
+        #     print("fields to be fetched 3----->",field_add)
+            try:
+                fetch_responses = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094","ABCDE", "fetch", field_add, "nil"))
+                data = fetch_responses["data"]
+                print(data)
+            except:
+                return Response({"Error": f"Responses do not exists for this scale {scale_id}!"}, status=status.HTTP_400_BAD_REQUEST)
 
-                try:
-                    scale_settings = get_scale_settings(scale_id)
-                except:
-                    return Response({"Error": f"Scale {scale_id} does not exist!"},
-                                    status=status.HTTP_400_BAD_REQUEST)
+            try:
+                scale_settings = get_scale_settings(scale_id)
+            except:
+                return Response({"Error": f"Scale {scale_id} does not exist!"},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-                no_of_scales = scale_settings.get('no_of_scales')
+            no_of_scales = scale_settings.get('no_of_scales')
 
-                instance_ids = [i['instance_id'] for i in data]
-                scores = [{i['instance_id']: i['score']} for i in data]
+            instance_ids = [i['instance_id'] for i in data]
+            scores = [{i['instance_id']: i['score']} for i in data]
 
-                return Response(
-                    {"success": True, "scale_id": scale_id, "no_of_scales": no_of_scales, "event_id": get_event_id(),
-                     "instances_used": len(instance_ids), "instance_ids": instance_ids, "scores": scores}, status=status.HTTP_200_OK)
-            else:
-                return Response({"Error": "Invalid fields!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"success": True, "scale_id": scale_id, "no_of_scales": no_of_scales, "event_id": get_event_id(),
+                 "instances_used": len(instance_ids), "instance_ids": instance_ids, "scores": scores}, status=status.HTTP_200_OK)
+        else:
+            return Response({"Error": "Invalid fields!"}, status=status.HTTP_400_BAD_REQUEST)
 
