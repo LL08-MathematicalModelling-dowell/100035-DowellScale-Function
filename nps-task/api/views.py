@@ -956,30 +956,37 @@ def redirect_view(request):
         return error_response(request, {"success": False, "error": f"Provide required fields"}, status.HTTP_400_BAD_REQUEST)
 
 def scales_plugins_function(request):
-    try:
-        scaletype = request.GET.get('scale_type')
-        scale_type = request.GET.get('type')
-        api_key = request.GET.get('api_key')
-        api_resp = processApikey(api_key)
-        if api_resp['success'] is True:
-            credit_count = api_resp['total_credits']
-            if credit_count > 0:
-                if "nps" in scaletype and "settings" in scale_type:
-                    return nps_plugins_create_settings(request, api_key)
-                elif "nps" in scaletype and "response" in scale_type:
-                    return nps_plugins_create_response(request)
-            else:
-                error_message = api_resp['message']
-                return error_response(request, {"success": False, "msg": error_message,
-                                                "total credits": api_resp['total_credits']},
-                                      status.HTTP_400_BAD_REQUEST)
-        elif api_resp['success'] is False:
-            error_message = api_resp['message']
-            return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
-
-    except Exception as e:
-        return error_response(request, {"success": False, "error": f"Provide required fields"},
-                              status.HTTP_400_BAD_REQUEST)
+    api_key = request.GET.get('api_key')
+    scaletype = request.GET.get('scale_type')
+    scale_type = request.GET.get('type')
+    if "nps" in scaletype and "settings" in scale_type:
+        return nps_plugins_create_settings(request, api_key)
+    elif "nps" in scaletype and "response" in scale_type:
+        return nps_plugins_create_response(request)
+    # try:
+    #     scaletype = request.GET.get('scale_type')
+    #     scale_type = request.GET.get('type')
+    #     api_key = request.GET.get('api_key')
+    #     api_resp = processApikey(api_key)
+    #     if api_resp['success'] is True:
+    #         credit_count = api_resp['total_credits']
+    #         if credit_count > 0:
+    #             if "nps" in scaletype and "settings" in scale_type:
+    #                 return nps_plugins_create_settings(request, api_key)
+    #             elif "nps" in scaletype and "response" in scale_type:
+    #                 return nps_plugins_create_response(request)
+    #         else:
+    #             error_message = api_resp['message']
+    #             return error_response(request, {"success": False, "msg": error_message,
+    #                                             "total credits": api_resp['total_credits']},
+    #                                   status.HTTP_400_BAD_REQUEST)
+    #     elif api_resp['success'] is False:
+    #         error_message = api_resp['message']
+    #         return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
+    #
+    # except Exception as e:
+    #     return error_response(request, {"success": False, "error": f"Provide required fields"},
+    #                           status.HTTP_400_BAD_REQUEST)
 
 
 def instance_exists(scale_id, instance_id):
@@ -1053,7 +1060,6 @@ def nps_plugins_create_settings(request, api_key):
                     "scale_category": "nps scale",
                     "api_key": api_key,
                     "show_total_score": response.get('show_total_score', True),
-                    # "position": [{"page": response.get('page', " "),"block" : response.get('block', "")}],
                     "position": response.get('position', []),
                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
@@ -1118,7 +1124,6 @@ def nps_plugins_create_settings(request, api_key):
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
                                      "1249001", "ABCDE", "find", field_add, "nil")
             settings_json = json.loads(x)
-            print(settings_json)
             if not settings_json['data']:
                 return Response({"error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -1131,7 +1136,7 @@ def nps_plugins_create_settings(request, api_key):
             right = response.get('right', settings["right"])
             text = f"{left}+{center}+{right}"
             name = response.get('name', settings["name"])
-            time = response.get('time', settings["time"]) or 0
+            time = response.get('time', settings["time"])
             template_name = settings["template_name"]
             orientation = response.get('orientation', settings["orientation"])
             scalecolor = response.get('scalecolor', settings["scalecolor"])
@@ -1158,6 +1163,7 @@ def nps_plugins_create_settings(request, api_key):
                     "fontcolor": fontcolor,
                     "fomat": fomat,
                     "time": time,
+                    "fontstyle": fontstyle,
                     "template_name": template_name,
                     "name": name,
                     "text": text,
@@ -1165,15 +1171,13 @@ def nps_plugins_create_settings(request, api_key):
                     "right": right,
                     "center": center,
                     "allow_resp": allow_resp,
-                    "show_total_score": show_total_score,
                     "scale_category": "nps scale",
-                    "fontstyle": fontstyle,
-                    "position": response.get('position', settings["position"]),
-                    "date_created": settings["date_created"],
-                    "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    "api_key": api_key,
+                    "show_total_score": show_total_score,
+                    "position": response.get('position', []),
+                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
             }
-
 
             if no_of_scales < 1:
                 return Response({"no_of_scales": "Out of range"}, status=status.HTTP_400_BAD_REQUEST)
@@ -1213,7 +1217,7 @@ def nps_plugins_create_settings(request, api_key):
                         future.result()
 
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data",
-                                     "1249001", "ABCDE", "update", field_add, "nil")
+                                     "1249001", "ABCDE", "update", field_add, update_field)
             return Response({"success": True, "data": update_field})
         except Exception as e:
             return Response({"Error": "Invalid fields!", "Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -1224,15 +1228,21 @@ def nps_plugins_create_settings(request, api_key):
             page_id = request.GET.get('page_id', None)
             block_id = request.GET.get('block_id', None)
 
-            if api_key and page_id and block_id:
-                field_add = {"settings.api_key":api_key,"settings.position.page":int(page_id),"settings.position.block":block_id}
-            elif api_key and page_id:
-                field_add = {"settings.api_key":api_key,"settings.position.page":int(page_id)}
-            elif api_key and block_id:
-                field_add = {"settings.api_key":api_key,"settings.position.block":block_id}
-            else:
-                field_add = {"settings.api_key":api_key}
-            print("ACTIVE FILTER IS...", field_add)
+            field_add = {}
+
+            if api_key:
+                field_add["settings.api_key"] = api_key
+
+            if page_id is not None:
+                field_add["settings.position"] = {"$elemMatch": {"page": page_id}}
+
+            if block_id is not None:
+                if "settings.position" in field_add:
+                    field_add["settings.position"]["$elemMatch"]["block"] = block_id
+                else:
+                    field_add["settings.position"] = {
+                        "$elemMatch": {"block": block_id}
+                    }
 
             settings_data = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data","1249001", "ABCDE", "fetch", field_add, "nil"))
 
