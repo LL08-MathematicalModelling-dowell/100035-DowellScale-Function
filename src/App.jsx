@@ -27,6 +27,8 @@ import {
   SinglePerceptualScaleSettings,
   UpdatePMSSettings,
 } from './pages/scales/pm-scale';
+
+import { StapleScale, CreateStapleScale,StapleScaleSettings } from './pages/scales/staple-scale';
 import PrivateRoutes from './components/PrivateRoute/PrivateRoute';
 
 function App() {

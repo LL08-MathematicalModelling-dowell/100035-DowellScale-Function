@@ -3,14 +3,16 @@ import { Outlet, Navigate, useSearchParams } from 'react-router-dom';
 
 const PrivateRoutes = () => {
   // const cookies = new Cookies();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const localSession = sessionStorage.getItem('session_id')
-    ? JSON.parse(sessionStorage.getItem('session_id'))
-    : null;
-  const localId = sessionStorage.getItem('id')
-    ? JSON.parse(sessionStorage.getItem('id'))
-    : null;
 
+  // const [searchParams, setSearchParams] = useSearchParams();
+  // const localSession = sessionStorage.getItem('session_id')
+  //   ? JSON.parse(sessionStorage.getItem('session_id'))
+  //   : null;
+  // const localId = sessionStorage.getItem('id')
+  //   ? JSON.parse(sessionStorage.getItem('id'))
+  //   : null;
+
+    
   let session_id = sessionStorage.getItem('session_id');
   console.log('====================================');
   console.log(session_id);
