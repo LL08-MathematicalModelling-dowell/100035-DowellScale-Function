@@ -38,8 +38,8 @@ function App() {
           <Navbar />
           <FetchUserContextProvider>
             <Routes>
-              {/* <Route path="/login" element={<Login />} /> */}
-              {/* <Route element={<PrivateRoutes />}> */}
+              <Route path="/login" element={<Login />} />
+              <Route element={<PrivateRoutes />}>
                 <Route path="/" element={<Home />} />
                 {/* <Route path="/available-scales" element={<AvailableScales />} /> */}
                 <Route path="/pc-scale" element={<PairedScale />} />
@@ -55,6 +55,23 @@ function App() {
                   path="/create-paired-scale-settings"
                   element={<CreatePCScaleSettings />}
                 />
+
+                {/* staple scale start */}
+
+                <Route
+                  path="/staple-scale"
+                  element={<StapleScale />}
+                />
+                <Route
+                  path="/create-staple-scale"
+                  element={<CreateStapleScale />}
+                />
+                <Route
+                  path="/staple-scale-settings/:slug"
+                  element={<StapleScaleSettings />}
+                />
+
+                {/* staple scale end */}
                 <Route
                   path="/create-perceptual-scale-settings"
                   element={<CreatePerceptualScaleSettings />}
@@ -96,7 +113,7 @@ function App() {
                   path="/update-nps-scale/:slug"
                   element={<UpdateNPSScale />}
                 />
-              {/* </Route> */}
+              </Route>
             </Routes>
           </FetchUserContextProvider>
         </Suspense>
