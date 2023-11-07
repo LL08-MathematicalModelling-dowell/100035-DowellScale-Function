@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class NpsliteConfig(AppConfig):
+class ThurstoneConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'thurstone'

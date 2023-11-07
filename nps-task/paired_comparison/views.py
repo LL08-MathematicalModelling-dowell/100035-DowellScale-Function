@@ -61,7 +61,7 @@ def settings_api_view_create(request):
         image_paths = {}
         for image_name in images_dict.keys():
             _, type = str(images_dict[image_name]).split(".")
-            path = default_storage.save(uuid.uuidv4(), images_dict[image_name])
+            path = default_storage.save(uuid.uuid4(), images_dict[image_name])
             image_paths[image_name] = path
         field_add = {
             "event_id": eventID,

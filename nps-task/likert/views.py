@@ -60,7 +60,7 @@ def settings_api_view_create(request):
                                       "no_of_scales": number_of_scales,
                                       "time": time, "name": name, "scale_category": "likert scale", "user": user,
                                       "round_color": round_color, "fomat": fomat, "label_selection": label_selection,
-                                      "fontstyle": fontstyle, 
+                                      "fontstyle": fontstyle,
                                       "label_input": label_input, "user": user,
                                       "custom_emoji_format": custom_emoji_format,
                                       "allow_resp": response.get('allow_resp', True),

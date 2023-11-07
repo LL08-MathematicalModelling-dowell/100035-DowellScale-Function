@@ -25,12 +25,12 @@ FRONTEND_DIR = BASE_DIR / "dist"
 SECRET_KEY = 'django-insecure-174^!vny@!oln&!^5%*dod#^fnbw92g9t_c&=y$g5h2-#dmyt='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 if DEBUG != True:
     public_url = "https://100035.pythonanywhere.com"
 else:
-    public_url = "http://127.0.0.1:8000/"
+    public_url = "https://100035.pythonanywhere.com"
 
 ALLOWED_HOSTS = ["*"]
 
