@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Navbar from './components/Navbar';
 import Fallback from './components/Fallback';
-import { RankingScale, CreateScale, AvailableScales } from './pages/scales';
+import { RankingScale, CreateRankingScale, UpdateRankingScale, RankingScaleSettings } from './pages/scales/ranking-scale';
 import {
   NPSScale,
   CreateNPSScale,
@@ -27,8 +27,6 @@ import {
   SinglePerceptualScaleSettings,
   UpdatePMSSettings,
 } from './pages/scales/pm-scale';
-import { UpdateRankingScale } from './pages/scales/update';
-import { RankingScaleSettings } from './pages/scales/settings';
 import PrivateRoutes from './components/PrivateRoute/PrivateRoute';
 
 function App() {
@@ -43,7 +41,7 @@ function App() {
               {/* <Route path="/login" element={<Login />} /> */}
               {/* <Route element={<PrivateRoutes />}> */}
                 <Route path="/" element={<Home />} />
-                <Route path="/available-scales" element={<AvailableScales />} />
+                {/* <Route path="/available-scales" element={<AvailableScales />} /> */}
                 <Route path="/pc-scale" element={<PairedScale />} />
                 <Route
                   path="/pm-scale"
@@ -52,7 +50,7 @@ function App() {
                 <Route path="/ranking-scale" element={<RankingScale />} />
                 <Route path="/nps-scale" element={<NPSScale />} />
 
-                <Route path="/create-scale" element={<CreateScale />} />
+                <Route path="/create-scale" element={<CreateRankingScale />} />
                 <Route
                   path="/create-paired-scale-settings"
                   element={<CreatePCScaleSettings />}

@@ -5,25 +5,29 @@ import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { useCreateScale } from '../../../hooks/useCreateScale';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
-
-import { EmojiPalette } from '../../../components/emoji-pellet';
-import { StarPalette } from '../../../components/stars-pellet';
+import { EmojiPicker } from '../../../components/emoji-picker';
 
 const CreateNPSScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedEmojis, setSelectedEmojis] = useState(Array(11).fill(false));
-    const [selectedStars, setSelectedStars] = useState(Array(5).fill(false));
+    const [selectedEmojis, setSelectedEmojis] = useState([]);
     const [showEmojiPalette, setShowEmojiPalette] = useState(false);
-    const [showStarPalette, setShowStarPalette] = useState(false);
-    const emojis = ['😊', '😄', '😃', '😁', '🙂', '😐', '😕', '😔', '😟', '😞', '😢'];
+    
+
     
 
     const createScale  = useCreateScale();
 
     const navigateTo = useNavigate();
+    let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    console.log(selectedEmojis)
+    const requiredFields = [
+        'name',
+        'left',
+        'right',
+        'center',
+        'orientation'
+    ]
     
     const [formData, setFormData] = useState({
           orientation: "",
@@ -52,49 +56,27 @@ const CreateNPSScale = () => {
     setShowEmojiPalette(!showEmojiPalette)
   }
 
-  const handleToggleStarsPellete = ()=>{
-    setShowStarPalette(!showStarPalette)
-  }
-
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setFormData({ ...formData, [name]:value });
     if (name === 'fomat' && value === 'Emojis') {
-        console.log('fomat selected:', value)
         handleToggleEmojiPellete();
       } else {
         setShowEmojiPalette(false);
       }
-
-    if (name === 'fomat' && value === 'Stars') {
-        handleToggleStarsPellete();
-      } else {
-        setShowStarPalette(false);
-      }
   }
 
-  const handleEmojiSelect = (index) => {
-    const newSelectedEmojis = [...selectedEmojis];
-    newSelectedEmojis[index] = !newSelectedEmojis[index];
-    setSelectedEmojis(newSelectedEmojis);
-  };
-
-  const handleStarSelect = (index) => {
-    const newSelectedStars = [...selectedStars];
-    newSelectedStars[index] = !newSelectedStars[index];
-    setSelectedStars(newSelectedStars);
-  };
 
   const handleToggleTime = ()=>{
     setTimeOn(!timeOn);
   } 
 
   const orientation = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis', 'Stars']
+  const format = ['Numbers', 'Emojis']
 
   const handleSubmitNPSScale = async()=>{
 
-    const selectedEmojisArray = selectedEmojis.map((isSelected, index) => isSelected ? emojis[index] : '');
+    
 
     const payload = {
         orientation: formData.orientation,
@@ -106,7 +88,7 @@ const CreateNPSScale = () => {
         no_of_scales: formData.no_of_scales,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
-        fomat: formData.fomat === 'Emojis' ? selectedEmojisArray : formData.fomat,
+        fomat: formData.fomat === 'Emojis' ? selectedEmojis : scores,
         time: formData.time,
         template_name: "testing5350",
         name: formData.name,
@@ -120,6 +102,13 @@ const CreateNPSScale = () => {
     }
 
     console.log(payload)
+
+    for(const field of requiredFields){
+        if(!formData[field]){
+            toast.error(`Please complete the "${field}" field.`);
+            return;
+        }
+    }
     try {
         setIsLoading(true);
         const response = await createScale('nps-scale', payload);
@@ -272,7 +261,6 @@ const CreateNPSScale = () => {
                       />
                   )
               }
-              
           </div>
           <div className='w-full'>
             <CustomTextInput 
@@ -291,18 +279,12 @@ const CreateNPSScale = () => {
         </div>
       </div>
       {showEmojiPalette && (
-        <EmojiPalette
+        <EmojiPicker
+            setSelectedEmojis={setSelectedEmojis}
             selectedEmojis={selectedEmojis}
-            handleEmojiSelect={handleEmojiSelect}
+            // handleEmojiSelect={handleEmojiSelect}
             handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
-        )}
-        {showStarPalette && (
-            <StarPalette
-                selectedStars={selectedStars}
-                handleStarSelect={handleStarSelect}
-                handleToggleStarsPellete={handleToggleStarsPellete}
-            />
         )}
     </div>
   )

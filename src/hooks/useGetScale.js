@@ -23,10 +23,6 @@ const useGetScale = () => {
         }
     }
 
-    useEffect(() => {
-        fetchScaleData(); 
-    }, []);
-
     return {
         isLoading,
         scaleData,
