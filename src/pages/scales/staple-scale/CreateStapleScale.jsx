@@ -80,7 +80,7 @@ const CreateStapleScale = () => {
     <div className='h-screen w-full flex flex-col items-center justify-center font-Montserrat'>
       <div className='w-full md:w-7/12 border p-5'>
         <div className='w-7/12 m-auto'>
-            <h2 className="capitalize text-center text-sm font-medium mb-3">set up your Ranking</h2>
+            <h2 className="capitalize text-center text-sm font-medium mb-3">set up your staple scale</h2>
         </div>
         <div className='grid grid-cols-2 md:grid-cols-3 gap-3 mb-10'>
           <div className='w-full'>
