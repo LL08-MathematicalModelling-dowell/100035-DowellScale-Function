@@ -7,6 +7,7 @@ import { useUpdateResponse } from "../../../hooks/useUpdateResponse";
 import CustomTextInput from "../../../components/forms/inputs/CustomTextInput";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
+import { EmojiPicker } from '../../../components/emoji-picker';
 
 const UpdateNPSScale = () => {
 
@@ -16,9 +17,11 @@ const UpdateNPSScale = () => {
   const { _id, settings } = (sigleScaleData && sigleScaleData[0]) || {};
   const [isLoading, setIsLoading] = useState(false);
   const updateResponse = useUpdateResponse();
+  const [showEmojiPalette, setShowEmojiPalette] = useState(false);
+  const [selectedEmojis, setSelectedEmojis] = useState([]);
 
   const navigateTo = useNavigate();
-
+  const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   
 
     const orientation = settings?.orientation
@@ -75,7 +78,7 @@ const UpdateNPSScale = () => {
     no_of_scales:updateFormData.no_of_scales,
     roundcolor:updateFormData.roundcolor,
     fontcolor:updateFormData.fontcolor,
-    fomat:updateFormData.fomat,
+    fomat:updateFormData.fomat === 'Emojis' ? selectedEmojis : scores,
     time: updateFormData.time,
     template_name:updateFormData.template_name,
     name:updateFormData.name,
@@ -87,10 +90,19 @@ const UpdateNPSScale = () => {
     show_total_score: updateFormData.show_total_score
   }
 
+  const handleToggleEmojiPellete = ()=>{
+    setShowEmojiPalette(!showEmojiPalette)
+  }
 
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setUpdateFormData({ ...updateFormData, [name]:value });
+    if (name === 'fomat' && value === 'Emojis') {
+      console.log('fomat selected:', value)
+      handleToggleEmojiPellete();
+    } else {
+      setShowEmojiPalette(false);
+    }
   }
 
   const handleToggleTime = ()=>{
@@ -316,7 +328,14 @@ const UpdateNPSScale = () => {
         </div>
         <Button primary width={'full'} onClick={ handleUpdateNPSScale }>Update scale</Button>
       </div>
-      
+      {showEmojiPalette && (
+        <EmojiPicker
+            setSelectedEmojis={setSelectedEmojis}
+            selectedEmojis={selectedEmojis}
+            // handleEmojiSelect={handleEmojiSelect}
+            handleToggleEmojiPellete={handleToggleEmojiPellete}
+        />
+        )}
     </div>
   )
 }

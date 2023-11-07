@@ -6,12 +6,14 @@ const useGetScale = () => {
     const [scaleData, setScaleData] = useState([]);
 
     const fetchScaleData = async (scaleType) => {
-        
+        console.log(scaleType, 'scaleType')
         const endPoint = 
         scaleType === 'ranking-scale' 
         ? 'http://100035.pythonanywhere.com/ranking/api/ranking_settings_create'
-        : scaleType==='nps-scale' ? 'https://100035.pythonanywhere.com/api/nps_create' : 'anoth';
-        console.log(endPoint, 'endPoint')
+        : scaleType==='nps-scale' ? 'https://100035.pythonanywhere.com/api/nps_create' 
+        : scaleType==='staple-scale' ? 'https://100035.pythonanywhere.com/stapel/api/stapel_settings'
+        : 'anoth';
+        
         try {
             setIsLoading(true);
             const response = await axios.get(`${endPoint}`);
@@ -22,10 +24,6 @@ const useGetScale = () => {
             setIsLoading(false);
         }
     }
-
-    useEffect(() => {
-        fetchScaleData(); 
-    }, []);
 
     return {
         isLoading,
