@@ -4,7 +4,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { FetchUserContextProvider } from './contexts/fetchUserContext';
 import Home from './pages/Home';
-import Login from './pages/Login';
 import Navbar from './components/Navbar';
 import Fallback from './components/Fallback';
 import { RankingScale, CreateRankingScale, UpdateRankingScale, RankingScaleSettings } from './pages/scales/ranking-scale';
@@ -29,7 +28,6 @@ import {
 } from './pages/scales/pm-scale';
 
 import { StapleScale, CreateStapleScale,StapleScaleSettings } from './pages/scales/staple-scale';
-import PrivateRoutes from './components/PrivateRoute/PrivateRoute';
 
 function App() {
   return (
@@ -40,8 +38,6 @@ function App() {
           <Navbar />
           <FetchUserContextProvider>
             <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route element={<PrivateRoutes />}>
                 <Route path="/" element={<Home />} />
                 {/* <Route path="/available-scales" element={<AvailableScales />} /> */}
                 <Route path="/pc-scale" element={<PairedScale />} />
@@ -115,7 +111,6 @@ function App() {
                   path="/update-nps-scale/:slug"
                   element={<UpdateNPSScale />}
                 />
-              </Route>
             </Routes>
           </FetchUserContextProvider>
         </Suspense>
