@@ -12,6 +12,7 @@ const CreateNPSScale = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedEmojis, setSelectedEmojis] = useState([]);
     const [showEmojiPalette, setShowEmojiPalette] = useState(false);
+    const [displayedTime, setDisplayedTime] = useState(0); 
     
 
     
@@ -67,6 +68,29 @@ const CreateNPSScale = () => {
   }
 
 
+  const handleBlurTime = () => {
+    if (formData.time) {
+      const countDownTimer = setInterval(() => {
+        setFormData((prev) => {
+          if (prev.time > 0) {
+            setDisplayedTime(prev.time);
+            return {
+              ...prev,
+              time: prev.time - 1,
+            };
+          } else {
+            clearInterval(countDownTimer);
+            return prev;
+          }
+        });
+      }, 1000); 
+
+      setFormData((prev) => ({
+        ...prev,
+        countDownTimerId: countDownTimer,
+      }));
+    }
+  };
   const handleToggleTime = ()=>{
     setTimeOn(!timeOn);
   } 
@@ -129,8 +153,11 @@ const CreateNPSScale = () => {
   return (
     <div className='h-screen w-full flex flex-col items-center justify-center font-Montserrat'>
       <div className='w-full md:w-7/12 border p-5'>
-        <div className='w-7/12 m-auto'>
+        <div className='flex justify-between'>
             <h2 className="capitalize text-center text-sm font-medium mb-3">set up your Ranking</h2>
+            {timeOn && (
+                <p>You have about <span className='text-primary font-bold'>{displayedTime}</span> seconds to submit your form</p>
+            )}
         </div>
         <div className='grid grid-cols-2 md:grid-cols-3 gap-3 mb-10'>
           <div className='w-full'>
@@ -258,6 +285,9 @@ const CreateNPSScale = () => {
                           name="time"
                           type="number"
                           placeholder="enter a valid time"
+                          value={formData.time}
+                          handleChange={handleChange}
+                          onBlur={handleBlurTime}
                       />
                   )
               }
