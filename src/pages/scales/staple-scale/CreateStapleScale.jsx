@@ -10,6 +10,7 @@ import Fallback from '../../../components/Fallback';
 const CreateStapleScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [displayedTime, setDisplayedTime] = useState(0); 
     const createScale  = useCreateScale();
 
     const navigateTo = useNavigate();
@@ -23,7 +24,7 @@ const CreateStapleScale = () => {
         roundcolor: "#938585",
         fontcolor: "#000000",
         fomat: "",
-        time: "60",
+        time: "",
         name: "",
         left: "",
         right: " ",
@@ -35,9 +36,34 @@ const CreateStapleScale = () => {
     setFormData({ ...formData, [name]:value });
   }
 
+  const handleBlurTime = () => {
+    if (formData.time) {
+      const countDownTimer = setInterval(() => {
+        setFormData((prev) => {
+          if (prev.time > 0) {
+            setDisplayedTime(prev.time);
+            return {
+              ...prev,
+              time: prev.time - 1,
+            };
+          } else {
+            clearInterval(countDownTimer);
+            return prev;
+          }
+        });
+      }, 1000); 
+
+      setFormData((prev) => ({
+        ...prev,
+        countDownTimerId: countDownTimer,
+      }));
+    }
+  };
   const handleToggleTime = ()=>{
     setTimeOn(!timeOn);
   } 
+
+
 
   const orientation = ['Vertical', 'Horizontal']
   const format = ['Numbers', 'Emojis', 'Stars']
@@ -77,17 +103,20 @@ const CreateStapleScale = () => {
 }
 
   return (
-    <div className='h-screen w-full flex flex-col items-center justify-center font-Montserrat'>
+    <div className='h-screen w-full flex flex-col items-center justify-center font-Montserrat relative'>
       <div className='w-full md:w-7/12 border p-5'>
-        <div className='w-7/12 m-auto'>
+        <div className='flex justify-between'>
             <h2 className="capitalize text-center text-sm font-medium mb-3">set up your staple scale</h2>
+            {timeOn && (
+                <p>You have about <span className='text-primary font-bold'>{displayedTime}</span> seconds to submit your form</p>
+            )}
         </div>
         <div className='grid grid-cols-2 md:grid-cols-3 gap-3 mb-10'>
           <div className='w-full'>
             <CustomTextInput 
                 label='name'
                 name='name'
-                value={formData.name}
+                value={formData?.name}
                 type='text'
                 handleChange={handleChange}
                 placeholder='enter scale name'
@@ -196,6 +225,7 @@ const CreateStapleScale = () => {
                 placeholder='enter scale right'
             />
           </div>
+          
           <div className="w-full">
               <div className="flex items-center gap-3">
                   {timeOn && <button onClick={handleToggleTime}><BsToggleOn className="text-primary h-6 w-6"/></button>}
@@ -208,6 +238,9 @@ const CreateStapleScale = () => {
                           name="time"
                           type="number"
                           placeholder="enter a valid time"
+                          value={formData.time}
+                          handleChange={handleChange}
+                          onBlur={handleBlurTime}
                       />
                   )
               }
