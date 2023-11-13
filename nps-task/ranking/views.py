@@ -315,9 +315,8 @@ def response_submit_api_view(request):
 
 
 def response_submit_loop(username, scale_id, responses, instance_id, process_id=None, document_data=None):
-    # # Check if response already exists for this event
-    field_add = {"username": username, "scale_data.scale_id": scale_id, "scale_data.scale_type": "ranking scale",
-                 "scale_data.instance_id": instance_id}
+    # Check if response already exists for this event
+    field_add = {"scale_data.scale_id": scale_id, "scale_data.scale_type": "ranking scale", "scale_data.instance_id": instance_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                          "1094", "ABCDE", "fetch",
                                          field_add, "nil")

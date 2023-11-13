@@ -896,7 +896,77 @@ class ResponseTestCase(TestCase):
         
 
         
+    def test_submit_existing_response(self):
+        # Create a scale settings object for testing
+        settings = {
+            'username': 'natan',
+            'scalename': 'Scale003',
+            'num_of_stages': 2,
+            'stages': ['city 1', 'city 2'],
+            'stages_arrangement': 'Alphabetically ordered',
+            'item_count': 4,
+            'item_list': ['Item 1', 'Item 2', 'Item 3', 'Item 4'],
+            'orientation': 'horizontal',
+            'scalecolor': '#FFFFFF',
+            'fontcolor': '#000000',
+            'fontstyle': 'Sans-serif',
+            'ranking_method_stages': 'Unique Ranking',
+            'reference': 'Overall Ranking',
+            'display_ranks': True,
             
+        }
+        created_settings = self.client.post(reverse('ranking:ranking_create_scale_settings_api'), data=settings, format='json')
+        scale_id = created_settings.data['scale_id']
+        
+        # Define the payload with valid response data for multiple document responses
+        payload = {
+                "username": "natan",
+                "instance_id": 1,
+                "process_id": "1",
+                "brand_name": "Test Brand",
+                "product_name": "Test Product",
+                "num_of_stages": 2,
+                "num_of_substages": 0,
+                "username": "natan",
+                "document_responses" : [
+                    {
+                        'num_of_stages': 2,
+                        'num_of_substages': 0,
+                        'scale_id': scale_id,
+                        'rankings': [
+                            {
+                                'stage_name': 'city 1',
+                                'stage_rankings': [
+                                    {'name': 'Item 1', 'rank': 1},
+                                    {'name': 'Item 2', 'rank': 2},
+                                    {'name': 'Item 3', 'rank': 3},
+                                    {'name': 'Item 4', 'rank': 4},
+                                ]
+                            },
+                            {
+                                'stage_name': 'city 2',
+                                'stage_rankings': [
+                                    {'name': 'Item 1', 'rank': 1},
+                                    {'name': 'Item 2', 'rank': 2},
+                                    {'name': 'Item 3', 'rank': 3},
+                                    {'name': 'Item 4', 'rank': 4},
+                                ]
+                            }
+                        ]
+                        }
+                    ]
+                }
+        
+        response = self.client.post(reverse('ranking:ranking_response_submit_api'), data=payload, format='json')
+        response_id = response.data[0]['response_id']
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response2 = self.client.post(reverse('ranking:ranking_response_submit_api'), data=payload, format='json')
+        url = reverse('ranking:ranking_response_submit_api')
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('You have already submitted a response for this scale.', response.data['error'])
+        
+        
             
 
         
