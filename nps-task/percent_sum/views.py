@@ -171,11 +171,11 @@ def percent_sum_response_submit(request):
                                                               "document_name": response_data.get('document_name', ""),
                                                               "page": response_data.get('page', "")},
                                                               "user_type": response_data.get('user_type', ""),
-                                                              "id": response_data['_id']}
+                                                              "id": response_data.get('_id')}
                                              }
                     success = response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id, document_data)
                     all_results.append(success.data)
-                return Response({"data": all_results}, status=status.HTTP_200_OK)
+                return Response(all_results)
             else:
                 scores = response_data['score']
                 scale_id = response_data['scale_id']
@@ -212,8 +212,6 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
                                     "ABCDE", "fetch",
                                     {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
     user_dets = json.loads(user_details)
-    print("This is the previous response", previous_response)
-    print("This is user dets", user_dets)
     if len(user_dets['data']) >= 1:
         b = [l['score']['score'] for l in previous_response if
              l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0][
@@ -229,9 +227,12 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
                                      "ABCDE",
                                      "fetch", field_add, "nil")
     data = json.loads(default_scale)
-    if data.get('data') is None:
+    if data.get('data') is None or data.get('data') == []:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+    print("a")
+    print(data["data"])
     scale = data.get('data')[0]
+    print("b")
     settings = scale["settings"]
     
     if settings['allow_resp'] == False:

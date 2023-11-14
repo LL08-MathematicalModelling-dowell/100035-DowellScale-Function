@@ -7,7 +7,7 @@ class TestLikertScaleAPI(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.settings_url = "percent_sum:settings_api_view_create"
-        self.response_url = "percent_sum:percent_sum_response_submit"
+        self.response_url = "percent_sum:percent_sum_response_submit_api"
 
     def test_create_scale(self):
         """
@@ -219,5 +219,23 @@ class TestLikertScaleAPI(TestCase):
 
         response = self.client.put(url, data=payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        
+
+    def test_create_scale_response_missing_field(self):
+        """
+        Test creating a scale with missing field.
+        """
+        url = reverse(self.response_url)
+        payload = {
+                    "document_responses":[{"scale_id": "64a6b2c00b4945419035af18", "score": [30, 60, 90]}],
+                    "username": "natan",
+                    "instance_id": "2",
+                    "process_id": "1",
+                    # Missing brand_name field
+                    "product_name": "testprod",
+                    
+                }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        scale_data = response.data
+        self.assertEqual(scale_data["error"], "Missing required parameter 'brand_name'")
         
