@@ -5,11 +5,15 @@ import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { useCreateScale } from '../../../hooks/useCreateScale';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
+import { fontStyles } from '../../../utils/fontStyles';
+import { EmojiPicker } from '../../../components/emoji-picker';
 
 
 const CreateStapleScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedEmojis, setSelectedEmojis] = useState([]);
+    const [showEmojiPalette, setShowEmojiPalette] = useState(false);
     const [displayedTime, setDisplayedTime] = useState(0); 
     const createScale  = useCreateScale();
 
@@ -29,11 +33,39 @@ const CreateStapleScale = () => {
         left: "",
         right: " ",
         fontstyle: " ",
-  })
+
+      //   {
+      //     "username": "Natan",
+      //     "orientation": "horizontal",
+      //     "spacing_unit": 1,
+      //     "scale_upper_limit": 10,
+      //     "scalecolor": "#8f1e1e",
+      //     "roundcolor": "#938585",
+      //     "fontcolor": "#000000",
+      //     "fomat": "emoji",
+      //     "time": "60",
+      //     "name": "scalename",
+      //     "left": "very good",
+      //     "right": "very good",
+      //     "label_images": {"0": "imagefile", "1": "imagefile", "2": "imagefile"},
+      //     "fontstyle": "Arial, Helvetica, sans-serif",
+      //     "custom_emoji_format": {"0": "😎", "1": "🤓", "2": "😊"}
+      // }
+  });
+
+  const handleToggleEmojiPellete = ()=>{
+    setShowEmojiPalette(!showEmojiPalette)
+  }
 
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setFormData({ ...formData, [name]:value });
+
+    if (name === 'fomat' && value === 'Emojis') {
+      handleToggleEmojiPellete();
+    } else {
+      setShowEmojiPalette(false);
+    }
   }
 
   const handleBlurTime = () => {
@@ -66,7 +98,7 @@ const CreateStapleScale = () => {
 
 
   const orientation = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis', 'Stars']
+  const format = ['Numbers', 'Emojis',]
 
   const handleSubmitStapleScale = async()=>{
     const payload = {
@@ -77,7 +109,7 @@ const CreateStapleScale = () => {
         scalecolor: formData.scalecolor,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
-        fomat: formData.fomat,
+        fomat: formData.fomat === 'Emojis' ? selectedEmojis : scores,
         time: formData.time,
         name: formData.name,
         left: formData.left,
@@ -205,7 +237,7 @@ const CreateStapleScale = () => {
                 placeholder='enter scale left'
             />
           </div>
-          <div className='w-full'>
+          {/* <div className='w-full'>
             <CustomTextInput 
                 label='center'
                 name='center'
@@ -214,7 +246,7 @@ const CreateStapleScale = () => {
                 handleChange={handleChange}
                 placeholder='enter scale center'
             />
-          </div>
+          </div> */}
           <div className='w-full'>
             <CustomTextInput 
                 label='right'
@@ -225,7 +257,23 @@ const CreateStapleScale = () => {
                 placeholder='enter scale right'
             />
           </div>
-          
+          <div>
+              <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">font style</label>
+              <select 
+                  label="Select font style" 
+                  name="fontstyle" 
+                  className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+                  value={formData.fontstyle}
+                  onChange={handleChange}
+              >
+                  <option value={''}>-- Select font style  --</option>
+                      {fontStyles.map((style, i) => (
+                          <option key={i} >
+                              {style}
+                          </option>
+                      ))}
+              </select>
+          </div>
           <div className="w-full">
               <div className="flex items-center gap-3">
                   {timeOn && <button onClick={handleToggleTime}><BsToggleOn className="text-primary h-6 w-6"/></button>}
@@ -244,17 +292,6 @@ const CreateStapleScale = () => {
                       />
                   )
               }
-              
-          </div>
-          <div className='w-full'>
-            <CustomTextInput 
-                label='No of scales'
-                name='no_of_scales'
-                value={formData.no_of_scales}
-                type='text'
-                handleChange={handleChange}
-                placeholder='Enter no of scales'
-            />
           </div>
         </div>
         <div className='flex justify-end gap-3'>
@@ -262,6 +299,14 @@ const CreateStapleScale = () => {
           <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button>
         </div>
       </div>
+      {showEmojiPalette && (
+        <EmojiPicker
+            setSelectedEmojis={setSelectedEmojis}
+            selectedEmojis={selectedEmojis}
+            // handleEmojiSelect={handleEmojiSelect}
+            handleToggleEmojiPellete={handleToggleEmojiPellete}
+        />
+        )}
     </div>
   )
 }
