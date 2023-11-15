@@ -21,17 +21,6 @@ const StapleScaleSettings = () => {
 
     console.log(sigleScaleData)
 
-   
-
-    
-
-
-    // if(scale && (scale[0]?.settings?.fomat) ){
-    //     scores = scale[0].settings.fomat
-    // }else{
-    //     scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    // }
-
 
 
     const handleSelectScore = (score)=>{
@@ -111,7 +100,7 @@ const StapleScaleSettings = () => {
             
                     <div className="flex gap-3 justify-end">
                         {sigleScaleData && sigleScaleData.map((scale, index)=>(
-                            <Button width={'3/4'} onClick={()=>navigateTo(`/update-nps-scale/${scale._id}`)} key={index}>update scale</Button>
+                            <Button width={'3/4'} onClick={()=>navigateTo(`/update-staple-scale/${scale._id}`)} key={index}>update scale</Button>
                         ))}
                         <Button 
                             onClick={submitResponse}

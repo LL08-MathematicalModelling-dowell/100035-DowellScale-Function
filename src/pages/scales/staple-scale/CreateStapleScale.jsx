@@ -18,6 +18,13 @@ const CreateStapleScale = () => {
     const createScale  = useCreateScale();
 
     const navigateTo = useNavigate();
+    const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
+    const requiredFields = [
+      'name',
+      'left',
+      'right',
+      'orientation'
+    ]
     
     const [formData, setFormData] = useState({
         username: "Natan",
@@ -116,15 +123,23 @@ const CreateStapleScale = () => {
         right: formData.right,
         fontstyle: formData.fontstyle,
     }
+
+    for(const field of requiredFields){
+      if(!formData[field]){
+          toast.error(`Please complete the "${field}" field.`);
+          return;
+      }
+    }
+
     try {
         setIsLoading(true);
         const response = await createScale('staple-scale', payload);
         console.log(response)
         if(response.status===201){
             toast.success('scale created');
-            // setTimeout(()=>{
-            //     navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
-            // },2000)
+            setTimeout(()=>{
+                navigateTo(`/staple-scale-settings/${response?.data?.data?.scale_id}`)
+            },2000)
         }
     } catch (error) {
         console.log(error);
