@@ -22,7 +22,7 @@ const UpdateStapleScale = () => {
   const [selectedEmojis, setSelectedEmojis] = useState([]);
 
   const navigateTo = useNavigate();
-  const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
 
 //   console.log(slug, 'slug');
 //   console.log(settings, 'settings');
@@ -62,14 +62,15 @@ const UpdateStapleScale = () => {
 
   const updatePayload = {
     scale_id: _id,
-    user: "yes",
-    username: "Ndoneambrose",
+    // user: "yes",
+    // username: "Ndoneambrose",
     orientation:updateFormData.orientation,
+    scale_upper_limit:updateFormData.scale_upper_limit,
     scalecolor:updateFormData.scalecolor,
     roundcolor:updateFormData.roundcolor,
     fontcolor:updateFormData.fontcolor,
     fomat:updateFormData.fomat === 'Emojis' ? selectedEmojis : scores,
-    time: updateFormData.time,
+    time: updateFormData?.time,
     name:updateFormData.name,
     left:updateFormData.left,
     right:updateFormData.right,
@@ -95,7 +96,7 @@ const UpdateStapleScale = () => {
   } 
 
   const orientationDB = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis', 'Stars']
+  const format = ['Numbers', 'Emojis']
 
 
   useEffect(() => {
@@ -113,6 +114,7 @@ const UpdateStapleScale = () => {
     if (settings) {
       setUpdateFormData({
         orientation: settings?.orientation || '',
+        scale_upper_limit:settings?.scale_upper_limit || 10,
         scale_id: _id || '',
         user: true, 
         username: settings?.username || '',
@@ -135,7 +137,7 @@ const UpdateStapleScale = () => {
 
     try {
         setIsLoading(true);
-        const { status, data } = await updateResponse('staple-scale', updatePayload);
+        const {status, data} = await updateResponse('staple-scale', updatePayload);
         if(status===200){
           toast.success('successfully updated');
           setTimeout(()=>{
