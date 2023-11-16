@@ -6,11 +6,11 @@ const useGetSingleStapleScale = () => {
     const [sigleScaleData, setSingleScaleData] = useState(null);
 
     const fetchSingleScaleData = async (scaleId) => {
-
         try {
             setLoading(true);
             const response = await axios.get(`https://100035.pythonanywhere.com/stapel/api/stapel_responses?scale_id=${scaleId}`);
-            setSingleScaleData(response.data); 
+            console.log(response, 'response***')
+            setSingleScaleData(response); 
         } catch (error) {
             console.error(error);
         } finally {

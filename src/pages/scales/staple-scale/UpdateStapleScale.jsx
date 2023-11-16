@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 import { useParams, useNavigate } from "react-router-dom";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
-// import useGetSingleScale from "../../../hooks/useGetSingleScale";
+import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import useGetSingleStapleScale from "../../../hooks/useGetSingleStapleScale";
 import { useUpdateResponse } from "../../../hooks/useUpdateResponse";
 import CustomTextInput from "../../../components/forms/inputs/CustomTextInput";
@@ -13,7 +13,7 @@ import { EmojiPicker } from '../../../components/emoji-picker';
 const UpdateStapleScale = () => {
 
   const { slug } = useParams();
-  const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleStapleScale();
+  const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
   const [timeOn, setTimeOn] = useState(false);
   const { _id, settings } = (sigleScaleData && sigleScaleData[0]) || {};
   const [isLoading, setIsLoading] = useState(false);
@@ -97,19 +97,14 @@ const UpdateStapleScale = () => {
   const orientationDB = ['Vertical', 'Horizontal']
   const format = ['Numbers', 'Emojis', 'Stars']
 
-    const handleFetchSingleScale = async (scaleId) => {
-      try {
-          await fetchSingleScaleData(scaleId);
-      } catch (error) {
-          console.error("Error fetching single scale data:", error);
-      }
-    }
-
-
 
   useEffect(() => {
       const fetchData = async () => {
-          await handleFetchSingleScale(slug);
+        try {
+            await fetchSingleScaleData(slug);
+        } catch (error) {
+            console.error("Error fetching single scale data:", error);
+        }
       }
       fetchData();
   }, [slug]);
