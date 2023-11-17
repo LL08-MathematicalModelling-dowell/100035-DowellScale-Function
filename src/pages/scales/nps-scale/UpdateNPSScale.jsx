@@ -110,7 +110,7 @@ const UpdateNPSScale = () => {
   } 
 
   const orientationDB = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis', 'Stars']
+  const format = ['Numbers', 'Emojis']
 
     const handleFetchSingleScale = async (scaleId) => {
       try {

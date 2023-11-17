@@ -30,16 +30,9 @@ const RankingScaleSettings = ()=>{
         })
         return itemList;
     });
-
-    console.log(sigleScaleData && sigleScaleData[0]?.settings?.item_list)
-
-   
-
-
-    
+ 
     
     const stages = sigleScaleData ? dataStages[0] : ['City 5', 'City 6'];
-    console.log(stages, 'stages')
     const itemsAvailable = dataItems ? dataItems[0] : ['item 111', 'item 222'];
     const rankings = [0, 1];
 
@@ -104,11 +97,11 @@ const RankingScaleSettings = ()=>{
     
         if (currentStage === stages.length - 1) {
             const payload =  {
-                scale_id: "651bd7295c8f069f1f078ed5",
+                scale_id: sigleScaleData[0]?._id,
                 brand_name: "New Brand",
                 product_name:"New Product",
-                num_of_stages: 2,
-                num_of_substages:0,
+                num_of_stages: sigleScaleData[0]?.settings?.num_of_stages,
+                num_of_substages:sigleScaleData[0]?.settings?.num_of_substages,
                 username: "natan",
                 rankings:updatedDb
               }
@@ -228,7 +221,9 @@ const RankingScaleSettings = ()=>{
                                 <Button width={'3/4'} onClick={()=>navigateTo(`/update-ranking-scale/${scale._id}`)} key={index}>update scale</Button>
                             </>
                         ))}
-                        <Button width={'3/4'} primary>Save Response</Button>
+                        <Button onClick={handleSubmit}
+                        disabled={currentStage !== stages.length - 1}
+                        width={'3/4'} primary>Save Response</Button>
                     </div>
                     
                 </div>
