@@ -30,10 +30,10 @@ def settings_api_view_create(request):
                 allow_resp = True
             else:
                 allow_resp = False
-            topic = response.get('topic')
-            statement_count = response.get('statement_count')
-            statements = response.get('statements')
-            sorting_order = response.get('sorting_order').lower()
+            topic = response['topic']
+            statement_count = response['statement_count']
+            statements = response['statements']
+            sorting_order = response['sorting_order'].lower()
             if sorting_order not in ["random", "alphabetical", "custom", "no order"]:
                 return Response({"error": "sorting_order must be one of random, alphabetical, custom or no order"}, status=status.HTTP_400_BAD_REQUEST)
             percentage_accuracy = response.get('percentage_accuracy')
@@ -115,7 +115,13 @@ def settings_api_view_create(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                             "fetch", field_add, "nil")
         settings_json = json.loads(x)
-        settings = settings_json['data'][0]['settings']
+        settings = settings_json.get('data')
+        if settings == None or len(settings) == 0:
+             return Response({"error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
+        settings = settings[0]
+        settings = settings.get('settings')
+        if settings == None or len(settings) == 0:
+             return Response({"error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
         for key in settings.keys():
             if key in response:
                 if key == "percentage_accuracy":
@@ -124,6 +130,7 @@ def settings_api_view_create(request):
                         return Response({"error": "percentage_accuracy must be between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)
                 settings[key] = response[key]
         statements = settings.get("statements")
+        statement_count = settings.get("statement_count")
         sorting_order = settings.get("sorting_order")
         if ("statements" in response) or ("statement_count" in response):
             statement_count = response.get("statement_count")
@@ -271,8 +278,7 @@ def response_submit_api_view(request):
                 return response_submit_loop(username, scale_id, response, instance_id, process_id)
 
             result = response_submit_loop(username, scale_id, response, instance_id)
-            result = result.data
-            return Response(result)
+            return result
 
 
 
@@ -296,11 +302,15 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
     scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
                             "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
     scale = json.loads(scale)
-    if not scale.get('data', None):
+    print(scale)
+    if scale.get("data") == None:
+        return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+    if len(scale["data"]) == 0 or scale["data"][0].get("settings") == None:
         return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
     if scale['data'][0]['settings']['scale_category'] != 'thurstone scale':
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
     settings = scale['data'][0]['settings']
+    print("a")
     if settings['allow_resp'] == False:
         return Response({"error": "scale not accepting responses"}, status=status.HTTP_400_BAD_REQUEST)
 
