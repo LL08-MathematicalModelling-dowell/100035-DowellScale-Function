@@ -202,7 +202,7 @@ const UpdatePCScaleSettings = () => {
               name="scale_name"
               value={formData.scale_name}
               onChange={handleChange}
-              className="w-full px-4 py-5 mt-4 border rounded-lg focus:outline-none"
+              className="w-full px-4 py-2.5 mt-4 border rounded-lg focus:outline-none"
               // required
             />
           </div>
@@ -365,7 +365,7 @@ const UpdatePCScaleSettings = () => {
                 name="time"
                 value={formData.time}
                 onChange={handleChange}
-                className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+                className="w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                 // required
               />
             )}
@@ -379,7 +379,7 @@ const UpdatePCScaleSettings = () => {
               id="numItems"
               value={formData.item_count}
               onChange={handleInputChange}
-              className="px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+              className="px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
             />
             <div>
               {formData.item_list.map((value, index) => (
@@ -388,7 +388,7 @@ const UpdatePCScaleSettings = () => {
                   type="text"
                   placeholder={`paired ${index + 1}`}
                   value={value}
-                  className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+                  className="w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                   onChange={(e) =>
                     handleInputValueChange(index, e.target.value)
                   }

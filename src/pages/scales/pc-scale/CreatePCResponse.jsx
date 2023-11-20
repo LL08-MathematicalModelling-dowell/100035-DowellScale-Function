@@ -164,7 +164,7 @@ const CreatePCResponse = () => {
               name="brand_name"
               value={formData.brand_name}
               onChange={handleChange}
-              className="w-full px-4 py-5 mt-4 border rounded-lg focus:outline-none"
+              className="w-full px-4 py-2.5 mt-4 border rounded-lg focus:outline-none"
               required
             />
           </div>
@@ -181,7 +181,7 @@ const CreatePCResponse = () => {
               name="product_name"
               value={formData.product_name}
               onChange={handleChange}
-              className="w-full px-4 py-5 mt-4 border rounded-lg focus:outline-none"
+              className="w-full px-4 py-2.5 mt-4 border rounded-lg focus:outline-none"
               required
             />
           </div>
@@ -199,7 +199,7 @@ const CreatePCResponse = () => {
                 placeholder={`Product Ranking ${index + 1}`}
                 value={value}
                 disabled
-                className="w-full px-4 py-5 mt-2 bg-white border rounded-lg focus:outline-none"
+                className="w-full px-4 py-2.5 mt-2 bg-white border rounded-lg focus:outline-none"
                 onChange={(e) => handleInputValueChange(index, e.target.value)}
               />
             ))}
