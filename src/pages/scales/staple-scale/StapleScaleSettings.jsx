@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
-import { useSaveResponse } from "../../../hooks/useSaveResponse";
+import { useSaveStapleScaleResponse } from "../../../hooks/useSaveStapleScaleResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
 
@@ -14,7 +14,7 @@ const StapleScaleSettings = () => {
     const [selectedScore, setSelectedScore] = useState(-6);
     const [isLoading, setIsLoading] = useState(false);
     // const [loading, setLoading] = useState(false);
-    const saveResponse = useSaveResponse();
+    const saveResponse = useSaveStapleScaleResponse();
     const navigateTo = useNavigate();
 
     const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
@@ -27,11 +27,17 @@ const StapleScaleSettings = () => {
       await fetchSingleScaleData(scaleId);
   }
 
-
   const submitResponse = async()=>{
 
     const payload = {
-        
+
+        username: "Natan",
+        scale_id : slug,
+        score: 3,
+        instance_id: 1,
+        brand_name: "brand envue",
+        product_name: "envue",
+        process_id: "1"
     }
 
     try {
