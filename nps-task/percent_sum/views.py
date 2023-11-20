@@ -40,7 +40,7 @@ def settings_api_view_create(request):
                 user = response['user']
             except KeyError as error:
                 return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
-            if 2 < product_count > 10:
+            if product_count < 2 or product_count > 10:
                 return Response({"error": "Product count should be between 2 to 10"},
                                 status=status.HTTP_400_BAD_REQUEST)
             if len(product_names) != int(product_count):
@@ -75,10 +75,10 @@ def settings_api_view_create(request):
 
     elif request.method == 'GET':
         param = request.GET
-        scale_id = param.get('scale_id', None)
+        scale_id = param.get('scale_id')
         if scale_id:
             try:
-                field_add = {"_id": scale_id, "settings.scale_category": "percent_sum scale"}
+                field_add = {"_id": scale_id}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                         "find", field_add, "nil")
                 settings_json = json.loads(x)

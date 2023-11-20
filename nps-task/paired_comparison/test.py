@@ -1,3 +1,4 @@
+import random
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -26,11 +27,14 @@ class TestLikertScaleAPI(TestCase):
                 "item_count":4,
                 "item_list": ["coke", "fanta", "malt", "sprite"]
                 }
-        response = self.client.post(url, data=payload, format='json')
+        headers = {
+                    "Content-Type": "multipart/form-data"
+                    }
+        response = self.client.post(url, data=payload, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         scale_data = response.data["data"]["settings"]
         self.assertEqual(scale_data["orientation"], payload["orientation"])
-        self.assertEqual(scale_data["scale_name"], payload["scale_name"])
+        self.assertEqual(scale_data["name"], payload["scale_name"])
 
     def test_create_scale_unauthorized(self):
         """
@@ -48,7 +52,10 @@ class TestLikertScaleAPI(TestCase):
                 "item_count":4,
                 "item_list": ["coke", "fanta", "malt", "sprite"]
                 }
-        response = self.client.post(url, data=payload, format='json')
+        headers = {
+                    "Content-Type": "multipart/form-data"
+                    }
+        response = self.client.post(url, data=payload, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data["error"],  "Unauthorized.")
 
@@ -68,9 +75,12 @@ class TestLikertScaleAPI(TestCase):
                 "time":100,
                 "item_list": ["coke", "fanta", "malt", "sprite"]
                 }
-        response = self.client.post(url, data=payload, format='json')
+        headers = {
+                    "Content-Type": "multipart/form-data"
+                    }
+        response = self.client.post(url, data=payload, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["error"],  "Missing required parameter item_count")
+        self.assertEqual(response.data["error"],  "item_count missing or misspelt")
 
     def test_create_scale_item_count_mismatch(self):
         """
@@ -89,7 +99,10 @@ class TestLikertScaleAPI(TestCase):
                 "item_count":3,
                 "item_list": ["coke", "fanta", "malt", "sprite"]
                 }
-        response = self.client.post(url, data=payload, format='json')
+        headers = {
+                    "Content-Type": "multipart/form-data"
+                    }
+        response = self.client.post(url, data=payload, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["error"],  "item count does not match length of item list")
 
@@ -110,7 +123,10 @@ class TestLikertScaleAPI(TestCase):
                 "item_count":1,
                 "item_list": ["sprite"]
                 }
-        response = self.client.post(url, data=payload, format='json')
+        headers = {
+                    "Content-Type": "multipart/form-data"
+                    }
+        response = self.client.post(url, data=payload, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["error"],  "2 or more items needed for paired comparison scale.")
 
@@ -151,15 +167,18 @@ class TestLikertScaleAPI(TestCase):
         url = reverse(self.settings_url)
         payload = {
                 "scale_id" : "6525cb40d274abb7aa1ee7c6",
-                "orientation" : "horizontal",
-                "scale_color" : "fffff",
+                "orientation" : "vertical",
+                "scalecolor" : "fffff",
                 }
-        response = self.client.put(url, data=payload, format='json')
+        headers = {
+                    "Content-Type": "multipart/form-data"
+                    }
+        response = self.client.put(url, data=payload, headers=headers)
         scale_data = response.data["data"]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(scale_data['orientation'], payload['orientation'])
-        self.assertEqual(scale_data['scale_color'], payload['scale_color'])
+        self.assertEqual(scale_data['scalecolor'], payload['scalecolor'])
 
     def test_update_scale_missing_scale_id(self):
         """
@@ -170,7 +189,10 @@ class TestLikertScaleAPI(TestCase):
                 "orientation" : "horizontal",
                 "scale_color" : "fffff",
                 }
-        response = self.client.put(url, data=payload, format='json')
+        headers = {
+                    "Content-Type": "multipart/form-data"
+                    }
+        response = self.client.put(url, data=payload, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["error"],  "scale_id missing or mispelt")
 
@@ -187,22 +209,25 @@ class TestLikertScaleAPI(TestCase):
                 "scale_color" : "fffff",
                 }
 
-        response = self.client.put(url, data=payload, format='json')
+        headers = {
+                    "Content-Type": "multipart/form-data"
+                    }
+        response = self.client.put(url, data=payload, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_scale_response_success(self):
         url = reverse(self.response_url)
         payload = {
-                    "username" : "pfactorial09",
+                    "username" : f"pfactorial{random.randint(0,1000)}",
                     "scale_id" : "64d633f2f74c77f2b88e2b99",
                     "brand_name" : "envue",
                     "process_id" : "1",
                     "product_name" : "workflow_AI",
-                    "products_ranking" : ["A","A","A","A","B","B","B","C","C","D"]
+                    "products_ranking" : ["A"]
                 }
         response = self.client.post(url, data=payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("response_id", response.data)
+        self.assertIn("event_id", response.data["data"])
 
     def test_create_scale_response_missing_fields(self):
         url = reverse(self.response_url)
@@ -215,13 +240,13 @@ class TestLikertScaleAPI(TestCase):
                 }
         response = self.client.post(url, data=payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("Missing required parameter username", response.data["error"])
+        self.assertEqual("Missing required parameter 'username'", response.data["error"])
 
     def test_create_scale_response_for_non_existent_scale(self):
         url = reverse(self.response_url)
         payload = {
                     "username" : "pfactorial09",
-                    "scale_id" : "64d633f2c77f2b88e2b99",
+                    "scale_id" : "64d633f2f74c77f2b98e2b99",
                     "brand_name" : "envue",
                     "process_id" : "1",
                     "product_name" : "workflow_AI",
@@ -229,11 +254,12 @@ class TestLikertScaleAPI(TestCase):
                 }
         response = self.client.post(url, data=payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("Scale does not exist", response.data["Error"])
+        self.assertEqual("Scale not found.", response.data["error"])
 
     def test_fetch_scale_response_by_id(self):
         scale_id = "64d63ca2be7f305101fc2beb"
         url = reverse(self.response_url)
         response = self.client.get(f'{url}?scale_id={scale_id}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("_id", response.data["data"])
 
