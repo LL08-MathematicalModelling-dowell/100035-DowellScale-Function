@@ -19,6 +19,8 @@ const NPSScaleSettings = () => {
 
     let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
+    console.log(scale, '*** scale')
+
    
 
     
@@ -112,21 +114,20 @@ const NPSScaleSettings = () => {
       fetchData();
   }, [slug]);
 
-  console.log(scale, 'scale scale')
 
 
   if (loading) {
     return <Fallback />;
   }
   return (
-    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium font-Montserrat'>
+    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
         <div className='border border-primary w-full lg:w-9/12 m-auto py-4 px-5'>
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
-                    <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {scale?.[0].settings.name}</h3>
+                    <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {scale?.[0].settings?.name}</h3>
                     <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
-                        {scale && scale?.[0].settings?.fomat?.map((score, index)=>(
+                        {scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>(
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score)}

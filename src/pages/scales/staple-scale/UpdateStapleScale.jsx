@@ -3,13 +3,14 @@ import { toast } from 'react-toastify';
 import { useParams, useNavigate } from "react-router-dom";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
+import useGetSingleStapleScale from "../../../hooks/useGetSingleStapleScale";
 import { useUpdateResponse } from "../../../hooks/useUpdateResponse";
 import CustomTextInput from "../../../components/forms/inputs/CustomTextInput";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
 import { EmojiPicker } from '../../../components/emoji-picker';
 
-const UpdateNPSScale = () => {
+const UpdateStapleScale = () => {
 
   const { slug } = useParams();
   const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
@@ -21,48 +22,39 @@ const UpdateNPSScale = () => {
   const [selectedEmojis, setSelectedEmojis] = useState([]);
 
   const navigateTo = useNavigate();
-  const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
+
+//   console.log(slug, 'slug');
+//   console.log(settings, 'settings');
   
 
     const orientation = settings?.orientation
-    // const scale_id = settings?.scale_id
-    // const user = settings?.user
     const username = settings?.username
     const scalecolor = settings?.scalecolor
-    const numberrating = settings?.numberrating
-    const no_of_scales = settings?.no_of_scales
+    const scale_upper_limit = settings?.scale_upper_limit
     const roundcolor = settings?.roundcolor
     const fontcolor = settings?.fontcolor
+    const fontstyle = settings?.fontstyle
     const fomat = settings?.fomat
     const time = settings?.time
-    const template_name = settings?.template_name
     const name = settings?.name
-    const text = settings?.text
     const left = settings?.left
-    const right = settings?.right
-    const center = settings?.center
-    const show_total_score = settings?.show_total_score
+    const right = settings?.right    
     
-
   const [updateFormData, setUpdateFormData] = useState(
       Object.assign({}, { 
         orientation,
         username,
         scalecolor,
-        numberrating,
-        no_of_scales,
+        scale_upper_limit,
         roundcolor,
         fontcolor,
         fomat,
         time,
-        template_name,
         name,
-        text,
         left,
         right,
-        center,
-        show_total_score,
-        scale_category: "nps scale"
+        fontstyle
       })
   );
 
@@ -70,24 +62,19 @@ const UpdateNPSScale = () => {
 
   const updatePayload = {
     scale_id: _id,
-    user: "yes",
-    username: "Ndoneambrose",
+    // user: "yes",
+    // username: "Ndoneambrose",
     orientation:updateFormData.orientation,
+    scale_upper_limit:updateFormData.scale_upper_limit,
     scalecolor:updateFormData.scalecolor,
-    numberrating:updateFormData.numberrating,
-    no_of_scales:updateFormData.no_of_scales,
     roundcolor:updateFormData.roundcolor,
     fontcolor:updateFormData.fontcolor,
     fomat:updateFormData.fomat === 'Emojis' ? selectedEmojis : scores,
-    time: updateFormData.time,
-    template_name:updateFormData.template_name,
+    time: updateFormData?.time,
     name:updateFormData.name,
-    text:updateFormData.text,
     left:updateFormData.left,
     right:updateFormData.right,
-    center: updateFormData.center,
-    // scale-category: "nps scale",
-    show_total_score: updateFormData.show_total_score
+    fontstyle:updateFormData.fontstyle,
   }
 
   const handleToggleEmojiPellete = ()=>{
@@ -98,7 +85,6 @@ const UpdateNPSScale = () => {
     const { name, value } = e.target;
     setUpdateFormData({ ...updateFormData, [name]:value });
     if (name === 'fomat' && value === 'Emojis') {
-      console.log('fomat selected:', value)
       handleToggleEmojiPellete();
     } else {
       setShowEmojiPalette(false);
@@ -112,19 +98,14 @@ const UpdateNPSScale = () => {
   const orientationDB = ['Vertical', 'Horizontal']
   const format = ['Numbers', 'Emojis']
 
-    const handleFetchSingleScale = async (scaleId) => {
-      try {
-          await fetchSingleScaleData(scaleId);
-      } catch (error) {
-          console.error("Error fetching single scale data:", error);
-      }
-    }
-
-
 
   useEffect(() => {
       const fetchData = async () => {
-          await handleFetchSingleScale(slug);
+        try {
+            await fetchSingleScaleData(slug);
+        } catch (error) {
+            console.error("Error fetching single scale data:", error);
+        }
       }
       fetchData();
   }, [slug]);
@@ -133,41 +114,37 @@ const UpdateNPSScale = () => {
     if (settings) {
       setUpdateFormData({
         orientation: settings?.orientation || '',
+        scale_upper_limit:settings?.scale_upper_limit || 10,
         scale_id: _id || '',
         user: true, 
         username: settings?.username || '',
         scalecolor: settings?.scalecolor || '',
-        numberrating: settings?.numberrating || 0,
-        no_of_scales: settings?.no_of_scales || 0,
         roundcolor: settings?.roundcolor || '',
         fontcolor: settings?.fontcolor || '',
         fomat: settings?.fomat || '',
         time: settings?.time || 0,
-        template_name: settings?.template_name || '',
         name: settings?.name || '',
         text: settings?.text || '',
         left: settings?.left || '',
         right: settings?.right || '',
-        center: settings?.center || '',
-        // scale-category: "nps scale",
-        show_total_score: settings?.show_total_score || 0 
+        fontstyle: settings?.fontstyle || '',
       });
       
     }
   }, [settings]);
 
-  const handleUpdateNPSScale = async()=>{
+  const handleUpdateStapleScale = async()=>{
     if(!fomat){
       toast.error('please select a format to proceed');
       return
     }
     try {
         setIsLoading(true);
-        const { status, data } = await updateResponse('nps-scale', updatePayload);
+        const {status, data} = await updateResponse('staple-scale', updatePayload);
         if(status===200){
           toast.success('successfully updated');
           setTimeout(()=>{
-              navigateTo(`/nps-scale-settings/${sigleScaleData[0]?._id}`);
+              navigateTo(`/staple-scale-settings/${sigleScaleData[0]?._id}`);
           },2000)
         }
     } catch (error) {
@@ -283,16 +260,6 @@ const UpdateNPSScale = () => {
           </div>
           <div className='w-full'>
             <CustomTextInput 
-                label='center'
-                name='center'
-                value={updateFormData.center}
-                type='text'
-                handleChange={handleChange}
-                placeholder='enter scale center'
-            />
-          </div>
-          <div className='w-full'>
-            <CustomTextInput 
                 label='right'
                 name='right'
                 value={updateFormData.right}
@@ -318,18 +285,8 @@ const UpdateNPSScale = () => {
               }
               
           </div>
-          <div className='w-full'>
-            <CustomTextInput 
-                label='No of scales'
-                name='no_of_scales'
-                value={updateFormData.no_of_scales}
-                type='text'
-                handleChange={handleChange}
-                placeholder='Enter no of scales'
-            />
-          </div>
         </div>
-        <Button primary width={'full'} onClick={ handleUpdateNPSScale }>Update scale</Button>
+        <Button primary width={'full'} onClick={ handleUpdateStapleScale }>Update scale</Button>
       </div>
       {showEmojiPalette && (
         <EmojiPicker
@@ -343,4 +300,4 @@ const UpdateNPSScale = () => {
   )
 }
 
-export default UpdateNPSScale
+export default UpdateStapleScale

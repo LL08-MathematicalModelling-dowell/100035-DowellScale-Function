@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
-import { useSaveResponse } from "../../../hooks/useSaveResponse";
+import { useSaveStapleScaleResponse } from "../../../hooks/useSaveStapleScaleResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
 
@@ -14,25 +14,10 @@ const StapleScaleSettings = () => {
     const [selectedScore, setSelectedScore] = useState(-6);
     const [isLoading, setIsLoading] = useState(false);
     // const [loading, setLoading] = useState(false);
-    const saveResponse = useSaveResponse();
+    const saveResponse = useSaveStapleScaleResponse();
     const navigateTo = useNavigate();
 
     const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
-
-    console.log(sigleScaleData)
-
-   
-
-    
-
-
-    // if(scale && (scale[0]?.settings?.fomat) ){
-    //     scores = scale[0].settings.fomat
-    // }else{
-    //     scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    // }
-
-
 
     const handleSelectScore = (score)=>{
       setSelectedScore(score)
@@ -42,11 +27,17 @@ const StapleScaleSettings = () => {
       await fetchSingleScaleData(scaleId);
   }
 
-
   const submitResponse = async()=>{
 
     const payload = {
-        
+
+        username: "Natan",
+        scale_id : slug,
+        score: 3,
+        instance_id: 1,
+        brand_name: "brand envue",
+        product_name: "envue",
+        process_id: "1"
     }
 
     try {
@@ -88,14 +79,14 @@ const StapleScaleSettings = () => {
     return <Fallback />;
   }
   return (
-    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium font-Montserrat'>
+    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
         <div className='border border-primary w-full lg:w-9/12 m-auto py-4 px-5'>
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {sigleScaleData?.[0].settings.name}</h3>
                     <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
-                        {sigleScaleData && sigleScaleData?.[0].settings?.scale?.slice(0, 10).map((score, index)=>(
+                        {sigleScaleData && (Array.isArray(sigleScaleData?.[0]?.settings?.fomat) ? sigleScaleData?.[0]?.settings?.fomat : scores).map((score, index)=>(
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score)}
@@ -111,7 +102,7 @@ const StapleScaleSettings = () => {
             
                     <div className="flex gap-3 justify-end">
                         {sigleScaleData && sigleScaleData.map((scale, index)=>(
-                            <Button width={'3/4'} onClick={()=>navigateTo(`/update-nps-scale/${scale._id}`)} key={index}>update scale</Button>
+                            <Button width={'3/4'} onClick={()=>navigateTo(`/update-staple-scale/${scale._id}`)} key={index}>update scale</Button>
                         ))}
                         <Button 
                             onClick={submitResponse}

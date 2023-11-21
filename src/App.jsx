@@ -27,7 +27,7 @@ import {
   UpdatePMSSettings,
 } from './pages/scales/pm-scale';
 
-import { StapleScale, CreateStapleScale,StapleScaleSettings } from './pages/scales/staple-scale';
+import { StapleScale, CreateStapleScale, StapleScaleSettings, UpdateStapleScale } from './pages/scales/staple-scale';
 
 function App() {
   return (
@@ -110,6 +110,10 @@ function App() {
                 <Route
                   path="/update-nps-scale/:slug"
                   element={<UpdateNPSScale />}
+                />
+                <Route
+                  path="/update-staple-scale/:slug"
+                  element={<UpdateStapleScale />}
                 />
             </Routes>
           </FetchUserContextProvider>
