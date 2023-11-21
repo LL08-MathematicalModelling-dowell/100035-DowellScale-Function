@@ -412,6 +412,7 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
             "score_list": score,
             "scale_specific_data": nps_scale_data
         }
+        print("\n\n\nnps_scale_data: ", response_)
         return response_
     elif scale_type == "stapel scale":
         score = [int(x) for x in score]
@@ -430,17 +431,28 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
 
 
 def fetch_scores_and_scale_type(query_params):
+    print(f"\n\nquery_params: {query_params}\n\n")
     response_data_scores = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                             "scale_reports", "1094", "ABCDE", "fetch", query_params, "nil")
 
+    print(f"\n\nresponse_data_scores: {response_data_scores}\n\n")
+    print(f"\n\nresponse_data_scores: {json.loads(response_data_scores)}\n\n")
     scores = [x['score']['score'] for x in json.loads(response_data_scores)['data']]
     scale_type = json.loads(response_data_scores)['data'][0]["scale_data"]["scale_type"]
+    print(f"\n\nscores: {scores}\n\nscale_type: {scale_type}\n\n")
     return scores, scale_type
 
 
 def statistics(scores, process_id):
-    stattrics = stattricks_api("evaluation_module", process_id, 16, 3, {"list1": scores})
+    print(f"\n\nscores: {scores}\n\nprocess_id: {process_id}..\n\n")
+    try:
+        stattrics = stattricks_api("evaluation_module", process_id, 16, 3, {"list1": scores})
+    except Exception as e:
+        print(f"\n\nException: {e}\n\n")
+        stattrics = {}
+    print(f"\n\nstattricsssss: {stattrics}\n\n")
     normality = Normality_api(process_id)
+    print(f"\n\nnormalityyyyy: {normality}\n\n")
     return normality, stattrics
 
 def get_scores(report_type, response_data):
@@ -465,6 +477,7 @@ def get_scores(report_type, response_data):
 @api_view(['POST'])
 def evaluation_api(request):
     try:
+        print("request.data: ", request.data)
         report_type = request.GET.get('report_type', '').strip()
         valid_report_types = ["process", "document", "scale"]
 
@@ -494,7 +507,13 @@ def evaluation_api(request):
                     "error": "Please provide 'template_id', 'type_of_element', 'element', and 'process_id' in the request body for 'scale' report type"},
                     status=status.HTTP_400_BAD_REQUEST)
 
+        print("\n\n\nresponse_data", response_data)
+        print(report_type, "report_type")
+
         scores, scale_type = get_scores(report_type, response_data)
+
+        print("\n\n\nscores", scores)
+        print("\n\n\nscale_type", scale_type)
 
         if not scores:
             return Response({"error": "No responses found for the given data"}, status=status.HTTP_404_NOT_FOUND)
@@ -504,6 +523,8 @@ def evaluation_api(request):
         response_ = categorize_scale_generate_scale_specific_report(scale_type, scores)
         process_id = f'{process_id}{report_type}'
         normality, stattrics = statistics(scores, process_id)
+        print("\n\n\nnormality: ", normality)
+        print("\n\n\nstattrics: ", stattrics)
         response_["normality_analysis"] = normality
         response_["central_tendencies"] = stattrics
         return Response({"success": response_}, status=status.HTTP_200_OK)
@@ -513,4 +534,44 @@ def evaluation_api(request):
                         status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def get_brand_product(request):
+    data = request.data
+    print(data, "data\n\n\n")
+    product_name = data.get("product_name")
+    brand_name = data.get("brand_name")
+
+    field_add = {}
+
+
+    if product_name:
+        field_add["brand_data.product_name"] = product_name
+    if brand_name:
+        field_add["brand_data.brand_name"] = brand_name
+    if not product_name and not brand_name:
+        return Response({"error": "Please provide either product_name or brand_name in the request body"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    if product_name and brand_name:
+        field_add["brand_data.product_name"] = product_name
+        field_add["brand_data.brand_name"] = brand_name
+
+    # Execute the API call using ThreadPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        data_future = executor.submit(
+            dowellconnection,
+            "dowellscale",
+            "bangalore",
+            "dowellscale",
+            "scale_reports",
+            "scale_reports",
+            "1094",
+            "ABCDE",
+            "fetch",
+            field_add,
+            "nil"
+        )
+
+    return Response({"success": data_future.result()}, status=status.HTTP_200_OK)
 

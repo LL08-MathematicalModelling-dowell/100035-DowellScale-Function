@@ -74,6 +74,7 @@ def stattricks_api(title, process_id, process_sequence_id, series, seriesvalues)
         "seriesvalues": seriesvalues
     }
     response = requests.post(url, json=payload)
+    print(response, "response")
     return response.json()
 
 
