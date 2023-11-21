@@ -133,8 +133,11 @@ const UpdateStapleScale = () => {
     }
   }, [settings]);
 
-  const handleUpdateNPSScale = async()=>{
-
+  const handleUpdateStapleScale = async()=>{
+    if(!fomat){
+      toast.error('please select a format to proceed');
+      return
+    }
     try {
         setIsLoading(true);
         const {status, data} = await updateResponse('staple-scale', updatePayload);
@@ -283,7 +286,7 @@ const UpdateStapleScale = () => {
               
           </div>
         </div>
-        <Button primary width={'full'} onClick={ handleUpdateNPSScale }>Update scale</Button>
+        <Button primary width={'full'} onClick={ handleUpdateStapleScale }>Update scale</Button>
       </div>
       {showEmojiPalette && (
         <EmojiPicker

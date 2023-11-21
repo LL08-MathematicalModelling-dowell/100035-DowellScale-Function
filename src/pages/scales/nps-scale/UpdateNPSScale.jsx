@@ -157,7 +157,10 @@ const UpdateNPSScale = () => {
   }, [settings]);
 
   const handleUpdateNPSScale = async()=>{
-
+    if(!fomat){
+      toast.error('please select a format to proceed');
+      return
+    }
     try {
         setIsLoading(true);
         const { status, data } = await updateResponse('nps-scale', updatePayload);
