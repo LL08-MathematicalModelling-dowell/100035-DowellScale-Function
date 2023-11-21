@@ -1,3 +1,4 @@
+import random
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -8,6 +9,7 @@ class TestPercentSumScaleApi(TestCase):
         self.client = APIClient()
         self.settings_url = "percent_sum:create_percent_sum_scale_api"
         self.response_url = "percent_sum:percent_sum_response_submit_api"
+        
     def test_create_scale(self):
         """
         Test creating a scale with valid input data.
@@ -237,4 +239,60 @@ class TestPercentSumScaleApi(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         scale_data = response.data
         self.assertEqual(scale_data["error"], "Missing required parameter 'brand_name'")
+
+
+    def test_create_scale_response_with_total_score_exceeding_max(self):
+        url = reverse(self.response_url)
+        payload = {
+                    "score":[30, 60, 90],
+                    "scale_id": "650be48df701e87c9a43132b",
+                    "username": f"natan{random.randint(0,1000)}",
+                    "instance_id": "2",
+                    "process_id": "1",
+                    "brand_name": "ella",
+                    "product_name": "testprod"
+                    
+                }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual('Total score cannot exceed 100.', response.data["error"])
+
+    def test_create_scale_response_succes(self):
+        url = reverse(self.response_url)
+        payload = {
+                    "score":[30, 60, 10],
+                    "scale_id": "650be48df701e87c9a43132b",
+                    "username": f"natan{random.randint(0,1000)}",
+                    "instance_id": "2",
+                    "process_id": "1",
+                    "brand_name": "ella",
+                    "product_name": "testprod"
+                    
+                }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('response_id', response.data)
+
+    def test_create_scale_response_for_non_existent_scale(self):
+        url = reverse(self.response_url)
+        payload = {
+                    "score":[30, 60, 90],
+                    "scale_id": "650be48df801e87c9a43132b",
+                    "username": f"natan{random.randint(0,1000)}",
+                    "instance_id": "2",
+                    "process_id": "1",
+                    "brand_name": "ella",
+                    "product_name": "testprod"
+                    
+                }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual("Scale does not exist", response.data["Error"])
+
+    def test_fetch_scale_response_by_id(self):
+        scale_id = "655c51472fecc9ccd59243d8"
+        url = reverse(self.response_url)
+        response = self.client.get(f'{url}?scale_id={scale_id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("_id", response.data["data"])
         
