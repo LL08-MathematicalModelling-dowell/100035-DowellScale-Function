@@ -19,8 +19,9 @@ const StapleScaleSettings = () => {
 
     const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
 
+
     const handleSelectScore = (score)=>{
-      setSelectedScore(score)
+      setSelectedScore(score);
   }
 
     const handleFetchSingleScale = async(scaleId)=>{
@@ -30,10 +31,9 @@ const StapleScaleSettings = () => {
   const submitResponse = async()=>{
 
     const payload = {
-
         username: "Natan",
         scale_id : slug,
-        score: 3,
+        score: selectedScore || 1,
         instance_id: 1,
         brand_name: "brand envue",
         product_name: "envue",
@@ -44,10 +44,11 @@ const StapleScaleSettings = () => {
         setIsLoading(true);
         const response = await saveResponse(payload);
         console.log(response)
-        // if(status===200){
+       
+        // if(response.status===200){
         //     toast.success('successfully updated');
         //     setTimeout(()=>{
-        //         navigateTo(`/nps-scale/${sigleScaleData[0]?._id}`);
+        //         navigateTo(`/staple-scale/${sigleScaleData[0]?._id}`);
         //     },2000)
         //   }
     } catch (error) {
