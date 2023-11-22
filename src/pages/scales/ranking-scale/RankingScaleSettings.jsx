@@ -16,6 +16,8 @@ const RankingScaleSettings = ()=>{
     const [currentStage, setCurrentStage] = useState(0);
     const [itemsAvailableSchema, setItemsAvailableSchema] = useState([]);
 
+    console.log(sigleScaleData, 'sigleScaleData')
+
 
     const dataStages = sigleScaleData && sigleScaleData?.map((scale)=>{
         const stages = scale?.settings?.stages.map((stage)=>{

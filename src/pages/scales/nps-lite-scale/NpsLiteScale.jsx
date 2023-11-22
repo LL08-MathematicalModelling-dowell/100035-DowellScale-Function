@@ -10,18 +10,20 @@ import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
 
 
-const StapleScale = () => {
+const NpsLiteScale = () => {
     const { slug } = useParams();
     const { isLoading, scaleData, fetchScaleData } = useGetScale();
-    const [selectedScore, setSelectedScore] = useState(-6);
+    const [selectedScore, setSelectedScore] = useState(-1);
     const navigateTo = useNavigate();
 
-    // const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
+    const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    console.log(scaleData, 'scaleData ***');
+
     
-    console.log(scaleData, 'scaleData')
+
     useEffect(()=>{
-        fetchScaleData('staple-scale');
+        fetchScaleData('nps-lite-scale');
     },[]);
 
     const handleSelectScore = (score)=>{
@@ -36,7 +38,6 @@ const StapleScale = () => {
     <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
         <div className='border border-primary w-full lg:w-10/12 m-auto py-4 px-5'>
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
-            // style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}
             >
                 <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
                     <h2 className='p-2 flex gap-2 items-center font-medium'>
@@ -44,16 +45,11 @@ const StapleScale = () => {
                         <MdManageHistory className='text-primary'/>
                         </span> Scale History
                     </h2>
-                    {scaleData && scaleData?.data?.map((scale, index) => (
-                        <Button
-                        width={'full'}
-                        onClick={() => navigateTo(`/staple-scale-settings/${scale._id}`)}
-                        key={index}
-                        >
-                        {scale?.settings?.name}
-                        </Button>
-                    ))
-                    }
+                    {scaleData && scaleData?.map((scale, index)=>(
+                        <>
+                            <Button width={'full'} onClick={()=>navigateTo(`/nps-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.name}</Button>
+                        </>
+                    ))}
 
                 </div>
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
@@ -63,18 +59,18 @@ const StapleScale = () => {
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index - 5  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
                             >{score}</button>
                         ))}
                     </div>
                     <div className='flex items-center justify-between my-3'>
                         <h4>Very unlikely</h4>
-                        <h4></h4>
+                        <h4>Select score</h4>
                         <h4>Very likely</h4>
                     </div>
             
                     <div className='w-full flex items-center justify-end my-4'>
-                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-staple-scale`)}>create new scale</Button>
+                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-nps-lite-scale`)}>create new scale</Button>
                     </div>
                 </div>
             </div>
@@ -84,4 +80,4 @@ const StapleScale = () => {
   )
 }
 
-export default StapleScale
+export default NpsLiteScale

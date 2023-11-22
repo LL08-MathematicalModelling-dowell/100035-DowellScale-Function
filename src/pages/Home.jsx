@@ -8,8 +8,8 @@ const Home = () => {
   // const cookie = new Cookies();
   const scaleTypes = [
     {
-      name: 'linkert scale',
-      slug: 'linkert-scale',
+      name: 'nps lite scale',
+      slug: 'nps-lite-scale',
     },
     {
       name: 'nps scale',
