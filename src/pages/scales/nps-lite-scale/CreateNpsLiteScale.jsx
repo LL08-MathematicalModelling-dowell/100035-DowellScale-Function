@@ -5,6 +5,7 @@ import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { useCreateScale } from '../../../hooks/useCreateScale';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
+import { fontStyles } from '../../../utils/fontStyles';
 
 
 const CreateNpsLiteScale = () => {
@@ -26,7 +27,6 @@ const CreateNpsLiteScale = () => {
     
     const [formData, setFormData] = useState({
           orientation: "",
-        //   scale_id: "64e8744218f0a24fb16b0ee2",
           user: "yes",  //should be boolean
           question: "",
           username: "Ndoneambrose",
@@ -35,6 +35,7 @@ const CreateNpsLiteScale = () => {
           no_of_scales: 3,
           roundcolor: "#E5E7E8",
           fontcolor: "#E5E7E8",
+          fontstyle: "",
           time: 0,
           template_name: "testing5350",
           name: "",
@@ -102,6 +103,7 @@ const CreateNpsLiteScale = () => {
         no_of_scales: formData.no_of_scales,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
+        fontstyle:formData.fontstyle,
         time: formData.time,
         template_name: "testing5350",
         name: formData.name,
@@ -114,8 +116,6 @@ const CreateNpsLiteScale = () => {
         show_total_score: "true" //should be boolean
     }
 
-    console.log(payload)
-
     for(const field of requiredFields){
         if(!formData[field]){
             toast.error(`Please complete the "${field}" field.`);
@@ -125,7 +125,8 @@ const CreateNpsLiteScale = () => {
     try {
         setIsLoading(true);
         const response = await createScale('nps-lite-scale', payload);
-        if(response.status===201){
+        console.log(response, '8* respon')
+        if(response.status===200){
             toast.success('scale created');
             setTimeout(()=>{
                 navigateTo(`/nps-lite-scale-settings/${response?.data?.data?.scale_id}`)
@@ -133,7 +134,7 @@ const CreateNpsLiteScale = () => {
         }
     } catch (error) {
         console.log(error);
-        toast.success('an error occured');
+        toast.error('an error occured');
     }finally{
         setIsLoading(false);
     }
@@ -214,6 +215,23 @@ const CreateNpsLiteScale = () => {
                   onChange={handleChange}
                   className="w-full"
               />
+          </div>
+          <div>
+              <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">font style</label>
+              <select 
+                  label="Select font style" 
+                  name="fontstyle" 
+                  className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+                  value={formData.fontstyle}
+                  onChange={handleChange}
+              >
+                  <option value={''}>-- Select font style  --</option>
+                      {fontStyles.map((style, i) => (
+                          <option key={i} >
+                              {style}
+                          </option>
+                      ))}
+              </select>
           </div>
           <div className='w-full'>
             <CustomTextInput 

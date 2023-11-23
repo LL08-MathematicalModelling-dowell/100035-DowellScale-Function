@@ -47,7 +47,7 @@ const NpsLiteScale = () => {
                     </h2>
                     {scaleData && scaleData?.map((scale, index)=>(
                         <>
-                            <Button width={'full'} onClick={()=>navigateTo(`/nps-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.name}</Button>
+                            <Button width={'full'} onClick={()=>navigateTo(`/nps-lite-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.name}</Button>
                         </>
                     ))}
 
