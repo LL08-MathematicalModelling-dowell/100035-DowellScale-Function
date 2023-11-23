@@ -65,7 +65,7 @@ def settings_api_view_create(request):
         field_add = {"event_id": eventID,
                      "settings": {"item_list": item_list, "scale_color": scale_color, "fontstyle": fontstyle,
                                   "no_of_scales": number_of_scales, "fontcolor": fontcolor,
-                                  "time": time, "name": name, "scale_category": "perceptual_mapping scale", "username": username,
+                                  "time": time, "name": name, "scale-category": "perceptual mapping", "username": username,
                                   "item_count": item_count, "X_left": X_left, "X_right": X_right, "Y_top": Y_top,
                                   "Y_bottom": Y_bottom, "marker_color": marker_color, "center": (0,0), "position": "center",
                                    "marker_type": marker_type, "x_range": x_range, "y_range": y_range, "X_upper_limit": X_upper_limit, "Y_upper_limit": Y_upper_limit,
@@ -89,12 +89,12 @@ def settings_api_view_create(request):
             params = request.GET
             scale_id = params.get("scale_id")
             if not scale_id:
-                field_add = {"settings.scale_category": "perceptual_mapping scale"}
+                field_add = {"settings.scale-category": "perceptual mapping"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response({"data": json.loads(response_data)}, status=status.HTTP_200_OK)
 
-            field_add = {"_id": scale_id, "settings.scale_category": "perceptual_mapping scale"}
+            field_add = {"_id": scale_id, "settings.scale-category": "perceptual mapping"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -113,7 +113,13 @@ def settings_api_view_create(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                             "fetch", field_add, "nil")
         settings_json = json.loads(x)
-        settings = settings_json['data'][0]['settings']
+        settings = settings_json.get('data')
+        if settings == None or len(settings) == 0:
+             return Response({"error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
+        settings = settings[0]
+        settings = settings.get('settings')
+        if settings == None or len(settings) == 0:
+             return Response({"error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
         for key in settings.keys():
             if key in response:
                 settings[key] = response[key]
