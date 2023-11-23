@@ -64,7 +64,7 @@ def settings_api_view_create(request):
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                         "ABCDE",
                                         "insert", details, "nil")
-        return Response({"success": x, "data": field_add})
+        return Response({"success": x, "data": field_add}, status=status.HTTP_201_CREATED)
     elif request.method == 'GET':
         try:
             param = request.GET

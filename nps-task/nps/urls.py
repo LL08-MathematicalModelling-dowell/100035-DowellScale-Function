@@ -13,8 +13,8 @@ urlpatterns = [
     path('nps-editor/settings/<str:id>', dowell_editor_admin, name='default_page_admin'),
     # Rest endpoints
 
-]
-'''
+
+
     path('api/nps_create_instance', dynamic_scale_instances, name="dynamic_instance"),
     path('api/nps_settings_create/', settings_api_view_create, name="create_scale_settings_api"),
     path('api/nps_custom_data/', custom_configuration_view, name="custom_configs"),
@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/nps_responses', scale_response_api_view, name="scale_response_api"),
     # path('api/total_responses/<str:doc_no>/<str:product_name>', calculate_total_score, name="calculate_total_score_api"),
     path('api/nps_settings/<str:id>', single_scale_settings_api_view, name="single_scale_settings_api"),
-    path('api/nps_responses/<str:id>', single_scale_response_api_view, name="single_scale_response_api"),'''
+    path('api/nps_responses/<str:id>', single_scale_response_api_view, name="single_scale_response_api"),
+]
