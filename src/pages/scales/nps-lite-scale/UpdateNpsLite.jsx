@@ -158,17 +158,18 @@ const UpdateNpsLite = () => {
   
 
   const handleUpdateNPSScale = async()=>{
-    if(!fomat){
+    console.log(updatePayload, 'payload')
+    if(!updateFormData.fomat){
       toast.error('please select a format to proceed');
       return
     }
     try {
         setIsLoading(true);
-        const { status, data } = await updateResponse('nps-scale', updatePayload);
+        const { status, data } = await updateResponse('nps-lite-scale', updatePayload);
         if(status===200){
           toast.success('successfully updated');
           setTimeout(()=>{
-              navigateTo(`/nps-scale-settings/${sigleScaleData[0]?._id}`);
+              navigateTo(`/nps-lite-scale-settings/${sigleScaleData[0]?._id}`);
           },2000)
         }
     } catch (error) {
