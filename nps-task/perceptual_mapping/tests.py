@@ -270,3 +270,64 @@ class PerceptualMappingScaleAPI(TestCase):
 
         response = self.client.put(url, data=payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_scale_response_success(self):
+        url = reverse(self.response_url)
+        payload = {
+                    "username": "natan",
+                    "instance_id": 1,
+                    "process_id": "1",
+                    "brand_name": "SAMSUNG",
+                    "product_name": "Galaxy Z Flip5",
+                    "scale_id": "656045d85185b5aa8a50d717",
+                    "positions": {
+                            "itemA": [2, -2],
+                            "itemB": [-2, 2],
+                        }
+                    }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("data", response.data)
+
+    def test_create_scale_response_missing_fields(self):
+        url = reverse(self.response_url)
+        payload = {
+                    "instance_id": 1,
+                    "process_id": "1",
+                    "brand_name": "SAMSUNG",
+                    "product_name": "Galaxy Z Flip5",
+                    "scale_id": "656045d85185b5aa8a50d717",
+                    "positions": {
+                            "itemA": [2, -2],
+                            "itemB": [-2, 2],
+                        }
+                    }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertIn("Unauthorized.", response.data["error"])
+
+    def test_create_scale_response_for_non_existent_scale(self):
+        url = reverse(self.response_url)
+        payload = {
+                    "username": "natan",
+                    "instance_id": 1,
+                    "process_id": "1",
+                    "brand_name": "SAMSUNG",
+                    "product_name": "Galaxy Z Flip5",
+                    "scale_id": "656045d85185b5aa8a50d718",
+                    "positions": {
+                            "itemA": [2, -2],
+                            "itemB": [-2, 2],
+                        }
+                    }
+        response = self.client.post(url, data=payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual("Scale does not exist.", response.data["Error"])
+
+    def test_fetch_scale_response_by_id(self):
+        scale_id = "6560485731e1653c2d250ca2"
+        url = reverse(self.response_url)
+        response = self.client.get(f'{url}?scale_id={scale_id}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("data", response.data)
+

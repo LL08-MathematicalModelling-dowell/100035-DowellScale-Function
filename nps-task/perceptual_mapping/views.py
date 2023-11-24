@@ -200,9 +200,10 @@ def response_submit_api_view(request):
                                      "scale_reports",
                                      "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(scale)
-            if data.get('data') is None:
-                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({"data": data['data']}, status=status.HTTP_200_OK)
+            if data.get('data') == None or len(data.get('data')) == 0:
+                return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            data = data['data'][0]
+            return Response({"data": data}, status=status.HTTP_200_OK)
         else:
             # Return all perceptual_mapping scale responses
             field_add = {"scale_data.scale_type": "perceptual_mapping scale"}
@@ -315,15 +316,16 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
 
     # Check if scale exists
     event_id = get_event_id()
-    field_add = {"_id": scale_id, "settings.scale_category": "perceptual_mapping scale"}
+    field_add = {"_id": scale_id, "settings.scale-category": "perceptual mapping"}
     scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
                              "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
     scale = json.loads(scale)
-    if not scale.get('data, none'):
+    if scale.get('data') == None or len(scale.get('data')) == 0:
         return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-    if scale['data'][0]['settings']['scale_category'] != 'perceptual_mapping scale':
-        return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
-    settings = scale['data'][0]['settings']
+    scale = scale['data'][0]
+    if scale.get('settings') == None:
+        return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+    settings = scale["settings"]
     if settings['allow_resp'] == False:
         return Response({"error": "scale not accepting responses"}, status=status.HTTP_400_BAD_REQUEST)
     
