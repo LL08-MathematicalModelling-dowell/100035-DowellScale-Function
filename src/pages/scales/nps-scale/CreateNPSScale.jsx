@@ -138,9 +138,10 @@ const CreateNPSScale = () => {
         const response = await createScale('nps-scale', payload);
         if(response.status===201){
             toast.success('scale created');
-            setTimeout(()=>{
-                navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
-            },2000)
+            // setTimeout(()=>{
+            //     navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
+            // },2000)
+            navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
         }
     } catch (error) {
         console.log(error);
