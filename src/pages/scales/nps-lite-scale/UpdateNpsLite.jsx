@@ -1,57 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
-import { useCreateScale } from '../../../hooks/useCreateScale';
-import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
-import Fallback from '../../../components/Fallback';
+import React, { useState, useEffect } from "react";
+import { toast } from 'react-toastify';
+import { useParams, useNavigate } from "react-router-dom";
+import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
+import useGetSingleNpsLiteScale from "../../../hooks/useGetSingleNpsLiteScale";
+import { useUpdateResponse } from "../../../hooks/useUpdateResponse";
+import CustomTextInput from "../../../components/forms/inputs/CustomTextInput";
+import Fallback from "../../../components/Fallback";
+import { Button } from "../../../components/button";
 import { EmojiPicker } from '../../../components/emoji-picker';
 
-const CreateNPSScale = () => {
-    const [timeOn, setTimeOn] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [selectedEmojis, setSelectedEmojis] = useState([]);
-    const [showEmojiPalette, setShowEmojiPalette] = useState(false);
-    const [displayedTime, setDisplayedTime] = useState(0); 
+const UpdateNpsLite = () => {
+
+  const { slug } = useParams();
+  const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleNpsLiteScale();
+  const [timeOn, setTimeOn] = useState(false);
+  const { _id, settings } = (sigleScaleData && sigleScaleData[0]) || {};
+  const [isLoading, setIsLoading] = useState(false);
+  const updateResponse = useUpdateResponse();
+  const [showEmojiPalette, setShowEmojiPalette] = useState(false);
+  const [selectedEmojis, setSelectedEmojis] = useState([]);
+
+  const navigateTo = useNavigate();
+  const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  
+
+    const orientation = settings?.orientation
+    // const scale_id = settings?.scale_id
+    // const user = settings?.user
+    const username = settings?.username
+    const scalecolor = settings?.scalecolor
+    const numberrating = settings?.numberrating
+    const no_of_scales = settings?.no_of_scales
+    const roundcolor = settings?.roundcolor
+    const fontcolor = settings?.fontcolor
+    const fomat = settings?.fomat
+    const time = settings?.time
+    const template_name = settings?.template_name
+    const name = settings?.name
+    const text = settings?.text
+    const left = settings?.left
+    const right = settings?.right
+    const center = settings?.center
+    const show_total_score = settings?.show_total_score
     
 
-    
+  const [updateFormData, setUpdateFormData] = useState(
+      Object.assign({}, { 
+        orientation,
+        username,
+        scalecolor,
+        numberrating,
+        no_of_scales,
+        roundcolor,
+        fontcolor,
+        fomat,
+        time,
+        template_name,
+        name,
+        text,
+        left,
+        right,
+        center,
+        show_total_score,
+        scale_category: "nps scale"
+      })
+  );
 
-    const createScale  = useCreateScale();
 
-    const navigateTo = useNavigate();
-    let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const requiredFields = [
-        'name',
-        'left',
-        'right',
-        'center',
-        'orientation'
-    ]
-    
-    const [formData, setFormData] = useState({
-          orientation: "",
-        //   scale_id: "64e8744218f0a24fb16b0ee2",
-          user: "yes",  //should be boolean
-          username: "Ndoneambrose",
-          scalecolor: "#E5E7E8",
-          numberrating: 10,
-          no_of_scales: 3,
-          roundcolor: "#E5E7E8",
-          fontcolor: "#E5E7E8",
-          fomat: "numbers",
-          time: 0,
-          template_name: "testing5350",
-          name: "",
-          text: "good+neutral+best",
-          left: "",
-          right: "",
-          center: "",
-          // scale-category: "nps scale",
-          scaleCategory: "nps scale",
-          show_total_score: "true" //should be boolean
-  })
+  const updatePayload = {
+    scale_id: _id,
+    user: "yes",
+    username: "Ndoneambrose",
+    orientation:updateFormData.orientation,
+    scalecolor:updateFormData.scalecolor,
+    numberrating:updateFormData.numberrating,
+    no_of_scales:updateFormData.no_of_scales,
+    roundcolor:updateFormData.roundcolor,
+    fontcolor:updateFormData.fontcolor,
+    fomat:updateFormData.fomat === 'Emojis' ? selectedEmojis : scores,
+    time: updateFormData.time,
+    template_name:updateFormData.template_name,
+    name:updateFormData.name,
+    text:updateFormData.text,
+    left:updateFormData.left,
+    right:updateFormData.right,
+    center: updateFormData.center,
+    // scale-category: "nps scale",
+    show_total_score: updateFormData.show_total_score
+  }
 
   const handleToggleEmojiPellete = ()=>{
     setShowEmojiPalette(!showEmojiPalette)
@@ -59,113 +96,105 @@ const CreateNPSScale = () => {
 
   const handleChange = (e)=>{
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]:value });
+    setUpdateFormData({ ...updateFormData, [name]:value });
     if (name === 'fomat' && value === 'Emojis') {
-        handleToggleEmojiPellete();
-      } else {
-        setShowEmojiPalette(false);
-      }
+      console.log('fomat selected:', value)
+      handleToggleEmojiPellete();
+    } else {
+      setShowEmojiPalette(false);
+    }
   }
 
-
-  const handleBlurTime = () => {
-    if (formData.time) {
-      const countDownTimer = setInterval(() => {
-        setFormData((prev) => {
-          if (prev.time > 0) {
-            setDisplayedTime(prev.time);
-            return {
-              ...prev,
-              time: prev.time - 1,
-            };
-          } else {
-            clearInterval(countDownTimer);
-            return prev;
-          }
-        });
-      }, 1000); 
-
-      setFormData((prev) => ({
-        ...prev,
-        countDownTimerId: countDownTimer,
-      }));
-    }
-  };
   const handleToggleTime = ()=>{
     setTimeOn(!timeOn);
   } 
 
-  const orientation = ['Vertical', 'Horizontal']
+  const orientationDB = ['Vertical', 'Horizontal']
   const format = ['Numbers', 'Emojis']
 
-  const handleSubmitNPSScale = async()=>{
-
-    
-
-    const payload = {
-        orientation: formData.orientation,
-        scale_id: "64e8744218f0a24fb16b0ee2",
-        user: "yes",  //should be boolean
-        username: "Ndoneambrose",
-        scalecolor: formData.scalecolor,
-        numberrating: 10,
-        no_of_scales: formData.no_of_scales,
-        roundcolor: formData.roundcolor,
-        fontcolor: formData.fontcolor,
-        fomat: formData.fomat === 'Emojis' ? selectedEmojis : scores,
-        time: formData.time,
-        template_name: "testing5350",
-        name: formData.name,
-        text: "good+neutral+best",
-        left: formData.left,
-        right: formData.right,
-        center: formData.center,
-        // scale-category: "nps scale",
-        scaleCategory: "nps scale",
-        show_total_score: "true" //should be boolean
+    const handleFetchSingleScale = async (scaleId) => {
+      try {
+          await fetchSingleScaleData(scaleId);
+      } catch (error) {
+          console.error("Error fetching single scale data:", error);
+      }
     }
 
-    console.log(payload)
 
-    for(const field of requiredFields){
-        if(!formData[field]){
-            toast.error(`Please complete the "${field}" field.`);
-            return;
-        }
+
+  useEffect(() => {
+      const fetchData = async () => {
+          await handleFetchSingleScale(slug);
+      }
+      fetchData();
+  }, [slug]);
+
+  useEffect(() => {
+    if (settings) {
+      setUpdateFormData({
+        orientation: settings?.orientation || '',
+        scale_id: _id || '',
+        user: true, 
+        username: settings?.username || '',
+        scalecolor: settings?.scalecolor || '',
+        numberrating: settings?.numberrating || 0,
+        no_of_scales: settings?.no_of_scales || 0,
+        roundcolor: settings?.roundcolor || '',
+        fontcolor: settings?.fontcolor || '',
+        fomat: settings?.fomat || '',
+        time: settings?.time || 0,
+        template_name: settings?.template_name || '',
+        name: settings?.name || '',
+        text: settings?.text || '',
+        left: settings?.left || '',
+        right: settings?.right || '',
+        center: settings?.center || '',
+        // scale-category: "nps scale",
+        show_total_score: settings?.show_total_score || 0 
+      });
+      
+    }
+  }, [settings]);
+  
+
+  const handleUpdateNPSScale = async()=>{
+    console.log(updatePayload, 'payload')
+    if(!updateFormData.fomat){
+      toast.error('please select a format to proceed');
+      return
     }
     try {
         setIsLoading(true);
-        const response = await createScale('nps-scale', payload);
-        if(response.status===201){
-            toast.success('scale created');
-            // setTimeout(()=>{
-            //     navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
-            // },2000)
-            navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
+        const { status, data } = await updateResponse('nps-lite-scale', updatePayload);
+        if(status===200){
+          toast.success('successfully updated');
+          setTimeout(()=>{
+              navigateTo(`/nps-lite-scale-settings/${sigleScaleData[0]?._id}`);
+          },2000)
         }
     } catch (error) {
-        console.log(error);
-        toast.success('an error occured');
+        console.log(error)
     }finally{
-        setIsLoading(false);
+        setIsLoading(false)
     }
 }
+
+  if(loading || isLoading){
+    return <Fallback />
+  }
 
   return (
     <div className='h-screen w-full flex flex-col items-center justify-center font-Montserrat'>
       <div className='w-full md:w-7/12 border p-5'>
-        <div className='flex justify-between'>
-            <h2 className="capitalize text-center text-sm font-medium mb-3">set up your Ranking</h2>
-            {timeOn && (
-                <p>You have about <span className='text-primary font-bold'>{displayedTime}</span> seconds to submit your form</p>
-            )}
+        <div className='w-7/12 m-auto'>
+            <h2 className="capitalize text-center text-sm font-medium mb-3">update { settings?.name } scale</h2>
         </div>
         <div className='grid grid-cols-2 md:grid-cols-3 gap-3 mb-10'>
           <div className='w-full'>
             <CustomTextInput 
                 label='name'
                 name='name'
-                value={formData.name}
+                value={updateFormData.name}
                 type='text'
                 handleChange={handleChange}
                 placeholder='enter scale name'
@@ -177,11 +206,11 @@ const CreateNPSScale = () => {
                   label="Select a orientation" 
                   name="orientation" 
                   className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                  value={formData.orientation}
+                  value={updateFormData.orientation}
                   onChange={handleChange}
               >
                   <option value={''}>-- Select orientation  --</option>
-                  {orientation.map((orientation, i) => (
+                  {orientationDB.map((orientation, i) => (
                       <option key={i} >
                           {orientation}
                       </option>
@@ -196,7 +225,7 @@ const CreateNPSScale = () => {
                   autoComplete="given-name"
                   type="color"
                   placeholder='scale color'
-                  value={formData.scalecolor}
+                  value={updateFormData.scalecolor}
                   onChange={handleChange}
                   className="w-full"
               />
@@ -209,7 +238,7 @@ const CreateNPSScale = () => {
                   autoComplete="given-name"
                   type="color"
                   placeholder='round color'
-                  value={formData.roundcolor}
+                  value={updateFormData.roundcolor}
                   onChange={handleChange}
                   className="w-full"
               />
@@ -222,7 +251,7 @@ const CreateNPSScale = () => {
                   autoComplete="given-name"
                   type="color"
                   placeholder='font color'
-                  value={formData.fontcolor}
+                  value={updateFormData.fontcolor}
                   onChange={handleChange}
                   className="w-full"
               />
@@ -233,7 +262,7 @@ const CreateNPSScale = () => {
                   label="Select a format" 
                   name="fomat" 
                   className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                  value={formData.fomat}
+                  value={updateFormData.fomat}
                   onChange={handleChange}
               >
                   <option value={''}>-- Select format  --</option>
@@ -248,7 +277,7 @@ const CreateNPSScale = () => {
             <CustomTextInput 
                 label='left'
                 name='left'
-                value={formData.left}
+                value={updateFormData.left}
                 type='text'
                 handleChange={handleChange}
                 placeholder='enter scale left'
@@ -258,7 +287,7 @@ const CreateNPSScale = () => {
             <CustomTextInput 
                 label='center'
                 name='center'
-                value={formData.center}
+                value={updateFormData.center}
                 type='text'
                 handleChange={handleChange}
                 placeholder='enter scale center'
@@ -268,7 +297,7 @@ const CreateNPSScale = () => {
             <CustomTextInput 
                 label='right'
                 name='right'
-                value={formData.right}
+                value={updateFormData.right}
                 type='text'
                 handleChange={handleChange}
                 placeholder='enter scale right'
@@ -286,28 +315,23 @@ const CreateNPSScale = () => {
                           name="time"
                           type="number"
                           placeholder="enter a valid time"
-                          value={formData.time}
-                          handleChange={handleChange}
-                          onBlur={handleBlurTime}
                       />
                   )
               }
+              
           </div>
           <div className='w-full'>
             <CustomTextInput 
                 label='No of scales'
                 name='no_of_scales'
-                value={formData.no_of_scales}
+                value={updateFormData.no_of_scales}
                 type='text'
                 handleChange={handleChange}
                 placeholder='Enter no of scales'
             />
           </div>
         </div>
-        <div className='flex justify-end gap-3'>
-        {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
-          <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button>
-        </div>
+        <Button primary width={'full'} onClick={ handleUpdateNPSScale }>Update scale</Button>
       </div>
       {showEmojiPalette && (
         <EmojiPicker
@@ -321,4 +345,4 @@ const CreateNPSScale = () => {
   )
 }
 
-export default CreateNPSScale
+export default UpdateNpsLite

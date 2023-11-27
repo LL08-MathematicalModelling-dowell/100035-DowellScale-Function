@@ -3,53 +3,46 @@ import { toast } from 'react-toastify';
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
-import { useSaveStapleScaleResponse } from "../../../hooks/useSaveStapleScaleResponse";
+import { useSaveResponse } from "../../../hooks/useSaveResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
 
-const StapleScaleSettings = () => {
+const NpsLiteSettings = () => {
     const { slug } = useParams();
-    const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const [scale, setScale] = useState(null);
-    const [selectedScore, setSelectedScore] = useState(-6);
+    const [selectedScore, setSelectedScore] = useState(-1);
     const [isLoading, setIsLoading] = useState(false);
-    // const [loading, setLoading] = useState(false);
-    const saveResponse = useSaveStapleScaleResponse();
+    const [loading, setLoading] = useState(false);
+    const saveResponse = useSaveResponse();
     const navigateTo = useNavigate();
 
-    const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
-
-    console.log(sigleScaleData, 'sigleScaleData **')
+    let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     const handleSelectScore = (score)=>{
-      setSelectedScore(score);
+      setSelectedScore(score)
   }
 
-    const handleFetchSingleScale = async(scaleId)=>{
-      await fetchSingleScaleData(scaleId);
-  }
+  console.log(scale, 'scale**')
+
 
   const submitResponse = async()=>{
 
     const payload = {
-        username: "Natan",
-        scale_id : slug,
-        score: selectedScore || 1,
-        instance_id: 1,
-        brand_name: "brand envue",
-        product_name: "envue",
-        process_id: "1"
+        user: "natan",
+        scale_id: "64afe7d3aad77b181847190a",
+        event_id: "1689249744727624",
+        scale_category: "npslite scale",
+        response: "9"
     }
 
     try {
         setIsLoading(true);
         const response = await saveResponse(payload);
         console.log(response)
-       
-        // if(response.status===200){
+        // if(status===200){
         //     toast.success('successfully updated');
         //     setTimeout(()=>{
-        //         navigateTo(`/staple-scale/${sigleScaleData[0]?._id}`);
+        //         navigateTo(`/nps-scale/${sigleScaleData[0]?._id}`);
         //     },2000)
         //   }
     } catch (error) {
@@ -61,16 +54,15 @@ const StapleScaleSettings = () => {
 
   useEffect(() => {
       const fetchData = async () => {
-          await handleFetchSingleScale(slug);
-        // try {
-        //     setLoading(true);
-        //     const response = await axios.get(`http://100035.pythonanywhere.com/ranking/api/ranking_settings_create?scale_id=${slug}`);
-        //     setScale(response.data); 
-        // } catch (error) {
-        //     console.error(error);
-        // } finally {
-        //     setLoading(false);
-        // }
+        try {
+            setLoading(true);
+            const response = await axios.get(`http://100035.pythonanywhere.com/nps-lite/api/nps-lite-settings/?scale_id=${slug}`);
+            setScale(response.data); 
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
       }
       fetchData();
   }, [slug]);
@@ -86,13 +78,13 @@ const StapleScaleSettings = () => {
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
-                    <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {sigleScaleData?.[0].settings.name}</h3>
+                    <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {scale?.[0].settings?.name}</h3>
                     <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
-                        {sigleScaleData && (Array.isArray(sigleScaleData?.[0]?.settings?.fomat) ? sigleScaleData?.[0]?.settings?.fomat : scores).map((score, index)=>(
+                        {scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>(
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index - 5  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
                             >{score}</button>
                         ))}
                     </div>
@@ -103,8 +95,8 @@ const StapleScaleSettings = () => {
                     </div>
             
                     <div className="flex gap-3 justify-end">
-                        {sigleScaleData && sigleScaleData.map((scale, index)=>(
-                            <Button width={'3/4'} onClick={()=>navigateTo(`/update-staple-scale/${scale._id}`)} key={index}>update scale</Button>
+                        {scale && scale.map((scale, index)=>(
+                            <Button width={'3/4'} onClick={()=>navigateTo(`/update-nps-lite-scale/${scale._id}`)} key={index}>update scale</Button>
                         ))}
                         <Button 
                             onClick={submitResponse}
@@ -122,4 +114,4 @@ const StapleScaleSettings = () => {
   )
 }
 
-export default StapleScaleSettings
+export default NpsLiteSettings

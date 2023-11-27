@@ -28,6 +28,7 @@ import {
 } from './pages/scales/pm-scale';
 
 import { StapleScale, CreateStapleScale, StapleScaleSettings, UpdateStapleScale } from './pages/scales/staple-scale';
+import { NPSLiteScale, CreateNpsLiteScale, NpsLiteSettings, UpdateNpsLite } from './pages/scales/nps-lite-scale';
 
 function App() {
   return (
@@ -68,8 +69,28 @@ function App() {
                   path="/staple-scale-settings/:slug"
                   element={<StapleScaleSettings />}
                 />
+                
 
                 {/* staple scale end */}
+
+                {/* nps lite scale start */}
+                  <Route
+                    path="/nps-lite-scale"
+                    element={<NPSLiteScale />}
+                  />
+                  <Route
+                    path="/create-nps-lite-scale"
+                    element={<CreateNpsLiteScale />}
+                  />
+                  <Route
+                    path="/update-nps-lite-scale/:slug"
+                    element={<UpdateNpsLite />}
+                  />
+                  <Route
+                    path="/nps-lite-scale-settings/:slug"
+                    element={<NpsLiteSettings />}
+                  />
+                {/* nps lite scale end */}
                 <Route
                   path="/create-perceptual-scale-settings"
                   element={<CreatePerceptualScaleSettings />}

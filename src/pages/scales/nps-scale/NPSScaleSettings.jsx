@@ -19,21 +19,6 @@ const NPSScaleSettings = () => {
 
     let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    console.log(scale, '*** scale')
-
-   
-
-    
-
-
-    // if(scale && (scale[0]?.settings?.fomat) ){
-    //     scores = scale[0].settings.fomat
-    // }else{
-    //     scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    // }
-
-
-
     const handleSelectScore = (score)=>{
       setSelectedScore(score)
   }
@@ -46,39 +31,45 @@ const NPSScaleSettings = () => {
   const submitResponse = async()=>{
 
     const payload = {
-        document_responses: [
-            {
-                scale_id:slug,
-                score:10
-            },
-            {
-                scale_id:"64f6fc2c7ab91b2af12c3958",
-                score:10
-            }],
-        instance_id:1,
-        brand_name:"question",
-        product_name:"answer",
-        username: "tall",
-        action: "document",
-        authorized: "Ambrose",
-        cluster: "Documents",
-        collection: "CloneReports",
-        command: "update",
-        database: "Documentation",
-        document: "CloneReports",
-        document_flag: "processing",
-        document_right: "add_edit",
-        field: "document_name",
-        function_ID: "ABCDE",
-        metadata_id: "64f568426bcc87ef0c75d43c",
-        process_id: "64f5683c3270cf0e74824fe7",
-        role: "single step role",
-        team_member_ID: "1212001",
-        content: "",
-        document_name: "name",
-        page: "",
-        user_type: "public",
-        _id: slug
+        // document_responses: [
+        //     {
+        //         scale_id:slug,
+        //         score:10
+        //     },
+        //     {
+        //         scale_id:"64f6fc2c7ab91b2af12c3958",
+        //         score:10
+        //     }],
+        // instance_id:1,
+        // brand_name:"question",
+        // product_name:"answer",
+        // username: "tall",
+        // action: "document",
+        // authorized: "Ambrose",
+        // cluster: "Documents",
+        // collection: "CloneReports",
+        // command: "update",
+        // database: "Documentation",
+        // document: "CloneReports",
+        // document_flag: "processing",
+        // document_right: "add_edit",
+        // field: "document_name",
+        // function_ID: "ABCDE",
+        // metadata_id: "64f568426bcc87ef0c75d43c",
+        // process_id: "64f5683c3270cf0e74824fe7",
+        // role: "single step role",
+        // team_member_ID: "1212001",
+        // content: "",
+        // document_name: "name",
+        // page: "",
+        // user_type: "public",
+        // _id: slug,
+
+        user: "natan",
+        scale_id: "64afe7d3aad77b181847190a",
+        event_id: "1689249744727624",
+        scale_category: "npslite scale",
+        response: "9"
     }
 
     try {

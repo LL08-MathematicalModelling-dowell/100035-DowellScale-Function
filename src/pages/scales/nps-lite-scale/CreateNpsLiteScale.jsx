@@ -5,22 +5,17 @@ import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { useCreateScale } from '../../../hooks/useCreateScale';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
-import { EmojiPicker } from '../../../components/emoji-picker';
+import { fontStyles } from '../../../utils/fontStyles';
 
-const CreateNPSScale = () => {
+
+const CreateNpsLiteScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedEmojis, setSelectedEmojis] = useState([]);
-    const [showEmojiPalette, setShowEmojiPalette] = useState(false);
     const [displayedTime, setDisplayedTime] = useState(0); 
     
-
-    
-
     const createScale  = useCreateScale();
-
     const navigateTo = useNavigate();
-    let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
 
     const requiredFields = [
         'name',
@@ -32,15 +27,15 @@ const CreateNPSScale = () => {
     
     const [formData, setFormData] = useState({
           orientation: "",
-        //   scale_id: "64e8744218f0a24fb16b0ee2",
           user: "yes",  //should be boolean
+          question: "",
           username: "Ndoneambrose",
           scalecolor: "#E5E7E8",
           numberrating: 10,
           no_of_scales: 3,
           roundcolor: "#E5E7E8",
           fontcolor: "#E5E7E8",
-          fomat: "numbers",
+          fontstyle: "",
           time: 0,
           template_name: "testing5350",
           name: "",
@@ -51,20 +46,16 @@ const CreateNPSScale = () => {
           // scale-category: "nps scale",
           scaleCategory: "nps scale",
           show_total_score: "true" //should be boolean
+
+        
+
+      
   })
 
-  const handleToggleEmojiPellete = ()=>{
-    setShowEmojiPalette(!showEmojiPalette)
-  }
 
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setFormData({ ...formData, [name]:value });
-    if (name === 'fomat' && value === 'Emojis') {
-        handleToggleEmojiPellete();
-      } else {
-        setShowEmojiPalette(false);
-      }
   }
 
 
@@ -112,7 +103,7 @@ const CreateNPSScale = () => {
         no_of_scales: formData.no_of_scales,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
-        fomat: formData.fomat === 'Emojis' ? selectedEmojis : scores,
+        fontstyle:formData.fontstyle,
         time: formData.time,
         template_name: "testing5350",
         name: formData.name,
@@ -125,8 +116,6 @@ const CreateNPSScale = () => {
         show_total_score: "true" //should be boolean
     }
 
-    console.log(payload)
-
     for(const field of requiredFields){
         if(!formData[field]){
             toast.error(`Please complete the "${field}" field.`);
@@ -135,17 +124,17 @@ const CreateNPSScale = () => {
     }
     try {
         setIsLoading(true);
-        const response = await createScale('nps-scale', payload);
-        if(response.status===201){
+        const response = await createScale('nps-lite-scale', payload);
+        console.log(response, '8* respon')
+        if(response.status===200){
             toast.success('scale created');
-            // setTimeout(()=>{
-            //     navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
-            // },2000)
-            navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
+            setTimeout(()=>{
+                navigateTo(`/nps-lite-scale-settings/${response?.data?.data?.scale_id}`)
+            },2000)
         }
     } catch (error) {
         console.log(error);
-        toast.success('an error occured');
+        toast.error('an error occured');
     }finally{
         setIsLoading(false);
     }
@@ -155,7 +144,7 @@ const CreateNPSScale = () => {
     <div className='h-screen w-full flex flex-col items-center justify-center font-Montserrat'>
       <div className='w-full md:w-7/12 border p-5'>
         <div className='flex justify-between'>
-            <h2 className="capitalize text-center text-sm font-medium mb-3">set up your Ranking</h2>
+            <h2 className="capitalize text-center text-sm font-medium mb-3">set up your scale</h2>
             {timeOn && (
                 <p>You have about <span className='text-primary font-bold'>{displayedTime}</span> seconds to submit your form</p>
             )}
@@ -227,21 +216,21 @@ const CreateNPSScale = () => {
                   className="w-full"
               />
           </div>
-          <div className='w-full'>
-              <label htmlFor="format" className="text-sm font-normal mb-1 ml-1">format</label>
+          <div>
+              <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">font style</label>
               <select 
-                  label="Select a format" 
-                  name="fomat" 
+                  label="Select font style" 
+                  name="fontstyle" 
                   className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                  value={formData.fomat}
+                  value={formData.fontstyle}
                   onChange={handleChange}
               >
-                  <option value={''}>-- Select format  --</option>
-                  {format.map((format, i) => (
-                      <option key={i} >
-                          {format}
-                      </option>
-                  ))}
+                  <option value={''}>-- Select font style  --</option>
+                      {fontStyles.map((style, i) => (
+                          <option key={i} >
+                              {style}
+                          </option>
+                      ))}
               </select>
           </div>
           <div className='w-full'>
@@ -309,16 +298,8 @@ const CreateNPSScale = () => {
           <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button>
         </div>
       </div>
-      {showEmojiPalette && (
-        <EmojiPicker
-            setSelectedEmojis={setSelectedEmojis}
-            selectedEmojis={selectedEmojis}
-            // handleEmojiSelect={handleEmojiSelect}
-            handleToggleEmojiPellete={handleToggleEmojiPellete}
-        />
-        )}
     </div>
   )
 }
 
-export default CreateNPSScale
+export default CreateNpsLiteScale
