@@ -11,7 +11,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from .eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
-
+from django.http import HttpResponse
 
 def generate_random_number():
     min_number = 10 ** 2
@@ -150,11 +150,13 @@ def settings_api_view_create(request):
             field_add = {"_id": scale_id}
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                              "ABCDE", "find", field_add, "nil")
+            print("1st", json.loads(response_data))
             return Response({"data": json.loads(response_data)})
         else:
             field_add = {"settings.scale-category": "nps scale"}
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                              "ABCDE", "fetch", field_add, "nil")
+            print("2nd", json.loads(response_data))
             return Response({"data": json.loads(response_data)})
 
     elif request.method == 'POST':
@@ -1006,6 +1008,7 @@ def single_scale_settings_api_view(request, id=None):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
+        print(settings_json)
         settings = settings_json['data'][0]['settings']
         no_of_scales = settings['no_of_scales']
         template_name = settings['template_name']
@@ -1279,4 +1282,24 @@ def default_scale_adminn(request):
     except:
         print("No scales found")
     return render(request, 'stapel/default.html', context)
+
+def redirect_view(request):
+    if request.method == 'GET':
+        scale_id = request.GET.get('scale_id')
+        request_type = request.GET.get('type')
+
+        if request_type == 'stapel_settings_create':
+            return settings_api_view_create(request)
+        elif request_type == 'stapel_scale_response':
+            return scale_response_api_view(request)
+        elif request_type == 'stapel_scale_settings':
+            return scale_settings_api_view(request)
+        elif request_type == 'stapel_single_scale_settings':
+            return single_scale_settings_api_view(request, scale_id)
+        elif request_type == 'stapel_single_scale_response':
+            return single_scale_response_api_view(request, scale_id)
+        else:
+            return HttpResponse("No type found")
+    else:
+        return HttpResponse("Invalid request method", status=405)
 
