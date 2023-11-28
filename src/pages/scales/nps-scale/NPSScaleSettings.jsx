@@ -1,155 +1,179 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import useGetSingleScale from "../../../hooks/useGetSingleScale";
-import { useSaveResponse } from "../../../hooks/useSaveResponse";
-import Fallback from "../../../components/Fallback";
-import { Button } from "../../../components/button";
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import useGetSingleScale from '../../../hooks/useGetSingleScale';
+import { useSaveResponse } from '../../../hooks/useSaveResponse';
+import Fallback from '../../../components/Fallback';
+import { Button } from '../../../components/button';
 
 const NPSScaleSettings = () => {
-    const { slug } = useParams();
-    // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
-    const [scale, setScale] = useState(null);
-    const [selectedScore, setSelectedScore] = useState(-1);
-    const [isLoading, setIsLoading] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const saveResponse = useSaveResponse();
-    const navigateTo = useNavigate();
+  const { slug } = useParams();
+  // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
+  const [scale, setScale] = useState(null);
+  const [selectedScore, setSelectedScore] = useState(-1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const saveResponse = useSaveResponse();
+  const navigateTo = useNavigate();
 
-    let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const handleSelectScore = (score)=>{
-      setSelectedScore(score)
-  }
+  const handleSelectScore = (score) => {
+    setSelectedScore(score);
+  };
 
-    const handleFetchSingleScale = async(scaleId)=>{
-      await fetchSingleScaleData(scaleId);
-  }
+  const handleFetchSingleScale = async (scaleId) => {
+    await fetchSingleScaleData(scaleId);
+  };
 
-
-  const submitResponse = async()=>{
-
+  const submitResponse = async () => {
     const payload = {
-        // document_responses: [
-        //     {
-        //         scale_id:slug,
-        //         score:10
-        //     },
-        //     {
-        //         scale_id:"64f6fc2c7ab91b2af12c3958",
-        //         score:10
-        //     }],
-        // instance_id:1,
-        // brand_name:"question",
-        // product_name:"answer",
-        // username: "tall",
-        // action: "document",
-        // authorized: "Ambrose",
-        // cluster: "Documents",
-        // collection: "CloneReports",
-        // command: "update",
-        // database: "Documentation",
-        // document: "CloneReports",
-        // document_flag: "processing",
-        // document_right: "add_edit",
-        // field: "document_name",
-        // function_ID: "ABCDE",
-        // metadata_id: "64f568426bcc87ef0c75d43c",
-        // process_id: "64f5683c3270cf0e74824fe7",
-        // role: "single step role",
-        // team_member_ID: "1212001",
-        // content: "",
-        // document_name: "name",
-        // page: "",
-        // user_type: "public",
-        // _id: slug,
+      // document_responses: [
+      //     {
+      //         scale_id:slug,
+      //         score:10
+      //     },
+      //     {
+      //         scale_id:"64f6fc2c7ab91b2af12c3958",
+      //         score:10
+      //     }],
+      // instance_id:1,
+      // brand_name:"question",
+      // product_name:"answer",
+      // username: "tall",
+      // action: "document",
+      // authorized: "Ambrose",
+      // cluster: "Documents",
+      // collection: "CloneReports",
+      // command: "update",
+      // database: "Documentation",
+      // document: "CloneReports",
+      // document_flag: "processing",
+      // document_right: "add_edit",
+      // field: "document_name",
+      // function_ID: "ABCDE",
+      // metadata_id: "64f568426bcc87ef0c75d43c",
+      // process_id: "64f5683c3270cf0e74824fe7",
+      // role: "single step role",
+      // team_member_ID: "1212001",
+      // content: "",
+      // document_name: "name",
+      // page: "",
+      // user_type: "public",
+      // _id: slug,
 
-        user: "natan",
-        scale_id: "64afe7d3aad77b181847190a",
-        event_id: "1689249744727624",
-        scale_category: "npslite scale",
-        response: "9"
-    }
+      user: 'natan',
+      scale_id: '64afe7d3aad77b181847190a',
+      event_id: '1689249744727624',
+      scale_category: 'npslite scale',
+      response: '9',
+    };
 
     try {
-        setIsLoading(true);
-        const response = await saveResponse(payload);
-        console.log(response)
-        // if(status===200){
-        //     toast.success('successfully updated');
-        //     setTimeout(()=>{
-        //         navigateTo(`/nps-scale/${sigleScaleData[0]?._id}`);
-        //     },2000)
-        //   }
+      setIsLoading(true);
+      const response = await saveResponse(payload);
+      console.log(response);
+      // if(status===200){
+      //     toast.success('successfully updated');
+      //     setTimeout(()=>{
+      //         navigateTo(`/nps-scale/${sigleScaleData[0]?._id}`);
+      //     },2000)
+      //   }
     } catch (error) {
-        console.log(error);
-    }finally{
-        setIsLoading(false);
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-      const fetchData = async () => {
-        //   await handleFetchSingleScale(slug);
-        try {
-            setLoading(true);
-            const response = await axios.get(`https://100035.pythonanywhere.com/ranking/api/ranking_settings_create?scale_id=${slug}`);
-            setScale(response.data); 
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
+    const fetchData = async () => {
+      //   await handleFetchSingleScale(slug);
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `https://100035.pythonanywhere.com/api/nps_create/?scale_id=${slug}`
+        );
+        console.log(response.data.success.scalecolor);
+        setScale(response.data.success);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
-      fetchData();
+    };
+    fetchData();
   }, [slug]);
-
-
 
   if (loading) {
     return <Fallback />;
   }
   return (
-    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
-        <div className='border border-primary w-full lg:w-9/12 m-auto py-4 px-5'>
-            <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
+    <div className="flex flex-col items-center justify-center h-screen font-medium font-Montserrat">
+      <div className="w-full px-5 py-4 m-auto border border-primary lg:w-9/12">
+        <div
+          className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`}
+        >
+          <div className="flex-1 w-full h-full p-2 border stage lg:w-5/12">
+            <h3 className="py-5 text-sm font-medium text-center">
+              Scale Name: {scale?.name}
+            </h3>
+            <div
+              className={`grid grid-cols-4 gap-3 px-2 py-6  bg-${scale?.scalecolor} md:grid-cols-11 md:px-1`}
+              style={{ backgroundColor: scale?.scalecolor }}
             >
-                <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
-                    <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {scale?.[0].settings?.name}</h3>
-                    <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
-                        {scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>(
-                            <button 
-                                key={index}
-                                onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
-                            >{score}</button>
-                        ))}
-                    </div>
-                    <div className='flex items-center justify-between my-3'>
-                        <h4>Very unlikely</h4>
-                        <h4>Select score</h4>
-                        <h4>Very likely</h4>
-                    </div>
-            
-                    <div className="flex gap-3 justify-end">
-                        {scale && scale.map((scale, index)=>(
-                            <Button width={'3/4'} onClick={()=>navigateTo(`/update-nps-scale/${scale._id}`)} key={index}>update scale</Button>
-                        ))}
-                        <Button 
-                            onClick={submitResponse}
-                            width={'3/4'} 
-                            primary
-                        >   
-                            {isLoading ? 'Saving Response' : 'Save Response'}
-                        </Button>
-                    </div>
-                </div>
+              {scale &&
+                (Array.isArray(scale?.fomat) ? scale.fomat : scores).map(
+                  (score, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSelectScore(score)}
+                      className={`rounded-full ${
+                        index > selectedScore
+                          ? `bg-[${scale.roundcolor}]`
+                          : `bg-primary text-[${scale?.fontcolor}]`
+                      } text-[${scale?.fontcolor}] h-[3.8rem] w-[3.8rem]`}
+                      style={
+                        index > selectedScore
+                          ? {
+                              backgroundColor: scale?.roundcolor,
+                              color: scale?.fontcolor,
+                            }
+                          : { color: 'white' }
+                      }
+                    >
+                      {score}
+                    </button>
+                  )
+                )}
             </div>
-            
-        </div>
-    </div>
-  )
-}
+            <div className="flex items-center justify-between my-3">
+              <h4>Unsatisfactory</h4>
+              <h4>neutral</h4>
+              <h4>Satisfactory</h4>
+            </div>
 
-export default NPSScaleSettings
+            <div className="flex justify-end gap-3">
+              {/* {scale &&
+                scale.map((scale, index) => ( */}
+              <Button
+                width={'3/4'}
+                onClick={() => navigateTo(`/update-nps-scale/${slug}`)}
+                // key={index}
+              >
+                update scale
+              </Button>
+              {/* ))} */}
+              <Button onClick={submitResponse} width={'3/4'} primary>
+                {isLoading ? 'Saving Response' : 'Save Response'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default NPSScaleSettings;
