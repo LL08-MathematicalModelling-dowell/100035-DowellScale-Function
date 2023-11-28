@@ -56,7 +56,7 @@ const NpsLiteSettings = () => {
       const fetchData = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://100035.pythonanywhere.com/nps-lite/api/nps-lite-settings/?scale_id=${slug}`);
+            const response = await axios.get(`https://100035.pythonanywhere.com/nps-lite/api/nps-lite-settings/?scale_id=${slug}`);
             setScale(response.data); 
         } catch (error) {
             console.error(error);

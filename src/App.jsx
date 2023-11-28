@@ -136,7 +136,7 @@ function App() {
                   path="/update-staple-scale/:slug"
                   element={<UpdateStapleScale />}
                 />
-            </Routes>
+              </Routes>
           </FetchUserContextProvider>
         </Suspense>
       </div>
