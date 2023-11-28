@@ -6,10 +6,12 @@ import useGetSingleScale from '../../../hooks/useGetSingleScale';
 import { useSaveResponse } from '../../../hooks/useSaveResponse';
 import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
+import UpdateNPSScale from './UpdateNPSScale';
 
 const NPSScaleSettings = () => {
   const { slug } = useParams();
   // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [scale, setScale] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,6 +20,10 @@ const NPSScaleSettings = () => {
   const navigateTo = useNavigate();
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  const handleToggleUpdateModal = () => {
+    setShowUpdateModal(!showUpdateModal);
+  };
 
   const handleSelectScore = (score) => {
     setSelectedScore(score);
@@ -159,19 +165,30 @@ const NPSScaleSettings = () => {
                 scale.map((scale, index) => ( */}
               <Button
                 width={'3/4'}
-                onClick={() => navigateTo(`/update-nps-scale/${slug}`)}
+                onClick={handleToggleUpdateModal}
                 // key={index}
               >
                 update scale
               </Button>
               {/* ))} */}
-              <Button onClick={submitResponse} width={'3/4'} primary>
-                {isLoading ? 'Saving Response' : 'Save Response'}
+              <Button  width={'3/4'} primary>
+                {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
               </Button>
             </div>
           </div>
         </div>
       </div>
+      {showUpdateModal && (
+        <UpdateNPSScale
+        handleToggleUpdateModal={handleToggleUpdateModal}
+        //   handleSubmitStagesSubinputs={handleSubmitStagesSubinputs}
+        //   subInputs={subInputs}
+        //   subInputsValue={subInputsValue}
+        //   handleInputsValueChange={handleInputsValueChange}
+        //   handleAddInputArea={handleAddInputArea}
+        //   removeSubinput={removeStagesSubinput}
+        />
+      )}
     </div>
   );
 };
