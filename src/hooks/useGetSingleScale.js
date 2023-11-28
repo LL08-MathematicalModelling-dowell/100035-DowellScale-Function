@@ -9,7 +9,7 @@ const useGetSingleScale = () => {
 
         // const endPoint = 
         // scaleType === 'ranking-scale' 
-        // ? 'http://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id='
+        // ? 'https://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id='
         // : scaleType==='nps-scale' ? 'https://100035.pythonanywhere.com/api/nps_create' : 'anoth';
 
         try {

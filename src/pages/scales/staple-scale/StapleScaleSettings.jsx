@@ -64,7 +64,7 @@ const StapleScaleSettings = () => {
           await handleFetchSingleScale(slug);
         // try {
         //     setLoading(true);
-        //     const response = await axios.get(`http://100035.pythonanywhere.com/ranking/api/ranking_settings_create?scale_id=${slug}`);
+        //     const response = await axios.get(`https://100035.pythonanywhere.com/ranking/api/ranking_settings_create?scale_id=${slug}`);
         //     setScale(response.data); 
         // } catch (error) {
         //     console.error(error);
