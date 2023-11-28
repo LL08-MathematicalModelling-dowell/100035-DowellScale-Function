@@ -39,9 +39,9 @@ function App() {
           <Navbar />
           <FetchUserContextProvider>
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route exact path="/" element={<Home />} />
                 {/* <Route path="/available-scales" element={<AvailableScales />} /> */}
-                <Route path="/pc-scale" element={<PairedScale />} />
+                <Route exact path="/pc-scale" element={<PairedScale />} />
                 <Route
                   path="/pm-scale"
                   element={<PerceptualScale />}
