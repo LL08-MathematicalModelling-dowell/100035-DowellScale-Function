@@ -6,7 +6,7 @@ from .views import *
 # scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create, nps_response_view_submit, dynamic_scale_instances
 app_name = "APIconf"
 urlpatterns = [
-    re_path(r'^functions/$', csrf_exempt(redirect_view), name="combined_api"),
+    re_path(r'^scales/$', csrf_exempt(redirect_view), name="combined_api"),
     # path('', include(router.urls)),
     path('nps-admin/settings/', dowell_scale_admin, name='admin_page'),
     path('nps-scale1/<str:tname1>', dowell_scale1, name='afteradmin'),

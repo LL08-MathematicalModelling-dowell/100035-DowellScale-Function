@@ -12,6 +12,16 @@ from django.views.decorators.csrf import csrf_exempt
 from .eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
 from django.http import HttpResponse
+import stapel.views as stapel
+import likert.views as likert
+import percent_sum.views as percent_sum
+import percent.views as percent
+import npslite.views as nps_lite
+import ranking.views as ranking
+import Qsort.views as Qsort
+import api.views as api
+import paired_comparison.views as paired_comparison
+from nps.dowellconnection import dowellconnection
 
 def generate_random_number():
     min_number = 10 ** 2
@@ -1283,23 +1293,89 @@ def default_scale_adminn(request):
         print("No scales found")
     return render(request, 'stapel/default.html', context)
 
-def redirect_view(request):
-    if request.method == 'GET':
-        scale_id = request.GET.get('scale_id')
-        request_type = request.GET.get('type')
+# def redirect_view(request):
+#     if request.method == 'GET':
+#         scale_id = request.GET.get('scale_id')
+#         request_type = request.GET.get('type')
+#
+#         if request_type == 'stapel_settings_create':
+#             return settings_api_view_create(request)
+#         elif request_type == 'stapel_scale_response':
+#             return scale_response_api_view(request)
+#         elif request_type == 'stapel_scale_settings':
+#             return scale_settings_api_view(request)
+#         elif request_type == 'stapel_single_scale_settings':
+#             return single_scale_settings_api_view(request, scale_id)
+#         elif request_type == 'stapel_single_scale_response':
+#             return single_scale_response_api_view(request, scale_id)
+#         else:
+#             return HttpResponse("No type found")
+#     else:
+#         return HttpResponse("Invalid request method", status=405)
 
-        if request_type == 'stapel_settings_create':
-            return settings_api_view_create(request)
-        elif request_type == 'stapel_scale_response':
-            return scale_response_api_view(request)
-        elif request_type == 'stapel_scale_settings':
-            return scale_settings_api_view(request)
-        elif request_type == 'stapel_single_scale_settings':
-            return single_scale_settings_api_view(request, scale_id)
-        elif request_type == 'stapel_single_scale_response':
-            return single_scale_response_api_view(request, scale_id)
+@api_view(['POST', 'GET', 'PUT'])
+def error_response(request, message, status):
+    return Response(message, status=status)
+
+
+def redirect_view(request):
+    scaletype = request.GET.get('scale_type')
+    scale_type = request.GET.get('type')
+    scale_id = request.GET.get('scale_id')
+
+
+    try:
+        if scale_id is not None and request.method == "GET":
+            responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports","scale_reports","1094", "ABCDE", "fetch", {"scale_data.scale_id": scale_id.strip()},"nil")
+            setting_response = dowellconnection("dowellscale", "bangalore", "dowellscale",   "scale", "scale", "1093", "ABCDE", "find",{"_id": scale_id}, "nil")
+            if scale_type == "settings":
+                return error_response(request, {"success": True, "settings": json.loads(setting_response)['data']},status.HTTP_200_OK)
+            return error_response(request, {"success": True, "responses": json.loads(responses)['data']},status.HTTP_200_OK)
+        # elif brand_name is not None and product_name is not None and request.method == "GET":
+        #     responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports","scale_reports","1094","ABCDE", "fetch",{"brand_data.brand_name": brand_name.strip(),"brand_data.product_name": product_name.strip(),"scale_data.scale_type": f"{scaletype} scale"},    "nil")
+        #     return error_response(request, {"success": True, "response": json.loads(responses)['data']},status.HTTP_200_OK)
+        if "nps_lite" in scaletype and "settings" in scale_type:
+            return nps_lite.settings_api_view_create(request)
+        elif "nps_lite" in scaletype and "response" in scale_type:
+            return nps_lite.submit_response_view(request)
+        elif "stapel" in scaletype and "settings" in scale_type:
+            return stapel.settings_api_view_create(request)
+        elif "stapel" in scaletype and "response" in scale_type:
+            return stapel.stapel_response_view_submit(request)
+        elif "likert" in scaletype and "settings" in scale_type:
+            return likert.settings_api_view_create(request)
+        elif "likert" in scaletype and "response" in scale_type:
+            return likert.submit_response_view(request)
+        elif "percent_sum" in scaletype and "settings" in scale_type:
+            return percent_sum.settings_api_view_create(request)
+        elif "percent_sum" in scaletype and "response" in scale_type:
+            return percent_sum.percent_sum_response_submit(request)
+        elif "nps" in scaletype and "settings" in scale_type:
+            return api.new_nps_create(request)
+        elif "nps" in scaletype and "response" in scale_type:
+            return api.nps_response_view_submit(request)
+        elif "percent" in scaletype and "settings" in scale_type:
+            return percent.settings_api_view_create(request)
+        elif "percent" in scaletype and "response" in scale_type:
+            return percent.percent_response_view_submit(request)
+        elif "ranking" in scaletype and "settings" in scale_type:
+            return ranking.settings_api_view_create(request)
+        elif "ranking" in scaletype and "response" in scale_type:
+            return ranking.response_submit_api_view(request)
+        elif "paired-comparison" in scaletype and "settings" in scale_type:
+            return paired_comparison.settings_api_view_create(request)
+        elif "paired-comparison" in scaletype and "response" in scale_type:
+            return paired_comparison.scale_response_api_view(request)
+        elif "qsort" in scaletype and "settings" in scale_type:
+            return Qsort.CreateScale(request)
+        elif "qsort" in scaletype and "response" in scale_type:
+            return Qsort.ResponseAPI(request)
         else:
-            return HttpResponse("No type found")
-    else:
-        return HttpResponse("Invalid request method", status=405)
+            return error_response(request, {"success": False, "message": "Scale will be available soon."},
+                                  status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        print("Erererer")
+        return error_response(request, {"success": False, "error": "Provide required fields"}, status.HTTP_400_BAD_REQUEST)
+
 
