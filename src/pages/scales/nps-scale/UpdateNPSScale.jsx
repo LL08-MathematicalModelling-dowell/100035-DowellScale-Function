@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import useGetSingleScale from '../../../hooks/useGetSingleScale';
 import { useUpdateResponse } from '../../../hooks/useUpdateResponse';
@@ -20,7 +20,7 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
   const [showEmojiPalette, setShowEmojiPalette] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
 
-  const navigateTo = useNavigate();
+  // const navigateTo = useNavigate();
   const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   const orientation = settings?.orientation;
