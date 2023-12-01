@@ -257,4 +257,4 @@ class TestPercentScaleApi(TestCase):
         response = self.client.get(f'{url}?scale_id={scale_id}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("_id", response.data["data"])
-        
+     

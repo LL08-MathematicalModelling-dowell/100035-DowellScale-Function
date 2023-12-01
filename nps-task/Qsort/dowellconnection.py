@@ -19,8 +19,8 @@ def dowellconnection(cluster,platform,database,collection,document,team_member_I
     headers = {'content-type': 'application/json'}
     try :
       response = requests.post(url, json =data,headers=headers)
-      print(response.json())
+      # print(response.json())
       return response.json()
     except Exception as e:
-        print("Error:", e)
+        # print("Error:", e)
         return "check your connectivity"
