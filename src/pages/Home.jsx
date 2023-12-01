@@ -2,10 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-// import Cookies from 'universal-cookie';
 
 const Home = () => {
-  // const cookie = new Cookies();
   const scaleTypes = [
     {
       name: 'nps lite scale',
@@ -63,9 +61,7 @@ const Home = () => {
   };
   const [searchParams] = useSearchParams();
 
-  const localSession = sessionStorage.getItem('session_id')
-    ? sessionStorage.getItem('session_id')
-    : null;
+  // const localSession = sessionStorage.getItem('session_id');
   // const localId = sessionStorage.getItem('id')
   //   ? JSON.parse(sessionStorage.getItem('id'))
   //   : null;
@@ -73,19 +69,16 @@ const Home = () => {
   useEffect(() => {
     const session_id = searchParams.get('session_id');
     // const id = searchParams.get('id');
+    // const cookie_session_id = cookie.get('session');
 
-    if (session_id) {
-      sessionStorage.setItem('session_id', session_id);
+    // if (cookie_session_id) {
+    //   console.log('cookie_session_id');
+    //   console.log(cookie_session_id);
+    //   console.log(cookie_session_id);
+      sessionStorage.setItem('sessionid', session_id);
       getUserInfo(session_id);
-
-      // if (id || localId) {
-      //   sessionStorage.setItem('id', id);
-      //   getUserInfoOther(session_id);
-      // } else {
-      //   getUserInfo(session_id);
-      // }
-    }
-    if (!localSession && !session_id) {
+    // }
+    if (!session_id) {
       // cookie.remove('sessionid');
       window.location.replace(
         import.meta.env.DEV
@@ -93,7 +86,7 @@ const Home = () => {
           : 'https://100014.pythonanywhere.com/?redirect_url=https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/'
       );
     }
-  }, [localSession, searchParams]);
+  }, [searchParams]);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
