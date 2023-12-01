@@ -2,10 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import Cookies from 'universal-cookie';
 
 const Home = () => {
-  const cookie = new Cookies();
   const scaleTypes = [
     {
       name: 'nps lite scale',
@@ -71,13 +69,13 @@ const Home = () => {
   useEffect(() => {
     const session_id = searchParams.get('session_id');
     // const id = searchParams.get('id');
-    // const cookie_session_id = cookie.get('sessionid');
+    // const cookie_session_id = cookie.get('session');
 
     // if (cookie_session_id) {
     //   console.log('cookie_session_id');
     //   console.log(cookie_session_id);
     //   console.log(cookie_session_id);
-    //   sessionStorage.setItem('sessionid', session_id);
+      sessionStorage.setItem('sessionid', session_id);
       getUserInfo(session_id);
     // }
     if (!session_id) {
