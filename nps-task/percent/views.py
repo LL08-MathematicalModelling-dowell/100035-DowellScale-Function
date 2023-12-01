@@ -75,7 +75,7 @@ def settings_api_view_create(request):
                                                  "ABCDE", "fetch", field_add, "nil")
                 return Response(json.loads(response_data)['data'], status=status.HTTP_200_OK)
 
-            field_add = {"_id": scale_id, "settings.scale_category": "percent scale"}
+            field_add = {"_id": scale_id}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
@@ -119,7 +119,7 @@ def settings_api_view_create(request):
 
 
 # SUMBIT SCALE RESPONSE
-@api_view(['POST', ])
+@api_view(['POST', 'GET'])
 def percent_response_view_submit(request):
     if request.method == 'POST':
         try:
@@ -178,6 +178,21 @@ def percent_response_view_submit(request):
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+    elif request.method == "GET":
+        params = request.GET
+        id = params.get("scale_id")
+        try:
+            if id:
+                field_add = {"_id": id}
+                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                                 "scale_reports",
+                                                 "1094", "ABCDE", "fetch", field_add, "nil")
+                data = json.loads(response_data).get("data")[0]
+                return Response({"data": data})
+            else:
+                return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
 def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None,
                          document_data=None):
@@ -190,19 +205,19 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
 
     event_id = get_event_id()
     # Check if scale exists
-    field_add = {"_id": scale_id, "settings.scale_category": "percent scale"}
+    field_add = {"_id": scale_id}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
                                      "find", field_add, "nil")
     data = json.loads(default_scale)
-    settings = data['data']['settings']
-
-
-    if data['data'] is None:
+    settings = data.get('data')
+    if settings == None:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
-    elif settings['allow_resp'] == False:
+    settings = settings.get("settings")
+    if settings == None:
+        return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
+    elif settings.get('allow_resp') == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
-
 
     # Check if all required responses are present
     expected_responses = data['data']['settings']['product_count']
@@ -214,31 +229,31 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
         if not isinstance(response, (int, float)) or response < 0 or response > 100:
             return Response({"error": "Invalid response."}, status=status.HTTP_400_BAD_REQUEST)
 
-    number_of_scale = settings['no_of_scales']
+    # number_of_scale = settings['no_of_scales']
 
-    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                    "ABCDE", "fetch",
-                                    {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
-    user_dets = json.loads(user_details)
-    if len(user_dets['data']) >= 1:
-        b = [l['score']['score'] for l in previous_response if
-             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0][
-                 'event_id']]
+    # user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+    #                                 "ABCDE", "fetch",
+    #                                 {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
+    # user_dets = json.loads(user_details)
+    # if len(user_dets['data']) >= 1:
+    #     b = [l['score']['score'] for l in previous_response if
+    #          l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0][
+    #              'event_id']]
 
-        return Response({"error": "Scale Response Exists!", "current_score": b[0]},
-                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    #     return Response({"error": "Scale Response Exists!", "current_score": b[0]},
+    #                     status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
-                  "score": scores}
+    # score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
+    #               "score": scores}
 
-    if int(instance_id) > int(number_of_scale):
-        return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
+    # if int(instance_id) > int(number_of_scale):
+    #     return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Insert new response into database
     response = {
         "username": username,
         "event_id": event_id,
         "scale_data": {"scale_id": scale_id, "scale_type": "percent scale"},
-        "score": score_data,
+        "score": scores,
         "brand_data": {"brand_name": brand_name, "product_name": product_name},
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }

@@ -30,22 +30,23 @@ def settings_api_view_create(request):
                 allow_resp = True
             else:
                 allow_resp = False
-            topic = response.get('topic')
-            statement_count = response.get('statement_count')
-            statements = response.get('statements')
-            sorting_order = response.get('sorting_order').lower()
+            topic = response['topic']
+            statement_count = response['statement_count']
+            statements = response['statements']
+            sorting_order = response['sorting_order'].lower()
             if sorting_order not in ["random", "alphabetical", "custom", "no order"]:
                 return Response({"error": "sorting_order must be one of random, alphabetical, custom or no order"}, status=status.HTTP_400_BAD_REQUEST)
             percentage_accuracy = response.get('percentage_accuracy')
             if not 0 <= int(percentage_accuracy) <= 100:
-                return Response({"error": "percentage_accuracy must be between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)    
+                return Response({"error": "percentage_accuracy must be between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
         if statement_count != len(statements):
             return Response({"error": "statement count must be equal to length of statements"}, status=status.HTTP_400_BAD_REQUEST)
         if sorting_order == "random":
-            statements = dowellshuffling_function(statements)  
-            
+            statements = dowellshuffling_function(statements)
+
+
         elif sorting_order == "alphabetical":
             capitalize_list = lambda statements: [string[-1].capitalize() for string in statements]
             statements = sorted(capitalize_list(statements))
@@ -114,15 +115,22 @@ def settings_api_view_create(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                             "fetch", field_add, "nil")
         settings_json = json.loads(x)
-        settings = settings_json['data'][0]['settings']
+        settings = settings_json.get('data')
+        if settings == None or len(settings) == 0:
+             return Response({"error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
+        settings = settings[0]
+        settings = settings.get('settings')
+        if settings == None or len(settings) == 0:
+             return Response({"error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
         for key in settings.keys():
             if key in response:
                 if key == "percentage_accuracy":
                     percentage_accuracy = response.get('percentage_accuracy')
                     if not 0 <= int(percentage_accuracy) <= 100:
-                        return Response({"error": "percentage_accuracy must be between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)                       
+                        return Response({"error": "percentage_accuracy must be between 0 and 100"}, status=status.HTTP_400_BAD_REQUEST)
                 settings[key] = response[key]
         statements = settings.get("statements")
+        statement_count = settings.get("statement_count")
         sorting_order = settings.get("sorting_order")
         if ("statements" in response) or ("statement_count" in response):
             statement_count = response.get("statement_count")
@@ -136,7 +144,7 @@ def settings_api_view_create(request):
             if sorting_order not in ["random", "alphabetical", "custom", "no order"]:
                 return Response({"error": "sorting_order must be one of random, alphabetical, custom or no order"}, status=status.HTTP_400_BAD_REQUEST)
         if sorting_order == "random":
-            statements = dowellshuffling_function(statements)  
+            statements = dowellshuffling_function(statements)
         elif sorting_order == "alphabetical":
             capitalize_list = lambda statements: [string.capitalize() for string in statements]
             statements = sorted(capitalize_list(statements))
@@ -160,9 +168,6 @@ def settings_api_view_create(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                 field_add, {"settings":settings})
         return Response({"success": "Successfully Updated ", "data": settings})
-
-
-
 
 
 @api_view(['POST', 'GET'])
@@ -191,7 +196,7 @@ def response_submit_api_view(request):
             for item in responses['data']:
                 settings_list.append(item)
             return Response({"data": settings_list}, status=status.HTTP_200_OK)
-        
+
 
     elif request.method == 'POST':
         response = request.data
@@ -200,12 +205,12 @@ def response_submit_api_view(request):
         except:
             return Response({"error": "Unauthorized."}, status=status.HTTP_401_UNAUTHORIZED)
         try:
-            
+
             brand_name = response['brand_name']
-            
+
         except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
-          
+
         if "document_responses" in response:
             try:
                 document_responses = response['document_responses']
@@ -216,7 +221,7 @@ def response_submit_api_view(request):
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
             if not isinstance(process_id, str):
                 return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             results = []
             for resp in document_responses:
                 scale_id = resp['scale_id']
@@ -255,7 +260,7 @@ def response_submit_api_view(request):
                 if result.get('error', None):
                     return Response(result, status=status.HTTP_400_BAD_REQUEST)
             return Response(results)
-                
+
         else:
             instance_id = response.get('instance_id')
             try:
@@ -265,7 +270,7 @@ def response_submit_api_view(request):
                 brand_name = response['brand_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             if "process_id" in response:
                 process_id = response.get('process_id')
                 if not isinstance(process_id, str):
@@ -273,14 +278,13 @@ def response_submit_api_view(request):
                 return response_submit_loop(username, scale_id, response, instance_id, process_id)
 
             result = response_submit_loop(username, scale_id, response, instance_id)
-            result = result.data
-            return Response(result)
+            return result
 
-    
-    
+
+
 def response_submit_loop(username, scale_id, response, instance_id, process_id=None, document_data=None):
-    
-    # Check if response already exists for this event    
+
+    # Check if response already exists for this event
     field_add = {"username": username, "scale_data.scale_id": scale_id, "scale_data.scale_type": "thurstone scale",
                 "scale_data.instance_id": instance_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
@@ -298,39 +302,43 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
     scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
                             "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
     scale = json.loads(scale)
-    if not scale.get('data', None):
+    print(scale)
+    if scale.get("data") == None:
+        return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+    if len(scale["data"]) == 0 or scale["data"][0].get("settings") == None:
         return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
     if scale['data'][0]['settings']['scale_category'] != 'thurstone scale':
         return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
     settings = scale['data'][0]['settings']
+    print("a")
     if settings['allow_resp'] == False:
         return Response({"error": "scale not accepting responses"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     statements = response['statements']
     statements_count = settings['statement_count']
     percentage_accuracy = settings['percentage_accuracy']
     min_allowed = settings['min_allowed_score']
     max_allowed = settings['max_allowed_score']
-    
-    
+
+
     # Check if all statements are assigned a score
     if len(statements) != statements_count:
         return Response({"error": "All statements are not assigned a score."}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Validate if each scale are assigned a score
     for statement in statements:
         if statement['score'] < min_allowed or statement['score'] > max_allowed or type(statement['score']) != int:
             return Response({"error": "Invalid score assigned."}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     # Sort the statements by score
     statements = sorted(statements, key=lambda k: k['score'])
-    
+
     # Calculate median score
     median_score = statements[statements_count//2]['score']
-    
+
     # Calculate score range
     score_range = max_allowed - min_allowed
-    
+
     # Calculate standardized score
     standardized_score_list = []
     for statement in statements:
@@ -339,18 +347,18 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
             standardized_score_list.append(standardized_score)
         else:
             return Response({"error": "Invalid score assigned."}, status=status.HTTP_400_BAD_REQUEST)
-        
+
     # Calculate cut off score
     cut_off_percentage = percentage_accuracy / 100 or 0.5
     cut_off_score = (cut_off_percentage  * score_range) + min_allowed
-    
+
     # Calculate response attitude
     response_attitude = {
         "favourable": 0,
         "unfavourable": 0,
         "neutral": 0
     }
-    
+
     for statement in standardized_score_list:
         if statement < 0.5:
             response_attitude['unfavourable'] += 1
@@ -358,20 +366,20 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
             response_attitude['favourable'] += 1
         else:
             response_attitude['neutral'] += 1
-            
+
     # Calculate attitude percentage
     attitude_percentage = {
         "favourable": (response_attitude['favourable'] / len(statements)) * 100,
         "unfavourable": (response_attitude['unfavourable'] / len(statements)) * 100,
         "neutral": (response_attitude['neutral'] / len(statements)) * 100
     }
-    
+
     # Calculate overall user attitude
     if attitude_percentage['favourable'] == attitude_percentage['neutral'] == attitude_percentage['unfavourable']:
         overall_user_attitude = "Cannot be decided"
     else:
         overall_user_attitude = max(attitude_percentage, key=attitude_percentage.get)
-        
+
     field_add = {
         "event_id": event_id,
         "scale_data": {
@@ -379,8 +387,8 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
             "scale_type": "thurstone scale",
             "instance_id": instance_id
         },
-        "brand_data": { 
-            "brand_name": response["brand_name"] 
+        "brand_data": {
+            "brand_name": response["brand_name"]
         },
         "statements": statements,
         "median_score": median_score,
@@ -395,10 +403,11 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
         field_add['document_data'] = document_data
     if process_id:
         field_add['process_id'] = process_id
-        
-    
+
+
     x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                     "1094", "ABCDE", "insert", field_add, "nil")
     response  = json.loads(x)
     field_add["inserted_id"] = response["inserted_id"]
     return Response({"success": True, "data": field_add }, status=status.HTTP_200_OK)
+

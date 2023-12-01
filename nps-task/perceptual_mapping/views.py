@@ -39,34 +39,36 @@ def settings_api_view_create(request):
             Y_bottom = response["Y_bottom"]
             marker_type = response["marker_type"].lower()
             if marker_type not in ["dot", "cross", "pin", "circle"]:
-                return Response({"error": "spacing must be betweeen 1 and 5"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "marker_type must be dot, cross, pin or circle"}, status=status.HTTP_400_BAD_REQUEST)
             marker_color = response["marker_color"]   
             X_spacing = response["X_spacing"]  
             Y_spacing = response["Y_spacing"]
         except KeyError as error:
             return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
-        if (X_upper_limit * 2 % X_spacing != 0) or (Y_upper_limit * 2 % Y_spacing != 0):
-            return Response({"error": "scale upper limits must be divisible by spacing unit"}, status=status.HTTP_400_BAD_REQUEST)
         if item_count != len(item_list):
             return Response({"error": "item_count must be equal to length of item_list"}, status=status.HTTP_400_BAD_REQUEST)
-        if not X_spacing <= X_upper_limit <= 10 and Y_spacing <= Y_upper_limit <= 10:
-            return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 10"}, status=status.HTTP_400_BAD_REQUEST)
+        if not 1 <= X_upper_limit <= 100 or not 1 <= Y_upper_limit <= 100:
+            return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 100"}, status=status.HTTP_400_BAD_REQUEST)
+        if not 1 <= X_spacing <= 50 or not  1 <= Y_spacing <= 50 :
+            return Response({"error": f"X_spacing and Y_spacing must be between 1 and 50"}, status=status.HTTP_400_BAD_REQUEST)
         X_lower_limit = -X_upper_limit
         Y_lower_limit = -Y_upper_limit
         x_range = []
         y_range = []
-        for position in range(X_lower_limit, X_upper_limit+1, X_spacing):
-            x_range.append(position)
-        for position in range(Y_lower_limit, Y_upper_limit+1, Y_spacing):
-            y_range.append(position)
+        for n in range(X_lower_limit, X_upper_limit+1):
+            if n % X_spacing == 0:
+                x_range.append(n)
+        for n in range(Y_lower_limit, Y_upper_limit+1):
+            if n % Y_spacing == 0:
+                y_range.append(n)
         eventID = get_event_id()
         field_add = {"event_id": eventID,
                      "settings": {"item_list": item_list, "scale_color": scale_color, "fontstyle": fontstyle,
                                   "no_of_scales": number_of_scales, "fontcolor": fontcolor,
-                                  "time": time, "name": name, "scale_category": "perceptual_mapping scale", "username": username,
+                                  "time": time, "name": name, "scale-category": "perceptual mapping", "username": username,
                                   "item_count": item_count, "X_left": X_left, "X_right": X_right, "Y_top": Y_top,
                                   "Y_bottom": Y_bottom, "marker_color": marker_color, "center": (0,0), "position": "center",
-                                   "marker_type": marker_type, "x_range": x_range, "y_range": y_range,
+                                   "marker_type": marker_type, "x_range": x_range, "y_range": y_range, "X_upper_limit": X_upper_limit, "Y_upper_limit": Y_upper_limit,
                                   "allow_resp": allow_resp, "X_spacing": X_spacing, "Y_spacing": Y_spacing, 
                                   "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                   }
@@ -75,7 +77,9 @@ def settings_api_view_create(request):
                              field_add, "nil")
 
         user_json = json.loads(x)
-        details = {"scale_id": user_json['inserted_id'], "event_id": eventID, "username": username}
+        scale_id = user_json['inserted_id']
+        field_add = {**{"scale_id":scale_id}, **field_add}
+        details = {"scale_id": scale_id, "event_id": eventID, "username": username}
         user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                         "ABCDE",
                                         "insert", details, "nil")
@@ -109,7 +113,13 @@ def settings_api_view_create(request):
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                             "fetch", field_add, "nil")
         settings_json = json.loads(x)
-        settings = settings_json['data'][0]['settings']
+        settings = settings_json.get('data')
+        if settings == None or len(settings) == 0:
+             return Response({"error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
+        settings = settings[0]
+        settings = settings.get('settings')
+        if settings == None or len(settings) == 0:
+             return Response({"error": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
         for key in settings.keys():
             if key in response:
                 settings[key] = response[key]
@@ -132,12 +142,15 @@ def settings_api_view_create(request):
             X_spacing = settings["X_spacing"]
             X_upper_limit = response["X_upper_limit"]
         if X_upper_limit and X_spacing:
-            if (X_upper_limit * 2 % X_spacing != 0):
-                return Response({"error": "scale upper limits must be divisible by spacing unit"}, status=status.HTTP_400_BAD_REQUEST)
+            if not 1 <= X_upper_limit <= 100:
+                return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 100"}, status=status.HTTP_400_BAD_REQUEST)
+            if not 1 <= X_spacing <= 50:
+                return Response({"error": f"X_spacing must be between 1 and 50"}, status=status.HTTP_400_BAD_REQUEST)
             X_lower_limit = -X_upper_limit
             x_range = []
-            for position in range(X_lower_limit, X_upper_limit+1, X_spacing):
-                x_range.append(position)
+            for n in range(X_lower_limit, X_upper_limit+1):
+                if n % X_spacing == 0:
+                    x_range.append(n)
 
         if "Y_spacing" in response and "Y_upper_limit" in response:
             Y_upper_limit = response["Y_upper_limit"]
@@ -149,12 +162,15 @@ def settings_api_view_create(request):
             Y_spacing = settings["Y_spacing"]
             Y_upper_limit = response["Y_upper_limit"]
         if Y_upper_limit and Y_spacing:
-            if (Y_upper_limit * 2 % Y_spacing != 0):
-                return Response({"error": "scale upper limits must be divisible by spacing unit"}, status=status.HTTP_400_BAD_REQUEST)
+            if not 1 <= Y_upper_limit <= 100:
+                return Response({"error": f"X_upper_limit and Y_upper_limit must be between 1 and 100"}, status=status.HTTP_400_BAD_REQUEST)
+            if not 1 <= Y_spacing <= 50 :
+                return Response({"error": f"Y_spacing must be between 1 and 50"}, status=status.HTTP_400_BAD_REQUEST)
             Y_lower_limit = -Y_upper_limit
             y_range = []
-            for position in range(Y_lower_limit, Y_upper_limit+1, Y_spacing):
-                y_range.append(position)
+            for n in range(Y_lower_limit, Y_upper_limit+1):
+                if n % Y_spacing == 0:
+                    y_range.append(n)
         
         if ("item_list" and  "item_count") in response:
             settings["item_count"] = item_count
@@ -184,9 +200,10 @@ def response_submit_api_view(request):
                                      "scale_reports",
                                      "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(scale)
-            if data.get('data') is None:
-                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({"data": data['data']}, status=status.HTTP_200_OK)
+            if data.get('data') == None or len(data.get('data')) == 0:
+                return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            data = data['data'][0]
+            return Response({"data": data}, status=status.HTTP_200_OK)
         else:
             # Return all perceptual_mapping scale responses
             field_add = {"scale_data.scale_type": "perceptual_mapping scale"}
@@ -299,15 +316,16 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
 
     # Check if scale exists
     event_id = get_event_id()
-    field_add = {"_id": scale_id, "settings.scale_category": "perceptual_mapping scale"}
+    field_add = {"_id": scale_id, "settings.scale-category": "perceptual mapping"}
     scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
                              "scale", "scale", "1093", "ABCDE", "fetch", field_add, "nil")
     scale = json.loads(scale)
-    if not scale.get('data, none'):
+    if scale.get('data') == None or len(scale.get('data')) == 0:
         return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-    if scale['data'][0]['settings']['scale_category'] != 'perceptual_mapping scale':
-        return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
-    settings = scale['data'][0]['settings']
+    scale = scale['data'][0]
+    if scale.get('settings') == None:
+        return Response({"Error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+    settings = scale["settings"]
     if settings['allow_resp'] == False:
         return Response({"error": "scale not accepting responses"}, status=status.HTTP_400_BAD_REQUEST)
     
