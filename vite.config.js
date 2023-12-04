@@ -18,5 +18,3 @@ export default defineConfig(({ command }) => {
 
   return config
 })
-
-//https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/
