@@ -291,7 +291,7 @@ const UpdateRankingScale = ()=>{
             // console.log(response, 'updated response')
             toast.success('successfully updated');
             setTimeout(()=>{
-                navigateTo(`/ranking-scale-settings/${sigleScaleData[0]?._id}`);
+                navigateTo(`/100035-DowellScale-Function/ranking-scale-settings/${sigleScaleData[0]?._id}`);
             },2000)
         } catch (error) {
             console.log(error)
@@ -305,9 +305,9 @@ const UpdateRankingScale = ()=>{
         return <Fallback />
     }
     return(
-        <div className="h-screen w-full flex flex-col items-center justify-center font-Montserrat">
-        <div className="w-7/12 m-auto border border-2 p-10">
-            <h2 className="capitalize text-center text-sm mb-7">update <span className="text-primary font-xl border-b">{scalename}</span></h2>
+        <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
+        <div className="w-7/12 p-10 m-auto border border-2">
+            <h2 className="text-sm text-center capitalize mb-7">update <span className="border-b text-primary font-xl">{scalename}</span></h2>
         <div>
             <div className='grid grid-cols-3 gap-3 mb-10'>
                 <CustomTextInput 
@@ -335,8 +335,8 @@ const UpdateRankingScale = ()=>{
                         {subInputsValue.map((value)=>(
                             <button 
                                 onClick={()=>removeInputValueItem(value)}
-                                className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
-                                {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span>
+                                className="relative px-5 py-1 m-1 text-white rounded-full bg-primary">
+                                {value}<span className="absolute right-0 px-2 text-red-500 bg-white rounded-full">x</span>
                             </button>
                         ))}
                     </div>
@@ -358,8 +358,8 @@ const UpdateRankingScale = ()=>{
                     {subItemsValue.map((value)=>(
                         <button 
                             onClick={()=>removeItemListValue(value)}
-                            className="px-5 py-1 bg-primary text-white rounded-full m-1 relative">
-                            {value}<span className="text-red-500 rounded-full bg-white px-2 absolute right-0">x</span>
+                            className="relative px-5 py-1 m-1 text-white rounded-full bg-primary">
+                            {value}<span className="absolute right-0 px-2 text-red-500 bg-white rounded-full">x</span>
                         </button>
                     ))}
                 </div>
@@ -373,7 +373,7 @@ const UpdateRankingScale = ()=>{
                     placeholder='enter number of substages'
                 />
                 <div>
-                    <label htmlFor="orientation" className="text-sm font-normal mb-1 ml-1">orientation</label>
+                    <label htmlFor="orientation" className="mb-1 ml-1 text-sm font-normal">orientation</label>
                     <select 
                         label="Select a orientation" 
                         name="orientation" 
@@ -390,7 +390,7 @@ const UpdateRankingScale = ()=>{
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">arrangement</label>
+                    <label htmlFor="arrangement" className="mb-1 ml-1 text-sm font-normal">arrangement</label>
                     <select 
                         label="Select arrangement" 
                         name="stages_arrangement" 
@@ -407,7 +407,7 @@ const UpdateRankingScale = ()=>{
                     </select>
                 </div>
                 <div>
-                    <label htmlFor="reference" className="text-sm font-normal mb-1 ml-1">reference</label>
+                    <label htmlFor="reference" className="mb-1 ml-1 text-sm font-normal">reference</label>
                     <select label="Select a reference" 
                         name="reference" 
                         className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
@@ -424,8 +424,8 @@ const UpdateRankingScale = ()=>{
                 </div>
                 <div className="w-full">
                     <div className="flex items-center gap-3">
-                        {timeOn && <button onClick={handleToggleTime}><BsToggleOn className="text-primary h-6 w-6"/></button>}
-                        {!timeOn && <button  onClick={handleToggleTime}><BsToggleOff className="text-primary h-6 w-6"/></button>}
+                        {timeOn && <button onClick={handleToggleTime}><BsToggleOn className="w-6 h-6 text-primary"/></button>}
+                        {!timeOn && <button  onClick={handleToggleTime}><BsToggleOff className="w-6 h-6 text-primary"/></button>}
                         <span>Toggle to set Time</span>
                     </div>
                     {
@@ -466,7 +466,7 @@ const UpdateRankingScale = ()=>{
                     />
                 </div>
                 <div>
-                    <label htmlFor="arrangement" className="text-sm font-normal mb-1 ml-1">font style</label>
+                    <label htmlFor="arrangement" className="mb-1 ml-1 text-sm font-normal">font style</label>
                     <select 
                         label="Select font style" 
                         name="fontstyle" 

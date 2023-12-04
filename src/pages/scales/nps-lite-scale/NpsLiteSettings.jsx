@@ -73,13 +73,13 @@ const NpsLiteSettings = () => {
     return <Fallback />;
   }
   return (
-    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
-        <div className='border border-primary w-full lg:w-9/12 m-auto py-4 px-5'>
+    <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
+        <div className='w-full px-5 py-4 m-auto border border-primary lg:w-9/12'>
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             >
-                <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
-                    <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {scale?.[0].settings?.name}</h3>
-                    <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
+                <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
+                    <h3 className='py-5 text-sm font-medium text-center'>Scale Name: {scale?.[0].settings?.name}</h3>
+                    <div className='grid grid-cols-4 gap-3 px-2 py-6 bg-gray-300 md:grid-cols-11 md:px-1'>
                         {scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>(
                             <button 
                                 key={index}
@@ -94,9 +94,9 @@ const NpsLiteSettings = () => {
                         <h4>Very likely</h4>
                     </div>
             
-                    <div className="flex gap-3 justify-end">
+                    <div className="flex justify-end gap-3">
                         {scale && scale.map((scale, index)=>(
-                            <Button width={'3/4'} onClick={()=>navigateTo(`/update-nps-lite-scale/${scale._id}`)} key={index}>update scale</Button>
+                            <Button width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/update-nps-lite-scale/${scale._id}`)} key={index}>update scale</Button>
                         ))}
                         <Button 
                             onClick={submitResponse}

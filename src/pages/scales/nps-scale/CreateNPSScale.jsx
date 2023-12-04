@@ -141,7 +141,7 @@ const CreateNPSScale = () => {
             // setTimeout(()=>{
             //     navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
             // },2000)
-            navigateTo(`/nps-scale-settings/${response?.data?.data?.scale_id}`)
+            navigateTo(`/100035-DowellScale-Function/nps-scale-settings/${response?.data?.data?.scale_id}`)
         }
     } catch (error) {
         console.log(error);
@@ -152,15 +152,15 @@ const CreateNPSScale = () => {
 }
 
   return (
-    <div className='h-screen w-full flex flex-col items-center justify-center font-Montserrat'>
-      <div className='w-full md:w-7/12 border p-5'>
+    <div className='flex flex-col items-center justify-center w-full h-screen font-Montserrat'>
+      <div className='w-full p-5 border md:w-7/12'>
         <div className='flex justify-between'>
-            <h2 className="capitalize text-center text-sm font-medium mb-3">set up your Ranking</h2>
+            <h2 className="mb-3 text-sm font-medium text-center capitalize">set up your Ranking</h2>
             {timeOn && (
-                <p>You have about <span className='text-primary font-bold'>{displayedTime}</span> seconds to submit your form</p>
+                <p>You have about <span className='font-bold text-primary'>{displayedTime}</span> seconds to submit your form</p>
             )}
         </div>
-        <div className='grid grid-cols-2 md:grid-cols-3 gap-3 mb-10'>
+        <div className='grid grid-cols-2 gap-3 mb-10 md:grid-cols-3'>
           <div className='w-full'>
             <CustomTextInput 
                 label='name'
@@ -172,7 +172,7 @@ const CreateNPSScale = () => {
             />
           </div>
           <div className='w-full'>
-              <label htmlFor="orientation" className="text-sm font-normal mb-1 ml-1">orientation</label>
+              <label htmlFor="orientation" className="mb-1 ml-1 text-sm font-normal">orientation</label>
               <select 
                   label="Select a orientation" 
                   name="orientation" 
@@ -228,7 +228,7 @@ const CreateNPSScale = () => {
               />
           </div>
           <div className='w-full'>
-              <label htmlFor="format" className="text-sm font-normal mb-1 ml-1">format</label>
+              <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">format</label>
               <select 
                   label="Select a format" 
                   name="fomat" 
@@ -276,8 +276,8 @@ const CreateNPSScale = () => {
           </div>
           <div className="w-full">
               <div className="flex items-center gap-3">
-                  {timeOn && <button onClick={handleToggleTime}><BsToggleOn className="text-primary h-6 w-6"/></button>}
-                  {!timeOn && <button  onClick={handleToggleTime}><BsToggleOff className="text-primary h-6 w-6"/></button>}
+                  {timeOn && <button onClick={handleToggleTime}><BsToggleOn className="w-6 h-6 text-primary"/></button>}
+                  {!timeOn && <button  onClick={handleToggleTime}><BsToggleOff className="w-6 h-6 text-primary"/></button>}
                   <span>Toggle to set Time</span>
               </div>
               {
