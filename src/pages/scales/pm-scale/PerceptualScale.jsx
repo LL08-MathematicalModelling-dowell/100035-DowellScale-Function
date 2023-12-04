@@ -80,7 +80,7 @@ const PerceptualScale = () => {
               {Object.values(data).map((e) => (
                 <Button width={'full'} key={e._id}>
                   {' '}
-                  <Link to={`/single-perceptual-scale-settings/${e._id}`}>
+                  <Link to={`/100035-DowellScale-Function/single-perceptual-scale-settings/${e._id}`}>
                     {e.settings.name}
                   </Link>
                 </Button>

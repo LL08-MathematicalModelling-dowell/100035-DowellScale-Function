@@ -101,7 +101,7 @@ const SinglePCScaleSettings = () => {
       });
 
       // Navigate to the CreatePCResponse component and pass the selectedOptions as part of route state
-      navigate(`/create-scale-response/${id}`, {
+      navigate(`/100035-DowellScale-Function/create-scale-response/${id}`, {
         state: { userSelections: selectedOptions },
       });
     }

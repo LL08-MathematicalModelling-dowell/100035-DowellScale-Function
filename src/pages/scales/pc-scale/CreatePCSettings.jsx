@@ -146,7 +146,7 @@ const CreatePCSettings = () => {
         console.log(insertedId);
         toast.success('Successfully Created');
         const timeout = setTimeout(
-          () => navigate(`/single-scale-settings/${insertedId}`),
+          () => navigate(`/100035-DowellScale-Function/single-scale-settings/${insertedId}`),
           3000
         );
         return () => clearTimeout(timeout);
