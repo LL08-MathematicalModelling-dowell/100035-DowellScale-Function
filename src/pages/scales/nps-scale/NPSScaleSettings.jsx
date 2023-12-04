@@ -112,6 +112,51 @@ const NPSScaleSettings = () => {
     fetchData();
   }, [slug]);
 
+  const createMasterLink = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const headers = {
+      'x-api-key': '',
+    };
+
+    var requestData = {
+      qrcode_type: 'Link',
+      quantity: 1,
+      company_id: 'gee',
+      document_name: 'Vader Doc',
+      links: [
+        {
+          link: 'https://uxlivinglab.com/en/workflow-ai/',
+        },
+      ],
+    };
+
+    try {
+      const data = await axios.post(
+        'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-submit-response/',
+        // '',
+        requestData,
+        { headers }
+      );
+      const result = await data.data;
+      console.log(result);
+
+      if (result.error) {
+        setIsLoading(false);
+        return;
+      } else {
+        setIsLoading(false);
+        toast.success('Successfully Created');
+      }
+    } catch (error) {
+      setIsLoading(false);
+
+      console.log('Error', error.response.data);
+    }
+    // https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/
+  };
+
   if (loading) {
     return <Fallback />;
   }
@@ -171,7 +216,7 @@ const NPSScaleSettings = () => {
                 update scale
               </Button>
               {/* ))} */}
-              <Button  width={'3/4'} primary>
+              <Button width={'3/4'} primary onClick={createMasterLink}>
                 {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
               </Button>
             </div>
@@ -180,13 +225,13 @@ const NPSScaleSettings = () => {
       </div>
       {showUpdateModal && (
         <UpdateNPSScale
-        handleToggleUpdateModal={handleToggleUpdateModal}
-        //   handleSubmitStagesSubinputs={handleSubmitStagesSubinputs}
-        //   subInputs={subInputs}
-        //   subInputsValue={subInputsValue}
-        //   handleInputsValueChange={handleInputsValueChange}
-        //   handleAddInputArea={handleAddInputArea}
-        //   removeSubinput={removeStagesSubinput}
+          handleToggleUpdateModal={handleToggleUpdateModal}
+          //   handleSubmitStagesSubinputs={handleSubmitStagesSubinputs}
+          //   subInputs={subInputs}
+          //   subInputsValue={subInputsValue}
+          //   handleInputsValueChange={handleInputsValueChange}
+          //   handleAddInputArea={handleAddInputArea}
+          //   removeSubinput={removeStagesSubinput}
         />
       )}
     </div>

@@ -142,10 +142,10 @@ const RankingScale = () => {
         return <Fallback />;
     }
   return (
-    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat'>
-        <div className='border border-primary w-full lg:w-8/12 m-auto py-4 px-10'>
-            <h2 className='text-center py-3'>Ranking Scale Name:  
-            <span className='font-medium text-sm'>{sigleScaleData ?
+    <div className='flex flex-col items-center justify-center h-screen font-Montserrat'>
+        <div className='w-full px-10 py-4 m-auto border border-primary lg:w-8/12'>
+            <h2 className='py-3 text-center'>Ranking Scale Name:  
+            <span className='text-sm font-medium'>{sigleScaleData ?
                         sigleScaleData?.map((scale)=>(
                             <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
                         )) : (scaleData[0]?.settings?.scalename || scaleData[0]?.settings?.scale_name)
@@ -153,7 +153,7 @@ const RankingScale = () => {
             </h2>
             <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}>
                 <div className={`h-full w-full lg:w-3/12 border overflow-y-auto ${currentStage > 0 && 'hidden'}`}>
-                    <h2 className='p-2 flex gap-2 items-center font-medium'>
+                    <h2 className='flex items-center gap-2 p-2 font-medium'>
                         <span className=''>
                         <MdManageHistory className='text-primary'/>
                         </span> Scale History
@@ -161,23 +161,23 @@ const RankingScale = () => {
                     {scaleData && scaleData.map((scale, index)=>(
                         <>
                             {/* <Button width={'full'} onClick={()=>handleFetchSingleScale(scale._id)} key={index}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button> */}
-                            <Button width={'full'} onClick={()=>navigateTo(`/ranking-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button>
+                            <Button width={'full'} onClick={()=>navigateTo(`/100035-DowellScale-Function/ranking-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.scalename || scale?.settings?.scale_name}</Button>
                         </>
                     ))}
                 </div>
-                <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
+                <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
                 {loading ? <h3>...loading data</h3> : (
                     <>
-                        <div className='w-full  flex items-center gap-5'>
+                        <div className='flex items-center w-full gap-5'>
                             <button 
                                 onClick={handlePrev} disabled={currentStage===0}
-                                className='w-3/12 bg-primary text-white flex items-center justify-center gap-2 hover:bg-gray-700/50 py- px-2 py-2 my-1 capitalize'> 
+                                className='flex items-center justify-center w-3/12 gap-2 px-2 py-2 my-1 text-white capitalize bg-primary hover:bg-gray-700/50 py-'> 
                                 <BsArrowLeft className='text-white' />
                                 Go Back
                             </button>
                             {/* <Button width={'1/2'} onClick={handlePrev} disabled={currentStage===0}>Previous</Button> */}
-                            <h2 className='w-3/12 border text-center py-2'>stage {currentStage + 1} of {stages.length}</h2>
-                            <h2 className='text-sm capitalize border w-6/12 py-1 text-center'>
+                            <h2 className='w-3/12 py-2 text-center border'>stage {currentStage + 1} of {stages.length}</h2>
+                            <h2 className='w-6/12 py-1 text-sm text-center capitalize border'>
                                 {/* {slug.split('-').join(' ')} */}
                                 {stages[currentStage]}
                                 {/* {sigleScaleData ?
@@ -187,30 +187,30 @@ const RankingScale = () => {
                             } */}
                             </h2>
                         </div>
-                        <div className='w-full flex gap-3 flex-col md:flex-row'>
+                        <div className='flex flex-col w-full gap-3 md:flex-row'>
                             <>
                                 <div className='w-full'>
-                                    <h2 className='border px-2 my-7'>Items available</h2>
+                                    <h2 className='px-2 border my-7'>Items available</h2>
                                 {
                                     <ul>
                                         {
                                             itemsAvailableSchema.map((item, index)=>(
-                                                <li key={index} className='border px-3 py-1'>{item.item}</li>
+                                                <li key={index} className='px-3 py-1 border'>{item.item}</li>
                                             ))
                                         }
                                     </ul>
                                 }
                                 </div>
                                 <div className='w-full'>
-                                    <h2 className='border px-2 my-7'>Select Rankings</h2>
+                                    <h2 className='px-2 border my-7'>Select Rankings</h2>
                                     {itemsAvailableSchema.map((item, index) => (
                                     <div className='w-full' key={index}>
-                                        {/* <h2 className='border px-2 my-7'>{item.item}</h2> */}
+                                        {/* <h2 className='px-2 border my-7'>{item.item}</h2> */}
                                         <select
                                             name={`ranking-${index}`}
                                             value={item.option}
                                             onChange={(e)=>handleSelectOption(e, index)}
-                                            className='w-full border px-3 py-1 outline-0'
+                                            className='w-full px-3 py-1 border outline-0'
                                         >
                                             {rankings.map((ranking) => (
                                                 <option key={ranking} value={ranking}>
@@ -232,13 +232,13 @@ const RankingScale = () => {
                     </div>
                     {sigleScaleData && sigleScaleData.map((scale, index)=>(
                         <>
-                            <Button width={'full'} onClick={()=>navigateTo(`/scales-update-settings/${scale._id}`)} key={index}>update scale</Button>
+                            <Button width={'full'} onClick={()=>navigateTo(`/100035-DowellScale-Function/scales-update-settings/${scale._id}`)} key={index}>update scale</Button>
                         </>
                     ))}
                 </div>
             </div>
-            <div className='w-full flex items-center justify-end my-4'>
-                <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
+            <div className='flex items-center justify-end w-full my-4'>
+                <Button primary width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/create-scale?slug=${slug}`)}>create new scale</Button>
             </div>
         </div>
     </div>
