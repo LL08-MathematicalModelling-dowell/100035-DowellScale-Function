@@ -49,7 +49,7 @@ import {
 import { FetchUserContextProvider } from './contexts/fetchUserContext.jsx';
 import { StrictMode } from 'react';
 
-const basePath = '';
+const basePath = '/100035-DowellScale-Function';
 const router = createBrowserRouter([
   {
     path: basePath,

@@ -125,7 +125,7 @@ const Home = () => {
       <div className="grid w-6/12 grid-cols-1 gap-4 lg:grid-cols-2">
         {scaleTypes.map((scale) => (
           <button
-            onClick={() => navigateTo(`/${scale.slug}`)}
+            onClick={() => navigateTo(`/100035-DowellScale-Function/${scale.slug}`)}
             key={scale.slug}
             className="w-full px-2 py-8 my-1 text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
           >
