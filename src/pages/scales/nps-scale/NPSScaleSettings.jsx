@@ -17,7 +17,7 @@ const NPSScaleSettings = () => {
   const [masterLink, setMasterLink] = useState("");
   const [scale, setScale] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
-  const [selectedScore, setSelectedScore] = useState(0);
+  const [selectedScore, setSelectedScore] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const saveResponse = useSaveResponse();
@@ -42,40 +42,6 @@ const NPSScaleSettings = () => {
 
   const submitResponse = async () => {
     const payload = {
-      // document_responses: [
-      //     {
-      //         scale_id:slug,
-      //         score:10
-      //     },
-      //     {
-      //         scale_id:"64f6fc2c7ab91b2af12c3958",
-      //         score:10
-      //     }],
-      // instance_id:1,
-      // brand_name:"question",
-      // product_name:"answer",
-      // username: "tall",
-      // action: "document",
-      // authorized: "Ambrose",
-      // cluster: "Documents",
-      // collection: "CloneReports",
-      // command: "update",
-      // database: "Documentation",
-      // document: "CloneReports",
-      // document_flag: "processing",
-      // document_right: "add_edit",
-      // field: "document_name",
-      // function_ID: "ABCDE",
-      // metadata_id: "64f568426bcc87ef0c75d43c",
-      // process_id: "64f5683c3270cf0e74824fe7",
-      // role: "single step role",
-      // team_member_ID: "1212001",
-      // content: "",
-      // document_name: "name",
-      // page: "",
-      // user_type: "public",
-      // _id: slug,
-
       user: "natan",
       scale_id: "64afe7d3aad77b181847190a",
       event_id: "1689249744727624",
@@ -100,6 +66,11 @@ const NPSScaleSettings = () => {
     }
   };
 
+  // SetpublicLinks triggers a re-render, so use useEffect to call MasterLinkFunction after state update
+  useEffect(() => {
+    MasterLinkFunction();
+  }, [publicLinks]);
+
   useEffect(() => {
     const fetchData = async () => {
       //   await handleFetchSingleScale(slug);
@@ -119,85 +90,32 @@ const NPSScaleSettings = () => {
     fetchData();
   }, [slug]);
 
-  const createMasterLink = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    console.log(sessionStorage.getItem("session_id"));
-
+  const MasterLinkFunction = async () => {
     try {
-      const pub_links = await axios.post(
-        "https://100093.pythonanywhere.com/api/userinfo/",
-        // '',
-        { session_id: sessionStorage.getItem("session_id") }
-      );
-      const result = await pub_links.data;
-      let all_links = [];
-      let all_public_links = [];
-      result["selected_product"]["userportfolio"].forEach((result, index) => {
-        if (
-          result["member_type"] === "public" &&
-          result["product"] === "Living Lab Scales"
-        ) {
-          all_links.push(result["username"]);
-        }
-      });
-      const flattenedArray = [].concat(...all_links);
+      // Prepare request data for master link creation
+      const requestData = {
+        qrcode_type: "Link",
+        quantity: 1,
+        company_id: "Living Lab Scales",
+        document_name: "Living Lab Scales",
+        links: publicLinks.map((link) => ({ link })),
+      };
 
-      // Split the URL by "/"
-      // Find the last index of "/"
-      const lastSlashIndex = window.location.href.lastIndexOf("/");
+      console.log(requestData);
 
-      // Slice the URL to exclude the last part
-      const modifiedUrl = window.location.href.slice(0, lastSlashIndex);
-      const lastPart = window.location.href.slice(lastSlashIndex + 1);
-
-      // Loop through the specified number of elements
-      for (
-        let i = 0;
-        i < scale.no_of_scales && i < flattenedArray.length;
-        i++
-      ) {
-        // Append the current element to the current window.location.href
-        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}`;
-        // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
-
-        // Display the new URL (you can modify this part based on your use case)
-        all_public_links.push(newUrl);
-      }
-
-      SetpublicLinks(all_public_links);
-
-      console.log(result["selected_product"]["product_name"]);
-      console.log(result["selected_product"]["userportfolio"]);
-    } catch {
-      setIsLoading(false);
-      console.log("Error", "No Enough Public Links");
-    }
-
-    console.log("tombotaller", publicLinks);
-
-    var requestData = {
-      qrcode_type: "Link",
-      quantity: 1,
-      company_id: "gee",
-      document_name: "Vader doc",
-      links: publicLinks.map((link) => ({ link })),
-    };
-
-    console.log(requestData);
-
-    try {
+      // Post request to create master link
       const data = await axios.post(
         "https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/",
         requestData
       );
-      const result = await data.data;
-      console.log(result.qrcodes[0].masterlink);
+
+      const result = data.data;
 
       if (result.error) {
         setIsLoading(false);
         return;
       } else {
+        // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
         handleToggleMasterlinkModal();
 
@@ -206,10 +124,60 @@ const NPSScaleSettings = () => {
       }
     } catch (error) {
       setIsLoading(false);
-
       console.log("Error", error.response);
     }
-    // https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/
+  };
+
+  const createMasterLink = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      // Fetch user information
+      const pub_links = await axios.post(
+        "https://100093.pythonanywhere.com/api/userinfo/",
+        { session_id: sessionStorage.getItem("session_id") }
+      );
+
+      const result = pub_links.data;
+
+      const PublicLinks = [];
+
+      // Extract public links from user portfolio
+      result.selected_product.userportfolio.forEach((portfolio) => {
+        if (
+          portfolio.member_type === "public" &&
+          portfolio.product === "Living Lab Scales"
+        ) {
+          PublicLinks.push(portfolio.username[0]);
+        }
+      });
+
+      // Generate modified URLs
+      const modifiedUrl = window.location.href.slice(
+        0,
+        window.location.href.lastIndexOf("/")
+      );
+      const lastPart = window.location.href.slice(
+        window.location.href.lastIndexOf("/") + 1
+      );
+      const allPublicLinks = PublicLinks.map(
+        (username) => `${modifiedUrl}/${lastPart}/?public_member=${username}`
+        // (username) => `${modifiedUrl}/${username}/?scale_id=${lastPart}`
+      );
+
+      console.log(PublicLinks);
+      console.log(publicLinks);
+
+      SetpublicLinks(allPublicLinks);
+
+      // Log user portfolio information
+      console.log(result.selected_product.product_name);
+      console.log(result.selected_product.userportfolio);
+    } catch (error) {
+      setIsLoading(false);
+      console.log("Error", "Insufficient public members");
+    }
   };
 
   if (loading) {
