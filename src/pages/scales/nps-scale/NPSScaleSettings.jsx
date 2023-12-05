@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { useParams, useNavigate,useLocation } from "react-router-dom";
-import useGetSingleScale from "../../../hooks/useGetSingleScale";
-import { useSaveResponse } from "../../../hooks/useSaveResponse";
-import Fallback from "../../../components/Fallback";
-import { Button } from "../../../components/button";
-import UpdateNPSScale from "./UpdateNPSScale";
-import NPSMasterlink from "./NPSMasterlink";
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import useGetSingleScale from '../../../hooks/useGetSingleScale';
+import { useSaveResponse } from '../../../hooks/useSaveResponse';
+import Fallback from '../../../components/Fallback';
+import { Button } from '../../../components/button';
+import UpdateNPSScale from './UpdateNPSScale';
+import NPSMasterlink from './NPSMasterlink';
+import dowellLogo from '../../../assets/dowell-logo.png';
+import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
 
 const NPSScaleSettings = () => {
   const { slug } = useParams();
+  const [userInfo, setUserInfo] = useState();
   // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
+    useState(false);
   const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
-  const [masterLink, setMasterLink] = useState("");
+  const [masterLink, setMasterLink] = useState('');
   const [scale, setScale] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
@@ -34,6 +39,9 @@ const NPSScaleSettings = () => {
   const handleToggleMasterlinkModal = () => {
     setShowMasterlinkModal(!showMasterlinkModal);
   };
+  const handleToggleMasterlinkSuccessModal = () => {
+    setShowMasterLinkSuccessModal(!showMasterLinkSuccessModal);
+  };
 
   const handleSelectScore = (score) => {
     setSelectedScore(score);
@@ -45,25 +53,58 @@ const NPSScaleSettings = () => {
 
   const submitResponse = async () => {
     const payload = {
-      user: "natan",
-      scale_id: "64afe7d3aad77b181847190a",
-      event_id: "1689249744727624",
-      scale_category: "npslite scale",
-      response: "9",
+      scale_id: slug,
+      score: selectedScore,
+      process_id: 'process_id879895',
+      instance_id: 1,
+      brand_name: 'question',
+      product_name: 'answer',
+      username: userInfo.username,
     };
+    console.log(payload);
+    finalizeMasterlink();
 
+    // try {
+    //   setIsLoading(true);
+    //   const response = await axios.post(
+    //     'https://100035.pythonanywhere.com/api/nps_responses_create',
+    //     payload
+    //   );
+    //   console.log(response.data);
+    //   if (response.data.success === 'true') {
+    //     toast.success('successfully updated');
+    //     finalizeMasterlink();
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // } finally {
+    //   setIsLoading(false);
+    // }
+  };
+
+  const finalizeMasterlink = async () => {
     try {
       setIsLoading(true);
-      const response = await saveResponse(payload);
-      console.log(response);
-      // if(status===200){
-      //     toast.success('successfully updated');
-      //     setTimeout(()=>{
-      //         navigateTo(`/nps-scale/${sigleScaleData[0]?._id}`);
-      //     },2000)
-      //   }
+      const response = await axios.put(
+        `https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?link_id=12279037654434517486`
+      );
+      console.log(response.response.data);
+      if (response.error) {
+        setIsLoading(false);
+        toast.error(response.message);
+        return;
+      } else {
+        // Set master link and handle modal toggle
+        setIsLoading(false);
+        handleToggleMasterlinkSuccessModal();
+
+        toast.success(response.response);
+      }
+      // handleToggleMasterlinkSuccessModal();
     } catch (error) {
-      console.log(error);
+      setIsLoading(false)
+      toast.error(error?.response?.data?.message);
+      console.error(error.response.data.message);
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +119,7 @@ const NPSScaleSettings = () => {
     const fetchData = async () => {
       //   await handleFetchSingleScale(slug);
       try {
-        setLoading(true);
+        setIsLoading(true);
         const response = await axios.get(
           `https://100035.pythonanywhere.com/api/nps_create/?scale_id=${slug}`
         );
@@ -87,7 +128,7 @@ const NPSScaleSettings = () => {
       } catch (error) {
         console.error(error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -97,10 +138,10 @@ const NPSScaleSettings = () => {
     try {
       // Prepare request data for master link creation
       const requestData = {
-        qrcode_type: "Link",
+        qrcode_type: 'Link',
         quantity: 1,
-        company_id: "Living Lab Scales",
-        document_name: "Living Lab Scales",
+        company_id: 'Living Lab Scales',
+        document_name: 'Living Lab Scales',
         links: publicLinks.map((link) => ({ link })),
       };
 
@@ -108,7 +149,7 @@ const NPSScaleSettings = () => {
 
       // Post request to create master link
       const data = await axios.post(
-        "https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/",
+        'https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/',
         requestData
       );
 
@@ -140,11 +181,15 @@ const NPSScaleSettings = () => {
     try {
       // Fetch user information
       const pub_links = await axios.post(
-        "https://100093.pythonanywhere.com/api/userinfo/",
-        { session_id: sessionStorage.getItem("session_id") }
+        'https://100093.pythonanywhere.com/api/userinfo/',
+        {
+          session_id: '28ceuiogadioveenkuxiy76em0x4bgdy',
+          // sessionStorage.getItem("session_id")
+        }
       );
 
       const result = pub_links.data;
+      setUserInfo(result.userinfo);
 
       const PublicLinks = [];
       const all_public_links = [];
@@ -152,8 +197,8 @@ const NPSScaleSettings = () => {
       // Extract public links from user portfolio
       result.selected_product.userportfolio.forEach((portfolio) => {
         if (
-          portfolio.member_type === "public" &&
-          portfolio.product === "Living Lab Scales"
+          portfolio.member_type === 'public' &&
+          portfolio.product === 'Living Lab Scales'
         ) {
           PublicLinks.push(portfolio.username[0]);
         }
@@ -164,10 +209,10 @@ const NPSScaleSettings = () => {
       // Generate modified URLs
       const modifiedUrl = window.location.href.slice(
         0,
-        window.location.href.lastIndexOf("/")
+        window.location.href.lastIndexOf('/')
       );
       const lastPart = window.location.href.slice(
-        window.location.href.lastIndexOf("/") + 1
+        window.location.href.lastIndexOf('/') + 1
       );
 
       for (
@@ -189,7 +234,7 @@ const NPSScaleSettings = () => {
       console.log(ma);
     } catch (error) {
       setIsLoading(false);
-      toast.error("Insufficient public members");
+      toast.error('Insufficient public members');
       // console.log("Error", "Insufficient public members");
     }
   };
@@ -199,6 +244,13 @@ const NPSScaleSettings = () => {
   }
   return (
     <div className="flex flex-col items-center justify-center h-screen font-medium font-Montserrat">
+      {publicLink && (
+        <img
+          src={dowellLogo}
+          alt="Dowell Logo"
+          className="cursor-pointer w-52"
+        />
+      )}
       <div className="w-full px-5 py-4 m-auto border border-primary lg:w-9/12">
         <div
           className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`}
@@ -228,7 +280,7 @@ const NPSScaleSettings = () => {
                               backgroundColor: scale?.roundcolor,
                               color: scale?.fontcolor,
                             }
-                          : { color: "white" }
+                          : { color: 'white' }
                       }
                     >
                       {score}
@@ -243,23 +295,32 @@ const NPSScaleSettings = () => {
             </div>
 
             <div className="flex justify-end gap-3">
-              {/* {scale &&
-                scale.map((scale, index) => ( */}
-              <Button
-                width={"3/4"}
-                onClick={handleToggleUpdateModal}
-                // key={index}
-              >
-                update scale
-              </Button>
-              {/* ))} */}
-              <Button width={"3/4"} primary onClick={createMasterLink}>
-                {isLoading ? "Creating Masterlink" : "Create Masterlink"}
-              </Button>
+              {!publicLink && (
+                <>
+                  <Button width={'3/4'} onClick={handleToggleUpdateModal}>
+                    update scale
+                  </Button>
+                  <Button width={'3/4'} primary onClick={createMasterLink}>
+                    {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
+        {!publicLink && (
+          <div className="flex items-center justify-center my-4">
+            <Button width={'1/2'} primary onClick={submitResponse}>
+              {isLoading ? 'Saving' : 'Save'}
+            </Button>
+          </div>
+        )}
       </div>
+      {showMasterLinkSuccessModal && (
+        <MasterlinkSuccessModal
+          handleToggleMasterlinkModal={handleToggleMasterlinkSuccessModal}
+        />
+      )}
       {showUpdateModal && (
         <UpdateNPSScale handleToggleUpdateModal={handleToggleUpdateModal} />
       )}
