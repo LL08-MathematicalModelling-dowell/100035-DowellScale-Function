@@ -45,7 +45,6 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload dist repository
-          base: /100035-DowellScale-Function/
           path: './dist'
       - name: Deploy to GitHub Pages
         id: deployment
