@@ -253,9 +253,9 @@ const NPSScaleSettings = () => {
                 )}
             </div>
             <div className="flex items-center justify-between my-3">
-              <h4>{scale.left}</h4>
-              <h4>{scale.center}</h4>
-              <h4>{scale.right}</h4>
+              <h4>Unsatisfactory</h4>
+              <h4>neutral</h4>
+              <h4>Satisfactory</h4>
             </div>
 
             <div className="flex justify-end gap-3">
