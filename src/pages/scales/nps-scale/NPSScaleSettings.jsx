@@ -17,7 +17,7 @@ const NPSScaleSettings = () => {
   const [masterLink, setMasterLink] = useState("");
   const [scale, setScale] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
-  const [selectedScore, setSelectedScore] = useState(-1);
+  const [selectedScore, setSelectedScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const saveResponse = useSaveResponse();
@@ -159,7 +159,8 @@ const NPSScaleSettings = () => {
         i++
       ) {
         // Append the current element to the current window.location.href
-        const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?scale_id=${lastPart}`;
+        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}`;
+        // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
 
         // Display the new URL (you can modify this part based on your use case)
         all_public_links.push(newUrl);
@@ -171,7 +172,7 @@ const NPSScaleSettings = () => {
       console.log(result["selected_product"]["userportfolio"]);
     } catch(error) {
       setIsLoading(false);
-      console.log("Error", error.response);
+      console.log("Error", "No Enough Public Links");
     }
 
     console.log("tombotaller", publicLinks);
