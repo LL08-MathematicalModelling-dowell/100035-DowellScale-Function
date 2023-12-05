@@ -88,7 +88,7 @@ const NPSScale = () => {
                     </div>
             
                     <div className='flex items-center justify-end w-full my-4'>
-                        <Button primary width={'3/4'} onClick={()=>navigateTo(`@heenakhan4 added /100035-DowellScale-Function to check if this is the issue, because every other method we tried are not working/create-nps-scale`)}>create new scale</Button>
+                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/create-nps-scale`)}>create new scale</Button>
                     </div>
                 </div>
             </div>

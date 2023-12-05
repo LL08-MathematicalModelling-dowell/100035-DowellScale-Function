@@ -7,11 +7,14 @@ import { useSaveResponse } from '../../../hooks/useSaveResponse';
 import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
 import UpdateNPSScale from './UpdateNPSScale';
+import NPSMasterlink from './NPSMasterlink';
 
 const NPSScaleSettings = () => {
   const { slug } = useParams();
   // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
+  const [masterLink, setMasterLink] = useState('');
   const [scale, setScale] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +26,9 @@ const NPSScaleSettings = () => {
 
   const handleToggleUpdateModal = () => {
     setShowUpdateModal(!showUpdateModal);
+  };
+  const handleToggleMasterlinkModal = () => {
+    setShowMasterlinkModal(!showMasterlinkModal);
   };
 
   const handleSelectScore = (score) => {
@@ -116,10 +122,6 @@ const NPSScaleSettings = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const headers = {
-      'x-api-key': '',
-    };
-
     var requestData = {
       qrcode_type: 'Link',
       quantity: 1,
@@ -127,32 +129,34 @@ const NPSScaleSettings = () => {
       document_name: 'Vader Doc',
       links: [
         {
-          link: 'https://uxlivinglab.com/en/workflow-ai/',
+          link: window.location.href,
         },
       ],
     };
 
     try {
       const data = await axios.post(
-        'https://100035.pythonanywhere.com/paired-comparison/paired-comparison-submit-response/',
+        'https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/',
         // '',
-        requestData,
-        { headers }
+        requestData
       );
       const result = await data.data;
-      console.log(result);
+      console.log(result.qrcodes[0].masterlink);
 
       if (result.error) {
         setIsLoading(false);
         return;
       } else {
+        setMasterLink(result.qrcodes[0].masterlink);
+        handleToggleMasterlinkModal();
+
         setIsLoading(false);
-        toast.success('Successfully Created');
+        toast.success(result.response);
       }
     } catch (error) {
       setIsLoading(false);
 
-      console.log('Error', error.response.data);
+      console.log('Error', error.response);
     }
     // https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/
   };
@@ -224,14 +228,12 @@ const NPSScaleSettings = () => {
         </div>
       </div>
       {showUpdateModal && (
-        <UpdateNPSScale
-          handleToggleUpdateModal={handleToggleUpdateModal}
-          //   handleSubmitStagesSubinputs={handleSubmitStagesSubinputs}
-          //   subInputs={subInputs}
-          //   subInputsValue={subInputsValue}
-          //   handleInputsValueChange={handleInputsValueChange}
-          //   handleAddInputArea={handleAddInputArea}
-          //   removeSubinput={removeStagesSubinput}
+        <UpdateNPSScale handleToggleUpdateModal={handleToggleUpdateModal} />
+      )}
+      {showMasterlinkModal && (
+        <NPSMasterlink
+          handleToggleMasterlinkModal={handleToggleMasterlinkModal}
+          link={masterLink}
         />
       )}
     </div>
