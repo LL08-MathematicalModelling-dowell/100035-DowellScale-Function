@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import useGetSingleScale from '../../../hooks/useGetSingleScale';
-import { useSaveResponse } from '../../../hooks/useSaveResponse';
-import Fallback from '../../../components/Fallback';
-import { Button } from '../../../components/button';
-import UpdateNPSScale from './UpdateNPSScale';
-import NPSMasterlink from './NPSMasterlink';
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import useGetSingleScale from "../../../hooks/useGetSingleScale";
+import { useSaveResponse } from "../../../hooks/useSaveResponse";
+import Fallback from "../../../components/Fallback";
+import { Button } from "../../../components/button";
+import UpdateNPSScale from "./UpdateNPSScale";
+import NPSMasterlink from "./NPSMasterlink";
 
 const NPSScaleSettings = () => {
   const { slug } = useParams();
   // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
-  const [masterLink, setMasterLink] = useState('');
+  const [masterLink, setMasterLink] = useState("");
   const [scale, setScale] = useState(null);
+  const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -75,11 +76,11 @@ const NPSScaleSettings = () => {
       // user_type: "public",
       // _id: slug,
 
-      user: 'natan',
-      scale_id: '64afe7d3aad77b181847190a',
-      event_id: '1689249744727624',
-      scale_category: 'npslite scale',
-      response: '9',
+      user: "natan",
+      scale_id: "64afe7d3aad77b181847190a",
+      event_id: "1689249744727624",
+      scale_category: "npslite scale",
+      response: "9",
     };
 
     try {
@@ -122,22 +123,70 @@ const NPSScaleSettings = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    try {
+      const pub_links = await axios.post(
+        "https://100093.pythonanywhere.com/api/userinfo/",
+        // '',
+        { session_id: "28ceuiogadioveenkuxiy76em0x4bgdy" }
+      );
+      const result = await pub_links.data;
+      let all_links = [];
+      let all_public_links = [];
+      result["selected_product"]["userportfolio"].forEach((result, index) => {
+        if (
+          result["member_type"] === "public" &&
+          result["product"] === "Living Lab Scales"
+        ) {
+          all_links.push(result["username"]);
+        }
+      });
+      const flattenedArray = [].concat(...all_links);
+
+      // Split the URL by "/"
+      // Find the last index of "/"
+      const lastSlashIndex = window.location.href.lastIndexOf("/");
+
+      // Slice the URL to exclude the last part
+      const modifiedUrl = window.location.href.slice(0, lastSlashIndex);
+      const lastPart = window.location.href.slice(lastSlashIndex + 1);
+
+      // Loop through the specified number of elements
+      for (
+        let i = 0;
+        i < scale.no_of_scales && i < flattenedArray.length;
+        i++
+      ) {
+        // Append the current element to the current window.location.href
+        const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?scale_id=${lastPart}`;
+
+        // Display the new URL (you can modify this part based on your use case)
+        all_public_links.push(newUrl);
+      }
+
+      SetpublicLinks(all_public_links);
+
+      console.log(result["selected_product"]["product_name"]);
+      console.log(result["selected_product"]["userportfolio"]);
+    } catch {
+      setIsLoading(false);
+      console.log("Error", error.response);
+    }
+
+    console.log("tombotaller", publicLinks);
+
     var requestData = {
-      qrcode_type: 'Link',
+      qrcode_type: "Link",
       quantity: 1,
-      company_id: 'gee',
-      document_name: 'Vader Doc',
-      links: [
-        {
-          link: window.location.href,
-        },
-      ],
+      company_id: "gee",
+      document_name: "Vader doc",
+      links: publicLinks.map((link) => ({ link })),
     };
+
+    console.log(requestData);
 
     try {
       const data = await axios.post(
-        'https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/',
-        // '',
+        "https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/",
         requestData
       );
       const result = await data.data;
@@ -156,7 +205,7 @@ const NPSScaleSettings = () => {
     } catch (error) {
       setIsLoading(false);
 
-      console.log('Error', error.response);
+      console.log("Error", error.response);
     }
     // https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/
   };
@@ -195,7 +244,7 @@ const NPSScaleSettings = () => {
                               backgroundColor: scale?.roundcolor,
                               color: scale?.fontcolor,
                             }
-                          : { color: 'white' }
+                          : { color: "white" }
                       }
                     >
                       {score}
@@ -204,24 +253,24 @@ const NPSScaleSettings = () => {
                 )}
             </div>
             <div className="flex items-center justify-between my-3">
-              <h4>Unsatisfactory</h4>
-              <h4>neutral</h4>
-              <h4>Satisfactory</h4>
+              <h4>{scale.left}</h4>
+              <h4>{scale.center}</h4>
+              <h4>{scale.right}</h4>
             </div>
 
             <div className="flex justify-end gap-3">
               {/* {scale &&
                 scale.map((scale, index) => ( */}
               <Button
-                width={'3/4'}
+                width={"3/4"}
                 onClick={handleToggleUpdateModal}
                 // key={index}
               >
                 update scale
               </Button>
               {/* ))} */}
-              <Button width={'3/4'} primary onClick={createMasterLink}>
-                {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
+              <Button width={"3/4"} primary onClick={createMasterLink}>
+                {isLoading ? "Creating Masterlink" : "Create Masterlink"}
               </Button>
             </div>
           </div>
@@ -234,6 +283,7 @@ const NPSScaleSettings = () => {
         <NPSMasterlink
           handleToggleMasterlinkModal={handleToggleMasterlinkModal}
           link={masterLink}
+          publicLinks={publicLinks}
         />
       )}
     </div>
