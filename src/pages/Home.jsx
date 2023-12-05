@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 // import Cookies from 'universal-cookie';
 
@@ -33,7 +33,7 @@ const Home = () => {
     },
   ];
 
-  const navigateTo = useNavigate();
+  // const navigateTo = useNavigate();
 
 
   // const getUserInfo = async (session_id) => {
@@ -116,6 +116,7 @@ const Home = () => {
       return;
     }
     getUserInfo()
+    sessionStorage.setItem('session_id', session_id)
     // setLoggedIn(true);
   }, []);
 
@@ -124,13 +125,13 @@ const Home = () => {
     <div className="flex flex-col items-center justify-center h-screen">
       <div className="grid w-6/12 grid-cols-1 gap-4 lg:grid-cols-2">
         {scaleTypes.map((scale) => (
-          <button
-            onClick={() => navigateTo(`/100035-DowellScale-Function/${scale.slug}`)}
+          <Link
+            to={`/100035-DowellScale-Function/${scale.slug}`}
             key={scale.slug}
             className="w-full px-2 py-8 my-1 text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
           >
             {scale.name}
-          </button>
+          </Link>
         ))}
       </div>
     </div>
