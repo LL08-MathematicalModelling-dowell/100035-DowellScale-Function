@@ -122,12 +122,13 @@ const NPSScaleSettings = () => {
   const createMasterLink = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log(sessionStorage.getItem("session_id"));
 
     try {
       const pub_links = await axios.post(
         "https://100093.pythonanywhere.com/api/userinfo/",
         // '',
-        { session_id: "28ceuiogadioveenkuxiy76em0x4bgdy" }
+        { session_id: sessionStorage.getItem("session_id") }
       );
       const result = await pub_links.data;
       let all_links = [];
