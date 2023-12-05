@@ -124,7 +124,9 @@ const NPSScaleSettings = () => {
       }
     } catch (error) {
       setIsLoading(false);
-      console.log("Error", error.response);
+      toast.error(error.response);
+
+      // console.log("Error", error.response);
     }
   };
 
@@ -142,6 +144,7 @@ const NPSScaleSettings = () => {
       const result = pub_links.data;
 
       const PublicLinks = [];
+      const all_public_links = [];
 
       // Extract public links from user portfolio
       result.selected_product.userportfolio.forEach((portfolio) => {
@@ -153,6 +156,8 @@ const NPSScaleSettings = () => {
         }
       });
 
+      const flattenedArray = [].concat(...all_links);
+
       // Generate modified URLs
       const modifiedUrl = window.location.href.slice(
         0,
@@ -161,22 +166,28 @@ const NPSScaleSettings = () => {
       const lastPart = window.location.href.slice(
         window.location.href.lastIndexOf("/") + 1
       );
-      const allPublicLinks = PublicLinks.map(
-        (username) => `${modifiedUrl}/${lastPart}/?public_member=${username}`
-        // (username) => `${modifiedUrl}/${username}/?scale_id=${lastPart}`
-      );
 
-      console.log(PublicLinks);
-      console.log(publicLinks);
+      for (
+        let i = 0;
+        i < scale.no_of_scales && i < flattenedArray.length;
+        i++
+      ) {
+        // Append the current element to the current window.location.href
+        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}`;
+        // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
 
-      SetpublicLinks(allPublicLinks);
+        // Display the new URL (you can modify this part based on your use case)
+        all_public_links.push(newUrl);
+      }
+
+      SetpublicLinks(all_public_links);
 
       // Log user portfolio information
-      console.log(result.selected_product.product_name);
-      console.log(result.selected_product.userportfolio);
+      console.log(ma);
     } catch (error) {
       setIsLoading(false);
-      console.log("Error", "Insufficient public members");
+      toast.error("Insufficient public members");
+      // console.log("Error", "Insufficient public members");
     }
   };
 
