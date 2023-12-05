@@ -45,6 +45,7 @@ import {
   UpdateNpsLite,
 } from './pages/scales/nps-lite-scale';
 import { StrictMode } from 'react';
+import NPSResponse from './pages/scales/nps-scale/NPSResponse.jsx';
 
 const basePath = '/100035-DowellScale-Function/';
 const router = createBrowserRouter([
@@ -155,6 +156,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/update-staple-scale/:slug`,
         element: <UpdateStapleScale />,
+      },
+      {
+        path: `${basePath}/nps-response/:slug`,
+        element: <NPSResponse />,
       },
     ],
   },

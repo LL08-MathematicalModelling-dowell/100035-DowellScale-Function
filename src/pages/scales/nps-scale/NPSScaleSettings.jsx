@@ -107,7 +107,7 @@ const NPSScaleSettings = () => {
         const response = await axios.get(
           `https://100035.pythonanywhere.com/api/nps_create/?scale_id=${slug}`
         );
-        console.log(response.data.success.scalecolor);
+        console.log(response.data.success);
         setScale(response.data.success);
       } catch (error) {
         console.error(error);
@@ -129,7 +129,7 @@ const NPSScaleSettings = () => {
       document_name: 'Vader Doc',
       links: [
         {
-          link: window.location.href,
+          link: `https://${window.location.host}/100035-DowellScale-Function/nps-response/${slug}`,
         },
       ],
     };
@@ -161,7 +161,7 @@ const NPSScaleSettings = () => {
     // https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/
   };
 
-  if (loading) {
+  if (isLoading) {
     return <Fallback />;
   }
   return (
@@ -204,9 +204,9 @@ const NPSScaleSettings = () => {
                 )}
             </div>
             <div className="flex items-center justify-between my-3">
-              <h4>Unsatisfactory</h4>
-              <h4>neutral</h4>
-              <h4>Satisfactory</h4>
+              <h4>{scale?.left}</h4>
+              <h4>{scale?.center}</h4>
+              <h4>{scale?.right}</h4>
             </div>
 
             <div className="flex justify-end gap-3">
