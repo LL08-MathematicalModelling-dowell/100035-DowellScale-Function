@@ -4,6 +4,7 @@ import {
   useSearchParams,
   useParams,
   useNavigate,
+  useLocation,
 } from 'react-router-dom';
 
 import axios from 'axios';
@@ -13,6 +14,7 @@ import { Button } from '../../../components/button';
 
 const NPSResponse = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
 
   const [userInfo, setUserInfo] = useState();
 
@@ -24,6 +26,9 @@ const NPSResponse = () => {
   const [loading, setLoading] = useState(false);
   const saveResponse = useSaveResponse();
   const navigateTo = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const publicLink = queryParams.get('public_link');
+  console.log(publicLink);
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -46,14 +51,14 @@ const NPSResponse = () => {
 
     try {
       setIsLoading(true);
-        const response = await saveResponse(payload);
-        console.log(response);
-      if(response.payload.isSuccess==='true'){
-          toast.success('successfully updated');
+      const response = await saveResponse(payload);
+      console.log(response);
+      if (response.payload.isSuccess === 'true') {
+        toast.success('successfully updated');
         //   setTimeout(()=>{
         //       navigateTo(`/nps-scale/${sigleScaleData[0]?._id}`);
         //   },2000)
-        }
+      }
     } catch (error) {
       console.log(error);
     } finally {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate,useLocation } from "react-router-dom";
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveResponse } from "../../../hooks/useSaveResponse";
 import Fallback from "../../../components/Fallback";
@@ -22,6 +22,9 @@ const NPSScaleSettings = () => {
   const [loading, setLoading] = useState(false);
   const saveResponse = useSaveResponse();
   const navigateTo = useNavigate();
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const publicLink = queryParams.get('public_link');
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
