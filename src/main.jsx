@@ -158,7 +158,7 @@ const router = createBrowserRouter([
         element: <UpdateStapleScale />,
       },
       {
-        path: `${basePath}/nps-response/:slug`,
+        path: `${basePath}/nps-scale-settings/:slug/:id`,
         element: <NPSResponse />,
       },
     ],

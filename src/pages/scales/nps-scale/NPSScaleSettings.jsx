@@ -122,6 +122,7 @@ const NPSScaleSettings = () => {
   const createMasterLink = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log('sessionStorage');
     console.log(sessionStorage.getItem("session_id"));
 
     try {
@@ -168,7 +169,7 @@ const NPSScaleSettings = () => {
 
       console.log(result["selected_product"]["product_name"]);
       console.log(result["selected_product"]["userportfolio"]);
-    } catch {
+    } catch(error) {
       setIsLoading(false);
       console.log("Error", error.response);
     }
