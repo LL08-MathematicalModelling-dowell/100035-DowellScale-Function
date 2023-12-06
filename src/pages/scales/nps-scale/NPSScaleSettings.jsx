@@ -82,24 +82,24 @@ const NPSScaleSettings = () => {
       username: qrCodeId,
     };
     console.log(payload);
-    finalizeMasterlink();
+    // finalizeMasterlink();
 
-    // try {
-    //   setIsLoading(true);
-    //   const response = await axios.post(
-    //     'https://100035.pythonanywhere.com/api/nps_responses_create',
-    //     payload
-    //   );
-    //   console.log(response.data);
-    //   if (response.data.success === 'true') {
-    //     toast.success('successfully updated');
-    //     finalizeMasterlink();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        'https://100035.pythonanywhere.com/api/nps_responses_create',
+        payload
+      );
+      console.log(response.data);
+      if (response.data.success === 'true') {
+        toast.success('successfully updated');
+        finalizeMasterlink();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const finalizeMasterlink = async () => {
@@ -109,17 +109,7 @@ const NPSScaleSettings = () => {
         `https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?link_id=${link_id}`
       );
       console.log(response.response.data);
-      // if (response.error) {
-      //   setIsLoading(false);
-      //   toast.error(response.message);
-      //   return;
-      // } else {
-      //   // Set master link and handle modal toggle
-      //   setIsLoading(false);
-      //   handleToggleMasterlinkSuccessModal();
 
-      //   toast.success(response.response);
-      // }
       handleToggleMasterlinkSuccessModal();
     } catch (error) {
       setIsLoading(false);
