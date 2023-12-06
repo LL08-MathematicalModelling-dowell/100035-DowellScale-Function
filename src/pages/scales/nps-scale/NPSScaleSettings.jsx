@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import {
+  useParams,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom';
 import useGetSingleScale from '../../../hooks/useGetSingleScale';
 import { useSaveResponse } from '../../../hooks/useSaveResponse';
 import Fallback from '../../../components/Fallback';
@@ -14,12 +19,14 @@ import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
 const NPSScaleSettings = () => {
   const { slug } = useParams();
   const [userInfo, setUserInfo] = useState();
+  // const [searchParams] = useSearchParams();
   // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
     useState(false);
   const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
   const [masterLink, setMasterLink] = useState('');
+  const [linkId, setLinkId] = useState('');
   const [scale, setScale] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
@@ -52,6 +59,17 @@ const NPSScaleSettings = () => {
   };
 
   const submitResponse = async () => {
+    const info = await axios.post(
+      'https://100093.pythonanywhere.com/api/userinfo/',
+      {
+        session_id: '28ceuiogadioveenkuxiy76em0x4bgdy',
+        // sessionStorage.getItem("session_id")
+      }
+    );
+
+    const result = info.data;
+    setUserInfo(result.userinfo);
+    
     const payload = {
       scale_id: slug,
       score: selectedScore,
@@ -59,7 +77,7 @@ const NPSScaleSettings = () => {
       instance_id: 1,
       brand_name: 'question',
       product_name: 'answer',
-      username: userInfo.username,
+      username: result.userinfo.username,
     };
     console.log(payload);
     finalizeMasterlink();
@@ -89,20 +107,20 @@ const NPSScaleSettings = () => {
         `https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?link_id=12279037654434517486`
       );
       console.log(response.response.data);
-      if (response.error) {
-        setIsLoading(false);
-        toast.error(response.message);
-        return;
-      } else {
-        // Set master link and handle modal toggle
-        setIsLoading(false);
-        handleToggleMasterlinkSuccessModal();
+      // if (response.error) {
+      //   setIsLoading(false);
+      //   toast.error(response.message);
+      //   return;
+      // } else {
+      //   // Set master link and handle modal toggle
+      //   setIsLoading(false);
+      //   handleToggleMasterlinkSuccessModal();
 
-        toast.success(response.response);
-      }
-      // handleToggleMasterlinkSuccessModal();
+      //   toast.success(response.response);
+      // }
+      handleToggleMasterlinkSuccessModal();
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.error(error?.response?.data?.message);
       console.error(error.response.data.message);
     } finally {
@@ -116,6 +134,17 @@ const NPSScaleSettings = () => {
   }, [publicLinks]);
 
   useEffect(() => {
+    // const session_id = searchParams.get('session_id');
+    // console.log(window.location.href);
+    // if (!session_id) {
+    //   window.location.href =
+    //     'https://100014.pythonanywhere.com/?redirect_url=' +
+    //     `${window.location.href}`;
+    //   return;
+    // }
+    // // getUserInfo();
+    // sessionStorage.setItem('session_id', session_id);
+
     const fetchData = async () => {
       //   await handleFetchSingleScale(slug);
       try {
@@ -161,6 +190,9 @@ const NPSScaleSettings = () => {
       } else {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
+        console.log('result.qrcodes[0].links[0].response.link_id');
+        console.log(result.qrcodes[0].links[0].response.link_id);
+        setLinkId(result.qrcodes[0].links[0].response.link_id);
         handleToggleMasterlinkModal();
 
         setIsLoading(false);
@@ -303,7 +335,7 @@ const NPSScaleSettings = () => {
             </div>
           </div>
         </div>
-        {!publicLink && (
+        {publicLink && (
           <div className="flex items-center justify-center my-4">
             <Button width={'1/2'} primary onClick={submitResponse}>
               {isLoading ? 'Saving' : 'Save'}

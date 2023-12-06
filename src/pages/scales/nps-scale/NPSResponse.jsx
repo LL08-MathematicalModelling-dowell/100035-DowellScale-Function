@@ -67,6 +67,7 @@ const NPSResponse = () => {
   };
 
   useEffect(() => {
+    
     const fetchData = async () => {
       //   await handleFetchSingleScale(slug);
       try {
