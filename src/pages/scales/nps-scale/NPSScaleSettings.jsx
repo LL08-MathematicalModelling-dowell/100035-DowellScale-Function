@@ -19,6 +19,7 @@ import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
 const NPSScaleSettings = () => {
   const { slug } = useParams();
   const [userInfo, setUserInfo] = useState();
+
   // const [searchParams] = useSearchParams();
   // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -37,6 +38,7 @@ const NPSScaleSettings = () => {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const publicLink = queryParams.get('public_link');
+  const link_id = queryParams.get('link_id');
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -104,7 +106,7 @@ const NPSScaleSettings = () => {
     try {
       setIsLoading(true);
       const response = await axios.put(
-        `https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?link_id=12279037654434517486`
+        `https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?link_id=${link_id}`
       );
       console.log(response.response.data);
       // if (response.error) {
