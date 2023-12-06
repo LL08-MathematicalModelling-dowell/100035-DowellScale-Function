@@ -887,7 +887,6 @@ def error_response(request, message, status):
 
 
 def redirect_view(request):
-    api_key = request.GET.get('api_key')
     scaletype = request.GET.get('scale_type')
     scale_type = request.GET.get('type')
     scale_id = request.GET.get('scale_id')
@@ -956,7 +955,6 @@ def redirect_view(request):
         elif api_resp['success'] is False:
             error_message = api_resp['message']
             return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
-
     except Exception as e:
         return error_response(request, {"success": False, "error": f"Provide required fields"}, status.HTTP_400_BAD_REQUEST)
 
