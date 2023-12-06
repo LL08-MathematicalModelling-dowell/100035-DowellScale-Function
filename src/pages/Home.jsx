@@ -96,6 +96,7 @@ const Home = () => {
       })
 
       .then((response) => {
+        console.log(response?.data);
         setUserInfo(response?.data?.userinfo);
         console.log(userInfo)
         // setLoadingFetchUserInfo(false);
@@ -128,7 +129,7 @@ const Home = () => {
           <Link
             to={`/100035-DowellScale-Function/${scale.slug}`}
             key={scale.slug}
-            className="w-full px-2 py-8 my-1 text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
+            className="w-full px-2 py-8 my-1 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
           >
             {scale.name}
           </Link>

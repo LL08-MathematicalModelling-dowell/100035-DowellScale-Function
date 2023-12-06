@@ -45,6 +45,7 @@ import {
   UpdateNpsLite,
 } from './pages/scales/nps-lite-scale';
 import { StrictMode } from 'react';
+import NPSResponse from './pages/scales/nps-scale/NPSResponse.jsx';
 
 const basePath = '/100035-DowellScale-Function/';
 const router = createBrowserRouter([
@@ -137,6 +138,10 @@ const router = createBrowserRouter([
         element: <NPSScaleSettings />,
       },
       {
+        path: `${basePath}/nps-scale-settings/:slug`,
+        element: <NPSResponse />,
+      },
+      {
         path: `${basePath}/update-paired-scale-settings/:id`,
         element: <UpdatePCScaleSettings />,
       },
@@ -156,6 +161,7 @@ const router = createBrowserRouter([
         path: `${basePath}/update-staple-scale/:slug`,
         element: <UpdateStapleScale />,
       },
+      
     ],
   },
 ]);
