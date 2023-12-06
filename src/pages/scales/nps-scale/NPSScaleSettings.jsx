@@ -138,7 +138,8 @@ const NPSScaleSettings = () => {
       // Fetch user information
       const pub_links = await axios.post(
         "https://100093.pythonanywhere.com/api/userinfo/",
-        { session_id: sessionStorage.getItem("session_id") }
+        // { session_id: sessionStorage.getItem("session_id") }
+        { session_id: "28ceuiogadioveenkuxiy76em0x4bgdy" }
       );
 
       const result = pub_links.data;
@@ -152,11 +153,11 @@ const NPSScaleSettings = () => {
           portfolio.member_type === "public" &&
           portfolio.product === "Living Lab Scales"
         ) {
-          PublicLinks.push(portfolio.username[0]);
+          PublicLinks.push(portfolio.username);
         }
       });
 
-      const flattenedArray = [].concat(...all_links);
+      const flattenedArray = [].concat(...PublicLinks);
 
       // Generate modified URLs
       const modifiedUrl = window.location.href.slice(
@@ -175,15 +176,10 @@ const NPSScaleSettings = () => {
         // Append the current element to the current window.location.href
         const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}`;
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
-
-        // Display the new URL (you can modify this part based on your use case)
         all_public_links.push(newUrl);
       }
 
       SetpublicLinks(all_public_links);
-
-      // Log user portfolio information
-      console.log(ma);
     } catch (error) {
       setIsLoading(false);
       toast.error("Insufficient public members");
