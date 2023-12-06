@@ -39,6 +39,7 @@ const NPSScaleSettings = () => {
   const queryParams = new URLSearchParams(search);
   const publicLink = queryParams.get('public_link');
   const link_id = queryParams.get('link_id');
+  const code = queryParams.get('code');
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -61,6 +62,7 @@ const NPSScaleSettings = () => {
   };
 
   const submitResponse = async () => {
+    console.log(qrCodeId);
     const info = await axios.post(
       'https://100093.pythonanywhere.com/api/userinfo/',
       {
@@ -70,36 +72,41 @@ const NPSScaleSettings = () => {
     );
 
     const result = info.data;
+    console.log(result.userinfo);
     setUserInfo(result.userinfo);
-    
+
     const payload = {
       scale_id: slug,
       score: selectedScore,
-      process_id: 'process_id879895',
+      process_id: link_id,
       instance_id: 1,
       brand_name: 'question',
       product_name: 'answer',
-      username: qrCodeId,
+      username: code,
     };
     console.log(payload);
-    finalizeMasterlink();
+    // finalizeMasterlink();
 
-    // try {
-    //   setIsLoading(true);
-    //   const response = await axios.post(
-    //     'https://100035.pythonanywhere.com/api/nps_responses_create',
-    //     payload
-    //   );
-    //   console.log(response.data);
-    //   if (response.data.success === 'true') {
-    //     toast.success('successfully updated');
-    //     finalizeMasterlink();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        'https://100035.pythonanywhere.com/api/nps_responses_create',
+        payload
+      );
+      const result = response.data;
+      console.log(result.success);
+      if (result.error) {
+        setIsLoading(false);
+        return;
+      } else {
+        toast.success('successfully updated');
+        finalizeMasterlink();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const finalizeMasterlink = async () => {
@@ -108,18 +115,9 @@ const NPSScaleSettings = () => {
       const response = await axios.put(
         `https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?link_id=${link_id}`
       );
-      console.log(response.response.data);
-      // if (response.error) {
-      //   setIsLoading(false);
-      //   toast.error(response.message);
-      //   return;
-      // } else {
-      //   // Set master link and handle modal toggle
-      //   setIsLoading(false);
-      //   handleToggleMasterlinkSuccessModal();
 
-      //   toast.success(response.response);
-      // }
+      console.log(response.response.data);
+
       handleToggleMasterlinkSuccessModal();
     } catch (error) {
       setIsLoading(false);
@@ -192,6 +190,7 @@ const NPSScaleSettings = () => {
       } else {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
+        console.log('result.qrcodes[0].qr_code_id');
         setQrCodeId(result.qrcodes[0].qr_code_id);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
@@ -255,7 +254,7 @@ const NPSScaleSettings = () => {
         i++
       ) {
         // Append the current element to the current window.location.href
-        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}`;
+        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}&code=${qrCodeId}`;
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
       }
@@ -347,7 +346,7 @@ const NPSScaleSettings = () => {
       </div>
       {showMasterLinkSuccessModal && (
         <MasterlinkSuccessModal
-          handleToggleMasterlinkModal={handleToggleMasterlinkSuccessModal}
+        handleToggleMasterlinkSuccessModal={handleToggleMasterlinkSuccessModal}
         />
       )}
       {showUpdateModal && (
