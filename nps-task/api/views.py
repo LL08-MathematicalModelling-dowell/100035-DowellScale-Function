@@ -887,6 +887,7 @@ def error_response(request, message, status):
 
 
 def redirect_view(request):
+    api_key = request.GET.get('api_key')
     scaletype = request.GET.get('scale_type')
     scale_type = request.GET.get('type')
     scale_id = request.GET.get('scale_id')
