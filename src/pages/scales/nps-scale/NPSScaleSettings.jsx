@@ -27,7 +27,7 @@ const NPSScaleSettings = () => {
     useState(false);
   const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
   const [masterLink, setMasterLink] = useState('');
-  const [linkId, setLinkId] = useState('');
+  const [qrCodeId, setQrCodeId] = useState('');
   const [scale, setScale] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
@@ -79,7 +79,7 @@ const NPSScaleSettings = () => {
       instance_id: 1,
       brand_name: 'question',
       product_name: 'answer',
-      username: result.userinfo.username,
+      username: qrCodeId,
     };
     console.log(payload);
     finalizeMasterlink();
@@ -192,9 +192,9 @@ const NPSScaleSettings = () => {
       } else {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
+        setQrCodeId(result.qrcodes[0].qr_code_id);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
-        setLinkId(result.qrcodes[0].links[0].response.link_id);
         handleToggleMasterlinkModal();
 
         setIsLoading(false);
