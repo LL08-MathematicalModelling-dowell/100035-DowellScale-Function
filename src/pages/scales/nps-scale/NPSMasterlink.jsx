@@ -1,8 +1,14 @@
-import React, { useRef } from 'react';
+/* eslint-disable react/prop-types */
+import  { useRef } from 'react';
 import { AiOutlineCopy } from 'react-icons/ai';
 import { toast } from 'react-toastify';
 
-const NPSMasterlink = ({ handleToggleMasterlinkModal, link, publicLinks }) => {
+const NPSMasterlink = ({
+  handleToggleMasterlinkModal,
+  link,
+  publicLinks,
+  image,
+}) => {
   const textToCopy = link;
   const textAreaRef = useRef(null);
 
@@ -35,12 +41,19 @@ const NPSMasterlink = ({ handleToggleMasterlinkModal, link, publicLinks }) => {
         </button>
         {/* <div className="flex flex-col items-center justify-center w-full font-Montserrat">
         </div> */}
+        <h2 className="flex items-center justify-center">MASTERLINK</h2>
         <div className="flex flex-col items-center justify-center w-full font-Montserrat ">
-          <div className="w-full p-5 border md:w-9/12 ">
-            <div className="flex items-center justify-center p-4 border">
-              <p className="overflow-hidden overflow-ellipsis whitespace-nowrap ">
-                {textToCopy}
+          <div className="w-full p-5 border ">
+            <div className="flex items-center justify-center p-2 border">
+              {/* <div className="flex flex-col items-center justify-center w-full overflow-hidden overflow-ellipsis whitespace-nowrap"> */}
+              <p className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+                {/* {textToCopy} */}
+                https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?api_key=14962975258431394286
+                <span className="flex items-center justify-center">
+                  <img src={image} alt="" width={100} height={100} />
+                </span>
               </p>
+              {/* </div> */}
               <AiOutlineCopy
                 onClick={() => handleCopyClick(link)}
                 size={50}
@@ -48,6 +61,18 @@ const NPSMasterlink = ({ handleToggleMasterlinkModal, link, publicLinks }) => {
                 className="inline text-[#1A8753] cursor-pointer "
               />
             </div>
+            <h2 className='flex items-center justify-center mt-8'>PUBLIC LINKS</h2>
+            {/* <div className="flex items-center justify-center p-2 border">
+              <p className="overflow-hidden overflow-ellipsis whitespace-nowrap ">
+                https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?api_key=14962975258431394286
+              </p>
+              <AiOutlineCopy
+                onClick={() => handleCopyClick(link)}
+                size={50}
+                color="bg-[#1A8753]"
+                className="inline text-[#1A8753] cursor-pointer "
+              />
+            </div> */}
 
             {publicLinks.map((link, index) => (
               <div
@@ -66,7 +91,6 @@ const NPSMasterlink = ({ handleToggleMasterlinkModal, link, publicLinks }) => {
               </div>
             ))}
           </div>
-
         </div>
         {/* <button onClick={handleCopyClick}>Copy to Clipboard</button> */}
       </div>

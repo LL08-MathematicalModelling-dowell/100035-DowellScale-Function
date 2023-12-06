@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import {
   useParams,
-  useNavigate,
   useLocation,
-  useSearchParams,
 } from 'react-router-dom';
-import useGetSingleScale from '../../../hooks/useGetSingleScale';
-import { useSaveResponse } from '../../../hooks/useSaveResponse';
 import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
 import UpdateNPSScale from './UpdateNPSScale';
@@ -27,14 +23,11 @@ const NPSScaleSettings = () => {
     useState(false);
   const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
   const [masterLink, setMasterLink] = useState('');
-  const [qrCodeId, setQrCodeId] = useState('');
+  const [qrCodeURL, setQrCodeURL] = useState('');
   const [scale, setScale] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const saveResponse = useSaveResponse();
-  const navigateTo = useNavigate();
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const publicLink = queryParams.get('public_link');
@@ -57,12 +50,11 @@ const NPSScaleSettings = () => {
     setSelectedScore(score);
   };
 
-  const handleFetchSingleScale = async (scaleId) => {
-    await fetchSingleScaleData(scaleId);
-  };
+  // const handleFetchSingleScale = async (scaleId) => {
+  //   await fetchSingleScaleData(scaleId);
+  // };
 
   const submitResponse = async () => {
-    console.log(qrCodeId);
     const info = await axios.post(
       'https://100093.pythonanywhere.com/api/userinfo/',
       {
@@ -130,6 +122,7 @@ const NPSScaleSettings = () => {
 
   // SetpublicLinks triggers a re-render, so use useEffect to call MasterLinkFunction after state update
   useEffect(() => {
+    // handleToggleMasterlinkModal();
     MasterLinkFunction();
   }, [publicLinks]);
 
@@ -190,8 +183,8 @@ const NPSScaleSettings = () => {
       } else {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
-        console.log('result.qrcodes[0].qr_code_id');
-        setQrCodeId(result.qrcodes[0].qr_code_id);
+        console.log('result.qrcodes[0].qrcode_image_url');
+        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
         handleToggleMasterlinkModal();
@@ -254,7 +247,7 @@ const NPSScaleSettings = () => {
         i++
       ) {
         // Append the current element to the current window.location.href
-        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}&code=${qrCodeId}`;
+        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}&code=${qrCodeURL}`;
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
       }
@@ -346,7 +339,9 @@ const NPSScaleSettings = () => {
       </div>
       {showMasterLinkSuccessModal && (
         <MasterlinkSuccessModal
-        handleToggleMasterlinkSuccessModal={handleToggleMasterlinkSuccessModal}
+          handleToggleMasterlinkSuccessModal={
+            handleToggleMasterlinkSuccessModal
+          }
         />
       )}
       {showUpdateModal && (
@@ -357,6 +352,7 @@ const NPSScaleSettings = () => {
           handleToggleMasterlinkModal={handleToggleMasterlinkModal}
           link={masterLink}
           publicLinks={publicLinks}
+          image={qrCodeURL}
         />
       )}
     </div>
