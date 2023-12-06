@@ -19,6 +19,7 @@ import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
 const NPSScaleSettings = () => {
   const { slug } = useParams();
   const [userInfo, setUserInfo] = useState();
+
   // const [searchParams] = useSearchParams();
   // const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -26,7 +27,7 @@ const NPSScaleSettings = () => {
     useState(false);
   const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
   const [masterLink, setMasterLink] = useState('');
-  const [linkId, setLinkId] = useState('');
+  const [qrCodeId, setQrCodeId] = useState('');
   const [scale, setScale] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
@@ -37,6 +38,7 @@ const NPSScaleSettings = () => {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const publicLink = queryParams.get('public_link');
+  const link_id = queryParams.get('link_id');
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -77,7 +79,7 @@ const NPSScaleSettings = () => {
       instance_id: 1,
       brand_name: 'question',
       product_name: 'answer',
-      username: result.userinfo.username,
+      username: qrCodeId,
     };
     console.log(payload);
     finalizeMasterlink();
@@ -104,7 +106,7 @@ const NPSScaleSettings = () => {
     try {
       setIsLoading(true);
       const response = await axios.put(
-        `https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?link_id=12279037654434517486`
+        `https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?link_id=${link_id}`
       );
       console.log(response.response.data);
       // if (response.error) {
@@ -190,9 +192,9 @@ const NPSScaleSettings = () => {
       } else {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
+        setQrCodeId(result.qrcodes[0].qr_code_id);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
-        setLinkId(result.qrcodes[0].links[0].response.link_id);
         handleToggleMasterlinkModal();
 
         setIsLoading(false);
