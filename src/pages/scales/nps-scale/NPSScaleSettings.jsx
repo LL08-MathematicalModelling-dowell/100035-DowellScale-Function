@@ -74,7 +74,7 @@ const NPSScaleSettings = () => {
       ),
       brand_name: "Living Lab Scales",
       product_name: "Living Lab Scales",
-      username: new URLSearchParams(window.location.search).get("qr_id"),
+      username: new URLSearchParams(window.location.search).get("public_link"),
     };
     console.log(payload);
     // finalizeMasterlink();
@@ -185,7 +185,6 @@ const NPSScaleSettings = () => {
         setMasterLink(result.qrcodes[0].masterlink);
         console.log("result.qrcodes[0].qrcode_image_url");
         setQrCodeURL(result.qrcodes[0].qrcode_image_url);
-        setQrCodeId(result.qrcodes[0].qrcode_id);
         console.log("result.qrcodes[0].links[0].response.link_id");
         console.log(result.qrcodes[0].links[0].response.link_id);
         handleToggleMasterlinkModal();
@@ -250,7 +249,7 @@ const NPSScaleSettings = () => {
         // Append the current element to the current window.location.href
         const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${
           flattenedArray[i]
-        }&code=${qrCodeURL}&instance_id=${i + 1}&qr_id=${qrCodeId}`;
+        }&code=${qrCodeURL}&instance_id=${i + 1}`;
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
       }
