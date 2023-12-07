@@ -159,10 +159,10 @@ const UpdateNpsLite = () => {
 
   const handleUpdateNPSScale = async()=>{
     console.log(updatePayload, 'payload')
-    if(!updateFormData.fomat){
-      toast.error('please select a format to proceed');
-      return
-    }
+    // if(!updateFormData.fomat){
+    //   toast.error('please select a format to proceed');
+    //   return
+    // }
     try {
         setIsLoading(true);
         const { status, data } = await updateResponse('nps-lite-scale', updatePayload);

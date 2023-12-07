@@ -131,7 +131,7 @@ const CreateNpsLiteScale = () => {
             setTimeout(()=>{
                 navigateTo(`/nps-lite-scale-settings/${response?.data?.data?.scale_id}`)
             },2000)
-        }
+          }
     } catch (error) {
         console.log(error);
         toast.error('an error occured');

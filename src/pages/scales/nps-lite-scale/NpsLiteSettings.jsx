@@ -15,8 +15,8 @@ const NpsLiteSettings = () => {
     const [loading, setLoading] = useState(false);
     const saveResponse = useSaveResponse();
     const navigateTo = useNavigate();
-
-    let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const [scores,setScores]=useState([]);
+    // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     const handleSelectScore = (score)=>{
       setSelectedScore(score)
@@ -28,11 +28,21 @@ const NpsLiteSettings = () => {
   const submitResponse = async()=>{
 
     const payload = {
-        user: "natan",
-        scale_id: "64afe7d3aad77b181847190a",
-        event_id: "1689249744727624",
-        scale_category: "npslite scale",
-        response: "9"
+        // user: "natan",
+        // scale_id: "64afe7d3aad77b181847190a",
+        // event_id: "1689249744727624",
+        // scale_category: "npslite scale",
+        // response: selectedScore
+        scale_id: "656b707c129273f39b974377", // scale_id of scale the response is for
+        score: selectedScore, // user score selection
+        process_id: "LivingLabScales", 
+        instance_id:2,//no. of scales
+        brand_name:"livingLabScales",
+        product_name:"livingLabScales",
+        username:  sessionStorage.getItem('session_id') //session id
+
+        
+    
     }
 
     try {
@@ -58,6 +68,9 @@ const NpsLiteSettings = () => {
             setLoading(true);
             const response = await axios.get(`https://100035.pythonanywhere.com/nps-lite/api/nps-lite-settings/?scale_id=${slug}`);
             setScale(response.data); 
+            const newArray = response.data[0].settings.label_selection.map((item, index) => [index + 1, item]);
+            setScores(newArray);
+            console.log(scores)
         } catch (error) {
             console.error(error);
         } finally {
@@ -65,6 +78,7 @@ const NpsLiteSettings = () => {
         }
       }
       fetchData();
+      console.log(scores)
   }, [slug]);
 
 
@@ -72,6 +86,8 @@ const NpsLiteSettings = () => {
   if (loading) {
     return <Fallback />;
   }
+                            {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
+
   return (
     <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
         <div className='border border-primary w-full lg:w-9/12 m-auto py-4 px-5'>
@@ -79,21 +95,22 @@ const NpsLiteSettings = () => {
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {scale?.[0].settings?.name}</h3>
-                    <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
-                        {scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>(
+                    <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1 az'>
+                        {
+                            scores.map((score,index)=>
                             <button 
                                 key={index}
-                                onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
-                            >{score}</button>
-                        ))}
+                                onClick={()=>handleSelectScore(score[0])}
+                                className={` ${score[0]  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                            >{score[1]}</button>
+                        )}
                     </div>
-                    <div className='flex items-center justify-between my-3'>
+                    {/* <div className='flex items-center justify-between my-3'>
                         <h4>Very unlikely</h4>
                         <h4>Select score</h4>
                         <h4>Very likely</h4>
                     </div>
-            
+             */}
                     <div className="flex gap-3 justify-end">
                         {scale && scale.map((scale, index)=>(
                             <Button width={'3/4'} onClick={()=>navigateTo(`/update-nps-lite-scale/${scale._id}`)} key={index}>update scale</Button>
