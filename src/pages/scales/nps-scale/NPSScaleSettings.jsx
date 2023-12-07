@@ -55,7 +55,7 @@ const NPSScaleSettings = () => {
     const info = await axios.post(
       "https://100093.pythonanywhere.com/api/userinfo/",
       {
-        session_id: "28ceuiogadioveenkuxiy76em0x4bgdy",
+        session_id: sessionStorage.getItem("session_id"),
         // sessionStorage.getItem("session_id")
       }
     );
@@ -208,7 +208,7 @@ const NPSScaleSettings = () => {
       const pub_links = await axios.post(
         "https://100093.pythonanywhere.com/api/userinfo/",
         {
-          session_id: "28ceuiogadioveenkuxiy76em0x4bgdy",
+          session_id: sessionStorage.getItem("session_id"),
           // sessionStorage.getItem("session_id")
         }
       );
