@@ -1,16 +1,13 @@
-import  { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import axios from 'axios';
-import {
-  useParams,
-  useLocation,
-} from 'react-router-dom';
-import Fallback from '../../../components/Fallback';
-import { Button } from '../../../components/button';
-import UpdateNPSScale from './UpdateNPSScale';
-import NPSMasterlink from './NPSMasterlink';
-import dowellLogo from '../../../assets/dowell-logo.png';
-import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useParams, useLocation } from "react-router-dom";
+import Fallback from "../../../components/Fallback";
+import { Button } from "../../../components/button";
+import UpdateNPSScale from "./UpdateNPSScale";
+import NPSMasterlink from "./NPSMasterlink";
+import dowellLogo from "../../../assets/dowell-logo.png";
+import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 
 const NPSScaleSettings = () => {
   const { slug } = useParams();
@@ -22,17 +19,17 @@ const NPSScaleSettings = () => {
   const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
     useState(false);
   const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
-  const [masterLink, setMasterLink] = useState('');
-  const [qrCodeURL, setQrCodeURL] = useState('');
+  const [masterLink, setMasterLink] = useState("");
+  const [qrCodeURL, setQrCodeURL] = useState("");
   const [scale, setScale] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const publicLink = queryParams.get('public_link');
-  const link_id = queryParams.get('link_id');
-  const code = queryParams.get('code');
+  const publicLink = queryParams.get("public_link");
+  const link_id = queryParams.get("link_id");
+  const code = queryParams.get("code");
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -56,9 +53,9 @@ const NPSScaleSettings = () => {
 
   const submitResponse = async () => {
     const info = await axios.post(
-      'https://100093.pythonanywhere.com/api/userinfo/',
+      "https://100093.pythonanywhere.com/api/userinfo/",
       {
-        session_id: '28ceuiogadioveenkuxiy76em0x4bgdy',
+        session_id: "28ceuiogadioveenkuxiy76em0x4bgdy",
         // sessionStorage.getItem("session_id")
       }
     );
@@ -71,10 +68,12 @@ const NPSScaleSettings = () => {
       scale_id: slug,
       score: selectedScore,
       process_id: link_id,
-      instance_id: 1,
-      brand_name: 'question',
-      product_name: 'answer',
-      username: code,
+      instance_id: parseInt(
+        new URLSearchParams(window.location.search).get("instance_id") + 1
+      ),
+      brand_name: "Living Lab Scales",
+      product_name: "Living Lab Scales",
+      username: new URLSearchParams(window.location.search).get("public_link"),
     };
     console.log(payload);
     // finalizeMasterlink();
@@ -82,7 +81,7 @@ const NPSScaleSettings = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'https://100035.pythonanywhere.com/api/nps_responses_create',
+        "https://100035.pythonanywhere.com/api/nps_responses_create",
         payload
       );
       const result = response.data;
@@ -91,7 +90,7 @@ const NPSScaleSettings = () => {
         setIsLoading(false);
         return;
       } else {
-        toast.success('successfully updated');
+        toast.success("successfully updated");
         finalizeMasterlink();
       }
     } catch (error) {
@@ -160,10 +159,10 @@ const NPSScaleSettings = () => {
     try {
       // Prepare request data for master link creation
       const requestData = {
-        qrcode_type: 'Link',
+        qrcode_type: "Link",
         quantity: 1,
-        company_id: 'Living Lab Scales',
-        document_name: 'Living Lab Scales',
+        company_id: "Living Lab Scales",
+        document_name: "Living Lab Scales",
         links: publicLinks.map((link) => ({ link })),
       };
 
@@ -171,7 +170,7 @@ const NPSScaleSettings = () => {
 
       // Post request to create master link
       const data = await axios.post(
-        'https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/',
+        "https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/",
         requestData
       );
 
@@ -183,9 +182,9 @@ const NPSScaleSettings = () => {
       } else {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
-        console.log('result.qrcodes[0].qrcode_image_url');
+        console.log("result.qrcodes[0].qrcode_image_url");
         setQrCodeURL(result.qrcodes[0].qrcode_image_url);
-        console.log('result.qrcodes[0].links[0].response.link_id');
+        console.log("result.qrcodes[0].links[0].response.link_id");
         console.log(result.qrcodes[0].links[0].response.link_id);
         handleToggleMasterlinkModal();
 
@@ -207,9 +206,9 @@ const NPSScaleSettings = () => {
     try {
       // Fetch user information
       const pub_links = await axios.post(
-        'https://100093.pythonanywhere.com/api/userinfo/',
+        "https://100093.pythonanywhere.com/api/userinfo/",
         {
-          session_id: '28ceuiogadioveenkuxiy76em0x4bgdy',
+          session_id: "28ceuiogadioveenkuxiy76em0x4bgdy",
           // sessionStorage.getItem("session_id")
         }
       );
@@ -223,8 +222,8 @@ const NPSScaleSettings = () => {
       // Extract public links from user portfolio
       result.selected_product.userportfolio.forEach((portfolio) => {
         if (
-          portfolio.member_type === 'public' &&
-          portfolio.product === 'Living Lab Scales'
+          portfolio.member_type === "public" &&
+          portfolio.product === "Living Lab Scales"
         ) {
           PublicLinks.push(portfolio.username);
         }
@@ -235,10 +234,10 @@ const NPSScaleSettings = () => {
       // Generate modified URLs
       const modifiedUrl = window.location.href.slice(
         0,
-        window.location.href.lastIndexOf('/')
+        window.location.href.lastIndexOf("/")
       );
       const lastPart = window.location.href.slice(
-        window.location.href.lastIndexOf('/') + 1
+        window.location.href.lastIndexOf("/") + 1
       );
 
       for (
@@ -247,7 +246,7 @@ const NPSScaleSettings = () => {
         i++
       ) {
         // Append the current element to the current window.location.href
-        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}&code=${qrCodeURL}`;
+        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}&code=${qrCodeURL}&instance_id=${i}`;
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
       }
@@ -255,7 +254,7 @@ const NPSScaleSettings = () => {
       SetpublicLinks(all_public_links);
     } catch (error) {
       setIsLoading(false);
-      toast.error('Insufficient public members');
+      toast.error("Insufficient public members");
       // console.log("Error", "Insufficient public members");
     }
   };
@@ -301,7 +300,7 @@ const NPSScaleSettings = () => {
                               backgroundColor: scale?.roundcolor,
                               color: scale?.fontcolor,
                             }
-                          : { color: 'white' }
+                          : { color: "white" }
                       }
                     >
                       {score}
@@ -318,11 +317,11 @@ const NPSScaleSettings = () => {
             <div className="flex justify-end gap-3">
               {!publicLink && (
                 <>
-                  <Button width={'3/4'} onClick={handleToggleUpdateModal}>
+                  <Button width={"3/4"} onClick={handleToggleUpdateModal}>
                     update scale
                   </Button>
-                  <Button width={'3/4'} primary onClick={createMasterLink}>
-                    {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
+                  <Button width={"3/4"} primary onClick={createMasterLink}>
+                    {isLoading ? "Creating Masterlink" : "Create Masterlink"}
                   </Button>
                 </>
               )}
@@ -331,8 +330,8 @@ const NPSScaleSettings = () => {
         </div>
         {publicLink && (
           <div className="flex items-center justify-center my-4">
-            <Button width={'1/2'} primary onClick={submitResponse}>
-              {isLoading ? 'Saving' : 'Save'}
+            <Button width={"1/2"} primary onClick={submitResponse}>
+              {isLoading ? "Saving" : "Save"}
             </Button>
           </div>
         )}
