@@ -435,9 +435,15 @@ def fetch_scores_and_scale_type(query_params):
     response_data_scores = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                             "scale_reports", "1094", "ABCDE", "fetch", query_params, "nil")
 
-    print(f"\n\nresponse_data_scores: {response_data_scores}\n\n")
     print(f"\n\nresponse_data_scores: {json.loads(response_data_scores)}\n\n")
-    scores = [x['score']['score'] for x in json.loads(response_data_scores)['data']]
+    scores = []
+    for item in json.loads(response_data_scores)['data']:
+        try:
+            scores.append(item['score']['score'])
+        except KeyError:
+            pass
+        print(f"\n\nitem: {item['score']}\n\n")
+
     scale_type = json.loads(response_data_scores)['data'][0]["scale_data"]["scale_type"]
     print(f"\n\nscores: {scores}\n\nscale_type: {scale_type}\n\n")
     return scores, scale_type
@@ -476,7 +482,7 @@ def get_scores(report_type, response_data):
 
 @api_view(['POST'])
 def evaluation_api(request):
-    try:
+    # try:
         print("request.data: ", request.data)
         report_type = request.GET.get('report_type', '').strip()
         valid_report_types = ["process", "document", "scale"]
@@ -529,11 +535,11 @@ def evaluation_api(request):
         response_["central_tendencies"] = stattrics
         return Response({"success": response_}, status=status.HTTP_200_OK)
 
-    except IndexError as e:
-        return Response({"error": f"No responses found for the above {report_type} wise report."},
-                        status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    # except IndexError as e:
+    #     return Response({"error": f"No responses found for the above {report_type} wise report."},
+    #                     status=status.HTTP_400_BAD_REQUEST)
+    # except Exception as e:
+    #     return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -574,4 +580,29 @@ def get_brand_product(request):
         )
 
     return Response({"success": data_future.result()}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST', 'GET'])
+def get_scale_report(request):
+    data = request.data
+    scale_id = data.get("scale_id")
+    field_add = {"_id": scale_id}
+    with ThreadPoolExecutor() as executor:
+        data_future = executor.submit(
+            dowellconnection,
+            "dowellscale",
+            "bangalore",
+            "dowellscale",
+            "scale_reports",
+            "scale_reports",
+            "1094",
+            "ABCDE",
+            "fetch",
+            field_add,
+            "nil"
+        )
+
+    return Response({"success": data_future.result()}, status=status.HTTP_200_OK)
+
+
 
