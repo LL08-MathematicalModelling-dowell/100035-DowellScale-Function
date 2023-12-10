@@ -1,10 +1,9 @@
-import  { useState, useEffect } from 'react';
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import {
-  useParams,
-  useLocation,
-} from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
 import UpdateNPSScale from './UpdateNPSScale';
@@ -32,7 +31,7 @@ const NPSScaleSettings = () => {
   const queryParams = new URLSearchParams(search);
   const publicLink = queryParams.get('public_link');
   const link_id = queryParams.get('link_id');
-  const code = queryParams.get('code');
+  const qrcode_id = queryParams.get('qrcode_id');
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -54,18 +53,22 @@ const NPSScaleSettings = () => {
   //   await fetchSingleScaleData(scaleId);
   // };
 
-  const submitResponse = async () => {
-    const info = await axios.post(
-      'https://100093.pythonanywhere.com/api/userinfo/',
-      {
-        session_id: '28ceuiogadioveenkuxiy76em0x4bgdy',
-        // sessionStorage.getItem("session_id")
-      }
-    );
+  const submitResponse = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    // const session_id = sessionStorage.getItem('session_id');
+    // console.log(session_id);
+    // const info = await axios.post(
+    //   'https://100093.pythonanywhere.com/api/userinfo/',
+    //   {
+    //     // session_id: '28ceuiogadioveenkuxiy76em0x4bgdy',
+    //     session_id,
+    //   }
+    // );
 
-    const result = info.data;
-    console.log(result.userinfo);
-    setUserInfo(result.userinfo);
+    // const result = info.data;
+    // console.log(result.userinfo);
+    // setUserInfo(result.userinfo);
 
     const payload = {
       scale_id: slug,
@@ -74,7 +77,7 @@ const NPSScaleSettings = () => {
       instance_id: 1,
       brand_name: 'question',
       product_name: 'answer',
-      username: code,
+      username: qrcode_id,
     };
     console.log(payload);
     // finalizeMasterlink();
@@ -102,6 +105,7 @@ const NPSScaleSettings = () => {
   };
 
   const finalizeMasterlink = async () => {
+    setIsLoading(true);
     try {
       setIsLoading(true);
       const response = await axios.put(
@@ -183,8 +187,9 @@ const NPSScaleSettings = () => {
       } else {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
-        console.log('result.qrcodes[0].qrcode_image_url');
-        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
+        console.log('result.qrcodes[0].qrcode_id');
+        setQrCodeURL(result.qrcodes[0].qrcode_id);
+        console.log(result.qrcodes[0].qrcode_id);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
         handleToggleMasterlinkModal();
@@ -203,14 +208,15 @@ const NPSScaleSettings = () => {
   const createMasterLink = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
+    const session_id = sessionStorage.getItem('session_id');
+    console.log(session_id);
     try {
       // Fetch user information
       const pub_links = await axios.post(
         'https://100093.pythonanywhere.com/api/userinfo/',
         {
-          session_id: '28ceuiogadioveenkuxiy76em0x4bgdy',
-          // sessionStorage.getItem("session_id")
+          // session_id: '28ceuiogadioveenkuxiy76em0x4bgdy',
+          session_id,
         }
       );
 
@@ -247,7 +253,7 @@ const NPSScaleSettings = () => {
         i++
       ) {
         // Append the current element to the current window.location.href
-        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}&code=${qrCodeURL}`;
+        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]}&qrcode_id=${qrCodeURL}`;
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
       }
@@ -274,7 +280,7 @@ const NPSScaleSettings = () => {
       )}
       <div className="w-full px-5 py-4 m-auto border border-primary lg:w-9/12">
         <div
-          className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`}
+          className={`h-100 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`}
         >
           <div className="flex-1 w-full h-full p-2 border stage lg:w-5/12">
             <h3 className="py-5 text-sm font-medium text-center">
@@ -330,7 +336,7 @@ const NPSScaleSettings = () => {
           </div>
         </div>
         {publicLink && (
-          <div className="flex items-center justify-center my-4">
+          <div className="flex items-center justify-center my-4 mt-20 md:mt-0">
             <Button width={'1/2'} primary onClick={submitResponse}>
               {isLoading ? 'Saving' : 'Save'}
             </Button>
