@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { useParams, useLocation } from "react-router-dom";
-import Fallback from "../../../components/Fallback";
-import { Button } from "../../../components/button";
-import UpdateNPSScale from "./UpdateNPSScale";
-import NPSMasterlink from "./NPSMasterlink";
-import dowellLogo from "../../../assets/dowell-logo.png";
-import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { useParams, useLocation } from 'react-router-dom';
+import Fallback from '../../../components/Fallback';
+import { Button } from '../../../components/button';
+import UpdateNPSScale from './UpdateNPSScale';
+import NPSMasterlink from './NPSMasterlink';
+import dowellLogo from '../../../assets/dowell-logo.png';
+import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
 
 const NPSScaleSettings = () => {
   const { slug } = useParams();
@@ -28,9 +30,9 @@ const NPSScaleSettings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const publicLink = queryParams.get("public_link");
-  const link_id = queryParams.get("link_id");
-  const code = queryParams.get("code");
+  const publicLink = queryParams.get('public_link');
+  const link_id = queryParams.get('link_id');
+  const qrcode_id = queryParams.get('qrcode_id');
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -61,9 +63,9 @@ const NPSScaleSettings = () => {
       }
     );
 
-    const result = info.data;
-    console.log(result.userinfo);
-    setUserInfo(result.userinfo);
+    // const result = info.data;
+    // console.log(result.userinfo);
+    // setUserInfo(result.userinfo);
 
     const payload = {
       scale_id: slug,
@@ -102,6 +104,7 @@ const NPSScaleSettings = () => {
   };
 
   const finalizeMasterlink = async () => {
+    setIsLoading(true);
     try {
       setIsLoading(true);
       const response = await axios.put(
@@ -183,9 +186,10 @@ const NPSScaleSettings = () => {
       } else {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
-        console.log("result.qrcodes[0].qrcode_image_url");
-        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
-        console.log("result.qrcodes[0].links[0].response.link_id");
+        console.log('result.qrcodes[0].qrcode_id');
+        setQrCodeURL(result.qrcodes[0].qrcode_id);
+        console.log(result.qrcodes[0].qrcode_id);
+        console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
         handleToggleMasterlinkModal();
 
@@ -203,7 +207,8 @@ const NPSScaleSettings = () => {
   const createMasterLink = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
+    const session_id = sessionStorage.getItem('session_id');
+    console.log(session_id);
     try {
       // Fetch user information
       const pub_links = await axios.post(
@@ -276,7 +281,7 @@ const NPSScaleSettings = () => {
       )}
       <div className="w-full px-5 py-4 m-auto border border-primary lg:w-9/12">
         <div
-          className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`}
+          className={`h-100 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`}
         >
           <div className="flex-1 w-full h-full p-2 border stage lg:w-5/12">
             <h3 className="py-5 text-sm font-medium text-center">
@@ -333,8 +338,8 @@ const NPSScaleSettings = () => {
         </div>
         {publicLink && (
           <div className="flex items-center justify-center my-4">
-            <Button width={"1/2"} primary onClick={submitResponse}>
-              {isLoading ? "Saving" : "Save"}
+            <Button width={'1/2'} primary onClick={submitResponse}>
+              {isLoading ? 'Saving' : 'Save'}
             </Button>
           </div>
         )}
