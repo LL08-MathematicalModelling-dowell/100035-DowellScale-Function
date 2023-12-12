@@ -47,8 +47,8 @@ const NPSMasterlink = ({
             <div className="flex items-center justify-center p-2 border">
               {/* <div className="flex flex-col items-center justify-center w-full overflow-hidden overflow-ellipsis whitespace-nowrap"> */}
               <p className="overflow-hidden overflow-ellipsis whitespace-nowrap">
-                {/* {textToCopy} */}
-                https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?api_key=14962975258431394286
+                {textToCopy}
+                {/* https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?api_key=14962975258431394286 */}
                 <span className="flex items-center justify-center">
                   <img src={image} alt="" width={100} height={100} />
                 </span>
@@ -74,16 +74,16 @@ const NPSMasterlink = ({
               />
             </div> */}
 
-            {publicLinks.map((link, index) => (
+            {publicLinks.map((public_link, index) => (
               <div
                 className="flex items-center justify-center p-4 border"
                 key={index}
               >
                 <p className="overflow-hidden overflow-ellipsis whitespace-nowrap ">
-                  {link}
+                  {public_link}
                 </p>
                 <AiOutlineCopy
-                  onClick={() => handleCopyClick(link)}
+                  onClick={() => handleCopyClick(public_link)}
                   size={50}
                   color="bg-[#1A8753]"
                   className="inline text-[#1A8753] cursor-pointer "
