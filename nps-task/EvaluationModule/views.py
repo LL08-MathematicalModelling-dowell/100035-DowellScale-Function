@@ -206,7 +206,10 @@ def by_username_api(request, username, scale_category):
         scale_category = 'npslite scale'
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "fetch", {"username": username}, "nil")
+    
+    
     user_dets = json.loads(user_details)
+    print("user_dets" , user_dets)
     # print(user_dets)
     scale_i = [entry['scale_id'] for entry in user_dets['data']]
     list_of_scales = []
@@ -545,7 +548,6 @@ def get_brand_product(request):
 
     field_add = {}
 
-
     if product_name:
         field_add["brand_data.product_name"] = product_name
     if brand_name:
@@ -575,3 +577,65 @@ def get_brand_product(request):
 
     return Response({"success": data_future.result()}, status=status.HTTP_200_OK)
 
+@api_view(["GET" ,])
+def scalewise_report(request , scale_id):
+    process_id = scale_id
+    
+    print("Process_id" , process_id)
+    if not process_id:
+        return Response({"is_Success" : False , "error_message" : "You need to pass the process_id"} ,
+                        status=status.HTTP_400_BAD_REQUEST)
+        
+    '''
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "fetch", {"username": "ambrose"}, "nil")
+    
+    print("user_details" , user_details)
+    
+    '''
+        
+        
+    field_add = {"scale_data.scale_id": scale_id}
+    random_number = generate_random_number()
+    with ThreadPoolExecutor() as executor:
+        data_future = executor.submit(
+            dowellconnection,
+            "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                     "1094", "ABCDE", "fetch", field_add, "nil"
+        )
+        
+        normal_api_executor = executor.submit(Normality_api , process_id
+                                           )
+
+        result= json.loads(data_future.result())    
+        
+        normality = normal_api_executor.result()
+       
+    try:     
+        
+        normality_result = normality
+        print("normality asdfdssa" , normality)
+        
+    except Exception as error:
+        pass
+        
+        
+    all_scores = [x['score']['score'] if isinstance(x["score"] , dict) else x["score"][0]['score'] for x in result["data"] ]
+        
+    with ThreadPoolExecutor() as executor:
+        response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3,
+                                               {"list1": all_scores})
+        statricks_api_response_json = response_json_future.result()
+        
+        
+    poison_case_results = statricks_api_response_json.get("poison case results", {})
+    normal_case_results = statricks_api_response_json.get("normal case results", {})
+    
+    reports = {"poisson_case_results" : poison_case_results , 
+               "normal_case_results": normal_case_results }
+        
+    print("results" , statricks_api_response_json)
+        
+    return Response({"report" : reports} , status=status.HTTP_200_OK)
+    
+    
