@@ -320,18 +320,16 @@ const NPSScaleSettings = () => {
                       onClick={() => handleSelectScore(score)}
                       className={`rounded-lg ${
                         index == selectedScore
-                          ? `bg-[${scale.roundcolor}]`
-                          : `bg-primary text-[${scale?.fontcolor}]`
-                      } text-[${
-                        scale?.fontcolor
-                      }] h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                          ? `bg-primary`
+                          : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
+                      }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                       style={
                         index == selectedScore
                           ? {
-                              backgroundColor: scale?.roundcolor,
-                              color: scale?.fontcolor,
+                             backgroundColor: 'green',
+                              color: 'white',
                             }
-                          : { color: 'white' }
+                          : {  backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
                       }
                     >
                       {score}

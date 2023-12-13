@@ -84,7 +84,7 @@ const SinglePerceptualScaleSettings = () => {
               Update Scale
             </Link>
             <Link
-              to="/create-perceptual-scale-settings"
+              to="/100035-DowellScale-Function/create-perceptual-scale-settings"
               className="px-8 py-2 text-white bg-[#1A8753] rounded-lg focus:outline-none "
             >
               SAVE RESPONSE

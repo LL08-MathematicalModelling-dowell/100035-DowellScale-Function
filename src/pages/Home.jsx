@@ -98,7 +98,8 @@ const Home = () => {
       .then((response) => {
         console.log(response?.data);
         setUserInfo(response?.data?.userinfo);
-        console.log(userInfo)
+        console.log(userInfo);
+        sessionStorage.setItem('userInfo', JSON.stringify(response.data));
         // setLoadingFetchUserInfo(false);
       })
       .catch((error) => {
@@ -116,8 +117,8 @@ const Home = () => {
         `${window.location.href}`;
       return;
     }
-    getUserInfo()
-    sessionStorage.setItem('session_id', session_id)
+    getUserInfo();
+    sessionStorage.setItem('session_id', session_id);
     // setLoggedIn(true);
   }, []);
 

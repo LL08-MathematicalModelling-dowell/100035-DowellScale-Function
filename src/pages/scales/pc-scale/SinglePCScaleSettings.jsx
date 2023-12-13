@@ -211,7 +211,7 @@ const SinglePCScaleSettings = () => {
       <div className="flex justify-center w-full lg:justify-end lg:w-[90%]">
         <div className="flex flex-col items-end justify-between space-x-2 lg:flex-row">
           <Link
-            to={`/update-paired-scale-settings/${id}`}
+            to={`/100035-DowellScale-Function/update-paired-scale-settings/${id}`}
             className="px-8 py-2 mt-6 text-white capitalize bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none "
           >
             Update Scale
