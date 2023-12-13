@@ -21,9 +21,9 @@ const NPSScaleSettings = () => {
   const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
     useState(false);
   const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
-  const [masterLink, setMasterLink] = useState("");
-  const [qrCodeURL, setQrCodeURL] = useState("");
-  const [qrCodeId, setQrCodeId] = useState("");
+  const [masterLink, setMasterLink] = useState('');
+  const [qrCodeURL, setQrCodeURL] = useState('');
+  const [qrCodeId, setQrCodeId] = useState('');
   const [scale, setScale] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
@@ -33,8 +33,16 @@ const NPSScaleSettings = () => {
   const publicLink = queryParams.get('public_link');
   const link_id = queryParams.get('link_id');
   const qrcode_id = queryParams.get('qrcode_id');
+  const [isButtonHidden, setIsButtonHidden] = useState(false);
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  const handleButtonHideClick = () => {
+    // Perform the click action
+
+    // Hide the button after one click
+    setIsButtonHidden(true);
+  };
 
   const handleToggleUpdateModal = () => {
     setShowUpdateModal(!showUpdateModal);
@@ -56,10 +64,10 @@ const NPSScaleSettings = () => {
 
   const submitResponse = async () => {
     const info = await axios.post(
-      "https://100093.pythonanywhere.com/api/userinfo/",
+      'https://100093.pythonanywhere.com/api/userinfo/',
       {
         // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
-        session_id: sessionStorage.getItem("session_id"),
+        session_id: sessionStorage.getItem('session_id'),
       }
     );
 
@@ -72,11 +80,11 @@ const NPSScaleSettings = () => {
       score: selectedScore,
       process_id: link_id,
       instance_id: new URLSearchParams(window.location.search).get(
-        "instance_id"
+        'instance_id'
       ),
-      brand_name: "Living Lab Scales",
-      product_name: "Living Lab Scales",
-      username: new URLSearchParams(window.location.search).get("public_link"),
+      brand_name: 'Living Lab Scales',
+      product_name: 'Living Lab Scales',
+      username: new URLSearchParams(window.location.search).get('public_link'),
     };
     console.log(payload);
     // finalizeMasterlink();
@@ -84,7 +92,7 @@ const NPSScaleSettings = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "https://100035.pythonanywhere.com/api/nps_responses_create",
+        'https://100035.pythonanywhere.com/api/nps_responses_create',
         payload
       );
       const result = response.data;
@@ -93,7 +101,8 @@ const NPSScaleSettings = () => {
         setIsLoading(false);
         return;
       } else {
-        toast.success("successfully updated");
+        handleButtonHideClick();
+        toast.success('Response has been saved');
         finalizeMasterlink();
       }
     } catch (error) {
@@ -163,10 +172,10 @@ const NPSScaleSettings = () => {
     try {
       // Prepare request data for master link creation
       const requestData = {
-        qrcode_type: "Link",
+        qrcode_type: 'Link',
         quantity: 1,
-        company_id: "Living Lab Scales",
-        document_name: "Living Lab Scales",
+        company_id: 'Living Lab Scales',
+        document_name: 'Living Lab Scales',
         links: publicLinks.map((link) => ({ link })),
       };
 
@@ -174,7 +183,7 @@ const NPSScaleSettings = () => {
 
       // Post request to create master link
       const data = await axios.post(
-        "https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/",
+        'https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/',
         requestData
       );
 
@@ -192,7 +201,6 @@ const NPSScaleSettings = () => {
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
         handleToggleMasterlinkModal();
-
         setIsLoading(false);
         toast.success(result.response);
       }
@@ -212,10 +220,10 @@ const NPSScaleSettings = () => {
     try {
       // Fetch user information
       const pub_links = await axios.post(
-        "https://100093.pythonanywhere.com/api/userinfo/",
+        'https://100093.pythonanywhere.com/api/userinfo/',
         {
           // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
-          session_id: sessionStorage.getItem("session_id"),
+          session_id: sessionStorage.getItem('session_id'),
         }
       );
 
@@ -228,8 +236,8 @@ const NPSScaleSettings = () => {
       // Extract public links from user portfolio
       result.selected_product.userportfolio.forEach((portfolio) => {
         if (
-          portfolio.member_type === "public" &&
-          portfolio.product === "Living Lab Scales"
+          portfolio.member_type === 'public' &&
+          portfolio.product === 'Living Lab Scales'
         ) {
           PublicLinks.push(portfolio.username);
         }
@@ -240,10 +248,10 @@ const NPSScaleSettings = () => {
       // Generate modified URLs
       const modifiedUrl = window.location.href.slice(
         0,
-        window.location.href.lastIndexOf("/")
+        window.location.href.lastIndexOf('/')
       );
       const lastPart = window.location.href.slice(
-        window.location.href.lastIndexOf("/") + 1
+        window.location.href.lastIndexOf('/') + 1
       );
 
       for (
@@ -262,14 +270,26 @@ const NPSScaleSettings = () => {
       SetpublicLinks(all_public_links);
     } catch (error) {
       setIsLoading(false);
-      toast.error("Insufficient public members");
+      toast.error('Insufficient public members');
       // console.log("Error", "Insufficient public members");
     }
   };
+  const getTextColorForCategory = (category) => {
+    switch (category) {
+      case 'Bad':
+        return selectedScore >= 0 && selectedScore <= 3 ? 'white' : 'black';
+      case 'Good':
+        return selectedScore >= 4 && selectedScore <= 6 ? 'white' : 'black';
+      case 'Best':
+        return selectedScore >= 7 && selectedScore <= 10 ? 'white' : 'black';
+      default:
+        return 'black';
+    }
+  };
 
-  if (isLoading) {
-    return <Fallback />;
-  }
+  // if (isLoading) {
+  //   return <Fallback />;
+  // }
   return (
     <div className="flex flex-col items-center justify-center h-screen font-medium font-Montserrat">
       {publicLink && (
@@ -279,16 +299,17 @@ const NPSScaleSettings = () => {
           className="cursor-pointer w-52"
         />
       )}
-      <div className="w-full px-5 py-4 m-auto border border-primary lg:w-9/12">
+      <div className="w-full py-4 m-auto md:px-5 lg:w-7/12">
+        <h1 className="py-5 text-[2rem] font-medium text-center">{scale?.name}</h1>
         <div
-          className={`h-100 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`}
+          className={`h-100 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
         >
-          <div className="flex-1 w-full h-full p-2 border stage lg:w-5/12">
-            <h3 className="py-5 text-sm font-medium text-center">
-              Scale Name: {scale?.name}
+          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12">
+            <h3 className="py-5 text-sm font-medium ">
+              How would you rate it?
             </h3>
             <div
-              className={`grid grid-cols-4 gap-3 px-2 py-6  bg-${scale?.scalecolor} md:grid-cols-11 md:px-1`}
+              className={`grid  md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
               style={{ backgroundColor: scale?.scalecolor }}
             >
               {scale &&
@@ -297,18 +318,20 @@ const NPSScaleSettings = () => {
                     <button
                       key={index}
                       onClick={() => handleSelectScore(score)}
-                      className={`rounded-full ${
-                        index > selectedScore
+                      className={`rounded-lg ${
+                        index == selectedScore
                           ? `bg-[${scale.roundcolor}]`
                           : `bg-primary text-[${scale?.fontcolor}]`
-                      } text-[${scale?.fontcolor}] h-[3.8rem] w-[3.8rem]`}
+                      } text-[${
+                        scale?.fontcolor
+                      }] h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                       style={
-                        index > selectedScore
+                        index == selectedScore
                           ? {
                               backgroundColor: scale?.roundcolor,
                               color: scale?.fontcolor,
                             }
-                          : { color: "white" }
+                          : { color: 'white' }
                       }
                     >
                       {score}
@@ -317,31 +340,89 @@ const NPSScaleSettings = () => {
                 )}
             </div>
             <div className="flex items-center justify-between my-3">
+              <h4
+                style={{
+                  fontSize: '1.5rem', // Adjust the font size as needed
+                  color: getTextColorForCategory('Bad'),
+                  background:
+                    selectedScore >= 0 && selectedScore <= 3
+                      ? 'red'
+                      : 'transparent',
+                  border:
+                    selectedScore >= 0 && selectedScore <= 3
+                      ? 'none'
+                      : 'none',
+                  padding: '5px 20px', // Adjust the padding as needed
+                  borderRadius: '10px', // Adjust the border radius as needed
+                }}
+              >
+                {scale?.left}
+              </h4>
+              <h4
+                style={{
+                  fontSize: '1.5rem',
+                  color: getTextColorForCategory('Good'),
+                  background:
+                    selectedScore >= 4 && selectedScore <= 6
+                      ? 'green'
+                      : 'transparent',
+                  border:
+                    selectedScore >= 4 && selectedScore <= 6 ? 'none' : 'none',
+                  padding: '5px 20px', // Adjust the padding as needed
+                  borderRadius: '10px', // Adjust the border radius as needed
+                }}
+              >
+                {scale?.center}
+              </h4>
+              <h4
+                style={{
+                  fontSize: '1.5rem', // Adjust the font size as needed
+                  color: getTextColorForCategory('Best'),
+                  background:
+                    selectedScore >= 7 && selectedScore <= 10
+                      ? 'blue'
+                      : 'transparent',
+                  border:
+                    selectedScore >= 7 && selectedScore <= 10
+                      ? 'none'
+                      : 'none',
+                  padding: '5px 20px', // Adjust the padding as needed
+                  borderRadius: '10px', // Adjust the border radius as needed
+                }}
+              >
+                {scale?.right}
+              </h4>
+            </div>
+
+            {/* <div className="flex items-center justify-between my-3">
               <h4>{scale?.left}</h4>
               <h4>{scale?.center}</h4>
               <h4>{scale?.right}</h4>
-            </div>
-
-            <div className="flex justify-end gap-3">
-              {!publicLink && (
-                <>
-                  <Button width={"3/4"} onClick={handleToggleUpdateModal}>
-                    update scale
-                  </Button>
-                  <Button width={"3/4"} primary onClick={createMasterLink}>
-                    {isLoading ? "Creating Masterlink" : "Create Masterlink"}
-                  </Button>
-                </>
-              )}
-            </div>
+            </div> */}
           </div>
         </div>
+        <div className="flex justify-end gap-3 mt-5">
+          {!publicLink && (
+            <>
+              <Button width={'3/4'} onClick={handleToggleUpdateModal}>
+              Update scale
+              </Button>
+              <Button width={'3/4'} primary onClick={createMasterLink}>
+                {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
+              </Button>
+            </>
+          )}
+        </div>
         {publicLink && (
-          <div className="flex items-center justify-center my-4">
-            <Button width={'1/2'} primary onClick={submitResponse}>
-              {isLoading ? 'Saving' : 'Save'}
-            </Button>
-          </div>
+          <>
+            {!isButtonHidden && (
+              <div className="flex items-center justify-center my-4">
+                <Button width={'3/12'} primary onClick={submitResponse}>
+                  {isLoading ? 'Submitting' : 'Submit'}
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
       {showMasterLinkSuccessModal && (
