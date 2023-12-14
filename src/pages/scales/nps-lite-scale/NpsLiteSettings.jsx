@@ -34,7 +34,7 @@ const NpsLiteSettings = () => {
         // scale_category: "npslite scale",
         // response: selectedScore
         scale_id: "656b707c129273f39b974377", // scale_id of scale the response is for
-        score: selectedScore, // user score selection
+        score: "selectedScore", // user score selection
         process_id: "LivingLabScales", 
         instance_id:2,//no. of scales
         brand_name:"livingLabScales",
@@ -45,6 +45,7 @@ const NpsLiteSettings = () => {
     
     }
 
+    console.log(payload)
     try {
         setIsLoading(true);
         const response = await saveResponse(payload);
