@@ -135,7 +135,7 @@ const CreatePerceptualScaleSettings = () => {
         const timeout = setTimeout(
           () =>
             navigate(
-              `/single-perceptual-scale-settings/${JSON.parse(result.success).inserted_id}`),
+              `/100035-DowellScale-Function/single-perceptual-scale-settings/${JSON.parse(result.success).inserted_id}`),
           3000
         );
         return () => clearTimeout(timeout);
@@ -526,7 +526,7 @@ const CreatePerceptualScaleSettings = () => {
             >
               Axes labels
             </label>
-            <div className="grid gap-6 md:grid-cols-3 mb-4">
+            <div className="grid gap-6 mb-4 md:grid-cols-3">
               <div className='lg:text-right lg:items-right lg:col-span-1' >
                 <label htmlFor="X_left">Left</label>
               </div>
@@ -542,7 +542,7 @@ const CreatePerceptualScaleSettings = () => {
                 />
               </div>
             </div>
-            <div className="grid gap-6 md:grid-cols-3 mb-4">
+            <div className="grid gap-6 mb-4 md:grid-cols-3">
               <div className='lg:text-right lg:items-right lg:col-span-1' >
                 <label htmlFor="X_right">Right</label>
               </div>
@@ -558,7 +558,7 @@ const CreatePerceptualScaleSettings = () => {
                 />
               </div>
             </div>
-            <div className="grid gap-6 md:grid-cols-3 mb-4">
+            <div className="grid gap-6 mb-4 md:grid-cols-3">
               <div className='lg:text-right lg:items-right lg:col-span-1' >
                 <label htmlFor="Y_top">Top</label>
               </div>
@@ -574,7 +574,7 @@ const CreatePerceptualScaleSettings = () => {
                 />
               </div>
             </div>
-            <div className="grid gap-6 md:grid-cols-3 mb-4">
+            <div className="grid gap-6 mb-4 md:grid-cols-3">
               <div className='lg:text-right lg:items-right lg:col-span-1' >
                 <label htmlFor="Y_bottom">Bottom</label>
               </div>
