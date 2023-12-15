@@ -111,7 +111,7 @@ def csv_new(request, product_name, doc_no):
     # Execute dowellconnection API call using ThreadPoolExecutor
     with ThreadPoolExecutor() as executor:
         data_future = executor.submit(dowellconnection, "dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                      "scale_reports",
+                                    "scale_reports",
                                       "1094", "ABCDE", "fetch", field_add, "nil")
         data = json.loads(data_future.result())["data"]
         # print(f"\n\n data: {data}\n\n")
@@ -197,7 +197,11 @@ def by_username(request, username, scale_category):
 
 @api_view(['GET'])
 def by_username_api(request, username, scale_category):
+
+
     global now
+
+    print("scale category" , scale_category)
     if scale_category == 'nps':
         scale_category = 'nps scale'
     elif scale_category == 'stapel':
@@ -206,7 +210,10 @@ def by_username_api(request, username, scale_category):
         scale_category = 'npslite scale'
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "fetch", {"username": username}, "nil")
+    
+    
     user_dets = json.loads(user_details)
+    print("user_dets" , user_dets)
     # print(user_dets)
     scale_i = [entry['scale_id'] for entry in user_dets['data']]
     list_of_scales = []
@@ -545,7 +552,6 @@ def get_brand_product(request):
 
     field_add = {}
 
-
     if product_name:
         field_add["brand_data.product_name"] = product_name
     if brand_name:
@@ -575,3 +581,92 @@ def get_brand_product(request):
 
     return Response({"success": data_future.result()}, status=status.HTTP_200_OK)
 
+@api_view(["GET" ,])
+def scalewise_report(request , scale_id):
+    """
+    The view function that returns statiscal reports about a particular scale
+
+    User provides the scale_id as a path parameter. The same scale_id is used as process id for the normality
+    API. 
+    """
+    process_id = scale_id
+
+    reports = {}
+    
+    print("Process_id" , process_id)
+    if not process_id:
+        return Response({"is_Success" : False , "error_message" : "You need to pass the process_id"} ,
+                        status=status.HTTP_400_BAD_REQUEST)
+        
+    '''
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "fetch", {"username": "ambrose"}, "nil")
+    
+    print("user_details" , user_details)
+    
+    '''
+        
+        
+    field_add = {"scale_data.scale_id": scale_id}
+    random_number = generate_random_number()
+    with ThreadPoolExecutor() as executor:
+        data_future = executor.submit(
+            dowellconnection,
+            "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                     "1094", "ABCDE", "fetch", field_add, "nil"
+        )
+        
+        normal_api_executor = executor.submit(Normality_api , process_id
+                                           )
+
+        result= json.loads(data_future.result())    
+        
+        normality = normal_api_executor.result()
+
+        
+       
+    
+    try:     
+        
+        normality_result = normality
+        print("normality asdfdssa" , normality)
+        
+    except Exception as error:
+        pass
+
+    try:
+
+        scale_type = result["data"][0]["scale_data"]["scale_type"]
+            
+        all_scores = [int(x['score']['score']) if isinstance(x["score"] , dict) else int(x["score"][0]['score']) for x in result["data"] ]
+
+    except Exception as e:
+        return Response({"isSuccess" : False , "reports" : str(e)})
+
+    try:
+        reports["cateogroise scale type"] = categorize_scale_generate_scale_specific_report(scale_type , all_scores)
+
+    except:
+        pass
+    
+
+
+    print("All scores" , all_scores)
+        
+    with ThreadPoolExecutor() as executor:
+        response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3,
+                                               {"list1": all_scores})
+        statricks_api_response_json = response_json_future.result()
+        
+        
+    poison_case_results = statricks_api_response_json.get("poison case results", {})
+    normal_case_results = statricks_api_response_json.get("normal case results", {})
+    
+    reports["poisson_case_results"] = poison_case_results 
+    reports["normal_case_results"]= normal_case_results
+        
+    #print("results" , statricks_api_response_json)
+        
+    return Response({"report" : reports} , status=status.HTTP_200_OK)
+    
+    
