@@ -36,29 +36,41 @@ const NpsLiteScale = () => {
         return <Fallback />;
     }
   return (
+<<<<<<< HEAD
     <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
         <div className='border border-primary  m-auto py-4 px-5'>
+=======
+    <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
+        <div className='w-full px-5 py-4 m-auto border border-primary lg:w-10/12'>
+>>>>>>> frontend-production
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             >
                 <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
-                    <h2 className='p-2 flex gap-2 items-center font-medium'>
+                    <h2 className='flex items-center gap-2 p-2 font-medium'>
                         <span className=''>
                         <MdManageHistory className='text-primary'/>
                         </span> Scale History
                     </h2>
                     {scaleData && scaleData?.map((scale, index)=>(
                         <>
-                            <Button width={'full'} onClick={()=>navigateTo(`/nps-lite-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.name}</Button>
+                            <Button width={'full'} onClick={()=>navigateTo(`/100035-DowellScale-Function/nps-lite-scale-settings/${scale._id}`)} key={index}>{scale?.settings?.name}</Button>
                         </>
                     ))}
 
                 </div>
+<<<<<<< HEAD
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>SCALE</h3>
                     <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
                        
                         {
                             level.map((score, index)=>(
+=======
+                <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
+                    <h3 className='py-5 text-sm font-medium text-center'>SCALE</h3>
+                    <div className='grid grid-cols-4 gap-3 px-2 py-6 bg-gray-300 md:grid-cols-11 md:px-1'>
+                        {scores.map((score, index)=>(
+>>>>>>> frontend-production
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score[0])}
@@ -68,8 +80,8 @@ const NpsLiteScale = () => {
                     </div>
                     
             
-                    <div className='w-full flex items-center justify-end my-4'>
-                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-nps-lite-scale`)}>create new scale</Button>
+                    <div className='flex items-center justify-end w-full my-4'>
+                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/create-nps-lite-scale`)}>create new scale</Button>
                     </div>
                 </div>
             </div>

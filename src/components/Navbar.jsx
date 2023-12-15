@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import dowellLogo from '../assets/dowell-logo.png';
 import { useSearchParams } from 'react-router-dom';
+
 const Navbar = () => {
   const [searchParams] = useSearchParams();
   const [sessionId, setSessionId] = useState('');
@@ -10,15 +11,17 @@ const Navbar = () => {
       searchParams.get('session_id') || sessionStorage.getItem('session_id');
     setSessionId(session_id);
   }, [searchParams]);
+
   return (
     <nav className="flex items-center justify-between w-full p-4 bg-[#1A8753] md:justify-center">
       <div className="md:flex-[0.5] flex-initial justify-center items-center">
         <Link
-          to={
-            import.meta.env.DEV
-              ? `http://localhost:3000/?session_id=${sessionId}`
-              : `https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/?session_id=${sessionId}`
-          }
+          to={`/100035-DowellScale-Function/?session_id=${sessionId}`}
+          // to={
+          //   import.meta.env.DEV
+          //     ? `http://localhost:3000/?session_id=${sessionId}`
+          //     : `https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/?session_id=${sessionId}`
+          // }
           className="inline"
         >
           <img

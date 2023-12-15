@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import useGetSingleScale from '../../../hooks/useGetSingleScale';
 import { useUpdateResponse } from '../../../hooks/useUpdateResponse';
@@ -19,28 +20,29 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
   const updateResponse = useUpdateResponse();
   const [showEmojiPalette, setShowEmojiPalette] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
+  const [scale, setScale] = useState(null);
 
-  const navigateTo = useNavigate();
+  // const navigateTo = useNavigate();
   const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-  const orientation = settings?.orientation;
-  // const scale_id = settings?.scale_id
-  // const user = settings?.user
-  const username = settings?.username;
-  const scalecolor = settings?.scalecolor;
-  const numberrating = settings?.numberrating;
-  const no_of_scales = settings?.no_of_scales;
-  const roundcolor = settings?.roundcolor;
-  const fontcolor = settings?.fontcolor;
-  const fomat = settings?.fomat;
-  const time = settings?.time;
-  const template_name = settings?.template_name;
-  const name = settings?.name;
-  const text = settings?.text;
-  const left = settings?.left;
-  const right = settings?.right;
-  const center = settings?.center;
-  const show_total_score = settings?.show_total_score;
+  const orientation = scale?.orientation;
+  // const scale_id = scale?.scale_id
+  // const user = scale?.user
+  const username = scale?.username;
+  const scalecolor = scale?.scalecolor;
+  const numberrating = scale?.numberrating;
+  const no_of_scales = scale?.no_of_scales;
+  const roundcolor = scale?.roundcolor;
+  const fontcolor = scale?.fontcolor;
+  const fomat = scale?.fomat;
+  const time = scale?.time;
+  const template_name = scale?.template_name;
+  const name = scale?.name;
+  const text = scale?.text;
+  const left = scale?.left;
+  const right = scale?.right;
+  const center = scale?.center;
+  const show_total_score = scale?.show_total_score;
 
   const [updateFormData, setUpdateFormData] = useState(
     Object.assign(
@@ -111,47 +113,54 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
   const orientationDB = ['Vertical', 'Horizontal'];
   const format = ['Numbers', 'Emojis'];
 
-  const handleFetchSingleScale = async (scaleId) => {
+  const handleFetchSingleScale = async () => {
     try {
-      await fetchSingleScaleData(scaleId);
-      console.log(scaleId);
+      // await fetchSingleScaleData(scaleId);
+      setIsLoading(true);
+      const response = await axios.get(
+        `https://100035.pythonanywhere.com/api/nps_create/?scale_id=${slug}`
+      );
+      console.log(response.data.success);
+      setScale(response.data.success);
     } catch (error) {
       console.error('Error fetching single scale data:', error);
+    }finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      await handleFetchSingleScale(slug);
+      await handleFetchSingleScale();
     };
     fetchData();
   }, [slug]);
 
   useEffect(() => {
-    if (settings) {
+    if (scale) {
       setUpdateFormData({
-        orientation: settings?.orientation || '',
-        scale_id: _id || '',
+        orientation: scale?.orientation || '',
+        scale_id: slug || '',
         user: true,
-        username: settings?.username || '',
-        scalecolor: settings?.scalecolor || '',
-        numberrating: settings?.numberrating || 0,
-        no_of_scales: settings?.no_of_scales || 0,
-        roundcolor: settings?.roundcolor || '',
-        fontcolor: settings?.fontcolor || '',
-        fomat: settings?.fomat || '',
-        time: settings?.time || 0,
-        template_name: settings?.template_name || '',
-        name: settings?.name || '',
-        text: settings?.text || '',
-        left: settings?.left || '',
-        right: settings?.right || '',
-        center: settings?.center || '',
+        username: scale?.username || '',
+        scalecolor: scale?.scalecolor || '',
+        numberrating: scale?.numberrating || 0,
+        no_of_scales: scale?.no_of_scales || 0,
+        roundcolor: scale?.roundcolor || '',
+        fontcolor: scale?.fontcolor || '',
+        fomat: scale?.fomat || '',
+        time: scale?.time || 0,
+        template_name: scale?.template_name || '',
+        name: scale?.name || '',
+        text: scale?.text || '',
+        left: scale?.left || '',
+        right: scale?.right || '',
+        center: scale?.center || '',
         // scale-category: "nps scale",
-        show_total_score: settings?.show_total_score || 0,
+        show_total_score: scale?.show_total_score || 0,
       });
     }
-  }, [settings]);
+  }, [scale]);
 
   const handleUpdateNPSScale = async () => {
     if (!fomat) {

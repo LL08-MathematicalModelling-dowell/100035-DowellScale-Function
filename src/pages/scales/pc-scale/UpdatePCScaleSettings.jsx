@@ -162,7 +162,7 @@ const UpdatePCScaleSettings = () => {
         setIsLoading(false);
         toast.success(result.success);
         const timeout = setTimeout(
-          () => navigate(`/single-scale-settings/${id}`),
+          () => navigate(`/100035-DowellScale-Function/single-scale-settings/${id}`),
           3000
         );
         return () => clearTimeout(timeout);
