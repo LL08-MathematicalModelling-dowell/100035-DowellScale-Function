@@ -591,67 +591,84 @@ def scalewise_report(request , scale_id):
     """
     process_id = scale_id
 
-    reports = {}
-    
-    print("Process_id" , process_id)
-    if not process_id:
-        return Response({"is_Success" : False , "error_message" : "You need to pass the process_id"} ,
-                        status=status.HTTP_400_BAD_REQUEST)
-        
-    '''
-    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                    "ABCDE", "fetch", {"username": "ambrose"}, "nil")
-    
-    print("user_details" , user_details)
-    
-    '''
-        
+    allowed_scale_types = ["nps scale"]
+
+    reports = {}        
         
     field_add = {"scale_data.scale_id": scale_id}
     random_number = generate_random_number()
-    with ThreadPoolExecutor() as executor:
-        data_future = executor.submit(
-            dowellconnection,
-            "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                     "1094", "ABCDE", "fetch", field_add, "nil"
-        )
-        
-        normal_api_executor = executor.submit(Normality_api , process_id
-                                           )
 
-        result= json.loads(data_future.result())    
-        
-        normality = normal_api_executor.result()
+    try:
+        with ThreadPoolExecutor() as executor:
+            data_future = executor.submit(
+                dowellconnection,
+                "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                        "1094", "ABCDE", "fetch", field_add, "nil"
+            )
+            
+            normal_api_executor = executor.submit(Normality_api , process_id
+                                            )
 
+            result= json.loads(data_future.result())    
+            
+            normality = normal_api_executor.result()
+
+    except:
+        return Response({"isSuccess" : True , "message" : "Error fetching fetching scores"} , status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-       
     
     try:     
         
         normality_result = normality
-        print("normality asdfdssa" , normality)
         
     except Exception as error:
         pass
 
     try:
+        all_scores = []
 
-        scale_type = result["data"][0]["scale_data"]["scale_type"]
+
+        if not result["data"]:
+            return Response({"isSuccess" : True , "message" : "Cannot generate a report for a scale with no responses"} , status = status.HTTP_400_BAD_REQUEST)
+
+        scale_data = result["data"][0].get("scale_data", None)
+
+        if not scale_data:
+            return Response({"isSuccess" : True , "message" : "No scale data found"} , status = status.HTTP_400_BAD_REQUEST)
+        
+        if not scale_data.get("scale_type" , None):
+            return Response({"isSuccess" : True , "message" : "No scale_type found"} , status = status.HTTP_400_BAD_REQUEST)
+        
+
+        scale_type = scale_data.get("scale_type")
+
+        if scale_type not in allowed_scale_types:
+            return  Response({"isSuccess" : True , "message" : "Can only generate report for nps scale only"} , status = status.HTTP_400_BAD_REQUEST)
+
             
-        all_scores = [int(x['score']['score']) if isinstance(x["score"] , dict) else int(x["score"][0]['score']) for x in result["data"] ]
+        for x in result["data"]: 
+            score = x.get("score", None)
+            if not score:
+                continue
+
+            score = score.get("score") if isinstance(x.get("score") , dict) else x["score"][0].get('score')
+
+            if not score:
+                continue
+
+            all_scores.append(int(score))
+
+        if len(all_scores) < 3:
+            return Response({"isSuccess" : True , "message" : "Cannot generate a report for a scale with less than 3 responses"} , status = status.HTTP_400_BAD_REQUEST)
 
     except Exception as e:
-        return Response({"isSuccess" : False , "reports" : str(e)})
+        return Response({"isSuccess" : False , "reports" : str(e)} , status = status.HTTP_400_BAD_REQUEST)
 
     try:
         reports["cateogroise scale type"] = categorize_scale_generate_scale_specific_report(scale_type , all_scores)
 
     except:
         pass
-    
-
-
-    print("All scores" , all_scores)
         
     with ThreadPoolExecutor() as executor:
         response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3,
@@ -664,8 +681,6 @@ def scalewise_report(request , scale_id):
     
     reports["poisson_case_results"] = poison_case_results 
     reports["normal_case_results"]= normal_case_results
-        
-    #print("results" , statricks_api_response_json)
         
     return Response({"report" : reports} , status=status.HTTP_200_OK)
     
