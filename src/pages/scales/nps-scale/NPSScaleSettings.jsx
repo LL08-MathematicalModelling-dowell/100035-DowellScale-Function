@@ -25,7 +25,7 @@ const NPSScaleSettings = () => {
   const [qrCodeURL, setQrCodeURL] = useState('');
   const [qrCodeId, setQrCodeId] = useState('');
   const [scale, setScale] = useState(null);
-  const [scaleResponse, setScaleResponse] = useState(null);
+  const [scaleResponse, setScaleResponse] = useState([]);
   const [response, setResponse] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
@@ -179,7 +179,7 @@ const NPSScaleSettings = () => {
         const response = await axios.get(
           `https://100035.pythonanywhere.com/api/nps_responses/${slug}`
         );
-        setScaleResponse(response.data.payload);
+        setScaleResponse(response.data.payload.data);
         setResponse(response.data.payload)
       } catch (error) {
         console.error(error);
@@ -317,7 +317,7 @@ const NPSScaleSettings = () => {
   //   return <Fallback />;
   // }
   return (
-    <div className="flex flex-col items-center justify-center h-screen font-medium font-Montserrat">
+    <div className="flex flex-col items-center justify-center h-screen font-medium" style={{fontFamily: `${scale?.fontstyle}`}}>
       {publicLink && (
         <img
           src={dowellLogo}
@@ -331,8 +331,8 @@ const NPSScaleSettings = () => {
           className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
         >
           <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12">
-            {scaleResponse === null && <h3 className="py-5 text-sm font-small" style={{fontSize:'medium'}}>
-              How would you rate it?
+            {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
+            Rate using the scale below
             </h3>}
             <div
               className={`grid  md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
@@ -344,7 +344,7 @@ const NPSScaleSettings = () => {
                     <button
                       key={index}
                       onClick={() => handleSelectScore(score)}
-                      disabled = {scaleResponse === null ? false : true}
+                      disabled = {scaleResponse.length === 0 ? false : true}
                       className={`rounded-lg ${
                         index == selectedScore
                           ? `bg-primary`
@@ -433,7 +433,7 @@ const NPSScaleSettings = () => {
           <>
             {!isButtonHidden && (
               <div className="flex items-center justify-center my-4">
-                {scaleResponse === null && <Button width={'3/12'} primary onClick={submitResponse}>
+                {scaleResponse.length === 0 && <Button width={'3/12'} primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
                }
