@@ -16,5 +16,5 @@ urlpatterns = [
     # new evaluation module process id function
     path('scale/reports/<str:process_id>/<str:doc_no>', evaluation_editor_process_id, name="evaluation_process_id"),
     path('get_brand_product/', get_brand_product, name='get_brand_product'),
-    path("scale/reports/scale_wise_reports/<str:scale_id>" , scalewise_report , name = "scalewise_report")
+
 ]
