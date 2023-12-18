@@ -177,10 +177,10 @@ const NPSScaleSettings = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `https://100035.pythonanywhere.com/api/nps_responses/${slug}`
+          `https://100035.pythonanywhere.com/api/nps_responses_create?scale_id=${slug}`
         );
-        setScaleResponse(response.data.payload.data);
-        setResponse(response.data.payload)
+        setScaleResponse((response.data.data.data[0]).score);
+        setResponse(response.data)
       } catch (error) {
         console.error(error);
       } finally {
@@ -192,7 +192,7 @@ const NPSScaleSettings = () => {
     }
   }, [slug]);
   
-  console.log("This is the scale response", scaleResponse)
+  console.log("This is the scale response", scaleResponse.score)
   console.log("This is the scale score", response)
   const MasterLinkFunction = async () => {
     try {
@@ -351,7 +351,7 @@ const NPSScaleSettings = () => {
                           : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
                       }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                       style={
-                        index == selectedScore
+                        index == selectedScore || scaleResponse.score === index
                           ? {
                              backgroundColor: 'green',
                               color: 'white',
