@@ -237,22 +237,31 @@ const MasterLinkFunction = async () => {
 
     const payload = {
       scale_id: slug,
-      score: selectedScore,
-      process_id: link_id,
-      instance_id: new URLSearchParams(window.location.search).get(
-        'instance_id'
-      ),
-      brand_name: 'Living Lab Scales',
-      product_name: 'Living Lab Scales',
-      username: new URLSearchParams(window.location.search).get('public_link'),
+      score: selectedScore[1],
+      // process_id: link_id,
+      // instance_id: new URLSearchParams(window.location.search).get(
+      //   'instance_id'
+      // ),
+      // brand_name: 'Living Lab Scales',
+      // product_name: 'Living Lab Scales',
+      // username: new URLSearchParams(window.location.search).get('public_link'),
+      // scale_id: "65806be4b3e62ca5274d5e03", // scale_id of scale the response is for
+    // score: "Good", // user score selection
+    process_id: "sefwef5444", 
+    instance_id:1,
+    brand_name:"question",
+    product_name:"answer",
+    username: "ndoneambse"
     };
     console.log(payload);
+    console.log("processID:",link_id)
     // finalizeMasterlink();
 
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'https://100035.pythonanywhere.com/api/nps_responses_create',
+        "https://100035.pythonanywhere.com/nps-lite/api/nps-lite-response",
+        // 'https://100035.pythonanywhere.com/api/nps_responses_create',
         payload
       );
       const result = response.data;
@@ -337,8 +346,8 @@ const MasterLinkFunction = async () => {
                             scores.map((score,index)=>
                             <button 
                                 key={index}
-                                onClick={()=>handleSelectScore(score[0])}
-                                className={` ${score[0]  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                onClick={()=>handleSelectScore(score)}
+                                className={` ${score[0]  > selectedScore[0] ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
                             >{score[1]}</button>
                         )}
                     </div>
@@ -361,12 +370,19 @@ const MasterLinkFunction = async () => {
                         </Button> */}
                         {!publicLink && (
             <>
-              <Button width={'3/4'} onClick={handleToggleUpdateModal}>
+              {/* <Button width={'3/4'} onClick={handleToggleUpdateModal}>
               Update scale
               </Button>
               <Button width={'3/4'} primary onClick={createMasterLink}>
                 {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
-              </Button>
+              </Button> */}
+              <Button 
+                            onClick={submitResponse}
+                            width={'3/4'} 
+                            primary
+                        >   
+                            {isLoading ? 'Saving Response' : 'Save Response'}
+                        </Button> 
             </>
           )}
                     </div>
