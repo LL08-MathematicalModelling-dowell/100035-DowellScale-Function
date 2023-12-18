@@ -317,7 +317,7 @@ const NPSScaleSettings = () => {
   //   return <Fallback />;
   // }
   return (
-    <div className="flex flex-col items-center justify-center h-screen font-medium" style={{fontFamily: `${scale?.fontstyle}`}}>
+    <div className="flex flex-col items-center justify-center h-screen font-medium" >
       {publicLink && (
         <img
           src={dowellLogo}
@@ -330,7 +330,7 @@ const NPSScaleSettings = () => {
         <div
           className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
         >
-          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12">
+          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`}}>
             {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
             Rate using the scale below
             </h3>}
