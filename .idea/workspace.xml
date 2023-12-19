@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="868b820d-f752-432a-9da3-f3bacec6f10c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/100035-DowellScale-Function.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/100035-DowellScale-Function.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/EvaluationModule/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/EvaluationModule/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/EvaluationModule/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/EvaluationModule/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -297,7 +294,7 @@
       <workItem from="1702313868037" duration="2448000" />
       <workItem from="1702376644274" duration="1895000" />
       <workItem from="1702382388633" duration="383000" />
-      <workItem from="1702936490133" duration="1286000" />
+      <workItem from="1702936490133" duration="1899000" />
     </task>
     <servers />
   </component>
