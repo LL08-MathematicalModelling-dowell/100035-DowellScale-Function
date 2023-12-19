@@ -1,5 +1,5 @@
 from django.urls import path, re_path
-from .views import redirect_view,scale_settings_api_view, dynamic_scale_instances_new, new_nps_create, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create, nps_response_view_submit, custom_configuration_list, custom_configuration_view, calculate_total_score, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create, nps_response_view_submit, dynamic_scale_instances
+from .views import redirect_view,scale_settings_api_view, scales_plugins_function, dynamic_scale_instances_new, new_nps_create, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create, nps_response_view_submit, custom_configuration_list, custom_configuration_view, calculate_total_score, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create, nps_response_view_submit, dynamic_scale_instances
 from django.views.decorators.csrf import csrf_exempt
 
 app_name = "api"
@@ -22,6 +22,7 @@ urlpatterns = [
 	# Combined URL pattern
 	re_path(r'^scales/$', csrf_exempt(redirect_view), name="combined_api"),
 	# Individual URL patterns
+	path('plugins/',csrf_exempt(scales_plugins_function), name="plugin endpoint"),
 	path('nps_create_instance',dynamic_scale_instances, name="dynamic_instance"),
 	path('nps_settings_create/', settings_api_view_create,name="create_scale_settings_api"),
 	path('nps_custom_data/', custom_configuration_view, name="custom_configs"),
