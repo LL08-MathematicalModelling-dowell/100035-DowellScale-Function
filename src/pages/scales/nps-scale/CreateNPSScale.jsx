@@ -63,6 +63,18 @@ console.log('====================================');
     }
   };
 
+  const fontStyles = [
+    "Arial",
+    "Helvetica",
+    "Times New Roman",
+    "Courier New",
+    "Verdana",
+    "Georgia",
+    "Comic Sans MS",
+    "Impact",
+    "Arial Black",
+  ];
+
   const handleBlurTime = () => {
     if (formData.time) {
       const countDownTimer = setInterval(() => {
@@ -115,6 +127,7 @@ console.log('====================================');
       // scale-category: "nps scale",
       scaleCategory: 'nps scale',
       show_total_score: 'true', //should be boolean
+      fontstyle: formData.fontStyle
     };
 
     console.log(payload);
@@ -229,6 +242,23 @@ console.log('====================================');
               onChange={handleChange}
               className="w-full"
             />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="fontcolor">font style</label>
+            <select
+              label="Select a font style"
+              name="fontStyle"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+              value={formData.fontStyle}
+              onChange={handleChange}
+              >
+                <option style={{ fontSize: "11px" }}>Select font style</option>
+                    {fontStyles.map((fontStyle, index) => (
+                      <option key={index} value={fontStyle}>
+                        {fontStyle}
+                        </option>
+                          ))}
+                  </select>
           </div>
           <div className="w-full">
             <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">
