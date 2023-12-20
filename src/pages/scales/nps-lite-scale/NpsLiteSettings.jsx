@@ -370,21 +370,44 @@ const MasterLinkFunction = async () => {
                         </Button> */}
                         {!publicLink && (
             <>
-              {/* <Button width={'3/4'} onClick={handleToggleUpdateModal}>
+              <Button width={'3/4'} onClick={handleToggleUpdateModal}>
               Update scale
               </Button>
               <Button width={'3/4'} primary onClick={createMasterLink}>
                 {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
-              </Button> */}
-              <Button 
-                            onClick={submitResponse}
-                            width={'3/4'} 
-                            primary
-                        >   
-                            {isLoading ? 'Saving Response' : 'Save Response'}
-                        </Button> 
+              </Button>
             </>
           )}
+          {publicLink && (
+          <>
+            {!isButtonHidden && (
+              <div className="flex items-center justify-center my-4">
+                <Button width={'3/12'} primary onClick={submitResponse}>
+                  {isLoading ? 'Submitting' : 'Submit'}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+        {showMasterLinkSuccessModal && (
+        <MasterlinkSuccessModal
+          handleToggleMasterlinkSuccessModal={
+            handleToggleMasterlinkSuccessModal
+          }
+        />
+      )}
+      {showUpdateModal && (
+        <UpdateNPSScale handleToggleUpdateModal={handleToggleUpdateModal} />
+      )}
+      {showMasterlinkModal && (
+        <NPSMasterlink
+          handleToggleMasterlinkModal={handleToggleMasterlinkModal}
+          link={masterLink}
+          publicLinks={publicLinks}
+          image={qrCodeURL}
+        />
+      )}
+  
                     </div>
                 </div>
             </div>
