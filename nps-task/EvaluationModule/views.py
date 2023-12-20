@@ -95,7 +95,6 @@ def evaluation_editor(request, product_name, doc_no):
 
     return render(request, 'EvaluationModule/editor_reports.html', context)
 
-
 @api_view(['GET'])
 def Target_API(request):
     # get all response from this API payload
@@ -408,7 +407,6 @@ def get_brand_product(request):
     brand_name = data.get("brand_name")
 
     field_add = {}
-
 
     if product_name:
         field_add["brand_data.product_name"] = product_name
