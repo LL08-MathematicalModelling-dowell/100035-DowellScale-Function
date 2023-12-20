@@ -95,7 +95,6 @@ def evaluation_editor(request, product_name, doc_no):
 
     return render(request, 'EvaluationModule/editor_reports.html', context)
 
-
 @api_view(['GET'])
 def Target_API(request):
     # get all response from this API payload
@@ -409,7 +408,6 @@ def get_brand_product(request):
 
     field_add = {}
 
-
     if product_name:
         field_add["brand_data.product_name"] = product_name
     if brand_name:
@@ -463,6 +461,5 @@ def get_scale_report(request, scale):
     response_["central_tendencies"] = stattrics
 
     return Response({"success": response_}, status=status.HTTP_200_OK)
-
 
 
