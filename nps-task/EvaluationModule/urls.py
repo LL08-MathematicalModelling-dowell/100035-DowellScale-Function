@@ -5,10 +5,9 @@ app_name="evaluation_module"
 
 urlpatterns = [
     path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
-
+    path("scale/scale_id/reports/<str:scale_id>", scalewise_report, name="scalewise_report"),
     # Rest endpoints
     path('target/', Target_API, name="target"),
-    path("scale/scale_id/reports/<str:scale_id>", scalewise_report, name="scalewise_report"),
     # Evaluation API
     path('evaluation-api/', evaluation_api, name="evaluation_api"),
     # new evaluation module process id function

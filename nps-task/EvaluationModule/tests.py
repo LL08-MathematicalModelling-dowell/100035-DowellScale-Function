@@ -5,7 +5,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dowellnps_scale_function.settin
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
-from .views import evaluation_api
+from .views import evaluation_api, scalewise_report
 
 class EvaluationAPITest(APITestCase):
     def setUp(self):
@@ -35,7 +35,7 @@ class EvaluationAPITest(APITestCase):
     # Test for invalid 'document' report type
     def test_invalid_document_report(self):
         url = f'{self.base_url}?report_type=document'
-        response = self.client.post(url, {'document_id': '123'}, format='json')  # No 'process_id' provided
+        response = self.client.post(url, {'document_id': '123'}, format='json')  
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     # Test for valid 'scale' report type
@@ -59,5 +59,28 @@ class EvaluationAPITest(APITestCase):
             'process_id': 'process123'
         }
         response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class ScalewiseReportAPITest(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_valid_scale_id(self):
+        scale_id = '6577189d4302b9938f99b9e2'  # Valid scale_id
+        url = reverse('evaluation_module:scalewise_report', args=[scale_id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_invalid_scale_id_not_found(self):
+        scale_id = 'invalid123'  # Invalid scale_id not in the database
+        url = reverse('evaluation_module:scalewise_report', args=[scale_id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_invalid_scale_id_bad_format(self):
+        scale_id = '12345'  # Invalid scale_id format
+        url = reverse('evaluation_module:scalewise_report', args=[scale_id])
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
