@@ -6,7 +6,9 @@ import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveResponse } from "../../../hooks/useSaveResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
-
+import UpdateNPSScale from "../nps-scale/UpdateNPSScale";
+import NPSMasterlink from "../nps-scale/NPSMasterlink";
+import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 const NpsLiteSettings = () => {
     const { slug } = useParams();
     const [scale, setScale] = useState(null);
