@@ -13,6 +13,9 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 
+
+from .utils import targeted_population
+
 # Create your views here.
 
 
@@ -62,6 +65,63 @@ def scalewise_report(request , scale_id):
 
     try:
         all_scores = []
+
+        # All targeted poopulation implementation
+
+
+        # Getting the scores to an higher level score
+
+        for r in result["data"]:
+            r["score_value"] = r.get("score")["score"] if isinstance(r.get("score") , dict) else r["score"][0].get('score')
+        
+
+        print("results" , result)
+
+        # Input parameter for the scores. 
+
+        database_details = {
+            "data_source" : "externaldata",
+            "data" : result["data"],
+            
+            'fields':['score_value']
+        }
+
+
+        time_input = {
+            'column_name': 'date_created',
+            'split': 'week',
+            'period': 'life_time',
+            "time_input_type" : 'iso'
+        }
+
+        stage_input_list = [
+            {
+                'data_type': 1,
+                'm_or_A_selction': 'maximum_point',
+                'm_or_A_value': 100,
+                'error': 20,
+                'r': 4,
+                'start_point': 0,
+                'end_point': 10,
+                'a': 5,
+            }
+        ]
+        distribution_input={
+            'normal': 1,
+            'poisson':0,
+            'binomial':0,
+            'bernoulli':0
+            
+        }
+
+        #Targeted Population api call
+
+        target_result = targeted_population(database_details , time_input , distribution_input , stage_input_list)
+
+        # Results printed out
+
+        print(target_result)
+        print(len(target_result["normal"]["data"]["score_value"]) ,target_result["normal"]["data"]["score_value"] )
 
 
         if not result["data"]:
