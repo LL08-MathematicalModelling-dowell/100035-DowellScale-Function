@@ -26,6 +26,7 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
   const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   const orientation = scale?.orientation;
+  const fontstyle = scale?.fontstyle;
   // const scale_id = scale?.scale_id
   // const user = scale?.user
   const username = scale?.username;
@@ -63,6 +64,7 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
         left,
         right,
         center,
+        fontstyle,
         show_total_score,
         scale_category: 'nps scale',
       }
@@ -70,7 +72,7 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
   );
 
   const updatePayload = {
-    scale_id: _id,
+    scale_id: slug,
     user: 'yes',
     username: 'Ndoneambrose',
     orientation: updateFormData.orientation,
@@ -87,6 +89,7 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
     left: updateFormData.left,
     right: updateFormData.right,
     center: updateFormData.center,
+    fontstyle: updateFormData.fontstyle,
     // scale-category: "nps scale",
     show_total_score: updateFormData.show_total_score,
   };
@@ -112,6 +115,17 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
 
   const orientationDB = ['Vertical', 'Horizontal'];
   const format = ['Numbers', 'Emojis'];
+  const fontStyleDB = [
+    "Arial",
+    "Helvetica",
+    "Times New Roman",
+    "Courier New",
+    "Verdana",
+    "Georgia",
+    "Comic Sans MS",
+    "Impact",
+    "Arial Black",
+  ];
 
   const handleFetchSingleScale = async () => {
     try {
@@ -156,6 +170,7 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
         left: scale?.left || '',
         right: scale?.right || '',
         center: scale?.center || '',
+        fontstyle: scale?.fontstyle,
         // scale-category: "nps scale",
         show_total_score: scale?.show_total_score || 0,
       });
@@ -274,6 +289,27 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
                   className="w-full"
                 />
               </div>
+              <div className="flex flex-col gap-2">
+            <label htmlFor="fontstyle">font style</label>
+            <select
+              label="Select a font style"
+              name="fontstyle"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+              value={updateFormData.fontstyle}
+              onChange={handleChange}
+              >
+                {/* <option style={{ fontSize: "11px" }}>Select font style</option>
+                    {fontStyles.map((fontStyle, index) => (
+                      <option key={index} value={fontStyle}>
+                        {fontStyle}
+                        </option>
+                          ))} */}
+                  <option value={''}>-- Select font style --</option>
+                  {fontStyleDB.map((fontstyle, i) => (
+                    <option key={i}>{fontstyle}</option>
+                  ))}
+                  </select>
+          </div>
               <div className="w-full">
                 <label
                   htmlFor="format"
@@ -288,7 +324,7 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
                   value={updateFormData.fomat}
                   onChange={handleChange}
                 >
-                  <option value={'Select format'}>-- Select format --</option>
+                  <option value={''}>-- Select format --</option>
                   {format.map((format, i) => (
                     <option key={i}>{format}</option>
                   ))}
