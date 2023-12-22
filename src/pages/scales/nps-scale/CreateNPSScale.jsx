@@ -161,7 +161,7 @@ console.log('====================================');
   return (
     <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
       <h2 className="mb-3 text-sm font-medium text-center capitalize">
-            set up your NPS
+            set up your NPS scale
           </h2>
       <div className="w-full p-5 border md:w-7/12">
         <div className="flex justify-between">
