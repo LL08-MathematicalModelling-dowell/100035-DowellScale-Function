@@ -72,13 +72,23 @@ const NPSScale = () => {
                 </div>
                 <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
                     <h3 className='py-5 text-sm font-medium text-center'>SCALE</h3>
-                    <div className='grid grid-cols-4 gap-3 px-2 py-6 bg-gray-300 md:grid-cols-11 md:px-1'>
+                    <div className= 'grid  md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center bg-gray-300'>
                         {scores.map((score, index)=>(
-                            <button 
-                                key={index}
-                                onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
-                            >{score}</button>
+                            // <button 
+                            //     key={index}
+                            //     onClick={()=>handleSelectScore(score)}
+                            //     className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                            // >{score}</button>
+                            <button
+                            key={index}
+                            onClick={() => handleSelectScore(score)}
+                            className={`rounded-lg ${
+                            index == selectedScore
+                            ? 'bg-white' : 'bg-primary text-white'
+                            }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                    >
+                      {score}
+                    </button>
                         ))}
                     </div>
                     <div className='flex items-center justify-between my-3'>

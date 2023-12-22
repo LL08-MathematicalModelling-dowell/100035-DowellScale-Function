@@ -279,7 +279,11 @@ const NPSScaleSettings = () => {
       const lastPart = window.location.href.slice(
         window.location.href.lastIndexOf('/') + 1
       );
-
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale.no_of_scales)
+      if(flattenedArray.length < scale.no_of_scales) {
+       return toast.error('Insufficient public members');
+      }
       for (
         let i = 0;
         i < scale.no_of_scales && i < flattenedArray.length;
@@ -332,7 +336,7 @@ const NPSScaleSettings = () => {
         >
           <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`}}>
             {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
-            Rate using the scale below
+            On a scale of 0-10, how likely are you to recommend the product to your friends?
             </h3>}
             <div
               className={`grid  md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}

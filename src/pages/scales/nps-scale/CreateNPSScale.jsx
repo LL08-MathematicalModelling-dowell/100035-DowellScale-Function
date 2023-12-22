@@ -354,9 +354,9 @@ console.log('====================================');
               Save
             </button>
           )}
-          <button className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium">
+          {/* <button className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium">
             Preview
-          </button>
+          </button> */}
         </div>
       </div>
       {showEmojiPalette && (
