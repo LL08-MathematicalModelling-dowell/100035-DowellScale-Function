@@ -40,7 +40,7 @@ const NpsLiteSettings = () => {
     // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 
-  console.log(scale, 'scale**')
+  console.log(scale, '**')
 
 
 //   const submitResponse = async()=>{
@@ -329,8 +329,6 @@ const MasterLinkFunction = async () => {
       console.log(scores)
   }, [slug]);
 
-
-
   if (loading) {
     return <Fallback />;
   }
@@ -349,7 +347,16 @@ const MasterLinkFunction = async () => {
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score)}
-                                className={` ${score[0]  > selectedScore[0] ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={`rounded-lg ${score[0]  == selectedScore[0] ? `bg-primary` : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`
+                              }
+                              style={
+                                score[0] == selectedScore
+                                  ? {
+                                     backgroundColor: 'green',
+                                      color: 'white',
+                                    }
+                                  : {  backgroundColor: scale?.[0].settings?.scalecolor,color: scale?.[0].settings?.fontcolor }
+                              }
                             >{score[1]}</button>
                         )}
                     </div>
