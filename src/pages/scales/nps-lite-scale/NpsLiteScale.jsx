@@ -63,7 +63,7 @@ const NpsLiteScale = () => {
                                 key={index}
                                 onClick={()=>handleSelectScore(score[0])}
                                 className={`rounded-lg ${index  === selectedScore
-                                ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                  ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
                             >{score[1]}</button>
                         ))}
                     </div>
