@@ -39,8 +39,7 @@ const NpsLiteSettings = () => {
   
     // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-
-  console.log(scale, '**')
+ console.log(scale, 'scale**')
 
 
 //   const submitResponse = async()=>{
@@ -332,8 +331,7 @@ const MasterLinkFunction = async () => {
   if (loading) {
     return <Fallback />;
   }
-                            {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
-
+  {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
   return (
     <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
         <div className='w-full px-5 py-4 m-auto border border-primary lg:w-9/12'>

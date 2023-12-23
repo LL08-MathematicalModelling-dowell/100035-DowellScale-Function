@@ -144,7 +144,7 @@ const CreateNpsLiteScale = () => {
     <div className='flex flex-col items-center justify-center w-full h-screen font-Montserrat'>
       <div className='w-full p-5 border md:w-7/12'>
         <div className='flex justify-between'>
-            <h2 className="mb-3 text-sm font-medium text-center capitalize">set up your NPS Lite scale</h2>
+          <h2 className="mb-3 text-sm font-medium text-center capitalize">set up your NPS Lite scale</h2>
             {timeOn && (
                 <p>You have about <span className='font-bold text-primary'>{displayedTime}</span> seconds to submit your form</p>
             )}
@@ -295,7 +295,7 @@ const CreateNpsLiteScale = () => {
         </div>
         <div className='flex justify-end gap-3'>
         {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
-          {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
+        {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
         </div>
       </div>
     </div>
