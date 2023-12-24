@@ -141,164 +141,163 @@ const CreateNpsLiteScale = () => {
 }
 
   return (
-    <div className='flex flex-col items-center justify-center w-full h-screen font-Montserrat'>
-      <div className='w-full p-5 border md:w-7/12'>
-        <div className='flex justify-between'>
-            <h2 className="mb-3 text-sm font-medium text-center capitalize">set up your NPS Lite scale</h2>
-            {timeOn && (
-                <p>You have about <span className='font-bold text-primary'>{displayedTime}</span> seconds to submit your form</p>
-            )}
+  <div className='flex flex-col items-center justify-center w-full h-screen font-Montserrat'>
+    <div className='w-full p-5 border md:w-7/12'>
+      <div className='flex justify-between'>
+        <h2 className="mb-3 text-sm font-medium text-center capitalize">set up your NPS Lite scale</h2>
+        {timeOn && (
+        <p>You have about <span className='font-bold text-primary'>{displayedTime}</span> seconds to submit your form</p>
+        )}
+      </div>
+      <div className='grid grid-cols-2 gap-3 mb-10 md:grid-cols-3'>
+        <div className='w-full'>
+          <CustomTextInput 
+            label='name'
+            name='name'
+            value={formData.name}
+            type='text'
+            handleChange={handleChange}
+            placeholder='enter scale name'
+          />
         </div>
-        <div className='grid grid-cols-2 gap-3 mb-10 md:grid-cols-3'>
-          <div className='w-full'>
-            <CustomTextInput 
-                label='name'
-                name='name'
-                value={formData.name}
-                type='text'
-                handleChange={handleChange}
-                placeholder='enter scale name'
-            />
-          </div>
-          <div className='w-full'>
-              <label htmlFor="orientation" className="mb-1 ml-1 text-sm font-normal">orientation</label>
-              <select 
-                  label="Select a orientation" 
-                  name="orientation" 
-                  className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                  value={formData.orientation}
-                  onChange={handleChange}
-              >
-                  <option value={''}>-- Select orientation  --</option>
-                  {orientation.map((orientation, i) => (
-                      <option key={i} >
-                          {orientation}
-                      </option>
-                  ))}
+        <div className='w-full'>
+          <label htmlFor="orientation" className="mb-1 ml-1 text-sm font-normal">orientation</label>
+          <select 
+            label="Select a orientation" 
+            name="orientation" 
+            className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+            value={formData.orientation}
+            onChange={handleChange}
+          >
+            <option value={''}>-- Select orientation  --</option>
+            {orientation.map((orientation, i) => ( 
+            <option key={i} >
+              {orientation}
+              </option>
+              ))}
               </select>
-          </div>
-          <div className="flex flex-col gap-2">
-              <label htmlFor='scalecolor'>scale color</label>
-              <input 
-                  label='scale color'
-                  name="scalecolor"
-                  autoComplete="given-name"
-                  type="color"
-                  placeholder='scale color'
-                  value={formData.scalecolor}
-                  onChange={handleChange}
-                  className="w-full"
-              />
-          </div>
-          <div className="flex flex-col gap-2">
-              <label htmlFor='roundcolor'>round color</label>
-              <input 
-                  label='round color'
-                  name="roundcolor"
-                  autoComplete="given-name"
-                  type="color"
-                  placeholder='round color'
-                  value={formData.roundcolor}
-                  onChange={handleChange}
-                  className="w-full"
-              />
-          </div>
-          <div className="flex flex-col gap-2">
-              <label htmlFor='fontcolor'>font color</label>
-              <input 
-                  label='font color'
-                  name="fontcolor"
-                  autoComplete="given-name"
-                  type="color"
-                  placeholder='font color'
-                  value={formData.fontcolor}
-                  onChange={handleChange}
-                  className="w-full"
-              />
-          </div>
-          <div>
-              <label htmlFor="arrangement" className="mb-1 ml-1 text-sm font-normal">font style</label>
-              <select 
-                  label="Select font style" 
-                  name="fontstyle" 
-                  className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                  value={formData.fontstyle}
-                  onChange={handleChange}
-              >
-                  <option value={''}>-- Select font style  --</option>
-                      {fontStyles.map((style, i) => (
-                          <option key={i} >
-                              {style}
-                          </option>
-                      ))}
-              </select>
-          </div>
-          <div className='w-full'>
-            <CustomTextInput 
-                label='left'
-                name='left'
-                value={formData.left}
-                type='text'
-                handleChange={handleChange}
-                placeholder='enter scale left'
-            />
-          </div>
-          <div className='w-full'>
-            <CustomTextInput 
-                label='center'
-                name='center'
-                value={formData.center}
-                type='text'
-                handleChange={handleChange}
-                placeholder='enter scale center'
-            />
-          </div>
-          <div className='w-full'>
-            <CustomTextInput 
-                label='right'
-                name='right'
-                value={formData.right}
-                type='text'
-                handleChange={handleChange}
-                placeholder='enter scale right'
-            />
-          </div>
-          <div className="w-full">
-              <div className="flex items-center gap-3">
-                  {timeOn && <button onClick={handleToggleTime}><BsToggleOn className="w-6 h-6 text-primary"/></button>}
-                  {!timeOn && <button  onClick={handleToggleTime}><BsToggleOff className="w-6 h-6 text-primary"/></button>}
-                  <span>Toggle to set Time</span>
-              </div>
-              {
-                  timeOn && (
-                      <CustomTextInput
-                          name="time"
-                          type="number"
-                          placeholder="enter a valid time"
-                          value={formData.time}
-                          handleChange={handleChange}
-                          onBlur={handleBlurTime}
-                      />
-                  )
-              }
-          </div>
-          <div className='w-full'>
-            <CustomTextInput 
-                label='No of scales'
-                name='no_of_scales'
-                value={formData.no_of_scales}
-                type='text'
-                handleChange={handleChange}
-                placeholder='Enter no of scales'
-            />
-          </div>
         </div>
-        <div className='flex justify-end gap-3'>
+        <div className="flex flex-col gap-2">
+          <label htmlFor='scalecolor'>scale color</label>
+          <input 
+            label='scale color'
+            name="scalecolor"
+            autoComplete="given-name"
+            type="color"
+            placeholder='scale color'
+            value={formData.scalecolor}
+            onChange={handleChange}
+            className="w-full"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor='roundcolor'>round color</label>
+          <input 
+            label='round color'
+            name="roundcolor"
+            autoComplete="given-name"
+            type="color"
+            placeholder='round color'
+            value={formData.roundcolor}
+            onChange={handleChange}
+            className="w-full"
+          />
+        </div>
+       <div className="flex flex-col gap-2">
+        <label htmlFor='fontcolor'>font color</label>
+        <input 
+          label='font color'
+          name="fontcolor"
+          autoComplete="given-name"
+          type="color"
+          placeholder='font color'
+          value={formData.fontcolor}
+          onChange={handleChange}
+          className="w-full"
+        />
+      </div>
+      <div>
+        <label htmlFor="arrangement" className="mb-1 ml-1 text-sm font-normal">font style</label>
+        <select 
+          label="Select font style" 
+          name="fontstyle" 
+          className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+          value={formData.fontstyle}
+          onChange={handleChange}
+        >
+        <option value={''}>-- Select font style  --</option>
+        {fontStyles.map((style, i) => (
+          <option key={i} >
+            {style}
+          </option>
+          ))}
+        </select>
+      </div>
+      <div className='w-full'>
+        <CustomTextInput 
+          label='left'
+          name='left'
+          value={formData.left}
+          type='text'
+          handleChange={handleChange}
+          placeholder='enter scale left'
+        />
+      </div>
+      <div className='w-full'>
+        <CustomTextInput 
+          label='center'
+          name='center'
+          value={formData.center}
+          type='text'
+          handleChange={handleChange}
+          placeholder='enter scale center'
+        />
+      </div>
+      <div className='w-full'>
+        <CustomTextInput 
+          label='right'
+          name='right'
+          value={formData.right}
+          type='text'
+          handleChange={handleChange}
+          placeholder='enter scale right'
+        />
+      </div>
+      <div className="w-full">
+        <div className="flex items-center gap-3">
+          {timeOn && <button onClick={handleToggleTime}><BsToggleOn className="w-6 h-6 text-primary"/></button>}
+          {!timeOn && <button  onClick={handleToggleTime}><BsToggleOff className="w-6 h-6 text-primary"/></button>}
+          <span>Toggle to set Time</span>
+        </div>
+        {
+        timeOn && (
+        <CustomTextInput
+          name="time"
+          type="number"
+          placeholder="enter a valid time"
+          value={formData.time}
+          handleChange={handleChange}
+          onBlur={handleBlurTime}
+        />
+        )}
+      </div>
+      <div className='w-full'>
+        <CustomTextInput 
+          label='No of scales'
+          name='no_of_scales'
+          value={formData.no_of_scales}
+          type='text'
+          handleChange={handleChange}
+          placeholder='Enter no of scales'
+        />
+      </div>
+      </div>
+      <div className='flex justify-end gap-3'>
         {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
-          {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
-        </div>
+        {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
       </div>
     </div>
+  </div>
   )
 }
 
