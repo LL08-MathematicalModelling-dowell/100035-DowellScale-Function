@@ -30,7 +30,7 @@ def scalewise_report(request , scale_id):
     """
     process_id = scale_id
 
-    allowed_scale_types = ["nps scale"]
+    allowed_scale_types = ["nps scale" , "stapel scale"]
 
     reports = {}        
         
@@ -47,21 +47,16 @@ def scalewise_report(request , scale_id):
             
             normal_api_executor = executor.submit(Normality_api , process_id
                                             )
-
-            result= json.loads(data_future.result())    
+            
+            result= json.loads(data_future.result())  
+  
             
             normality = normal_api_executor.result()
 
-    except:
+    except Exception as e:
+        print(str(e))
         return Response({"isSuccess" : True , "message" : "Error fetching fetching scores"} , status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-    
-    try:     
-        
-        normality_result = normality
-        
-    except Exception as error:
-        pass
 
     try:
         all_scores = []
@@ -71,13 +66,15 @@ def scalewise_report(request , scale_id):
 
         # Getting the scores to an higher level score
 
+        """
+
         for r in result["data"]:
             r["score_value"] = r.get("score")["score"] if isinstance(r.get("score") , dict) else r["score"][0].get('score')
-        
 
-        print("results" , result)
-
+        """
         # Input parameter for the scores. 
+
+        """
 
         database_details = {
             "data_source" : "externaldata",
@@ -93,6 +90,8 @@ def scalewise_report(request , scale_id):
             'period': 'life_time',
             "time_input_type" : 'iso'
         }
+
+        
 
         stage_input_list = [
             {
@@ -123,6 +122,7 @@ def scalewise_report(request , scale_id):
         print(target_result)
         print(len(target_result["normal"]["data"]["score_value"]) ,target_result["normal"]["data"]["score_value"] )
 
+        """
 
         if not result["data"]:
             return Response({"isSuccess" : True , "message" : "Cannot generate a report for a scale with no responses"} , status = status.HTTP_400_BAD_REQUEST)
