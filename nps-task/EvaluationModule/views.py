@@ -250,6 +250,11 @@ def by_username_api(request, username, scale_category):
 @api_view(['GET'])
 def Target_API(request):
     # get all response from this API payload
+
+    """
+    Fetching scales reports based on date_range they were created. 
+    
+    """
     
     period = request.data.get("period")
 
@@ -259,13 +264,13 @@ def Target_API(request):
 
     database_details = {
             "database" : "dowellscale",
-            "collection" : "scale",
+            "collection" : "scale_reports",
             'fields':['eventId']
         }
 
 
     time_input = {
-            'column_name': 'settings.date_created',
+            'column_name': 'date_created',
             'period': period,
             "time_type_in_db" : 'iso'
         }
