@@ -6,7 +6,7 @@ import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveResponse } from "../../../hooks/useSaveResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
-import UpdateNPSLite from "./UpdateNPSLite";
+import UpdateNpsLite from "./UpdateNpsLite";
 import NPSMasterlink from "../nps-scale/NPSMasterlink";
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 const NpsLiteSettings = () => {
@@ -347,7 +347,14 @@ const MasterLinkFunction = async () => {
                                 onClick={()=>handleSelectScore(score)}
                                 className={`rounded-lg ${score[0]  == selectedScore[0] ? `bg-primary` : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`
                               }
-                              
+                              style={
+                                score[0] == selectedScore
+                                  ? {
+                                     backgroundColor: 'green',
+                                      color: 'white',
+                                    }
+                                  : {  backgroundColor: scale?.[0].settings?.scalecolor,color: scale?.[0].settings?.fontcolor }
+                              }
                             >{score[1]}</button>
                         )}
                     </div>
@@ -397,7 +404,7 @@ const MasterLinkFunction = async () => {
         />
       )}
       {showUpdateModal && (
-        <UpdateNPSLite handleToggleUpdateModal={handleToggleUpdateModal} />
+        <UpdateNpsLite handleToggleUpdateModal={handleToggleUpdateModal} />
       )}
       {showMasterlinkModal && (
         <NPSMasterlink
