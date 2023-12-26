@@ -347,14 +347,7 @@ const MasterLinkFunction = async () => {
                                 onClick={()=>handleSelectScore(score)}
                                 className={`rounded-lg ${score[0]  == selectedScore[0] ? `bg-primary` : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`
                               }
-                              style={
-                                score[0] == selectedScore
-                                  ? {
-                                     backgroundColor: 'green',
-                                      color: 'white',
-                                    }
-                                  : {  backgroundColor: scale?.[0].settings?.scalecolor,color: scale?.[0].settings?.fontcolor }
-                              }
+                              
                             >{score[1]}</button>
                         )}
                     </div>
