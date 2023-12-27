@@ -209,8 +209,6 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
                             field_add, "nil")
     previous_response = json.loads(previous_response)
     previous_response = previous_response.get('data')            
-    if len(previous_response) > 0 :
-        return Response({"error": "You have already submitted a response for this scale."}, status=status.HTTP_400_BAD_REQUEST)
     field_add = {"_id": scale_id, "settings.scale_category": "likert scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
@@ -227,6 +225,18 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
 
     number_of_scale = settings['no_of_scales']
     label_selection = settings['label_selection']
+
+    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
+                                    "ABCDE", "fetch",
+                                    {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
+    user_dets = json.loads(user_details)
+    if len(user_dets['data']) >= 1:
+        b = [l['score']['score'] for l in previous_response if
+             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0][
+                 'event_id']]
+
+        return Response({"error": "Scale Response Exists!", "current_score": b[0]},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     event_id = get_event_id()
     if data['data']['settings'].get('fomat') == "text":
