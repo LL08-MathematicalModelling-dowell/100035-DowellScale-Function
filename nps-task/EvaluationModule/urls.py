@@ -8,6 +8,10 @@ urlpatterns = [
     path("scale/scale_id/reports/<str:scale_id>", scalewise_report, name="scalewise_report"),
     # Rest endpoints
     path('target/', Target_API, name="target"),
+<<<<<<< Updated upstream
+=======
+    # path("scale/scale_id/reports/<str:scale_id>", scalewise_report, name="scalewise_report"),
+>>>>>>> Stashed changes
     # Evaluation API
     path('evaluation-api/', evaluation_api, name="evaluation_api"),
     # new evaluation module process id function
