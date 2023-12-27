@@ -1,6 +1,5 @@
 import json
 
-from django.shortcuts import render
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -14,7 +13,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 
-from .utils import targeted_population
+from .utils import get_all_scores , likert_scale_report , convert_all_likert_label
 
 # Create your views here.
 
@@ -30,7 +29,7 @@ def scalewise_report(request , scale_id):
     """
     process_id = scale_id
 
-    allowed_scale_types = ["nps scale" , "stapel scale"]
+    allowed_scale_types = ["nps scale" , "stapel scale" , "likert scale"]
 
     reports = {}        
         
@@ -54,117 +53,65 @@ def scalewise_report(request , scale_id):
             normality = normal_api_executor.result()
 
     except Exception as e:
-        print(str(e))
         return Response({"isSuccess" : True , "message" : "Error fetching fetching scores"} , status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
-    try:
-        all_scores = []
 
         # All targeted poopulation implementation
 
 
         # Getting the scores to an higher level score
 
-        """
+    print("adfafda" , result)
 
-        for r in result["data"]:
-            r["score_value"] = r.get("score")["score"] if isinstance(r.get("score") , dict) else r["score"][0].get('score')
+    if not result["data"]:
+        return Response({"isSuccess" : True , "message" : "Cannot generate a report for a scale with no responses"} , status = status.HTTP_400_BAD_REQUEST)
 
-        """
-        # Input parameter for the scores. 
+    scale_data = result["data"][0].get("scale_data", None)
 
-        """
-
-        database_details = {
-            "data_source" : "externaldata",
-            "data" : result["data"],
-            
-            'fields':['score_value']
-        }
-
-
-        time_input = {
-            'column_name': 'date_created',
-            'split': 'week',
-            'period': 'life_time',
-            "time_input_type" : 'iso'
-        }
-
+    if not scale_data:
+        return Response({"isSuccess" : True , "message" : "No scale data found"} , status = status.HTTP_400_BAD_REQUEST)
+        
+    if not scale_data.get("scale_type" , None):
+        return Response({"isSuccess" : True , "message" : "No scale_type found"} , status = status.HTTP_400_BAD_REQUEST)
         
 
-        stage_input_list = [
-            {
-                'data_type': 1,
-                'm_or_A_selction': 'maximum_point',
-                'm_or_A_value': 100,
-                'error': 20,
-                'r': 4,
-                'start_point': 0,
-                'end_point': 10,
-                'a': 5,
-            }
-        ]
-        distribution_input={
-            'normal': 1,
-            'poisson':0,
-            'binomial':0,
-            'bernoulli':0
-            
-        }
+    scale_type = scale_data.get("scale_type")
 
-        #Targeted Population api call
+    if scale_type not in allowed_scale_types:
+        return  Response({"isSuccess" : True , "message" : f"Can only generate report for {scale_type}  only"} , status = status.HTTP_400_BAD_REQUEST)
 
-        target_result = targeted_population(database_details , time_input , distribution_input , stage_input_list)
+    all_scores = get_all_scores(result , score_type= "text" if scale_type == "likert scale" else "int")
 
-        # Results printed out
+    if len(all_scores) < 3:
+        return Response({"isSuccess" : True , "message" : "Cannot generate a report for a scale with less than 3 responses"} , status = status.HTTP_400_BAD_REQUEST)
 
-        print(target_result)
-        print(len(target_result["normal"]["data"]["score_value"]) ,target_result["normal"]["data"]["score_value"] )
+    
 
-        """
 
-        if not result["data"]:
-            return Response({"isSuccess" : True , "message" : "Cannot generate a report for a scale with no responses"} , status = status.HTTP_400_BAD_REQUEST)
-
-        scale_data = result["data"][0].get("scale_data", None)
-
-        if not scale_data:
-            return Response({"isSuccess" : True , "message" : "No scale data found"} , status = status.HTTP_400_BAD_REQUEST)
-        
-        if not scale_data.get("scale_type" , None):
-            return Response({"isSuccess" : True , "message" : "No scale_type found"} , status = status.HTTP_400_BAD_REQUEST)
-        
-
-        scale_type = scale_data.get("scale_type")
-
-        if scale_type not in allowed_scale_types:
-            return  Response({"isSuccess" : True , "message" : "Can only generate report for nps scale only"} , status = status.HTTP_400_BAD_REQUEST)
-
-            
-        for x in result["data"]: 
-            score = x.get("score", None)
-            if not score:
-                continue
-
-            score = score.get("score") if isinstance(x.get("score") , dict) else x["score"][0].get('score')
-
-            if not score:
-                continue
-
-            all_scores.append(int(score))
-
-        if len(all_scores) < 3:
-            return Response({"isSuccess" : True , "message" : "Cannot generate a report for a scale with less than 3 responses"} , status = status.HTTP_400_BAD_REQUEST)
-
-    except Exception as e:
-        return Response({"isSuccess" : False , "reports" : str(e)} , status = status.HTTP_400_BAD_REQUEST)
 
     try:
-        reports["cateogroise scale type"] = categorize_scale_generate_scale_specific_report(scale_type , all_scores)
+        if scale_type == "likert scale":
+            likert_scale = dowellconnection(
+                "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                        "1093", "ABCDE", "fetch", {"_id" : scale_id}, "nil"
+            )
 
-    except:
-        pass
+
+            likert_scale = json.loads(likert_scale)
+
+            label_selection= likert_scale["data"][0]["settings"].get("label_selection") or likert_scale["data"][0]["settings"].get("label_scale_selection")
+
+            reports["categorise scale type"] = likert_scale_report(label_selection , all_scores)
+
+            all_scores = convert_all_likert_label(label_selection , all_scores)
+
+        else:
+
+            reports["categorise scale type"] = categorize_scale_generate_scale_specific_report(scale_type , all_scores)
+
+    except Exception as e:
+        return Response({"is_error" : True , "error" : f"categorize_scale stage: {str(e)} "})
         
     with ThreadPoolExecutor() as executor:
         response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3,
