@@ -1,6 +1,8 @@
 import requests
+import json
 
-from collections import Counter
+
+from EvaluationModule.calculate_function import dowellconnection
 
 
 likert_label_map = {
@@ -48,6 +50,27 @@ likert_label_map = {
         },
     }
 
+def fetch_scale_response(field_add : dict):
+
+    result = dowellconnection(
+                "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                            "1094", "ABCDE", "fetch", field_add , "nil"
+        )
+        
+    try:
+                                            
+            
+        result= json.loads(result) 
+
+        if not isinstance(result , dict):
+            raise Exception("Error while fetching data from scale_reports")
+        
+        return  result
+
+    except:
+            raise Exception("Error while fetching scale responses.")
+
+
 def targeted_population(database_details, time_input , distribution_input , stage_input_list ,  binomial = None , bernoulli = None):
 
     number_of_variables = 1
@@ -75,13 +98,17 @@ def targeted_population(database_details, time_input , distribution_input , stag
     return response.json()
 
 def get_all_scores(scales_data , score_type = "int"):
+    """
+        Gets all the scores irrespectives of the scores on the 
+    """
+
     all_scores = []
     for x in scales_data["data"]: 
         score = x.get("score", None)
         if not score:
             continue
 
-        score = score.get("score") if isinstance(x.get("score") , dict) else x["score"][0].get('score')
+        score = score.get("score") or isinstance(x.get("score") , dict) or x["score"][0].get('score') or score.get("scorescale_id")
 
         if not score:
             continue
@@ -92,9 +119,6 @@ def get_all_scores(scales_data , score_type = "int"):
             all_scores.append(int(score))
     
     return all_scores
-
-def convert_all_likert_label(label_selection , labels_list):
-    return [convert_likert_label(label_selection , label) for label in labels_list]
 
 def get_percentage_occurrence(counter_dict):
     total_items = sum(counter_dict.values())
@@ -110,23 +134,3 @@ def get_percentage_occurrence(counter_dict):
 def get_key_by_value(counter_dict , value):
     return list(counter_dict.keys())[list(counter_dict.values()).index(value)]
 
-def convert_likert_label(label_selection , label):
-    return get_key_by_value(likert_label_map[label_selection] , label)
-
-def likert_scale_report(label_selection , all_scores):
-    counts = Counter(all_scores)
-
-    percentage_dict = get_percentage_occurrence(counts)
-
-
-    return {
-        "max_reponse" : get_key_by_value(counts , max(list(counts.values()))),
-        "no_of_scores" : len(counts),
-        "scale_data" : percentage_dict,
-        }
-
-
-
-
-
-    

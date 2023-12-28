@@ -1,19 +1,10 @@
-import json
-
-
-from concurrent.futures import ThreadPoolExecutor
-
-
-from EvaluationModule.views import categorize_scale_generate_scale_specific_report , stattricks_api 
-from EvaluationModule.normality import Normality_api
-from EvaluationModule.calculate_function import dowellconnection , generate_random_number
-
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 
+from .report import ScaleReport
+from .utils import fetch_scale_response
 
-from .utils import get_all_scores , likert_scale_report , convert_all_likert_label
 
 # Create your views here.
 
@@ -27,7 +18,24 @@ def scalewise_report(request , scale_id):
     User provides the scale_id as a path parameter. The same scale_id is used as process id for the normality
     API. 
     """
-    process_id = scale_id
+
+    try:
+        field_add = {"scale_data.scale_id": scale_id}
+        scale_response_data = fetch_scale_response(field_add)
+
+        scale_report = ScaleReport(scale_response_data)
+
+        r = scale_report.report()
+
+
+        return Response({"is_error" : False , "report" : r } , status = status.HTTP_200_OK)
+    
+    except Exception as e:
+        return Response({"is_error" : True , "report" : str(e) } , status = status.HTTP_400_BAD_REQUEST)
+    
+
+
+    """
 
     allowed_scale_types = ["nps scale" , "stapel scale" , "likert scale"]
 
@@ -62,7 +70,6 @@ def scalewise_report(request , scale_id):
 
         # Getting the scores to an higher level score
 
-    print("adfafda" , result)
 
     if not result["data"]:
         return Response({"isSuccess" : True , "message" : "Cannot generate a report for a scale with no responses"} , status = status.HTTP_400_BAD_REQUEST)
@@ -86,9 +93,6 @@ def scalewise_report(request , scale_id):
     if len(all_scores) < 3:
         return Response({"isSuccess" : True , "message" : "Cannot generate a report for a scale with less than 3 responses"} , status = status.HTTP_400_BAD_REQUEST)
 
-    
-
-
 
     try:
         if scale_type == "likert scale":
@@ -97,14 +101,18 @@ def scalewise_report(request , scale_id):
                                         "1093", "ABCDE", "fetch", {"_id" : scale_id}, "nil"
             )
 
+            if not isinstance(likert_scale , str):
 
-            likert_scale = json.loads(likert_scale)
+                likert_scale = json.loads(likert_scale)
 
-            label_selection= likert_scale["data"][0]["settings"].get("label_selection") or likert_scale["data"][0]["settings"].get("label_scale_selection")
+                label_selection= likert_scale["data"][0]["settings"].get("label_selection") or likert_scale["data"][0]["settings"].get("label_scale_selection")
 
-            reports["categorise scale type"] = likert_scale_report(label_selection , all_scores)
+                reports["categorise scale type"] = likert_scale_report(label_selection , all_scores)
 
-            all_scores = convert_all_likert_label(label_selection , all_scores)
+                all_scores = convert_all_likert_label(label_selection , all_scores)
+
+            else:
+                return Response("Error fetching scale data for likert scale. Try again later" , status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         else:
 
@@ -126,3 +134,5 @@ def scalewise_report(request , scale_id):
     reports["normal_case_results"]= normal_case_results
         
     return Response({"report" : reports} , status=status.HTTP_200_OK)
+
+    """
