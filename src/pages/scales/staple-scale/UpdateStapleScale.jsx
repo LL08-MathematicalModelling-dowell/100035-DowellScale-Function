@@ -15,7 +15,7 @@ const UpdateStapleScale = () => {
   const { slug } = useParams();
   const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
   const [timeOn, setTimeOn] = useState(false);
-  const { _id, settings } = (sigleScaleData && sigleScaleData[0]) || {};
+  const { _id, settings } = (sigleScaleData && sigleScaleData) || {};
   const [isLoading, setIsLoading] = useState(false);
   const updateResponse = useUpdateResponse();
   const [showEmojiPalette, setShowEmojiPalette] = useState(false);
@@ -61,20 +61,31 @@ const UpdateStapleScale = () => {
 
 
   const updatePayload = {
-    scale_id: _id,
-    // user: "yes",
-    // username: "Ndoneambrose",
-    orientation:updateFormData.orientation,
-    scale_upper_limit:updateFormData.scale_upper_limit,
-    scalecolor:updateFormData.scalecolor,
-    roundcolor:updateFormData.roundcolor,
-    fontcolor:updateFormData.fontcolor,
-    fomat:updateFormData.fomat === 'Emojis' ? selectedEmojis : scores,
-    time: updateFormData?.time,
-    name:updateFormData.name,
-    left:updateFormData.left,
-    right:updateFormData.right,
-    fontstyle:updateFormData.fontstyle,
+    // scale_id: "658d482a7e1af17c0914ea2d",
+    // // user: "yes",
+    // // username: "Ndoneambrose",
+    // orientation:updateFormData.orientation,
+    // scale_upper_limit:updateFormData.scale_upper_limit,
+    // scalecolor:updateFormData.scalecolor,
+    // roundcolor:updateFormData.roundcolor,
+    // fontcolor:updateFormData.fontcolor,
+    // fomat:updateFormData.fomat === 'Emojis' ? selectedEmojis : scores,
+    // time: updateFormData?.time,
+    // name:updateFormData.name,
+    // left:updateFormData.left,
+    // right:updateFormData.right,
+    // fontstyle:updateFormData.fontstyle,
+    scale_id: "658d482a7e1af17c0914ea2d", // scale_id of scale to be updated
+    // values to change in the scale ==>
+    fomat: "emoji",
+    scale_upper_limit: 10,
+    time: "60",
+    name: "scalename",
+    left: "very good",
+    right: "very good",
+    label_images: {"0": "imagefile", "1": "imagefile", "2": "imagefile"},
+    fontstyle: "Arial, Helvetica, sans-serif",
+    custom_emoji_format: {"0": "😎", "1": "🤓", "2": "😎"}
   }
 
   const handleToggleEmojiPellete = ()=>{
@@ -83,12 +94,14 @@ const UpdateStapleScale = () => {
 
   const handleChange = (e)=>{
     const { name, value } = e.target;
-    setUpdateFormData({ ...updateFormData, [name]:value });
+    // alert(value)
+    setUpdateFormData({ ...updateFormData, name:value });
     if (name === 'fomat' && value === 'Emojis') {
       handleToggleEmojiPellete();
     } else {
       setShowEmojiPalette(false);
     }
+    
   }
 
   const handleToggleTime = ()=>{
@@ -134,17 +147,17 @@ const UpdateStapleScale = () => {
   }, [settings]);
 
   const handleUpdateStapleScale = async()=>{
-    if(!fomat){
-      toast.error('please select a format to proceed');
-      return
-    }
+    // if(!fomat){
+    //   toast.error('please select a format to proceed');
+    //   return
+    // }
     try {
         setIsLoading(true);
-        const {status, data} = await updateResponse('staple-scale', updatePayload);
+        const {status, data} = await updateResponse('staple-scale', updateFormData);
         if(status===200){
           toast.success('successfully updated');
           setTimeout(()=>{
-              navigateTo(`/100035-DowellScale-Function/staple-scale-settings/${sigleScaleData[0]?._id}`);
+              navigateTo(`/100035-DowellScale-Function/staple-scale-settings/${sigleScaleData?._id}`);
           },2000)
         }
     } catch (error) {
@@ -237,10 +250,10 @@ const UpdateStapleScale = () => {
                   label="Select a format" 
                   name="fomat" 
                   className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                  value={updateFormData.fomat}
+                  // value={updateFormData.fomat}
                   onChange={handleChange}
               >
-                  <option value={''}>-- Select format  --</option>
+                  <option value={'Number'}>-- Select format  --</option>
                   {format.map((format, i) => (
                       <option key={i} >
                           {format}
