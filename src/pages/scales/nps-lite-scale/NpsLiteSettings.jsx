@@ -39,8 +39,7 @@ const NpsLiteSettings = () => {
   
     // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-
-  console.log(scale, 'scale**')
+    console.log(scale, 'scale**')
 
 
 //   const submitResponse = async()=>{
@@ -329,27 +328,33 @@ const MasterLinkFunction = async () => {
       console.log(scores)
   }, [slug]);
 
-
-
   if (loading) {
     return <Fallback />;
   }
-                            {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
-
+      {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
   return (
     <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
         <div className='w-full px-5 py-4 m-auto border border-primary lg:w-9/12'>
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
-                    <h3 className='text-center py-5 text-sm font-medium'>Scale Name: {scale?.[0].settings?.name}</h3>
+                    <h3 className='text-center py-5 text-sm font-medium'>{scale?.[0].settings?.name}</h3>
                     <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1 az'>
                         {
                             scores.map((score,index)=>
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score)}
-                                className={` ${score[0]  > selectedScore[0] ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={`rounded-lg ${score[0]  == selectedScore[0] ? `bg-primary` : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`
+                              }
+                              style={
+                                score[0] == selectedScore
+                                  ? {
+                                     backgroundColor: 'green',
+                                      color: 'white',
+                                    }
+                                  : {  backgroundColor: scale?.[0].settings?.scalecolor,color: scale?.[0].settings?.fontcolor }
+                              }
                             >{score[1]}</button>
                         )}
                     </div>

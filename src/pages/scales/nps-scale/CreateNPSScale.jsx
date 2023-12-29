@@ -63,6 +63,18 @@ console.log('====================================');
     }
   };
 
+  const fontStyles = [
+    "Arial",
+    "Helvetica",
+    "Times New Roman",
+    "Courier New",
+    "Verdana",
+    "Georgia",
+    "Comic Sans MS",
+    "Impact",
+    "Arial Black",
+  ];
+
   const handleBlurTime = () => {
     if (formData.time) {
       const countDownTimer = setInterval(() => {
@@ -115,6 +127,7 @@ console.log('====================================');
       // scale-category: "nps scale",
       scaleCategory: 'nps scale',
       show_total_score: 'true', //should be boolean
+      fontstyle: formData.fontStyle
     };
 
     console.log(payload);
@@ -147,11 +160,11 @@ console.log('====================================');
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
+      <h2 className="mb-3 text-sm font-medium text-center capitalize">
+            set up your NPS scale
+          </h2>
       <div className="w-full p-5 border md:w-7/12">
         <div className="flex justify-between">
-          <h2 className="mb-3 text-sm font-medium text-center capitalize">
-            set up your Ranking
-          </h2>
           {timeOn && (
             <p>
               You have about{' '}
@@ -229,6 +242,23 @@ console.log('====================================');
               onChange={handleChange}
               className="w-full"
             />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="fontcolor">font style</label>
+            <select
+              label="Select a font style"
+              name="fontStyle"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+              value={formData.fontStyle}
+              onChange={handleChange}
+              >
+                <option style={{ fontSize: "11px" }}>Select font style</option>
+                    {fontStyles.map((fontStyle, index) => (
+                      <option key={index} value={fontStyle}>
+                        {fontStyle}
+                        </option>
+                          ))}
+                  </select>
           </div>
           <div className="w-full">
             <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">
@@ -324,9 +354,9 @@ console.log('====================================');
               Save
             </button>
           )}
-          <button className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium">
+          {/* <button className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium">
             Preview
-          </button>
+          </button> */}
         </div>
       </div>
       {showEmojiPalette && (

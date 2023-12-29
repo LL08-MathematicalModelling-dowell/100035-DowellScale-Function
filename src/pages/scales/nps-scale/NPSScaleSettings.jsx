@@ -25,6 +25,8 @@ const NPSScaleSettings = () => {
   const [qrCodeURL, setQrCodeURL] = useState('');
   const [qrCodeId, setQrCodeId] = useState('');
   const [scale, setScale] = useState(null);
+  const [scaleResponse, setScaleResponse] = useState([]);
+  const [response, setResponse] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
@@ -111,7 +113,7 @@ const NPSScaleSettings = () => {
       setIsLoading(false);
     }
   };
-
+   
   const finalizeMasterlink = async () => {
     setIsLoading(true);
     try {
@@ -168,6 +170,30 @@ const NPSScaleSettings = () => {
     fetchData();
   }, [slug]);
 
+  useEffect(() => {
+
+    const fetchResponseData = async () => {
+      //   await handleFetchSingleScale(slug);
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `https://100035.pythonanywhere.com/api/nps_responses_create?scale_id=${slug}`
+        );
+        setScaleResponse((response.data.data.data[0]).score);
+        setResponse(response.data)
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if(publicLink) {
+      fetchResponseData();
+    }
+  }, [slug]);
+  
+  console.log("This is the scale response", scaleResponse.score)
+  console.log("This is the scale score", response)
   const MasterLinkFunction = async () => {
     try {
       // Prepare request data for master link creation
@@ -253,7 +279,11 @@ const NPSScaleSettings = () => {
       const lastPart = window.location.href.slice(
         window.location.href.lastIndexOf('/') + 1
       );
-
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale.no_of_scales)
+      if(flattenedArray.length < scale.no_of_scales) {
+       return toast.error('Insufficient public members');
+      }
       for (
         let i = 0;
         i < scale.no_of_scales && i < flattenedArray.length;
@@ -291,7 +321,7 @@ const NPSScaleSettings = () => {
   //   return <Fallback />;
   // }
   return (
-    <div className="flex flex-col items-center justify-center h-screen font-medium font-Montserrat">
+    <div className="flex flex-col items-center justify-center h-screen font-medium" >
       {publicLink && (
         <img
           src={dowellLogo}
@@ -300,14 +330,14 @@ const NPSScaleSettings = () => {
         />
       )}
       <div className="w-full py-4 m-auto md:px-5 lg:w-7/12">
-        <h1 className="py-5 text-[2rem] font-medium text-center">{scale?.name}</h1>
+        <h1 className="py-5 text-[2rem] font-small text-center">{scale?.name}</h1>
         <div
-          className={`h-100 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
+          className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
         >
-          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12">
-            <h3 className="py-5 text-sm font-medium ">
-              How would you rate it?
-            </h3>
+          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`}}>
+            {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
+            On a scale of 0-10, how likely are you to recommend the product to your friends?
+            </h3>}
             <div
               className={`grid  md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
               style={{ backgroundColor: scale?.scalecolor }}
@@ -318,13 +348,14 @@ const NPSScaleSettings = () => {
                     <button
                       key={index}
                       onClick={() => handleSelectScore(score)}
+                      disabled = {scaleResponse.length === 0 ? false : true}
                       className={`rounded-lg ${
                         index == selectedScore
                           ? `bg-primary`
                           : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
                       }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                       style={
-                        index == selectedScore
+                        index == selectedScore || scaleResponse.score === index
                           ? {
                              backgroundColor: 'green',
                               color: 'white',
@@ -340,12 +371,9 @@ const NPSScaleSettings = () => {
             <div className="flex items-center justify-between my-3">
               <h4
                 style={{
-                  fontSize: '1.5rem', // Adjust the font size as needed
-                  color: getTextColorForCategory('Bad'),
-                  background:
-                    selectedScore >= 0 && selectedScore <= 3
-                      ? 'red'
-                      : 'transparent',
+                  fontSize: '0.9rem', // Adjust the font size as needed
+                  color: '#000000',
+                  background: 'transparent',
                   border:
                     selectedScore >= 0 && selectedScore <= 3
                       ? 'none'
@@ -358,12 +386,9 @@ const NPSScaleSettings = () => {
               </h4>
               <h4
                 style={{
-                  fontSize: '1.5rem',
-                  color: getTextColorForCategory('Good'),
-                  background:
-                    selectedScore >= 4 && selectedScore <= 6
-                      ? 'green'
-                      : 'transparent',
+                  fontSize: '0.9rem',
+                  color: '#000000',
+                  background: 'transparent',
                   border:
                     selectedScore >= 4 && selectedScore <= 6 ? 'none' : 'none',
                   padding: '5px 20px', // Adjust the padding as needed
@@ -374,12 +399,9 @@ const NPSScaleSettings = () => {
               </h4>
               <h4
                 style={{
-                  fontSize: '1.5rem', // Adjust the font size as needed
-                  color: getTextColorForCategory('Best'),
-                  background:
-                    selectedScore >= 7 && selectedScore <= 10
-                      ? 'blue'
-                      : 'transparent',
+                  fontSize: '0.9rem', // Adjust the font size as needed
+                  color: '#000000',
+                  background: 'transparent',
                   border:
                     selectedScore >= 7 && selectedScore <= 10
                       ? 'none'
@@ -415,9 +437,10 @@ const NPSScaleSettings = () => {
           <>
             {!isButtonHidden && (
               <div className="flex items-center justify-center my-4">
-                <Button width={'3/12'} primary onClick={submitResponse}>
+                {scaleResponse.length === 0 && <Button width={'3/12'} primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
+               }
               </div>
             )}
           </>
