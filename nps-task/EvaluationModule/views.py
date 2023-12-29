@@ -255,8 +255,73 @@ def evaluation_editor_process_id(request, process_id, doc_no):
     return render(request, 'EvaluationModule/editor_reports.html', context)
 
 
+def map_binary_to_likert(yes_count, no_count, total_responses):
+    # Avoid division by zero
+    if total_responses == 0:
+        return "Neutral"
+
+    # Calculate the percentage of 'yes' and 'no' responses
+    yes_percentage = yes_count / total_responses
+    no_percentage = no_count / total_responses
+
+    # Define thresholds for mapping
+    if yes_percentage > 0.6:
+        return "Strongly Disagree"
+    elif yes_percentage > 0.3:
+        return "Disgree"
+    elif no_percentage > 0.6:
+        return "Strongly Agree"
+    elif no_percentage > 0.3:
+        return "Agree"
+    else:
+        return "Neutral"
+
+def basic_likert_score(responses):
+    yes_count = responses.count('Yes')
+    no_count = responses.count('No')
+    print(yes_count, "yes_count")
+    print(no_count, "no_count")
+    total_responses = len(responses)
+
+    # Calculate basic NPS score (not actually used for mapping but might be useful for reference)
+    nps_score = (yes_count - no_count) / total_responses * 100 if total_responses > 0 else 0
+
+    # Map to Likert scale
+    print(nps_score, "nps_score")
+    likert_result = map_binary_to_likert(yes_count, no_count, total_responses)
+    print(likert_result, "likert_result")
+    return likert_result, nps_score
+
+def weighted_nps_score(responses, w1=0.7, w2=0.3):
+    # Assigning weights based on the score
+    weighted_scores = [(w1 if r == 3 else w2 if r == 1 else 0.5) for r in responses]
+    promoters_weighted = sum(w for r, w in zip(responses, weighted_scores) if r == 3)
+    detractors_weighted = sum(w for r, w in zip(responses, weighted_scores) if r == 1)
+    total_weighted = sum(weighted_scores)
+    nps_score = (promoters_weighted - detractors_weighted) / total_weighted * 100
+    return nps_score
+
+def basic_nps_score(responses):
+    promoters = responses.count(3)
+    detractors = responses.count(1)
+    total_responses = len(responses)
+
+    if total_responses == 0:
+        return 0  # Avoid division by zero if there are no responses
+
+    nps_score = (promoters - detractors) / total_responses * 100
+    return nps_score
+
+def categorize_nps_score(nps_score):
+    if nps_score > 0:
+        return "Promoter"
+    elif nps_score == 0:
+        return "Passive"
+    else:
+        return "Detractor"
+
 def categorize_scale_generate_scale_specific_report(scale_type, score):
-    if scale_type == "nps scale":
+    if scale_type == "nps scale" or scale_type == "nps":
         score = [int(x) for x in score]
         nps_categories = [find_category(x) for x in score]
         nps_scale_data = calculate_nps_category(nps_categories)
@@ -270,9 +335,8 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
             "score_list": score,
             "scale_specific_data": nps_scale_data
         }
-        print("\n\n\nnps_scale_data: ", response_)
         return response_
-    elif scale_type == "stapel scale":
+    elif scale_type == "stapel scale" or scale_type == "stapel":
         score = [int(x) for x in score]
         stapel_scale_data = calculate_stapel_scale_category(score)
 
@@ -287,9 +351,37 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
         }
         return response_
 
+    elif scale_type == "likert scale" or scale_type == "likert":
+        scores = [x for x in score]
+        nps_scale_data = basic_likert_score(scores)
+
+        response_ = {
+            "scale_category": scale_type,
+            "no_of_scales": len(score),
+            "report": nps_scale_data,
+        }
+        return response_
+
+    elif scale_type == "npslite scale" or scale_type == "npslite":
+        scores = [x for x in score]
+
+        basic_score = basic_nps_score(scores)
+        weighted_score = weighted_nps_score(scores)
+
+        response_ = {
+            "scale_category": scale_type,
+            "no_of_scales": len(score),
+            "npslite_total_score": len(score) * 10,
+            "score_list": score,
+            "Basic NPSlite Score": basic_nps_score(scores),
+            "Weighted NPSlite Score": weighted_nps_score(scores),
+            "Basic NPSlite Category": categorize_nps_score(basic_score),
+            "Weighted NPSlite Category": categorize_nps_score(weighted_score),
+        }
+        return response_
+
 
 def fetch_scores_and_scale_type(query_params):
-    print(f"\n\nquery_params: {query_params}\n\n")
     response_data_scores = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                             "scale_reports", "1094", "ABCDE", "fetch", query_params, "nil")
 
@@ -466,37 +558,28 @@ def get_scale_report(request, scale):
 
 
 @api_view(["GET"])
-def scalewise_report(request, scale_id, scale_type):
-    print("Accessed 22")
-    print("Process", scale_id)
-    print("Type", scale_type)
-
-    allowed_scale_types = ["nps scale", "npslite scale", "stapel scale", "likert scale"]
-    allowed_scale_types_payload = ["nps", "npslite", "stapel", "likert"]
-
-    if scale_type not in allowed_scale_types_payload:
-        return Response(
-            {"isSuccess": False, "message": "Invalid scale type"},
-            status=status.HTTP_400_BAD_REQUEST)
-
+def scalewise_report(request, scale_id):
     reports = {}
     random_number = generate_random_number()
 
     # Update field_add based on scale_type
-    if scale_type == "npslite":
-        field_add = {"_id": scale_id}
-    elif scale_type == "likert":
-        field_add = {"_id": scale_id, "settings.scale_category": "likert scale"}
-    elif scale_type == "stapel":
-        field_add = {"scale_data.scale_id": scale_id, "scale_data.scale_category": "stapel scale"}
-    else:
-        field_add = {"scale_data.scale_id": scale_id}
+    field_add = {"scale_data.scale_id": scale_id}
 
     result = fetch_scale_data(field_add)
     if not result["success"]:
         return Response(result["response"], status=result["status"])
 
-    all_scores = extract_scores(result["data"])
+    scale_type = result['data'][0]["scale_data"]["scale_type"]
+    scale_types = ["nps scale", "npslite scale", "stapel scale", "likert scale"]
+
+    if scale_type not in scale_types:
+        return Response(
+            {"isSuccess": False, "message": "Invalid scale type"},
+            status=status.HTTP_400_BAD_REQUEST)
+    print(result, "result\n\n\n")
+    all_scores = extract_scores(result)
+    print(all_scores, "all_scores\n\n\n")
+    print(len(all_scores), "all_scores\n\n\n")
     if len(all_scores) < 3:
         return Response(
             {"isSuccess": True, "message": "Cannot generate a report for a scale with less than 3 responses"},
@@ -508,12 +591,17 @@ def scalewise_report(request, scale_id, scale_type):
         return Response({"isSuccess": False, "reports": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     # Statricks API call
-    response_json = call_stattricks_api(random_number, all_scores)
-    if response_json:
-        reports.update({
-            "poisson_case_results": response_json.get("poison case results", {}),
-            "normal_case_results": response_json.get("normal case results", {})
-        })
+    if scale_type != "likert scale" or scale_type != "likert":
+        response_json = stattricks_api("evaluation_module", random_number, 16, 3, {"list1": all_scores})
+        if response_json:
+            reports.update({
+                "Stattricks results": {
+                "poisson_case_results": response_json.get("poison case results", {}),
+                "normal_case_results": response_json.get("normal case results", {})
+                }
+            })
+        normality = Normality_api(random_number)
+        reports.update({"Normality results": normality['list1']})
 
     return Response({"report": reports}, status=status.HTTP_200_OK)
 
@@ -523,11 +611,8 @@ def fetch_scale_data(field_add):
     Fetches scale data from the database.
     """
     try:
-        response = dowellconnection(
-            "dowellscale", "bangalore", "dowellscale", "scale", "scale",
-            "1093" if field_add.get("_id") else "1094", "ABCDE", "fetch",
-            field_add, "nil"
-        )
+        response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                    "1094", "ABCDE", "fetch", field_add, "nil")
         result = json.loads(response)
         if "user is not active" in result:
             return {"success": False, "response": {"isSuccess": False, "message": "User is not active"}, "status": status.HTTP_400_BAD_REQUEST}
@@ -541,25 +626,22 @@ def extract_scores(data):
     """
     Extracts scores from the fetched data.
     """
-    all_scores = []
-    for entry in data:
-        score = entry.get("score", None)
-        if not score:
-            continue
-        score = score.get("score") if isinstance(entry.get("score"), dict) else entry["score"][0].get('score')
-        if score is not None:
-            all_scores.append(int(score))
-    return all_scores
+    scores = []
+    for entry in data['data']:
+        score_info = entry.get('score', {})
+        score_value = score_info.get('score')
+        scores.append(score_value)
+    return scores
 
 def call_stattricks_api(random_number, all_scores):
     """
     Calls the Statricks API and processes the response.
     """
     try:
-        with ThreadPoolExecutor() as executor:
-            response_json_future = executor.submit(
-                stattricks_api, "evaluation_module", random_number, 16, 3, {"list1": all_scores}
+            print("accessing statricks api")
+            result = stattricks_api( "evaluation_module", random_number, 16, 3, {"list1": all_scores}
             )
-            return json.loads(response_json_future.result())
+            print(json.loads(result), "------------------")
+            return json.loads(result)
     except Exception as e:
         return None
