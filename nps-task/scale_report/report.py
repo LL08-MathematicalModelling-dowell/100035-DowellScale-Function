@@ -23,12 +23,15 @@ from .utils import (
 
 
 class ScaleReport(Protocol):
+
+    scale_report_type = None
+
     @classmethod
     def report(all_scores , **kwargs):
         ...
 
 
-class ScaleReport:
+class ScaleReportObject:
 
     """
         A class that returns a scale report
@@ -42,11 +45,19 @@ class ScaleReport:
         self.scale_response_data = scale_responses_data
         self._scale_type = None
         self._all_scores = None
+        self._scale_id = None
 
         self._run_validator()
 
 
     def report(self):
+
+        for subclass in ScaleReport.__subclasses__():
+            if subclass.scale_report_type == self._scale_type:
+                return subclass().report(self)
+    
+        """
+
         if self.scale_type == "likert scale":
 
             return LikertScaleReport().report(self.all_scores , scale_data = self.scale_response_data)
@@ -55,7 +66,11 @@ class ScaleReport:
         else:
             return NpsScaleReport.report(self.all_scores)
 
-   
+        """
+
+    @property
+    def scale_id(self):
+        return self._scale_id
 
     @property
     def scale_type(self):
@@ -83,8 +98,12 @@ class ScaleReport:
 
         scale_data = self.scale_response_data["data"][0].get("scale_data", None)
 
+
+
         if not scale_data:
            raise NoScaleDataFound("The scale has no scale")
+        
+        self._scale_id = scale_data["scale_id"]
         
         self._check_for_scale_type()
 
@@ -95,6 +114,7 @@ class ScaleReport:
     def _scale_type_validation(self):
         if self.scale_type not in self.allowed_scale_types:
             raise TypeError(f"Can not generate scale report for {self._scale_type}")
+        
 
     def _get_all_scores(self):
         
@@ -106,6 +126,11 @@ class ScaleReport:
 
         if len(self._all_scores) < 3:
              raise Exception("We need more than three response to be able to create a report")
+        
+
+    def _get_scale_response_meta_data(self , metadata):
+        pass
+
 
 
 
@@ -157,31 +182,35 @@ class StatisticsReport:
         return StatisticsReport._get_statricks_api(all_scores)
 
 
-class NpsScaleReport:
+class NpsScaleReport(ScaleReport):
+
+    scale_report_type = "nps scale"
 
     @classmethod
-    def report(cls , all_scores):
+    def report(cls , scale_report_object : ScaleReportObject):
         reports = {}
-        reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , all_scores)
-        reports.update(StatisticsReport.statistics_report(all_scores))
+        reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , scale_report_object.all_scores)
+        reports.update(StatisticsReport.statistics_report(scale_report_object.all_scores))
 
         return reports
     
 
 
-class StapelScaleReport:
+class StapelScaleReport(ScaleReport):
+
+    scale_report_type = "stapel scale"
 
     @classmethod
-    def report(cls , all_scores):
+    def report(cls , scale_report_object : ScaleReportObject):
         reports = {}
-        reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , all_scores)
-        reports.update(StatisticsReport.statistics_report(all_scores))
+        reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("stapel scale" , scale_report_object.all_scores)
+        reports.update(StatisticsReport.statistics_report(scale_report_object.all_scores))
 
         return reports
 
+class LikertScaleReport(ScaleReport):
 
-class LikertScaleReport:
-
+    scale_report_type = "likert scale"
 
     @staticmethod
     def convert_all_likert_label(label_selection , labels_list):
@@ -210,10 +239,9 @@ class LikertScaleReport:
             }
     
     @staticmethod
-    def _get_label_selection(scale_response_data):
+    def _get_label_selection(scale_id):
 
 
-        scale_id = scale_response_data["data"][0]["scale_data"].get("scale_id")
         likert_scale = dowellconnection(
                 "dowellscale", "bangalore", "dowellscale", "scale", "scale",
                                         "1093", "ABCDE", "fetch", {"_id" : scale_id}, "nil"
@@ -234,14 +262,14 @@ class LikertScaleReport:
 
     
     @classmethod
-    def report(cls , all_scores_labels , **kwargs):
+    def report(cls , scale_report_object : ScaleReportObject):
         reports ={}
 
-        label_selection = LikertScaleReport._get_label_selection(kwargs.get("scale_data"))
+        label_selection = LikertScaleReport._get_label_selection(scale_report_object.scale_id)
 
-        all_scores = LikertScaleReport.convert_all_likert_label(label_selection , all_scores_labels)
+        all_scores = LikertScaleReport.convert_all_likert_label(label_selection , scale_report_object.all_scores)
 
-        reports["categorize_scale_report"] = LikertScaleReport.likert_scale_report(label_selection , all_scores_labels)
+        reports["categorize_scale_report"] = LikertScaleReport.likert_scale_report(label_selection , scale_report_object.all_scores)
 
         reports.update(StatisticsReport.statistics_report(all_scores))
 
