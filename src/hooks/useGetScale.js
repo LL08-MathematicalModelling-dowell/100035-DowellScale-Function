@@ -13,6 +13,8 @@ const useGetScale = () => {
         : scaleType==='nps-scale' ? 'https://100035.pythonanywhere.com/api/nps_create' 
         : scaleType==='nps-lite-scale' ? 'https://100035.pythonanywhere.com/nps-lite/api/nps-lite-settings' 
         : scaleType==='staple-scale' ? 'https://100035.pythonanywhere.com/stapel/api/stapel_settings'
+        : scaleType==='staple-scale' ? 'https://100035.pythonanywhere.com/stapel/api/stapel_settings'
+        : scaleType==='likert-scale' ? 'https://100035.pythonanywhere.com/likert/likert-scale_create/'
         : null;
         
         try {
