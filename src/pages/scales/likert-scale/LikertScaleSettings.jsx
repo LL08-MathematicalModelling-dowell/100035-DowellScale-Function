@@ -29,6 +29,8 @@ const LikertScaleSettings = () => {
   const [response, setResponse] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
+  const [selectedIndex, setSelectedIndex] = useState()
+  const [disableOnMouseEnter, setDisableOnMouseEnter] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -36,6 +38,8 @@ const LikertScaleSettings = () => {
   const link_id = queryParams.get('link_id');
   const qrcode_id = queryParams.get('qrcode_id');
   const [isButtonHidden, setIsButtonHidden] = useState(false);
+  const [buttonBgColor, setButtonBgColor] = useState(false);
+  const [btnText, setBtnText] = useState("");
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -56,8 +60,14 @@ const LikertScaleSettings = () => {
     setShowMasterLinkSuccessModal(!showMasterLinkSuccessModal);
   };
 
-  const handleSelectScore = (score) => {
+  const handleSelectScore = (score, index) => {
     setSelectedScore(score);
+    setSelectedIndex(index)
+    setDisableOnMouseEnter(true)
+    if(disableOnMouseEnter === true) {
+      document.getElementById('score-button').removeEventListener('mouseleave', setDisableOnMouseEnter(true));
+      document.getElementById('score-button').removeEventListener('mouseenter', setDisableOnMouseEnter(true));
+    }
   };
 
   // const handleFetchSingleScale = async (scaleId) => {
@@ -94,7 +104,7 @@ const LikertScaleSettings = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'https://100035.pythonanywhere.com/api/nps_responses_create',
+        'https://100035.pythonanywhere.com/likert/likert-scale_response/',
         payload
       );
       const result = response.data;
@@ -177,10 +187,11 @@ const LikertScaleSettings = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `https://100035.pythonanywhere.com/likert/likert-scale_create?scale_id=${slug}`
+          `https://100035.pythonanywhere.com/likert/likert-scale_response/${slug}`
         );
-        setScaleResponse((response.data.data.data[0]).score);
+        setScaleResponse((response.data));
         setResponse(response.data)
+        console.log(response.data, "hhhhhhhhhhhhhhhhhhhhhhhhhh")
       } catch (error) {
         console.error(error);
       } finally {
@@ -317,6 +328,16 @@ const LikertScaleSettings = () => {
     }
   };
 
+  const handleButtonBgColor = (score) => {
+    setButtonBgColor(true)
+    setBtnText(score)
+}
+
+const handleButtonBgColor2 = (score) => {
+  setButtonBgColor(false)
+  setBtnText(score)
+}
+
   // if (isLoading) {
   //   return <Fallback />;
   // }
@@ -334,33 +355,36 @@ const LikertScaleSettings = () => {
         <div
           className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
         >
-          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`}}>
+          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
             {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
             How likely are you to recommend the product to your friends?
             </h3>}
             <div
               className={`grid gap-3 md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
-              style={{ backgroundColor: scale?.scalecolor ,display:'flex', alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto'}}
+              style={{ backgroundColor: scale?.scalecolor ,display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : ""}}
             >
               {scale &&
                 (scale?.label_input).map(
                   (score, index) => (
                     <button
                       key={index}
-                      onClick={() => handleSelectScore(score)}
+                      onClick={() => handleSelectScore(score, index)}
                       disabled = {scaleResponse.length === 0 ? false : true}
+                      id = "score-button"
                       className={`rounded-lg ${
                         index == selectedScore
                           ? `bg-primary`
                           : `bg-[${scale.round_color}] text-[${scale?.fontcolor}]`
                       }  h-[3rem] w-[5rem] md:h-[3rem] md:w-[5rem]`}
+                      onMouseEnter={() => handleButtonBgColor(score)}
+                      onMouseLeave = {() => handleButtonBgColor2(score)}
                       style={
-                        index == selectedScore || scaleResponse.score === index
+                        index == selectedIndex || scaleResponse.score === index
                           ? {
                              backgroundColor: 'green',
                               color: 'white',
                             }
-                          : {  backgroundColor: scale?.round_color, color: scale?.fontcolor }
+                          : {backgroundColor: buttonBgColor === true && scale?.label_input[index] === btnText ? 'green' : scale?.round_color , color: buttonBgColor === true && scale?.label_input[index] === btnText ? "white" : scale?.fontcolor }
                       }
                     >
                       {score}
