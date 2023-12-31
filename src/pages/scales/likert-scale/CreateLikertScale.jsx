@@ -5,13 +5,15 @@ import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { useCreateScale } from '../../../hooks/useCreateScale';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
-import { EmojiPicker } from '../../../components/emoji-picker';
+import { MdInsertEmoticon } from "react-icons/md"
+import { LikertEmojiPicker } from '../../../components/emoji-picker';
 
 const CreateLikertScale = () => {
   const [timeOn, setTimeOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
   const [showEmojiPalette, setShowEmojiPalette] = useState(false);
+  const [showEmojiInput, setShowEmojiInput] = useState(false)
   const [displayedTime, setDisplayedTime] = useState(0);
   const [labelArray, setLabelArray] = useState([])
   const [likertScores, setLikertScores] = useState([])
@@ -69,8 +71,8 @@ console.log('====================================');
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    if (name === 'labelType' && value === 'Emojis') {
-      handleToggleEmojiPellete();
+    if (name === 'labelType' && value === 'emoji') {
+      setShowEmojiInput(true);
     } else {
       setShowEmojiPalette(false);
     }
@@ -87,14 +89,29 @@ console.log('====================================');
     if (name === 'labelSelection') {
        if(value === '3 points scale') {
         setLabelArray(firstSelArray)
+        if(formData.labelType === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
        }else if (value === '4 points scale') {
         setLabelArray(secSelArray)
+        if(formData.labelType === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
        } else if (value === '5 points scale') {
         setLabelArray(thirdSelArray)
+        if(formData.labelType === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
        } else if (value === '7 points scale') {
         setLabelArray(fourthSelArray)
+        if(formData.labelType === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
        } else if (value === '9 points scale') {
         setLabelArray(fifthSelArray)
+        if(formData.labelType === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
        }else {
         setLabelArray([])
        }
@@ -182,50 +199,61 @@ console.log('====================================');
   const labelType = ['text', 'emoji'];
   const labelSelection = ['3 points scale', '4 points scale', '5 points scale', '7 points scale', '9 points scale']
 
+  let likertDictionary = {}
+
   const handleSubmitLikertScale = async () => {
     const firstScaleInput = document.getElementById('0')
     if(firstScaleInput) {
-      likertScores.includes(firstScaleInput.value) === true ? "" : likertScores.push(firstScaleInput.value)   
+      likertScores.includes(firstScaleInput.value) === true ? "" : likertScores.push(firstScaleInput.value)
+      likertDictionary["0"] = selectedEmojis[0]
     }
 
     const secondScaleInput = document.getElementById('1')
     if(secondScaleInput) {
-      likertScores.includes(secondScaleInput.value) === true ? "" : likertScores.push(secondScaleInput.value)      
+      likertScores.includes(secondScaleInput.value) === true ? "" : likertScores.push(secondScaleInput.value) 
+      likertDictionary["1"] = selectedEmojis[1]     
     }
 
     const thirdScaleInput = document.getElementById('2')
     if(thirdScaleInput) {
-      likertScores.includes(thirdScaleInput.value) === true ? "" : likertScores.push(thirdScaleInput.value)     
+      likertScores.includes(thirdScaleInput.value) === true ? "" : likertScores.push(thirdScaleInput.value) 
+      likertDictionary["2"] = selectedEmojis[2]    
     }
 
     const fourthScaleInput = document.getElementById('3')
     if(fourthScaleInput) {
-      likertScores.includes(fourthScaleInput.value) === true ? "" : likertScores.push(fourthScaleInput.value)    
+      likertScores.includes(fourthScaleInput.value) === true ? "" : likertScores.push(fourthScaleInput.value) 
+      likertDictionary["3"] = selectedEmojis[3]   
     }
 
     const fifthScaleInput = document.getElementById('4')
     if(fifthScaleInput) {
-      likertScores.includes(fifthScaleInput.value) === true ? "" : likertScores.push(fifthScaleInput.value)     
+      likertScores.includes(fifthScaleInput.value) === true ? "" : likertScores.push(fifthScaleInput.value)  
+      likertDictionary["4"] = selectedEmojis[4]   
     }
 
     const sixthScaleInput = document.getElementById('5')
     if(sixthScaleInput) {
-      likertScores.includes(sixthScaleInput) === true ? "" : likertScores.push(sixthScaleInput)      
+      likertScores.includes(sixthScaleInput) === true ? "" : likertScores.push(sixthScaleInput)
+      likertDictionary["5"] = selectedEmojis[5]      
     }
 
     const seventhScaleInput = document.getElementById('6')
     if(seventhScaleInput) {
-      likertScores.includes(seventhScaleInput.value) === true ? "" : likertScores.push(seventhScaleInput.value)      
+      likertScores.includes(seventhScaleInput.value) === true ? "" : likertScores.push(seventhScaleInput.value) 
+      likertDictionary["6"] = selectedEmojis[6]     
     }
 
     const eighthScaleInput = document.getElementById('7')
     if(eighthScaleInput) { 
-      likertScores.includes(eighthScaleInput.value) === true ? "" : likertScores.push(eighthScaleInput.value)     
+      likertScores.includes(eighthScaleInput.value) === true ? "" : likertScores.push(eighthScaleInput.value)  
+      likertDictionary["7"] = selectedEmojis[7]   
     }
 
     const ninethScaleInput = document.getElementById('8')
     if(ninethScaleInput) {
-      likertScores.push(ninethScaleInput.value)      
+      likertScores.push(ninethScaleInput.value) 
+      likertDictionary["8"] = selectedEmojis[8]     
     }
     const payload = {
       username : userinfo.userinfo.username || '',
@@ -235,8 +263,9 @@ console.log('====================================');
       font_color : formData.fontcolor,
       round_color : formData.roundcolor,
       label_type : formData.labelType,
-      label_scale_selection : likertScores.length,
+      label_scale_selection : formData.labelType === "text" ? likertScores.length : Object.keys(likertDictionary).length,
       label_scale_input : likertScores,
+      custom_emoji_format: formData.labelType === "emoji" ? likertDictionary : "",
       time : formData.time,
       fontstyle: formData.fontStyle,
       scale_color: formData.scalecolor,
@@ -245,6 +274,7 @@ console.log('====================================');
     };
 
     console.log(payload);
+    console.log(Object.keys(likertDictionary).length, "gggggggggggggggggggggggggggg")
 
     for (const field of requiredFields) {
       if (!formData[field]) {
@@ -392,7 +422,7 @@ console.log('====================================');
               ))}
             </select>
             <div>
-              {labelArray.map((txt, i) =>(
+              {formData.labelType === "text" ? (labelArray.map((txt, i) =>(
                 <CustomTextInput
                 name="label_scale_input"
                 type="text"
@@ -402,8 +432,17 @@ console.log('====================================');
                 value= {setScore(i)}
                 handleChange={(e) =>handleScoreInputs(i, e)}
               />
-              ))}
-            
+              ))) : (selectedEmojis.map((emoji, i) =>(
+                <CustomTextInput
+                name="label_scale_input"
+                type="text"
+                key={i}
+                id={i}
+                placeholder= {showEmojiInput === true ? "": ""}
+                value= {selectedEmojis[i]}
+                handleChange={(e) =>handleScoreInputs(i, e)}
+              />
+              )))}
           </div>
           </div>
           <div className="w-full">
@@ -476,9 +515,10 @@ console.log('====================================');
         </div>
       </div>
       {showEmojiPalette && (
-        <EmojiPicker
+        <LikertEmojiPicker
           setSelectedEmojis={setSelectedEmojis}
           selectedEmojis={selectedEmojis}
+          no_of_emojis = {labelArray.length}
           // handleEmojiSelect={handleEmojiSelect}
           handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
