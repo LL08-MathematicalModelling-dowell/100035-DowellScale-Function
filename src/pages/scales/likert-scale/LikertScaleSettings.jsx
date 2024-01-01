@@ -478,7 +478,7 @@ const handleButtonBgColor2 = (score) => {
         />
       )}
       {showUpdateModal && (
-        <UpdateNPSScale handleToggleUpdateModal={handleToggleUpdateModal} />
+        <UpdateLikertScale handleToggleUpdateModal={handleToggleUpdateModal} />
       )}
       {showMasterlinkModal && (
         <LikertScaleMasterink

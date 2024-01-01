@@ -304,6 +304,19 @@ const NPSScaleSettings = () => {
       // console.log("Error", "Insufficient public members");
     }
   };
+
+  const handleMouseEnter = (index) =>{
+    if(index === 0) {
+      const btn = document.getElementById(0)
+      btn.title = scale?.left
+    } else if(index === 6) {
+      const btn = document.getElementById(6)
+      btn.title = scale?.center
+    } else if(index === 10) {
+      const btn = document.getElementById(10)
+      btn.title = scale?.right
+    }
+  }
   const getTextColorForCategory = (category) => {
     switch (category) {
       case 'Bad':
@@ -329,24 +342,25 @@ const NPSScaleSettings = () => {
           className="cursor-pointer w-52"
         />
       )}
-      <div className="w-full py-4 m-auto md:px-5 lg:w-7/12">
+      <div className="w-full py-4 m-auto md:px-5 lg:w-7/12" style={{marginTop: scale?.orientation === "Vertical" ? "400px" : ""}}>
         <h1 className="py-5 text-[2rem] font-small text-center">{scale?.name}</h1>
         <div
           className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
         >
-          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`}}>
+          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
             {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
             On a scale of 0-10, how likely are you to recommend the product to your friends?
             </h3>}
             <div
               className={`grid  md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
-              style={{ backgroundColor: scale?.scalecolor }}
+              style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "" }}
             >
               {scale &&
                 (Array.isArray(scale?.fomat) ? scale.fomat : scores).map(
                   (score, index) => (
                     <button
                       key={index}
+                      id = {index}
                       onClick={() => handleSelectScore(score)}
                       disabled = {scaleResponse.length === 0 ? false : true}
                       className={`rounded-lg ${
@@ -362,6 +376,8 @@ const NPSScaleSettings = () => {
                             }
                           : {  backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
                       }
+
+                      onMouseEnter={() => {scale?.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
                     >
                       {score}
                     </button>
@@ -380,6 +396,7 @@ const NPSScaleSettings = () => {
                       : 'none',
                   padding: '5px 20px', // Adjust the padding as needed
                   borderRadius: '10px', // Adjust the border radius as needed
+                  display: scale?.orientation === "Vertical" ? "none" : "block"
                 }}
               >
                 {scale?.left}
@@ -393,6 +410,7 @@ const NPSScaleSettings = () => {
                     selectedScore >= 4 && selectedScore <= 6 ? 'none' : 'none',
                   padding: '5px 20px', // Adjust the padding as needed
                   borderRadius: '10px', // Adjust the border radius as needed
+                  display: scale?.orientation === "Vertical" ? "none" : "block"
                 }}
               >
                 {scale?.center}
@@ -408,6 +426,7 @@ const NPSScaleSettings = () => {
                       : 'none',
                   padding: '5px 20px', // Adjust the padding as needed
                   borderRadius: '10px', // Adjust the border radius as needed
+                  display: scale?.orientation === "Vertical" ? "none" : "block"
                 }}
               >
                 {scale?.right}
