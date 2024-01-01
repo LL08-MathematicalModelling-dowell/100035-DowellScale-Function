@@ -9,7 +9,7 @@ import { useUpdateResponse } from '../../../hooks/useUpdateResponse';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
-import { EmojiPicker } from '../../../components/emoji-picker';
+import { LikertEmojiPicker } from '../../../components/emoji-picker';
 
 const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
   const { slug } = useParams();
@@ -20,7 +20,11 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
   const updateResponse = useUpdateResponse();
   const [showEmojiPalette, setShowEmojiPalette] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
+  const [labelArray, setLabelArray] = useState([])
   const [scale, setScale] = useState(null);
+  const [scoreCount, setScoreCount] = useState(0)
+  const [firstScore, setFirstScore] = useState("")
+  const [showEmojiInput, setShowEmojiInput] = useState(false)
 
   // const navigateTo = useNavigate();
   const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -30,11 +34,12 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
   // const scale_id = scale?.scale_id
   // const user = scale?.user
   const username = scale?.username;
+  const label_type = scale?.label_type;
   const scalecolor = scale?.scalecolor;
   const numberrating = scale?.numberrating;
   const no_of_scales = scale?.no_of_scales;
-  const roundcolor = scale?.roundcolor;
-  const fontcolor = scale?.fontcolor;
+  const round_color = scale?.round_color;
+  const fontcolor = scale?.font_color;
   const fomat = scale?.fomat;
   const time = scale?.time;
   const template_name = scale?.template_name;
@@ -53,8 +58,9 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
         username,
         scalecolor,
         numberrating,
+        labelSelection: '',
         no_of_scales,
-        roundcolor,
+        round_color,
         fontcolor,
         fomat,
         time,
@@ -65,6 +71,7 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
         right,
         center,
         fontstyle,
+        label_type,
         show_total_score,
         scale_category: 'nps scale',
       }
@@ -72,26 +79,13 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
   );
 
   const updatePayload = {
-    scale_id: slug,
-    user: 'yes',
-    username: 'Ndoneambrose',
-    orientation: updateFormData.orientation,
-    scalecolor: updateFormData.scalecolor,
-    numberrating: updateFormData.numberrating,
-    no_of_scales: updateFormData.no_of_scales,
-    roundcolor: updateFormData.roundcolor,
-    fontcolor: updateFormData.fontcolor,
-    fomat: updateFormData.fomat === 'Emojis' ? selectedEmojis : scores,
-    time: updateFormData.time,
-    template_name: updateFormData.template_name,
-    name: updateFormData.name,
-    text: updateFormData.text,
-    left: updateFormData.left,
-    right: updateFormData.right,
-    center: updateFormData.center,
-    fontstyle: updateFormData.fontstyle,
-    // scale-category: "nps scale",
-    show_total_score: updateFormData.show_total_score,
+      scale_id : slug,
+      scale_name : updateFormData.name,
+      no_of_scales : updateFormData.no_of_scales,
+      orientation : updateFormData.orientation,
+      font_color : updateFormData.fontcolor,
+      round_color : updateFormData.round_color,
+      label_type : updateFormData.label_type,
   };
 
   const handleToggleEmojiPellete = () => {
@@ -114,7 +108,8 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
   };
 
   const orientationDB = ['Vertical', 'Horizontal'];
-  const format = ['Numbers', 'Emojis'];
+  const labelType = ['text', 'emoji'];
+  const labelSelection = ['3 points scale', '4 points scale', '5 points scale', '7 points scale', '9 points scale']
   const fontStyleDB = [
     "Arial",
     "Helvetica",
@@ -127,12 +122,91 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
     "Arial Black",
   ];
 
+  const firstSelArray = ['Enter text 1', 'Enter text 2', 'Enter text 3']
+  const secSelArray = ['Enter text 1', 'Enter text 2', 'Enter text 3', 'Enter text 4']
+  const thirdSelArray = ['Enter text 1', 'Enter text 2', 'Enter text 3', 'Enter text 4', 'Enter text 5']
+  const fourthSelArray = ['Enter text 1', 'Enter text 2', 'Enter text 3', 'Enter text 4', 'Enter text 5', 'Enter text 6', 'Enter text 7']
+  const fifthSelArray = ['Enter text 1', 'Enter text 2', 'Enter text 3', 'Enter text 4', 'Enter text 5', 'Enter text 6', 'Enter text 7', 'Enter text 8', 'Enter text 9']
+
+  const handleLabelSelection = (e) => {
+    const { name, value } = e.target;
+    setUpdateFormData({ ...updateFormData, [name]: value });
+    if (name === 'labelSelection') {
+       if(value === '3 points scale') {
+        setLabelArray(firstSelArray)
+        if(updateFormData.label_type === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
+       }else if (value === '4 points scale') {
+        setLabelArray(secSelArray)
+        if(updateFormData.label_type === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
+       } else if (value === '5 points scale') {
+        setLabelArray(thirdSelArray)
+        if(updateFormData.label_type === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
+       } else if (value === '7 points scale') {
+        setLabelArray(fourthSelArray)
+        if(updateFormData.label_type === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
+       } else if (value === '9 points scale') {
+        setLabelArray(fifthSelArray)
+        if(updateFormData.label_type === 'emoji') {
+          setShowEmojiPalette(!showEmojiPalette)
+        }
+       }else {
+        setLabelArray([])
+       }
+    }
+  };
+
+  const handleScoreInputs = (id, e) => {
+    e.preventDefault()
+    if(id === 0) {
+      setFirstScore(e.target.value)
+      setScoreCount(0)
+    } else if(id === 1) {
+      setFirstScore(e.target.value)
+      setScoreCount(1)
+    }else if(id === 2) {
+      setFirstScore(e.target.value)
+      setScoreCount(2)
+    }else if(id === 3) {
+      setFirstScore(e.target.value)
+      setScoreCount(3)
+    }else if(id === 4) {
+      setFirstScore(e.target.value)
+      setScoreCount(4)
+    }else if(id === 5) {
+      setFirstScore(e.target.value)
+      setScoreCount(5)
+    }else if(id === 6) {
+      setFirstScore(e.target.value)
+      setScoreCount(6)
+    }else if(id === 7) {
+      setFirstScore(e.target.value)
+      setScoreCount(7)
+    }else if(id === 8) {
+      setFirstScore(e.target.value)
+      setScoreCount(8)
+    }
+  }
+
+  const setScore = (i) => {
+    if(scoreCount === i) {
+      return firstScore
+    }
+  }
+
   const handleFetchSingleScale = async () => {
     try {
       // await fetchSingleScaleData(scaleId);
       setIsLoading(true);
       const response = await axios.get(
-        `https://100035.pythonanywhere.com/api/nps_create/?scale_id=${slug}`
+        `https://100035.pythonanywhere.com/likert/likert-scale_create?scale_id=${slug}`
       );
       console.log(response.data.success);
       setScale(response.data.success);
@@ -160,7 +234,7 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
         scalecolor: scale?.scalecolor || '',
         numberrating: scale?.numberrating || 0,
         no_of_scales: scale?.no_of_scales || 0,
-        roundcolor: scale?.roundcolor || '',
+        round_color: scale?.round_color || '',
         fontcolor: scale?.fontcolor || '',
         fomat: scale?.fomat || '',
         time: scale?.time || 0,
@@ -171,20 +245,21 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
         right: scale?.right || '',
         center: scale?.center || '',
         fontstyle: scale?.fontstyle,
+        label_type: scale?.label_type,
         // scale-category: "nps scale",
         show_total_score: scale?.show_total_score || 0,
       });
     }
   }, [scale]);
 
-  const handleUpdateNPSScale = async () => {
+  const handleUpdateLikertScale = async () => {
     if (!fomat) {
       toast.error('please select a format to proceed');
       return;
     }
     try {
       setIsLoading(true);
-      const { status } = await updateResponse('nps-scale', updatePayload);
+      const { status } = await updateResponse('likert-scale', updatePayload);
       if (status === 200) {
         toast.success('successfully updated');
         setTimeout(() => {
@@ -267,11 +342,11 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
                 <label htmlFor="roundcolor">round color</label>
                 <input
                   label="round color"
-                  name="roundcolor"
+                  name="round_color"
                   autoComplete="given-name"
                   type="color"
                   placeholder="round color"
-                  value={updateFormData.roundcolor}
+                  value={updateFormData.round_color}
                   onChange={handleChange}
                   className="w-full"
                 />
@@ -311,46 +386,63 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
                   </select>
           </div>
               <div className="w-full">
-                <label
-                  htmlFor="format"
-                  className="mb-1 ml-1 text-sm font-normal"
-                >
-                  format
-                </label>
-                <select
-                  label="Select a format"
-                  name="fomat"
-                  className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-                  value={updateFormData.fomat}
-                  onChange={handleChange}
-                >
-                  <option value={''}>-- Select format --</option>
-                  {format.map((format, i) => (
-                    <option key={i}>{format}</option>
-                  ))}
-                </select>
-              </div>
+              <label htmlFor="labelType" className="mb-1 ml-1 text-sm font-normal">
+              Label Type
+            </label>
+            <select
+              label="Select a label type"
+              name="label_type"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+              value={updateFormData.label_type}
+              onChange={handleChange}
+            >
+              <option value={''}>-- Select label --</option>
+              {labelType.map((labelType, i) => (
+                <option key={i}>{labelType}</option>
+              ))}
+            </select>
               <div className="w-full">
+              {updateFormData.label_type === "text" ? (labelArray.map((txt, i) =>(
                 <CustomTextInput
-                  label="left"
-                  name="left"
-                  value={updateFormData.left}
-                  type="text"
-                  handleChange={handleChange}
-                  placeholder="enter scale left"
-                />
-              </div>
-              <div className="w-full">
+                name="label_scale_input"
+                type="text"
+                key={i}
+                id={i}
+                placeholder= {txt}
+                value= {setScore(i)}
+                handleChange={(e) =>handleScoreInputs(i, e)}
+              />
+              ))) : (selectedEmojis.map((emoji, i) =>(
                 <CustomTextInput
-                  label="center"
-                  name="center"
-                  value={updateFormData.center}
-                  type="text"
-                  handleChange={handleChange}
-                  placeholder="enter scale center"
-                />
+                name="label_scale_input"
+                type="text"
+                key={i}
+                id={i}
+                placeholder= {showEmojiInput === true ? "": ""}
+                value= {selectedEmojis[i]}
+                handleChange={(e) =>handleScoreInputs(i, e)}
+              />
+              )))}
+              </div>
               </div>
               <div className="w-full">
+              <label htmlFor="labelSelection" className="mb-1 ml-1 text-sm font-normal">
+              Label scale selection
+            </label>
+            <select
+              label="Select a label type"
+              name="labelSelection"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+              value={updateFormData.labelSelection}
+              onChange={handleLabelSelection}
+            >
+              <option value={''}>-- Select choice --</option>
+              {labelSelection.map((labelType, i) => (
+                <option key={i}>{labelType}</option>
+              ))}
+            </select>
+              </div>
+              {/* <div className="w-full">
                 <CustomTextInput
                   label="right"
                   name="right"
@@ -359,7 +451,7 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
                   handleChange={handleChange}
                   placeholder="enter scale right"
                 />
-              </div>
+              </div> */}
               <div className="w-full">
                 <div className="flex items-center gap-3">
                   {timeOn && (
@@ -393,17 +485,18 @@ const UpdateLikertScale = ({ handleToggleUpdateModal }) => {
                 />
               </div>
             </div>
-            <Button primary width={'full'} onClick={handleUpdateNPSScale}>
+            <Button primary width={'full'} onClick={handleUpdateLikertScale}>
               Update scale
             </Button>
           </div>
           {showEmojiPalette && (
-            <EmojiPicker
-              setSelectedEmojis={setSelectedEmojis}
-              selectedEmojis={selectedEmojis}
-              // handleEmojiSelect={handleEmojiSelect}
-              handleToggleEmojiPellete={handleToggleEmojiPellete}
-            />
+            <LikertEmojiPicker
+            setSelectedEmojis={setSelectedEmojis}
+            selectedEmojis={selectedEmojis}
+            no_of_emojis = {labelArray.length}
+            // handleEmojiSelect={handleEmojiSelect}
+            handleToggleEmojiPellete={handleToggleEmojiPellete}
+          />
           )}
         </div>
 

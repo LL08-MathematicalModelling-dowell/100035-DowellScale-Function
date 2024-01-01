@@ -48,7 +48,8 @@ import {
 import {
   LikertScale,
   CreateLikertScale,
-  LikertScaleSettings
+  LikertScaleSettings,
+  UpdateLikertScale
 } from './pages/scales/likert-scale';
 import { StrictMode } from 'react';
 import NPSResponse from './pages/scales/nps-scale/NPSResponse.jsx';
@@ -174,6 +175,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/update-nps-scale/:slug`,
         element: <UpdateNPSScale />,
+      },
+      {
+        path: `${basePath}/update-likert-scale/:slug`,
+        element: <UpdateLikertScale />,
       },
       {
         path: `${basePath}/update-staple-scale/:slug`,
