@@ -164,7 +164,11 @@ const MasterLinkFunction = async () => {
       const lastPart = window.location.href.slice(
         window.location.href.lastIndexOf('/') + 1
       );
-
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale.no_of_scales)
+      if(flattenedArray.length < scale.no_of_scales) {
+       return toast.error('Insufficient public members');
+      }
       for (
         let i = 0;
         i < scale.no_of_scales && i < flattenedArray.length;
