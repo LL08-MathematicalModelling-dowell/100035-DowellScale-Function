@@ -632,16 +632,3 @@ def extract_scores(data):
         score_value = score_info.get('score')
         scores.append(score_value)
     return scores
-
-def call_stattricks_api(random_number, all_scores):
-    """
-    Calls the Statricks API and processes the response.
-    """
-    try:
-            print("accessing statricks api")
-            result = stattricks_api( "evaluation_module", random_number, 16, 3, {"list1": all_scores}
-            )
-            print(json.loads(result), "------------------")
-            return json.loads(result)
-    except Exception as e:
-        return None
