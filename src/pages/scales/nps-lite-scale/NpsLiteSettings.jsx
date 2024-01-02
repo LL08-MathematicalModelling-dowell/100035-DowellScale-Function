@@ -6,8 +6,8 @@ import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveResponse } from "../../../hooks/useSaveResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
-import UpdateNPSLite from "./UpdateNPSLite";
-import NPSMasterlink from "../nps-scale/NPSMasterlink";
+import UpdateNpsLite from "./UpdateNpsLite";
+import NPSLiteMasterLink from "./NPSLiteMasterLink";
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 const NpsLiteSettings = () => {
     const { slug } = useParams();
@@ -404,10 +404,10 @@ const MasterLinkFunction = async () => {
         />
       )}
       {showUpdateModal && (
-        <UpdateNPSLite handleToggleUpdateModal={handleToggleUpdateModal} />
+        <UpdateNpsLite handleToggleUpdateModal={handleToggleUpdateModal} />
       )}
       {showMasterlinkModal && (
-        <NPSMasterlink
+        <NPSLiteMasterLink
           handleToggleMasterlinkModal={handleToggleMasterlinkModal}
           link={masterLink}
           publicLinks={publicLinks}
