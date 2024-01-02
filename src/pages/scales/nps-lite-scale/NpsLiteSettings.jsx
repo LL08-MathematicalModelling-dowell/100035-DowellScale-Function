@@ -7,7 +7,7 @@ import { useSaveResponse } from "../../../hooks/useSaveResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
 import UpdateNpsLite from "./UpdateNpsLite";
-import NPSMasterlink from "../nps-scale/NPSMasterlink";
+import NPSLiteMasterLink from "./NPSLiteMasterLink";
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 const NpsLiteSettings = () => {
     const { slug } = useParams();
@@ -164,7 +164,11 @@ const MasterLinkFunction = async () => {
       const lastPart = window.location.href.slice(
         window.location.href.lastIndexOf('/') + 1
       );
-
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale.no_of_scales)
+      if(flattenedArray.length < scale.no_of_scales) {
+       return toast.error('Insufficient public members');
+      }
       for (
         let i = 0;
         i < scale.no_of_scales && i < flattenedArray.length;
@@ -407,7 +411,7 @@ const MasterLinkFunction = async () => {
         <UpdateNpsLite handleToggleUpdateModal={handleToggleUpdateModal} />
       )}
       {showMasterlinkModal && (
-        <NPSMasterlink
+        <NPSLiteMasterLink
           handleToggleMasterlinkModal={handleToggleMasterlinkModal}
           link={masterLink}
           publicLinks={publicLinks}
