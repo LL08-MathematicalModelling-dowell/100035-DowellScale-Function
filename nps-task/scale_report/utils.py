@@ -105,8 +105,10 @@ def get_all_scores(scales_data , score_type = "int"):
     all_scores = []
     for x in scales_data["data"]: 
         score = x.get("score", None)
-        if not score:
+        if score:
             continue
+
+
 
         score = score.get("score") or isinstance(x.get("score") , dict) or x["score"][0].get('score') or score.get("scorescale_id")
 
@@ -119,6 +121,16 @@ def get_all_scores(scales_data , score_type = "int"):
             all_scores.append(int(score))
     
     return all_scores
+
+def get_positions(scales_data):
+    all_positions=[]
+    for x in scales_data["data"]:
+        if x.get("positions"):
+            all_positions.append(x["positions"])
+
+    return all_positions
+        
+
 
 def get_percentage_occurrence(counter_dict):
     total_items = sum(counter_dict.values())
