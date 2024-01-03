@@ -237,6 +237,7 @@ def settings_api_view_create(request):
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
+
             if not settings_json.get('data'):
                 return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
 

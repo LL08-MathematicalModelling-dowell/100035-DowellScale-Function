@@ -6,7 +6,6 @@ app_name="evaluation_module"
 urlpatterns = [
     path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
     path("scalewise_reports/<str:scale_id>", scalewise_report, name="scalewise_report"),
-
     path('target/', Target_API, name="target"),
     # Evaluation API
     path('evaluation-api/', evaluation_api, name="evaluation_api"),

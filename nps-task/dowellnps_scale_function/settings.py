@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'perceptual_mapping',
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',
-    'thurstone'
+    'thurstone',
+    "scale_report"
 ]
 
 
