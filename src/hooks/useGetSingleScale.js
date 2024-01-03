@@ -9,13 +9,14 @@ const useGetSingleScale = () => {
 
         // const endPoint = 
         // scaleType === 'ranking-scale' 
-        // ? 'http://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id='
+        // ? 'https://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id='
         // : scaleType==='nps-scale' ? 'https://100035.pythonanywhere.com/api/nps_create' : 'anoth';
 
         try {
             setLoading(true);
-            const response = await axios.get(`http://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id=${scaleId}`);
+            const response = await axios.get(`https://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id=${scaleId}`);
             setSingleScaleData(response.data); 
+            console.log(response.data)
         } catch (error) {
             console.error(error);
         } finally {

@@ -11,10 +11,9 @@ const CreatePerceptualScaleSettings = () => {
   const [formData, setFormData] = useState({
     username: userinfo.userinfo.username || '',
     scale_name: '',
-    orientation: '',
     fontcolor: '',
     fontstyle: '',
-    scalecolor: '',
+    scale_color: '',
     roundcolor: '',
     time: 0,
     item_list: inputValues,
@@ -31,7 +30,7 @@ const CreatePerceptualScaleSettings = () => {
     X_spacing: 0,
     Y_spacing: 0,
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [isInputVisible, setInputVisible] = useState(false);
   const [itemCount, setItemCount] = useState(0);
@@ -58,13 +57,12 @@ const CreatePerceptualScaleSettings = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: type === 'number' ? parseFloat(value) : value,
     });
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,14 +71,12 @@ const CreatePerceptualScaleSettings = () => {
     var requestOptions = {
       username: formData.username,
       scale_name: formData.scale_name,
-      orientation: formData.orientation,
       fontcolor: formData.fontcolor,
       fontstyle: formData.fontstyle,
       time: formData.time,
-      scalecolor: formData.scalecolor,
-      roundcolor: formData.roundcolor,
+      scale_color: formData.scale_color,
       item_count: itemCount,
-      item_list: formData.item_list,
+      item_list: inputValues,
       no_of_scale: formData.no_of_scale,
       allow_resp: formData.allow_resp,
       X_upper_limit: formData.X_upper_limit,
@@ -114,7 +110,7 @@ const CreatePerceptualScaleSettings = () => {
           orientation: '',
           fontcolor: '',
           fontstyle: '',
-          scalecolor: '',
+          scale_color: '',
           roundcolor: '',
           time: 0,
           item_list: inputValues,
@@ -135,15 +131,11 @@ const CreatePerceptualScaleSettings = () => {
         return;
       } else {
         setIsLoading(false);
-        console.log(`${JSON.parse(result.success).inserted_id}`);
         toast.success('Successfully Created');
         const timeout = setTimeout(
           () =>
             navigate(
-              `/single-perceptual-scale-settings/${
-                JSON.parse(result.success).inserted_id
-              }`
-            ),
+              `/100035-DowellScale-Function/single-perceptual-scale-settings/${JSON.parse(result.success).inserted_id}`),
           3000
         );
         return () => clearTimeout(timeout);
@@ -153,9 +145,11 @@ const CreatePerceptualScaleSettings = () => {
       console.log('Error', error);
     }
   };
+
   if (isLoading) {
     return <Fallback />;
   }
+
   return (
     <div className="mx-auto mt-8 lg:container ">
       <form
@@ -181,7 +175,7 @@ const CreatePerceptualScaleSettings = () => {
               name="scale_name"
               value={formData.scale_name || ''}
               onChange={handleChange}
-              className="w-full px-4 py-5 mt-4 border rounded-lg focus:outline-none"
+              className="w-full px-4 py-2.5 mt-4 border rounded-lg focus:outline-none"
               // required
             />
           </div>
@@ -206,7 +200,7 @@ const CreatePerceptualScaleSettings = () => {
           </div>
           <div className="mb-4">
             <label
-              htmlFor="scalecolor"
+              htmlFor="scale_color"
               className="block font-semibold text-gray-600"
             >
               Scale Color
@@ -214,9 +208,9 @@ const CreatePerceptualScaleSettings = () => {
             <div className="px-2 my-4 bg-white rounded-lg">
               <input
                 type="color"
-                id="scalecolor"
-                name="scalecolor"
-                value={formData.scalecolor || '#000000'}
+                id="scale_color"
+                name="scale_color"
+                value={formData.scale_color || '#000000'}
                 onChange={handleChange}
                 className="w-full my-2 border rounded-lg focus:outline-none "
                 // required
@@ -316,7 +310,7 @@ const CreatePerceptualScaleSettings = () => {
                   id="item_count"
                   value={itemCount || 0}
                   onChange={handleInputChange}
-                  className="px-4 py-5 mt-4 border rounded-lg focus:outline-none"
+                  className="px-4 py-2.5 mt-4 border rounded-lg focus:outline-none"
                 />
               </div>
 
@@ -329,7 +323,7 @@ const CreatePerceptualScaleSettings = () => {
                       name="item_list"
                       placeholder={`paired ${index + 1}`}
                       value={value}
-                      className="inline w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+                      className="inline w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                       onChange={(e) =>
                         handleInputValueChange(index, e.target.value)
                       }
@@ -353,30 +347,30 @@ const CreatePerceptualScaleSettings = () => {
                   <div>
                     <input
                       type="number"
-                      id="x_upper_limit"
-                      name="x_upper_limit"
+                      id="X_upper_limit"
+                      name="X_upper_limit"
                       value={formData.X_upper_limit || 0}
                       onChange={handleChange}
-                      className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+                      className="w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                       // required
                     />
                   </div>
                   <div>
                     <input
                       type="number"
-                      id="x_upper_limit"
-                      name="x_upper_limit"
-                      value={formData.X_upper_limit || 0}
+                      id="X_upper_limit"
+                      name="X_upper_limit"
+                      value={`-${formData.X_upper_limit}` || 0}
+                      disabled
                       onChange={handleChange}
-                      className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
-                      // required
+                      className="w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                     />
                   </div>
                 </div>
               </div>
               <div>
                 <label
-                  htmlFor="y_upper_limit"
+                  htmlFor="Y_upper_limit"
                   className="block font-semibold text-center text-gray-600"
                 >
                   Y asix limits
@@ -385,22 +379,23 @@ const CreatePerceptualScaleSettings = () => {
                   <div>
                     <input
                       type="number"
-                      id="y_upper_limit"
-                      name="y_upper_limit"
+                      id="Y_upper_limit"
+                      name="Y_upper_limit"
                       value={formData.Y_upper_limit || 0}
                       onChange={handleChange}
-                      className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+                      className="w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                       // required
                     />
                   </div>
                   <div>
                     <input
                       type="number"
-                      id="y_upper_limit"
-                      name="y_upper_limit"
-                      value={formData.Y_upper_limit || 0}
+                      id="Y_upper_limit"
+                      name="Y_upper_limit"
+                      value={`-${formData.Y_upper_limit}` || 0}
+                      disabled
                       onChange={handleChange}
-                      className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+                      className="w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                       // required
                     />
                   </div>
@@ -412,35 +407,35 @@ const CreatePerceptualScaleSettings = () => {
             <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <label
-                  htmlFor="x_spacing"
+                  htmlFor="X_spacing"
                   className="block font-semibold text-gray-600 "
                 >
                   X spacing
                 </label>
                 <input
                   type="number"
-                  id="x_spacing"
-                  name="x_spacing"
+                  id="X_spacing"
+                  name="X_spacing"
                   value={formData.X_spacing || 0}
                   onChange={handleChange}
-                  className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+                  className="w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                   // required
                 />
               </div>
               <div>
                 <label
-                  htmlFor="y_spacing"
+                  htmlFor="Y_spacing"
                   className="block font-semibold text-gray-600"
                 >
                   Y spacing
                 </label>
                 <input
                   type="number"
-                  id="y_spacing"
-                  name="y_spacing"
+                  id="Y_spacing"
+                  name="Y_spacing"
                   value={formData.Y_spacing || 0}
                   onChange={handleChange}
-                  className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+                  className="w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                   // required
                 />
               </div>
@@ -499,7 +494,7 @@ const CreatePerceptualScaleSettings = () => {
                     name="time"
                     value={formData.time || 0}
                     onChange={handleChange}
-                    className="w-full px-4 py-5 mt-2 border rounded-lg focus:outline-none"
+                    className="w-full px-4 py-2.5 mt-2 border rounded-lg focus:outline-none"
                     // required
                   />
                 </div>
@@ -523,6 +518,78 @@ const CreatePerceptualScaleSettings = () => {
               <option value="">Choose...</option>
               <option value="red">Red</option>
             </select>
+          </div>
+          <div>
+            <label
+              htmlFor=""
+              className="block font-semibold text-center text-gray-600"
+            >
+              Axes labels
+            </label>
+            <div className="grid gap-6 mb-4 md:grid-cols-3">
+              <div className='lg:text-right lg:items-right lg:col-span-1' >
+                <label htmlFor="X_left">Left</label>
+              </div>
+              <div className='lg:col-span-2'>
+                <input
+                  type="text"
+                  id="X_left"
+                  name="X_left"
+                  value={formData.X_left}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border rounded-lg focus:outline-none"
+                  // required
+                />
+              </div>
+            </div>
+            <div className="grid gap-6 mb-4 md:grid-cols-3">
+              <div className='lg:text-right lg:items-right lg:col-span-1' >
+                <label htmlFor="X_right">Right</label>
+              </div>
+              <div className='lg:col-span-2'>
+                <input
+                  type="text"
+                  id="X_right"
+                  name="X_right"
+                  value={formData.X_right}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border rounded-lg focus:outline-none"
+                  // required
+                />
+              </div>
+            </div>
+            <div className="grid gap-6 mb-4 md:grid-cols-3">
+              <div className='lg:text-right lg:items-right lg:col-span-1' >
+                <label htmlFor="Y_top">Top</label>
+              </div>
+              <div className='lg:col-span-2'>
+                <input
+                  type="text"
+                  id="Y_top"
+                  name="Y_top"
+                  value={formData.Y_top}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border rounded-lg focus:outline-none"
+                  // required
+                />
+              </div>
+            </div>
+            <div className="grid gap-6 mb-4 md:grid-cols-3">
+              <div className='lg:text-right lg:items-right lg:col-span-1' >
+                <label htmlFor="Y_bottom">Bottom</label>
+              </div>
+              <div className='lg:col-span-2'>
+                <input
+                  type="text"
+                  id="Y_bottom"
+                  name="Y_bottom"
+                  value={formData.Y_bottom}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border rounded-lg focus:outline-none"
+                  // required
+                />
+              </div>
+            </div>
           </div>
         </div>
         <div className="flex mt-4 lg:justify-end">

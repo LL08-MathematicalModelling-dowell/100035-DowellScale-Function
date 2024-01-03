@@ -61,7 +61,7 @@ const PairedScale = () => {
               {Object.values(data).map((e) => (
                 <Button width={'full'} key={e._id}>
                   {' '}
-                  <Link to={`/single-scale-settings/${e._id}`}>
+                  <Link to={`/100035-DowellScale-Function/single-scale-settings/${e._id}`}>
                     {e.settings.name}
                   </Link>
                 </Button>
@@ -107,7 +107,7 @@ const PairedScale = () => {
         <div className="w-full lg:w-[60%] lg:pl-4">
           <div className="flex items-center justify-center h-40 lg:justify-end">
             <Link
-              to="/create-paired-scale-settings"
+              to="/100035-DowellScale-Function/create-paired-scale-settings"
               className="px-8 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:outline-none "
             >
               Create Scale Settings

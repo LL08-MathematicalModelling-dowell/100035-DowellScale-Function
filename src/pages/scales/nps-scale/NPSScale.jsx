@@ -32,13 +32,13 @@ const NPSScale = () => {
         return <Fallback />;
     }
   return (
-    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium font-Montserrat'>
-        <div className='border border-primary w-full lg:w-10/12 m-auto py-4 px-5'>
+    <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
+        <div className='w-full px-5 py-4 m-auto border border-primary lg:w-10/12'>
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             // style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}
             >
                 <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
-                    <h2 className='p-2 flex gap-2 items-center font-medium'>
+                    <h2 className='flex items-center gap-2 p-2 font-medium'>
                         <span className=''>
                         <MdManageHistory className='text-primary'/>
                         </span> Scale History
@@ -61,7 +61,7 @@ const NPSScale = () => {
                     .map((scale, index) => (
                         <Button
                         width={'full'}
-                        onClick={() => navigateTo(`/nps-scale-settings/${scale._id}`)}
+                        onClick={() => navigateTo(`/100035-DowellScale-Function/nps-scale-settings/${scale._id}`)}
                         key={index}
                         >
                         {scale?.settings?.name}
@@ -70,15 +70,25 @@ const NPSScale = () => {
                     }
 
                 </div>
-                <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
-                    <h3 className='text-center py-5 text-sm font-medium'>SCALE</h3>
-                    <div className='grid grid-cols-4 md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
+                <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
+                    <h3 className='py-5 text-sm font-medium text-center'>SCALE</h3>
+                    <div className= 'grid  md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center bg-gray-300'>
                         {scores.map((score, index)=>(
-                            <button 
-                                key={index}
-                                onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
-                            >{score}</button>
+                            // <button 
+                            //     key={index}
+                            //     onClick={()=>handleSelectScore(score)}
+                            //     className={`rounded-full ${index  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                            // >{score}</button>
+                            <button
+                            key={index}
+                            onClick={() => handleSelectScore(score)}
+                            className={`rounded-lg ${
+                            index == selectedScore
+                            ? 'bg-white' : 'bg-primary text-white'
+                            }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                    >
+                      {score}
+                    </button>
                         ))}
                     </div>
                     <div className='flex items-center justify-between my-3'>
@@ -87,8 +97,8 @@ const NPSScale = () => {
                         <h4>Very likely</h4>
                     </div>
             
-                    <div className='w-full flex items-center justify-end my-4'>
-                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-nps-scale`)}>create new scale</Button>
+                    <div className='flex items-center justify-end w-full my-4'>
+                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/create-nps-scale`)}>create new scale</Button>
                     </div>
                 </div>
             </div>

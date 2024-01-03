@@ -16,6 +16,8 @@ const RankingScaleSettings = ()=>{
     const [currentStage, setCurrentStage] = useState(0);
     const [itemsAvailableSchema, setItemsAvailableSchema] = useState([]);
 
+    console.log(sigleScaleData, 'sigleScaleData')
+
 
     const dataStages = sigleScaleData && sigleScaleData?.map((scale)=>{
         const stages = scale?.settings?.stages.map((stage)=>{
@@ -30,16 +32,9 @@ const RankingScaleSettings = ()=>{
         })
         return itemList;
     });
-
-    console.log(sigleScaleData && sigleScaleData[0]?.settings?.item_list)
-
-   
-
-
-    
+ 
     
     const stages = sigleScaleData ? dataStages[0] : ['City 5', 'City 6'];
-    console.log(stages, 'stages')
     const itemsAvailable = dataItems ? dataItems[0] : ['item 111', 'item 222'];
     const rankings = [0, 1];
 
@@ -104,11 +99,11 @@ const RankingScaleSettings = ()=>{
     
         if (currentStage === stages.length - 1) {
             const payload =  {
-                scale_id: "651bd7295c8f069f1f078ed5",
+                scale_id: sigleScaleData[0]?._id,
                 brand_name: "New Brand",
                 product_name:"New Product",
-                num_of_stages: 2,
-                num_of_substages:0,
+                num_of_stages: sigleScaleData[0]?.settings?.num_of_stages,
+                num_of_substages:sigleScaleData[0]?.settings?.num_of_substages,
                 username: "natan",
                 rankings:updatedDb
               }
@@ -117,7 +112,7 @@ const RankingScaleSettings = ()=>{
                 toast.success('successfully updated');
                 if(response.status===200){
                     setTimeout(() => {
-                        navigateTo(`/${'ranking-scale'}`)
+                        navigateTo(`/100035-DowellScale-Function/${'ranking-scale'}`)
                     }, 2000);
                 }
             } catch (error) {
@@ -154,55 +149,55 @@ const RankingScaleSettings = ()=>{
         return <Fallback />;
     }
     return(
-        <div className='h-screen  flex flex-col items-center justify-center font-Montserrat'>
-        <div className='border border-primary w-full lg:w-8/12 m-auto py-4 px-10'>
-            <h2 className='text-center py-3'>Ranking Scale Name:  
-            <span className='font-medium text-sm'>{sigleScaleData &&
+        <div className='flex flex-col items-center justify-center h-screen font-Montserrat'>
+        <div className='w-full px-10 py-4 m-auto border border-primary lg:w-8/12'>
+            <h2 className='py-3 text-center'>Ranking Scale Name:  
+            <span className='text-sm font-medium'>{sigleScaleData &&
                         sigleScaleData?.map((scale)=>(
                             <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
                         ))
                 }</span>
             </h2>
             <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}>
-                <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
+                <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
                 {loading ? <h3>...loading data</h3> : (
                     <>
-                        <div className='w-full  flex items-center gap-5'>
+                        <div className='flex items-center w-full gap-5'>
                             <button 
                                 onClick={handlePrev} disabled={currentStage===0}
-                                className='w-3/12 bg-primary text-white flex items-center justify-center gap-2 hover:bg-gray-700/50 py- px-2 py-2 my-1 capitalize'> 
+                                className='flex items-center justify-center w-3/12 gap-2 px-2 py-2 my-1 text-white capitalize bg-primary hover:bg-gray-700/50 py-'> 
                                 <BsArrowLeft className='text-white' />
                                 Go Back
                             </button>
-                            <h2 className='w-3/12 border text-center py-2'>stage {currentStage + 1} of {stages.length}</h2>
-                            <h2 className='text-sm capitalize border w-6/12 py-1 text-center'>
+                            <h2 className='w-3/12 py-2 text-center border'>stage {currentStage + 1} of {stages.length}</h2>
+                            <h2 className='w-6/12 py-1 text-sm text-center capitalize border'>
                                 {stages[currentStage]}
                             </h2>
                         </div>
-                        <div className='w-full flex gap-3 flex-col md:flex-row'>
+                        <div className='flex flex-col w-full gap-3 md:flex-row'>
                             <>
                                 <div className='w-full'>
-                                    <h2 className='border px-2 my-7'>Items available</h2>
+                                    <h2 className='px-2 border my-7'>Items available</h2>
                                 {
                                     <ul>
                                         {
                                             itemsAvailableSchema.map((item, index)=>(
-                                                <li key={index} className='border px-3 py-1'>{item.item}</li>
+                                                <li key={index} className='px-3 py-1 border'>{item.item}</li>
                                             ))
                                         }
                                     </ul>
                                 }
                                 </div>
                                 <div className='w-full'>
-                                    <h2 className='border px-2 my-7'>Select Rankings</h2>
+                                    <h2 className='px-2 border my-7'>Select Rankings</h2>
                                     {itemsAvailableSchema.map((item, index) => (
                                     <div className='w-full' key={index}>
-                                        {/* <h2 className='border px-2 my-7'>{item.item}</h2> */}
+                                        {/* <h2 className='px-2 border my-7'>{item.item}</h2> */}
                                         <select
                                             name={`ranking-${index}`}
                                             value={item.option}
                                             onChange={(e)=>handleSelectOption(e, index)}
-                                            className='w-full border px-3 py-1 outline-0'
+                                            className='w-full px-3 py-1 border outline-0'
                                         >
                                             {rankings.map((ranking) => (
                                                 <option key={ranking} value={ranking}>
@@ -222,18 +217,20 @@ const RankingScaleSettings = ()=>{
                         <Button width={'full'} primary onClick={handleSubmit}>{(currentStage === stages.length - 1) ? 'submit scale' : 'save and proceed'}</Button>
                     
                     </div>
-                    <div className="flex gap-3 justify-end">
+                    <div className="flex justify-end gap-3">
                         {sigleScaleData && sigleScaleData.map((scale, index)=>(
                             <>
-                                <Button width={'3/4'} onClick={()=>navigateTo(`/update-ranking-scale/${scale._id}`)} key={index}>update scale</Button>
+                                <Button width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/update-ranking-scale/${scale._id}`)} key={index}>update scale</Button>
                             </>
                         ))}
-                        <Button width={'3/4'} primary>Save Response</Button>
+                        <Button onClick={handleSubmit}
+                        disabled={currentStage !== stages.length - 1}
+                        width={'3/4'} primary>Save Response</Button>
                     </div>
                     
                 </div>
             </div>
-            {/* <div className='w-full flex items-center justify-end my-4'>
+            {/* <div className='flex items-center justify-end w-full my-4'>
                 <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
             </div> */}
         </div>
