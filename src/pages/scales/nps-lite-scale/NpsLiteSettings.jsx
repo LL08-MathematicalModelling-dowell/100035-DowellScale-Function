@@ -26,6 +26,7 @@ const NpsLiteSettings = () => {
     const [masterLink, setMasterLink] = useState('');
     const [qrCodeURL, setQrCodeURL] = useState('');
     const [qrCodeId, setQrCodeId] = useState('');
+    const [userInfo, setUserInfo] = useState();
     // const [scale, setScale] = useState(null);
     const [publicLinks, SetpublicLinks] = useState(null);
     // const [selectedScore, setSelectedScore] = useState(-1);
@@ -153,7 +154,7 @@ const MasterLinkFunction = async () => {
           PublicLinks.push(portfolio.username);
         }
       });
-
+      console.log(PublicLinks, "TTTTTTTTTTTTHHHHHHHHHHH")
       const flattenedArray = [].concat(...PublicLinks);
 
       // Generate modified URLs
@@ -165,8 +166,8 @@ const MasterLinkFunction = async () => {
         window.location.href.lastIndexOf('/') + 1
       );
       console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
-      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale.no_of_scales)
-      if(flattenedArray.length < scale.no_of_scales) {
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale?.[0].settings?.no_of_scales)
+      if(flattenedArray.length < scale?.[0].settings?.no_of_scales) {
        return toast.error('Insufficient public members');
       }
       for (
@@ -189,6 +190,7 @@ const MasterLinkFunction = async () => {
       // console.log("Error", "Insufficient public members");
     }
   };
+
   const getTextColorForCategory = (category) => {
     switch (category) {
       case 'Bad':
@@ -331,7 +333,7 @@ const MasterLinkFunction = async () => {
       fetchData();
       console.log(scores)
   }, [slug]);
-
+  console.log(scale?.[0].settings?.no_of_scales, "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
   if (loading) {
     return <Fallback />;
   }
