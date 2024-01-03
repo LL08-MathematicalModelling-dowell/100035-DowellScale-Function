@@ -44,6 +44,13 @@ import {
   NpsLiteSettings,
   UpdateNpsLite,
 } from './pages/scales/nps-lite-scale';
+
+import {
+  LikertScale,
+  CreateLikertScale,
+  LikertScaleSettings,
+  UpdateLikertScale
+} from './pages/scales/likert-scale';
 import { StrictMode } from 'react';
 import NPSResponse from './pages/scales/nps-scale/NPSResponse.jsx';
 
@@ -76,6 +83,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/create-scale`,
         element: <CreateRankingScale />,
+      },
+      {
+        path: `${basePath}/likert-scale/`,
+        element: <LikertScale />
       },
       {
         path: `${basePath}/create-paired-scale-settings`,
@@ -122,6 +133,10 @@ const router = createBrowserRouter([
         element: <CreateNPSScale />,
       },
       {
+        path: `${basePath}/create-likert-scale`,
+        element: <CreateLikertScale />,
+      },
+      {
         path: `${basePath}/ranking-scale-settings/:slug`,
         element: <RankingScaleSettings />,
       },
@@ -136,6 +151,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/nps-scale-settings/:slug`,
         element: <NPSScaleSettings />,
+      },
+      {
+        path: `${basePath}/likert-scale-settings/:slug`,
+        element: <LikertScaleSettings />,
       },
       {
         path: `${basePath}/nps-scale-settings/:slug`,
@@ -158,10 +177,13 @@ const router = createBrowserRouter([
         element: <UpdateNPSScale />,
       },
       {
+        path: `${basePath}/update-likert-scale/:slug`,
+        element: <UpdateLikertScale />,
+      },
+      {
         path: `${basePath}/update-staple-scale/:slug`,
         element: <UpdateStapleScale />,
       },
-      
     ],
   },
 ]);

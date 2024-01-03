@@ -31,8 +31,11 @@ const Home = () => {
       name: 'perceptual mapping scale',
       slug: 'pm-scale',
     },
+    {
+      name: 'Likert scale',
+      slug: 'likert-scale',
+    }
   ];
-
   // const navigateTo = useNavigate();
 
 

@@ -6,12 +6,12 @@ import axios from 'axios';
 import { useParams, useLocation } from 'react-router-dom';
 import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
-import UpdateNPSScale from './UpdateNPSScale';
-import NPSMasterlink from './NPSMasterlink';
+import UpdateLikertScale from './UpdateLikertScale';
+import LikertScaleMasterink from './LikertScaleMasterink';
 import dowellLogo from '../../../assets/dowell-logo.png';
 import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
 
-const NPSScaleSettings = () => {
+const LikertScaleSettings = () => {
   const { slug } = useParams();
   const [userInfo, setUserInfo] = useState();
 
@@ -29,6 +29,8 @@ const NPSScaleSettings = () => {
   const [response, setResponse] = useState(null);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
+  const [selectedIndex, setSelectedIndex] = useState()
+  const [disableOnMouseEnter, setDisableOnMouseEnter] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -36,6 +38,8 @@ const NPSScaleSettings = () => {
   const link_id = queryParams.get('link_id');
   const qrcode_id = queryParams.get('qrcode_id');
   const [isButtonHidden, setIsButtonHidden] = useState(false);
+  const [buttonBgColor, setButtonBgColor] = useState(false);
+  const [btnText, setBtnText] = useState("");
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -56,8 +60,14 @@ const NPSScaleSettings = () => {
     setShowMasterLinkSuccessModal(!showMasterLinkSuccessModal);
   };
 
-  const handleSelectScore = (score) => {
+  const handleSelectScore = (score, index) => {
     setSelectedScore(score);
+    setSelectedIndex(index)
+    setDisableOnMouseEnter(true)
+    if(disableOnMouseEnter === true) {
+      document.getElementById('score-button').removeEventListener('mouseleave', setDisableOnMouseEnter(true));
+      document.getElementById('score-button').removeEventListener('mouseenter', setDisableOnMouseEnter(true));
+    }
   };
 
   // const handleFetchSingleScale = async (scaleId) => {
@@ -94,7 +104,7 @@ const NPSScaleSettings = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'https://100035.pythonanywhere.com/api/nps_responses_create',
+        'https://100035.pythonanywhere.com/likert/likert-scale_response/',
         payload
       );
       const result = response.data;
@@ -157,9 +167,9 @@ const NPSScaleSettings = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `https://100035.pythonanywhere.com/api/nps_create/?scale_id=${slug}`
+          `https://100035.pythonanywhere.com/likert/likert-scale_create?scale_id=${slug}`
         );
-        console.log(response.data.success);
+        console.log(response.data.success, "hhhhhhhhhhbbbbbbbbbbbffttt");
         setScale(response.data.success);
       } catch (error) {
         console.error(error);
@@ -177,10 +187,11 @@ const NPSScaleSettings = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `https://100035.pythonanywhere.com/api/nps_responses_create?scale_id=${slug}`
+          `https://100035.pythonanywhere.com/likert/likert-scale_response/${slug}`
         );
-        setScaleResponse((response.data.data.data[0]).score);
+        setScaleResponse((response.data));
         setResponse(response.data)
+        console.log(response.data, "hhhhhhhhhhhhhhhhhhhhhhhhhh")
       } catch (error) {
         console.error(error);
       } finally {
@@ -255,7 +266,7 @@ const NPSScaleSettings = () => {
 
       const result = pub_links.data;
       setUserInfo(result.userinfo);
-      console.log(result, "hhhhhhhhhhhhhhhhhhhhhtttttttttttt")
+
       const PublicLinks = [];
       const all_public_links = [];
 
@@ -304,19 +315,6 @@ const NPSScaleSettings = () => {
       // console.log("Error", "Insufficient public members");
     }
   };
-
-  const handleMouseEnter = (index) =>{
-    if(index === 0) {
-      const btn = document.getElementById(0)
-      btn.title = scale?.left
-    } else if(index === 6) {
-      const btn = document.getElementById(6)
-      btn.title = scale?.center
-    } else if(index === 10) {
-      const btn = document.getElementById(10)
-      btn.title = scale?.right
-    }
-  }
   const getTextColorForCategory = (category) => {
     switch (category) {
       case 'Bad':
@@ -330,6 +328,16 @@ const NPSScaleSettings = () => {
     }
   };
 
+  const handleButtonBgColor = (score) => {
+    setButtonBgColor(true)
+    setBtnText(score)
+}
+
+const handleButtonBgColor2 = (score) => {
+  setButtonBgColor(false)
+  setBtnText(score)
+}
+
   // if (isLoading) {
   //   return <Fallback />;
   // }
@@ -342,42 +350,42 @@ const NPSScaleSettings = () => {
           className="cursor-pointer w-52"
         />
       )}
-      <div className="w-full py-4 m-auto md:px-5 lg:w-7/12" style={{marginTop: scale?.orientation === "Vertical" ? "400px" : ""}}>
+      <div className="w-full py-4 m-auto md:px-5 lg:w-7/12">
         <h1 className="py-5 text-[2rem] font-small text-center">{scale?.name}</h1>
         <div
           className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
         >
           <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
             {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
-            On a scale of 0-10, how likely are you to recommend the product to your friends?
+            How likely are you to recommend the product to your friends?
             </h3>}
             <div
-              className={`grid  md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
-              style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "" }}
+              className={`grid gap-3 md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
+              style={{ backgroundColor: scale?.scalecolor ,display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : ""}}
             >
               {scale &&
-                (Array.isArray(scale?.fomat) ? scale.fomat : scores).map(
+                (scale?.label_input).map(
                   (score, index) => (
                     <button
                       key={index}
-                      id = {index}
-                      onClick={() => handleSelectScore(score)}
+                      onClick={() => handleSelectScore(score, index)}
                       disabled = {scaleResponse.length === 0 ? false : true}
+                      id = "score-button"
                       className={`rounded-lg ${
                         index == selectedScore
                           ? `bg-primary`
-                          : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
-                      }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                          : `bg-[${scale.round_color}] text-[${scale?.fontcolor}]`
+                      }  h-[3rem] w-[5rem] md:h-[3rem] md:w-[5rem]`}
+                      onMouseEnter={() => handleButtonBgColor(score)}
+                      onMouseLeave = {() => handleButtonBgColor2(score)}
                       style={
-                        index == selectedScore || scaleResponse.score === index
+                        index == selectedIndex || scaleResponse.score === index
                           ? {
                              backgroundColor: 'green',
                               color: 'white',
                             }
-                          : {  backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
+                          : {backgroundColor: buttonBgColor === true && scale?.label_input[index] === btnText ? 'green' : scale?.round_color , color: buttonBgColor === true && scale?.label_input[index] === btnText ? "white" : scale?.fontcolor }
                       }
-
-                      onMouseEnter={() => {scale?.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
                     >
                       {score}
                     </button>
@@ -396,7 +404,6 @@ const NPSScaleSettings = () => {
                       : 'none',
                   padding: '5px 20px', // Adjust the padding as needed
                   borderRadius: '10px', // Adjust the border radius as needed
-                  display: scale?.orientation === "Vertical" ? "none" : "block"
                 }}
               >
                 {scale?.left}
@@ -410,7 +417,6 @@ const NPSScaleSettings = () => {
                     selectedScore >= 4 && selectedScore <= 6 ? 'none' : 'none',
                   padding: '5px 20px', // Adjust the padding as needed
                   borderRadius: '10px', // Adjust the border radius as needed
-                  display: scale?.orientation === "Vertical" ? "none" : "block"
                 }}
               >
                 {scale?.center}
@@ -426,7 +432,6 @@ const NPSScaleSettings = () => {
                       : 'none',
                   padding: '5px 20px', // Adjust the padding as needed
                   borderRadius: '10px', // Adjust the border radius as needed
-                  display: scale?.orientation === "Vertical" ? "none" : "block"
                 }}
               >
                 {scale?.right}
@@ -473,10 +478,10 @@ const NPSScaleSettings = () => {
         />
       )}
       {showUpdateModal && (
-        <UpdateNPSScale handleToggleUpdateModal={handleToggleUpdateModal} />
+        <UpdateLikertScale handleToggleUpdateModal={handleToggleUpdateModal} />
       )}
       {showMasterlinkModal && (
-        <NPSMasterlink
+        <LikertScaleMasterink
           handleToggleMasterlinkModal={handleToggleMasterlinkModal}
           link={masterLink}
           publicLinks={publicLinks}
@@ -487,4 +492,4 @@ const NPSScaleSettings = () => {
   );
 };
 
-export default NPSScaleSettings;
+export default LikertScaleSettings;

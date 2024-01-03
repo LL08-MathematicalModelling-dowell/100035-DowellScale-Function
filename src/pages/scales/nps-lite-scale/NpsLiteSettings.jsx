@@ -6,8 +6,8 @@ import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveResponse } from "../../../hooks/useSaveResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
-import UpdateNPSLite from "./UpdateNPSLite";
-import NPSMasterlink from "../nps-scale/NPSMasterlink";
+import UpdateNpsLite from "./UpdateNpsLite";
+import NPSLiteMasterLink from "./NPSLiteMasterLink";
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 const NpsLiteSettings = () => {
     const { slug } = useParams();
@@ -26,6 +26,7 @@ const NpsLiteSettings = () => {
     const [masterLink, setMasterLink] = useState('');
     const [qrCodeURL, setQrCodeURL] = useState('');
     const [qrCodeId, setQrCodeId] = useState('');
+    const [userInfo, setUserInfo] = useState();
     // const [scale, setScale] = useState(null);
     const [publicLinks, SetpublicLinks] = useState(null);
     // const [selectedScore, setSelectedScore] = useState(-1);
@@ -140,7 +141,7 @@ const MasterLinkFunction = async () => {
 
       const result = pub_links.data;
       setUserInfo(result.userinfo);
-
+      console.log(result, "hhhhhhhhhhhhhhhhhhhhhtttttttttttt")
       const PublicLinks = [];
       const all_public_links = [];
 
@@ -153,7 +154,7 @@ const MasterLinkFunction = async () => {
           PublicLinks.push(portfolio.username);
         }
       });
-
+      console.log(PublicLinks, "TTTTTTTTTTTTHHHHHHHHHHH")
       const flattenedArray = [].concat(...PublicLinks);
 
       // Generate modified URLs
@@ -164,7 +165,11 @@ const MasterLinkFunction = async () => {
       const lastPart = window.location.href.slice(
         window.location.href.lastIndexOf('/') + 1
       );
-
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale?.[0].settings?.no_of_scales)
+      if(flattenedArray.length < scale?.[0].settings?.no_of_scales) {
+       return toast.error('Insufficient public members');
+      }
       for (
         let i = 0;
         i < scale.no_of_scales && i < flattenedArray.length;
@@ -185,6 +190,7 @@ const MasterLinkFunction = async () => {
       // console.log("Error", "Insufficient public members");
     }
   };
+
   const getTextColorForCategory = (category) => {
     switch (category) {
       case 'Bad':
@@ -327,7 +333,7 @@ const MasterLinkFunction = async () => {
       fetchData();
       console.log(scores)
   }, [slug]);
-
+  console.log(scale?.[0].settings?.no_of_scales, "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
   if (loading) {
     return <Fallback />;
   }
@@ -404,10 +410,10 @@ const MasterLinkFunction = async () => {
         />
       )}
       {showUpdateModal && (
-        <UpdateNPSLite handleToggleUpdateModal={handleToggleUpdateModal} />
+        <UpdateNpsLite handleToggleUpdateModal={handleToggleUpdateModal} />
       )}
       {showMasterlinkModal && (
-        <NPSMasterlink
+        <NPSLiteMasterLink
           handleToggleMasterlinkModal={handleToggleMasterlinkModal}
           link={masterLink}
           publicLinks={publicLinks}
