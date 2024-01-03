@@ -6,6 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="868b820d-f752-432a-9da3-f3bacec6f10c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/asgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/asgi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/wsgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/dowellnps_scale_function/wsgi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/scale_report/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/scale_report/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/scale_report/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/scale_report/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/scale_report/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/scale_report/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/scale_report/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/scale_report/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/scale_report/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/scale_report/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/scale_report/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/scale_report/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -327,6 +337,8 @@
       <workItem from="1703845293422" duration="3496000" />
       <workItem from="1703874280193" duration="787000" />
       <workItem from="1704194020344" duration="602000" />
+      <workItem from="1704271431393" duration="825000" />
+      <workItem from="1704272283256" duration="179000" />
     </task>
     <servers />
   </component>
