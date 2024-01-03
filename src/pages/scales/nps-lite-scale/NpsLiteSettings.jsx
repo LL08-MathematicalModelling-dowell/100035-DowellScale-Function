@@ -140,7 +140,7 @@ const MasterLinkFunction = async () => {
 
       const result = pub_links.data;
       setUserInfo(result.userinfo);
-
+      console.log(result, "hhhhhhhhhhhhhhhhhhhhhtttttttttttt")
       const PublicLinks = [];
       const all_public_links = [];
 
