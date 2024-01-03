@@ -17,7 +17,7 @@ const UpdateRankingScale = ()=>{
     const { slug } = useParams();
     const { loading, sigleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const [timeOn, setTimeOn] = useState(false);
-    const { _id, settings } = (sigleScaleData && sigleScaleData[0]) || {};
+    const { _id, settings } = (sigleScaleData && sigleScaleData) || {};
     const [isLoading, setIsLoading] = useState(false);
     const updateResponse = useUpdateResponse();
     const navigateTo = useNavigate();
@@ -37,7 +37,7 @@ const UpdateRankingScale = ()=>{
 
     const { fetchSessionId, user  } = useFetchUserContext();
 
-
+console.log(settings,'ss')
 
     const scalename = settings?.scalename;
     const num_of_stages = settings?.num_of_stages;
@@ -83,13 +83,13 @@ const UpdateRankingScale = ()=>{
     const ranking_reference = ['Overall Ranking', 'StageWise Ranking'];
 
     const updatePayload = {
-            scale_id:_id,
+            scale_id:sigleScaleData?._id,
             user: true,
             username: user?.username,
             scalename:updateFormData.scalename,
             num_of_stages:updateFormData.num_of_stages, 
             num_of_substages:updateFormData.num_of_substages, 
-            stages:subInputsValue, 
+            stages:sigleScaleData.settings.stages, 
             item_count:updateFormData.item_count, 
             item_list:updateFormData.item_list,
             scalecolor:updateFormData.scalecolor, 
@@ -101,6 +101,7 @@ const UpdateRankingScale = ()=>{
             reference:updateFormData.reference,
             stages_arrangement:updateFormData.stages_arrangement,
             display_ranks:updateFormData.display_ranks 
+            
     }
 
     console.log(updatePayload, '****updatePayload')
@@ -252,11 +253,11 @@ const UpdateRankingScale = ()=>{
         }
       }, [settings]);
 
-    useEffect(()=>{
-        if(updateFormData.stages){
-            setSubInputsValue([...updateFormData.stages]);
-        }
-    },[updateFormData.stages]);
+    // useEffect(()=>{
+    //     if(updateFormData.stages){
+    //         setSubInputsValue([...updateFormData.stages]);
+    //     }
+    // },[updateFormData.stages]);
 
     useEffect(()=>{
         if(updateFormData.num_of_stages){
@@ -287,11 +288,12 @@ const UpdateRankingScale = ()=>{
     const handleUpdateRankingScale = async()=>{
         try {
             setIsLoading(true);
+            console.log(updatePayload)
             const response = await updateResponse('ranking-scale', updatePayload);
             // console.log(response, 'updated response')
             toast.success('successfully updated');
             setTimeout(()=>{
-                navigateTo(`/100035-DowellScale-Function/ranking-scale-settings/${sigleScaleData[0]?._id}`);
+                navigateTo(`/100035-DowellScale-Function/ranking-scale-settings/${sigleScaleData?._id}`);
             },2000)
         } catch (error) {
             console.log(error)

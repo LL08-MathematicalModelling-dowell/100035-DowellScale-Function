@@ -16,22 +16,15 @@ const RankingScaleSettings = ()=>{
     const [currentStage, setCurrentStage] = useState(0);
     const [itemsAvailableSchema, setItemsAvailableSchema] = useState([]);
 
-    console.log(sigleScaleData, 'sigleScaleData')
+    console.log(sigleScaleData?.settings?.stages[2], 'sigleScaleData')
 
-
-    const dataStages = sigleScaleData && sigleScaleData?.map((scale)=>{
-        const stages = scale?.settings?.stages.map((stage)=>{
-            return stage;
-        })
-        return stages;
-    });
-
-    const dataItems = sigleScaleData && sigleScaleData?.map((scale)=>{
-        const itemList = scale?.settings?.item_list.map((list)=>{
+    // const stagess = sigleScaleData?.settings?.stages || {};
+    const stagesObject = sigleScaleData?.settings?.stages || {};
+    const dataStages = Object.values(stagesObject);
+      
+    const dataItems = sigleScaleData && sigleScaleData?.settings?.item_list.map((list)=>{
             return list;
         })
-        return itemList;
-    });
  
     
     const stages = sigleScaleData ? dataStages[0] : ['City 5', 'City 6'];
@@ -152,13 +145,11 @@ const RankingScaleSettings = ()=>{
         <div className='flex flex-col items-center justify-center h-screen font-Montserrat'>
         <div className='w-full px-10 py-4 m-auto border border-primary lg:w-8/12'>
             <h2 className='py-3 text-center'>Ranking Scale Name:  
-            <span className='text-sm font-medium'>{sigleScaleData &&
-                        sigleScaleData?.map((scale)=>(
-                            <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
-                        ))
-                }</span>
+            <span className='text-sm font-medium'>
+                            <span>{sigleScaleData?.settings?.scalename}</span>
+                </span>
             </h2>
-            <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}>
+            <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{backgroundColor:`${sigleScaleData && sigleScaleData.settings.scalecolor}`}}>
                 <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
                 {loading ? <h3>...loading data</h3> : (
                     <>
@@ -217,22 +208,18 @@ const RankingScaleSettings = ()=>{
                         <Button width={'full'} primary onClick={handleSubmit}>{(currentStage === stages.length - 1) ? 'submit scale' : 'save and proceed'}</Button>
                     
                     </div>
+                    {sigleScaleData && 
                     <div className="flex justify-end gap-3">
-                        {sigleScaleData && sigleScaleData.map((scale, index)=>(
-                            <>
-                                <Button width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/update-ranking-scale/${scale._id}`)} key={index}>update scale</Button>
-                            </>
-                        ))}
+                                <Button width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/update-ranking-scale/${sigleScaleData._id}`)} key={sigleScaleData._id}>update scale</Button>
                         <Button onClick={handleSubmit}
                         disabled={currentStage !== stages.length - 1}
                         width={'3/4'} primary>Save Response</Button>
                     </div>
+                    }
                     
                 </div>
             </div>
-            {/* <div className='flex items-center justify-end w-full my-4'>
-                <Button primary width={'3/4'} onClick={()=>navigateTo(`/create-scale?slug=${slug}`)}>create new scale</Button>
-            </div> */}
+         
         </div>
     </div>
     )

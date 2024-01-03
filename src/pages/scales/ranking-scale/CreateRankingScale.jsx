@@ -170,44 +170,71 @@ const CreateRankingScale = ()=>{
 
     const handleSubmitScales = async()=>{
         const payload = {
-            user: formData.user,
-            username: user.username,
-            scalename:formData.scalename,
-            num_of_stages:Number(formData.num_of_stages),
-            num_of_substages:formData.num_of_stages,
-            stages: subInputsValue,
-            item_count:Number(formData.item_count),
-            item_list:subItemsValue,
-            stages_arrangement: formData.stages_arrangement,
-            scalecolor:formData.scalecolor,
-            fontcolor:formData.fontcolor,
-            fontstyle:formData.fontstyle,
-            orientation:formData.orientation,
-            ranking_method_stages:formData.ranking_method_stages,
-            start_with_zero: true,
-            reference:formData.reference,
-            display_ranks: true
+            
+
+
+  username: "natan",
+  scalename: "Ranking",
+  num_of_stages: 4,
+  num_of_substages: 0,
+  item_count: 3,
+  item_list: ["a","b","c"],
+  stages: [
+      "City 1",
+      "City 2",
+      "City 3",
+      "City 4"
+    ],
+      stages_arrangement: "Using ID numbers",
+      scalecolor: "#FFFFFF",
+      fontcolor:"#FCFCFC",
+      fontstyle: "Sans Serif",
+      orientation: "Horizontal",
+      ranking_method_stages: "Unique Ranking",
+      start_with_zero: true,
+      reference: "Overall Ranking",
+      display_ranks: true
+    
+  
+  
+            // user: formData.user,
+            // username: user.username,
+            // scalename:formData.scalename,
+            // num_of_stages:Number(formData.num_of_stages),
+            // num_of_substages:formData.num_of_stages,
+            // stages: subInputsValue,
+            // item_count:Number(formData.item_count),
+            // item_list:subItemsValue,
+            // stages_arrangement: formData.stages_arrangement,
+            // scalecolor:formData.scalecolor,
+            // fontcolor:formData.fontcolor,
+            // fontstyle:formData.fontstyle,
+            // orientation:formData.orientation,
+            // ranking_method_stages:formData.ranking_method_stages,
+            // start_with_zero: true,
+            // reference:formData.reference,
+            // display_ranks: true
         }
 
-        for (const field of requiredFields) {
-            if (!formData[field]) {
-                toast.error(`Please complete the "${field.replace(/_/g, ' ')}" field.`);
-                return;
-            }
-        }
+        // for (const field of requiredFields) {
+        //     if (!formData[field]) {
+        //         toast.error(`Please complete the "${field.replace(/_/g, ' ')}" field.`);
+        //         return;
+        //     }
+        // }
 
-        if (timeOn===true && (formData.time < 9)) {
-            toast.error('Time cannot be empty, please set a time greater than 9');
-            return;
-        }
-        if (payload.stages.length === 0) {
-            toast.error('Click on number of stages to provide at least one stage item.');
-            return;
-        }
-        if (payload.item_list.length === 0) {
-            toast.error('Click on item count to add at least one item in the list.');
-            return;
-        }
+        // if (timeOn===true && (formData.time < 9)) {
+        //     toast.error('Time cannot be empty, please set a time greater than 9');
+        //     return;
+        // }
+        // if (payload.stages.length === 0) {
+        //     toast.error('Click on number of stages to provide at least one stage item.');
+        //     return;
+        // }
+        // if (payload.item_list.length === 0) {
+        //     toast.error('Click on item count to add at least one item in the list.');
+        //     return;
+        // }
 
         try {
             setIsLoading(true);
