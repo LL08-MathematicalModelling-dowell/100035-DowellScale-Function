@@ -28,6 +28,7 @@ def map_binary_to_likert(yes_count, no_count, total_responses):
     else:
         return "Neutral"
 
+
 def basic_likert_score(responses):
     yes_count = responses.count('Yes')
     no_count = responses.count('No')
@@ -44,6 +45,7 @@ def basic_likert_score(responses):
     print(likert_result, "likert_result")
     return likert_result, nps_score
 
+
 def weighted_nps_score(responses, w1=0.7, w2=0.3):
     # Assigning weights based on the score
     weighted_scores = [(w1 if r == 3 else w2 if r == 1 else 0.5) for r in responses]
@@ -52,6 +54,14 @@ def weighted_nps_score(responses, w1=0.7, w2=0.3):
     total_weighted = sum(weighted_scores)
     nps_score = (promoters_weighted - detractors_weighted) / total_weighted * 100
     return nps_score
+
+
+def calculate_percent_scale_score(aggregate_scores, max_score=100):
+    # Assuming max_score is the maximum possible score for each product
+    total_possible_score = max_score * len(aggregate_scores)
+    percent_scores = [(score / total_possible_score) * 100 for score in aggregate_scores]
+    return percent_scores
+
 
 def basic_nps_score(responses):
     promoters = responses.count(3)
@@ -64,6 +74,7 @@ def basic_nps_score(responses):
     nps_score = (promoters - detractors) / total_responses * 100
     return nps_score
 
+
 def categorize_nps_score(nps_score):
     if nps_score > 0:
         return "Promoter"
@@ -72,6 +83,7 @@ def categorize_nps_score(nps_score):
     else:
         return "Detractor"
 
+
 def categorize_scale_generate_scale_specific_report(scale_type, score):
     if scale_type == "nps scale" or scale_type == "nps":
         score = [int(x) for x in score]
@@ -79,7 +91,7 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
         nps_scale_data = calculate_nps_category(nps_categories)
 
         response_ = {
-            "scale_category": scale_type,
+            "scale_type": scale_type,
             "no_of_scales": len(score),
             "nps_score": sum(score),
             "nps_total_score": len(score) * 10,
@@ -93,7 +105,7 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
         stapel_scale_data = calculate_stapel_scale_category(score)
 
         response_ = {
-            "scale_category": scale_type,
+            "scale_type": scale_type,
             "no_of_scales": len(score),
             "stapel_score": sum(score),
             # "stapel_total_score": len(score) * 10,
@@ -108,7 +120,7 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
         nps_scale_data = basic_likert_score(scores)
 
         response_ = {
-            "scale_category": scale_type,
+            "scale_type": scale_type,
             "no_of_scales": len(score),
             "report": nps_scale_data,
         }
@@ -121,7 +133,7 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
         weighted_score = weighted_nps_score(scores)
 
         response_ = {
-            "scale_category": scale_type,
+            "scale_type": scale_type,
             "no_of_scales": len(score),
             "npslite_total_score": len(score) * 10,
             "score_list": score,
@@ -129,6 +141,19 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
             "Weighted NPSlite Score": weighted_nps_score(scores),
             "Basic NPSlite Category": categorize_nps_score(basic_score),
             "Weighted NPSlite Category": categorize_nps_score(weighted_score),
+        }
+        return response_
+
+    elif scale_type == "percent scale" or scale_type == "percent":
+        scores = calculate_percent_scale_score(score)
+        response_ = {
+            "scale_type": scale_type,
+            "no_of_scales": len(score),
+            "aggregated_score_list": score,
+            "percent_score": sum(score),
+            "percent_total_score": len(score) * 10,
+            "max_total_score": max(score),
+            "report": scores
         }
         return response_
 
@@ -163,6 +188,7 @@ def statistics(scores, process_id):
     print(f"\n\nnormalityyyyy: {normality}\n\n")
     return normality, stattrics
 
+
 def get_scores(report_type, response_data):
     if report_type == "document":
         document_id = response_data.get("document_id")
@@ -196,16 +222,26 @@ def scalewise_report(request, scale_id):
         return Response(result["response"], status=result["status"])
 
     scale_type = result['data'][0]["scale_data"]["scale_type"]
-    scale_types = ["nps scale", "npslite scale", "stapel scale", "likert scale"]
+    scale_types = ["nps scale", "npslite scale", "stapel scale", "likert scale", "percent scale"]
 
     if scale_type not in scale_types:
         return Response(
             {"isSuccess": False, "message": "Invalid scale type"},
             status=status.HTTP_400_BAD_REQUEST)
     print(result, "result\n\n\n")
-    all_scores = extract_scores(result)
+    passed = []
+    if scale_type != "percent scale":
+        all_scores = extract_scores(result)
+    else:
+        print("accessing else part")
+
+
+        for i in result['data']:
+            print(i, "i\n\n")
+            passed.append(i['score'])
+        print(passed, "passed\n\n")
+        all_scores = aggregate_scores(passed)
     print(all_scores, "all_scores\n\n\n")
-    print(len(all_scores), "all_scores\n\n\n")
     if len(all_scores) < 3:
         return Response(
             {"isSuccess": True, "message": "Cannot generate a report for a scale with less than 3 responses"},
@@ -214,12 +250,16 @@ def scalewise_report(request, scale_id):
     try:
         dd = categorize_scale_generate_scale_specific_report(scale_type, all_scores)
         print(dd, "uiiu\n\n")
-        reports["categorize_scale_type"] = dd
+        reports["categorized_scale_type"] = dd
+        if scale_type == "percent scale":
+            reports["categorized_scale_type"] = {**{"score_list": passed}, **reports["categorized_scale_type"]}
     except Exception as e:
         return Response({"isSuccess": False, "reports": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+    print(reports, "reportsssss\n\n")
     # Statricks API call
-    if scale_type != "likert scale" or scale_type != "likert":
+    print(f"\n\nscale_type: ...{scale_type}...\n\n")
+    if scale_type != "likert scale":
+        print("accessing statricks api")
         response_json = stattricks_api("evaluation_module", random_number, 16, 3, {"list1": all_scores})
         print(response_json, "lll\n\n")
         if response_json:
@@ -241,6 +281,20 @@ def scalewise_report(request, scale_id):
     return Response({"report": reports}, status=status.HTTP_200_OK)
 
 
+def aggregate_scores(instances):
+    print(instances, "instances\n\n\n")
+    # Initialize an aggregate list with zeros, length equal to the number of scores in each instance
+    aggregate = [0] * len(instances[0])
+
+    for instance in instances:
+        for i, score in enumerate(instance):
+            aggregate[i] += score
+
+    print(aggregate, "aggregate\n\n\n")
+
+    return aggregate
+
+
 def fetch_scale_data(field_add):
     """
     Fetches scale data from the database.
@@ -249,6 +303,7 @@ def fetch_scale_data(field_add):
         response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                     "1094", "ABCDE", "fetch", field_add, "nil")
         result = json.loads(response)
+        print(result, "result\n\n\n")
         if "user is not active" in result:
             return {"success": False, "response": {"isSuccess": False, "message": "User is not active"}, "status": status.HTTP_400_BAD_REQUEST}
         if not result["data"]:
@@ -257,13 +312,17 @@ def fetch_scale_data(field_add):
     except Exception as e:
         return {"success": False, "response": {"isSuccess": False, "message": str(e)}, "status": status.HTTP_500_INTERNAL_SERVER_ERROR}
 
+
 def extract_scores(data):
     """
     Extracts scores from the fetched data.
     """
     scores = []
-    for entry in data['data']:
-        score_info = entry.get('score', {})
-        score_value = score_info.get('score')
-        scores.append(score_value)
+    try:
+        for entry in data['data']:
+            score_info = entry.get('score', {})
+            score_value = score_info.get('score')
+            scores.append(score_value)
+    except:
+        print("No scores found")
     return scores

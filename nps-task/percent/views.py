@@ -73,12 +73,14 @@ def settings_api_view_create(request):
                 field_add = {"settings.scale_category": "percent scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                                  "ABCDE", "fetch", field_add, "nil")
+                print(response_data, "response_data\n\n")
                 return Response(json.loads(response_data)['data'], status=status.HTTP_200_OK)
 
             field_add = {"_id": scale_id}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                  "find", field_add, "nil")
             settings_json = json.loads(x)
+            print(settings_json, "settings_json\n\n")
             if not settings_json.get('data'):
                 return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -187,6 +189,7 @@ def percent_response_view_submit(request):
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
+                print(response_data, "response_data\n\n")
                 data = json.loads(response_data).get("data")[0]
                 return Response({"data": data})
             else:

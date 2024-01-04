@@ -762,6 +762,7 @@ def fetch_scale_data(field_add):
         response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                     "1094", "ABCDE", "fetch", field_add, "nil")
         result = json.loads(response)
+        print(result, "result\n\n\n")
         if "user is not active" in result:
             return {"success": False, "response": {"isSuccess": False, "message": "User is not active"}, "status": status.HTTP_400_BAD_REQUEST}
         if not result["data"]:
