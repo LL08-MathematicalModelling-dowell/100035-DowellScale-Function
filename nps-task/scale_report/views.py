@@ -85,6 +85,7 @@ def categorize_nps_score(nps_score):
 
 
 def categorize_scale_generate_scale_specific_report(scale_type, score):
+    print("category function")
     if scale_type == "nps scale" or scale_type == "nps":
         score = [int(x) for x in score]
         nps_categories = [find_category(x) for x in score]
@@ -157,6 +158,51 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
         }
         return response_
 
+    elif scale_type == "percent_sum scale":
+        global score_
+        max_score = max(max(instance) for instance in score)
+
+        # Calculate average score for each category
+        num_categories = len(score[0])
+        category_averages = [0] * num_categories
+        for instance in score:
+            for i, score_ in enumerate(instance):
+                category_averages[i] += score_
+        category_averages = [total / len(score) for total in category_averages]
+
+        # Calculate total score for each instance
+        total_scores_per_instance = [sum(instance) for instance in score]
+
+        # Calculate average score across all instances
+        average_score = sum(total_scores_per_instance) / len(score)
+        print(f"score: {score_}\n\n")
+        response_ = {
+            "scale_type": scale_type,
+            "no_of_scales": len(score),
+            "average_score": average_score,
+            "max_total_score": max_score,
+        }
+        return response_
+
+
+def aggregate_percent_sum_scores(instances):
+    # Check if instances list is empty or malformed
+    if not instances or not instances[0]:
+        return []
+
+    num_categories = len(instances[0])
+    aggregate = [0] * num_categories  # Initialize aggregate list for each score category
+
+    for instance in instances:
+        for i, score in enumerate(instance):
+            aggregate[i] += score
+
+    # Calculate the average for each category
+    num_instances = len(instances)
+    average_scores = [total / num_instances for total in aggregate]
+
+    return average_scores
+
 
 def fetch_scores_and_scale_type(query_params):
     response_data_scores = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
@@ -208,9 +254,9 @@ def get_scores(report_type, response_data):
         return fetch_scores_and_scale_type(query_params)
 
 
-
 @api_view(["GET"])
 def scalewise_report(request, scale_id):
+    all_scores = []
     reports = {}
     random_number = generate_random_number()
 
@@ -222,7 +268,8 @@ def scalewise_report(request, scale_id):
         return Response(result["response"], status=result["status"])
 
     scale_type = result['data'][0]["scale_data"]["scale_type"]
-    scale_types = ["nps scale", "npslite scale", "stapel scale", "likert scale", "percent scale"]
+    print(scale_type, "scale_type\n\n")
+    scale_types = ["nps scale", "npslite scale", "stapel scale", "likert scale", "percent scale", "percent_sum scale"]
 
     if scale_type not in scale_types:
         return Response(
@@ -230,9 +277,21 @@ def scalewise_report(request, scale_id):
             status=status.HTTP_400_BAD_REQUEST)
     print(result, "result\n\n\n")
     passed = []
-    if scale_type != "percent scale":
+    # if scale_type == "percent_sum scale":
+    #     # Extract scores for percent_sum scale
+    #     scores = []
+    #     for entry in result['data']:
+    #         print(entry, "entry\n\n")
+    #         scores.append(entry['score'])
+    #     print(scores, "scoresssss\n\n")
+    #     all_scores = aggregate_percent_sum_scores(scores)
+    # print(all_scores, "all_scoresssssss umar\n\n\n")
+    if scale_type != "percent scale" or scale_type != "percent_sum scale":
+        print(f"accessing if part ..{scale_type}..")
         all_scores = extract_scores(result)
-    else:
+        if scale_type == "percent_sum scale":
+            passed = aggregate_percent_sum_scores(all_scores)
+    elif scale_type != "percent_sum scale":
         print("accessing else part")
 
 
@@ -241,7 +300,7 @@ def scalewise_report(request, scale_id):
             passed.append(i['score'])
         print(passed, "passed\n\n")
         all_scores = aggregate_scores(passed)
-    print(all_scores, "all_scores\n\n\n")
+    print(all_scores, "all_scoresssssss\n\n\n")
     if len(all_scores) < 3:
         return Response(
             {"isSuccess": True, "message": "Cannot generate a report for a scale with less than 3 responses"},
@@ -253,6 +312,8 @@ def scalewise_report(request, scale_id):
         reports["categorized_scale_type"] = dd
         if scale_type == "percent scale":
             reports["categorized_scale_type"] = {**{"score_list": passed}, **reports["categorized_scale_type"]}
+        elif scale_type == "percent_sum scale":
+            reports["categorized_scale_type"] = {**{"Report": passed}, **reports["categorized_scale_type"]}
     except Exception as e:
         return Response({"isSuccess": False, "reports": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     print(reports, "reportsssss\n\n")
@@ -260,7 +321,10 @@ def scalewise_report(request, scale_id):
     print(f"\n\nscale_type: ...{scale_type}...\n\n")
     if scale_type != "likert scale":
         print("accessing statricks api")
-        response_json = stattricks_api("evaluation_module", random_number, 16, 3, {"list1": all_scores})
+        if scale_type == "percent_sum scale":
+            response_json = stattricks_api("evaluation_module", random_number, 16, 3, {"list1": passed})
+        else:
+            response_json = stattricks_api("evaluation_module", random_number, 16, 3, {"list1": all_scores})
         print(response_json, "lll\n\n")
         if response_json:
             reports.update({
