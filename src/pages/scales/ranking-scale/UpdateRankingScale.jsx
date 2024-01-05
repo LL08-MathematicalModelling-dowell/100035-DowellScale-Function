@@ -89,7 +89,7 @@ console.log(settings,'ss')
             scalename:updateFormData.scalename,
             num_of_stages:updateFormData.num_of_stages, 
             num_of_substages:updateFormData.num_of_substages, 
-            stages:sigleScaleData.settings.stages, 
+            stages:sigleScaleData?.settings.stages, 
             item_count:updateFormData.item_count, 
             item_list:updateFormData.item_list,
             scalecolor:updateFormData.scalecolor, 

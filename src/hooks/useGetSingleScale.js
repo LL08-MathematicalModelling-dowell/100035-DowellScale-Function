@@ -16,7 +16,7 @@ const useGetSingleScale = () => {
             setLoading(true);
             const response = await axios.get(`https://100035.pythonanywhere.com/ranking/api/ranking_settings_create/?scale_id=${scaleId}`);
             setSingleScaleData(response.data); 
-            console.log(response.data)
+            console.log(response.data,"sdsadsdasdsd")
         } catch (error) {
             console.error(error);
         } finally {
