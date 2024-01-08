@@ -211,7 +211,8 @@ def ResponseAPI(request):
                         if group in payload:
                             all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
                     all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
-                    
+                    print(all_cards, "cards\n\n")
+                    print(list(range(1, total_statements + 1)), "range\n\n")
                     if all_cards != list(range(1, total_statements + 1)):
                         return Response({"Error": "Card numbers are not continuous or missing."},
                                             status=status.HTTP_400_BAD_REQUEST)
@@ -371,21 +372,21 @@ def ResponseAPI(request):
 
     if request.method == 'GET':
         params = request.GET
-        id = params.get("id")
+        id = params.get("scale_id")
         if not id:
-            z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                        "scale_reports",
-                                        "1094", "ABCDE", "fetch", {"settings.scaletype": "qsort"}, "nil")
+            z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
+                                    "fetch",
+                                    {"settings.scaletype": "qsort"}, "nil")
 
             z = json.loads(z)
             return Response({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
                                 status=status.HTTP_200_OK)
         else:
-            field_add = {"_id": id}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                        "scale_reports",
-                                        "1094", "ABCDE", "fetch", field_add, "nil")
+            field_add = {"scale_id": "id"}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
+                                    "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(x)
+            print("Tijani is" , data)
             if data.get('data') == []:
                 return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
             return Response({"data": data['data']}, status=status.HTTP_200_OK)

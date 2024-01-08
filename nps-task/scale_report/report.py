@@ -17,6 +17,9 @@ from .exceptions import (
 from .utils import (
     get_all_scores,
     get_positions,
+    find_range, 
+    median, 
+    mode,
     likert_label_map,
     get_key_by_value,
     get_percentage_occurrence)
@@ -321,16 +324,21 @@ class PerpetualMappingScaleReport(ScaleReportBaseClass):
     def report(self , scale_report_object : ScaleReportObject):
         reports = {}
 
-        item_list_dicts = defaultdict(lambda: [[], []])
+        item_list_dicts = defaultdict(lambda: defaultdict(list))
 
         for score in  self._all_scores:
             for key in score.keys():
-                item_list_dicts[key][0].append(score[key][0])
-                item_list_dicts[key][1].append(score[key][1])
+                item_list_dicts[key]["x"].append(score[key][0])
+                item_list_dicts[key]["y"].append(score[key][1])
 
         for keys , values in item_list_dicts.items():
-            items_report_x = calculate_stapel_scale_category(values[0])
-            items_report_y = calculate_stapel_scale_category(values[1])
+            items_report_x = calculate_stapel_scale_category(values["x"])
+            items_report_y = calculate_stapel_scale_category(values["y"])
+
+            items_report_x["mode"] , items_report_y["mode"] =  mode(values["x"]) , mode(values["y"])
+            items_report_x["median"] , items_report_y["median"] = mode(values["x"]) , mode(values["y"])
+            items_report_x["range"] , items_report_y["range"] = find_range(values["x"]) , find_range(values["y"])
+
 
             reports[keys] = [items_report_x , items_report_y]
 
@@ -392,7 +400,54 @@ class ThurststoneScaleReport(ScaleReportBaseClass):
         self._get_scale_settings()
         self.__gather_statement_scores()
         return self._statememt_scores
-        pass
+
+
+class QSortScaleReport(ScaleReportBaseClass):
+
+    scale_report_type = "qsort scale"
+    
+    def _get_all_scores(self):
+        self._all_scores = []
+        for score in self._scale_response_data["data"]:
+            self._all_scores.append(score["results"])
+        return self._all_scores
+
+    def _populate_dictionary(self , dictionary , in_place_dict , values):
+        from itertools import zip_longest
+        for key , value in zip_longest(dictionary["statements"] , dictionary["scores"]) :
+            if key is not None:
+                in_place_dict[key["text"]][0].append(values)
+                in_place_dict[key["text"]][0].append(value)
+
+    
+    def _gather_scores_(self):
+        self._statement_scores = defaultdict(lambda : [[] , []])
+
+        for statement in self._all_scores:
+            self._populate_dictionary(statement["Disagree"] , self._statement_scores , "Disagree")
+            self._populate_dictionary(statement["Agree"] , self._statement_scores , "Agree")
+            self._populate_dictionary(statement["neutral"] , self._statement_scores , "neutral")
+
+    def report(self, all_scores, **kwargs):
+        self._gather_scores_()
+        return self._statement_scores
+    
+
+class PairedComparisonScaleReport(ScaleReportBaseClass):
+
+    scale_report_type = "paired comparison scale report"
+
+    def _get_all_scores(self):
+        self._all_scores = []
+        for score in self._scale_response_data["data"]:
+            self._all_scores.append(score["ranking"])
+        return self._all_scores
+
+
+
+
+
+        
 
 
         

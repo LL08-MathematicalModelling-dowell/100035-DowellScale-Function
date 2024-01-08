@@ -1,6 +1,8 @@
 import requests
 import json
 
+from collections import Counter
+
 
 from EvaluationModule.calculate_function import dowellconnection
 
@@ -129,7 +131,28 @@ def get_positions(scales_data):
             all_positions.append(x["positions"])
 
     return all_positions
-        
+
+
+def mode(data):
+    counter = Counter(data)
+    mode_value = max(counter, key=counter.get)
+    return mode_value
+
+def median(data):
+    sorted_data = sorted(data)
+    n = len(sorted_data)
+
+    if n % 2 == 0:
+        # If the list has an even number of elements, average the middle two
+        median_value = (sorted_data[n // 2 - 1] + sorted_data[n // 2]) / 2
+    else:
+        # If the list has an odd number of elements, take the middle one
+        median_value = sorted_data[n // 2]
+
+    return median_value
+
+def find_range(data):
+    return max(data) - min(data)
 
 
 def get_percentage_occurrence(counter_dict):
