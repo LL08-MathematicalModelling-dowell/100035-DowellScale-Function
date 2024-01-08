@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="868b820d-f752-432a-9da3-f3bacec6f10c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nps-task/Qsort/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/Qsort/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nps-task/scale_report/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/scale_report/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -332,7 +333,9 @@
       <workItem from="1704272283256" duration="179000" />
       <workItem from="1704357632245" duration="8098000" />
       <workItem from="1704396371712" duration="795000" />
-      <workItem from="1704447786906" duration="2720000" />
+      <workItem from="1704447786906" duration="6559000" />
+      <workItem from="1704630450030" duration="585000" />
+      <workItem from="1704708375097" duration="3240000" />
     </task>
     <servers />
   </component>

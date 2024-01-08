@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from EvaluationModule.calculate_function import *
 from .report import ScaleReportObject
 from .utils import fetch_scale_response
+import numpy as np
 
 
 # Create your views here.
@@ -82,6 +83,62 @@ def categorize_nps_score(nps_score):
         return "Passive"
     else:
         return "Detractor"
+
+
+def generate_ranking_scale_report(rankings):
+    try:
+        print("generate_ranking_scale_report")
+        # Initialize data structures
+        rank_distribution = defaultdict(lambda: defaultdict(int))
+        print(rank_distribution, "rank_distribution")
+        total_ranks = defaultdict(int)
+        print(total_ranks, "total_ranks")
+        count_ranks = defaultdict(int)
+        print(count_ranks, "count_ranks")
+        comparison_matrix = defaultdict(lambda: defaultdict(int))
+        print(comparison_matrix, "comparison_matrix")
+        # Process each ranking submission
+        for stage_ranking in rankings:
+            print(stage_ranking, "stage_ranking")
+            stage_name = stage_ranking['stage_name']
+            for rank_info in stage_ranking['stage_rankings']:
+                item_name = rank_info['name']
+                rank = rank_info['rank']
+
+                # Update rank distribution and totals
+                rank_distribution[item_name][rank] += 1
+                total_ranks[item_name] += rank
+                count_ranks[item_name] += 1
+
+                # Update comparison matrix
+                for other_item in rank_distribution:
+                    if other_item != item_name:
+                        if rank_distribution[other_item][rank] > 0:
+                            comparison_matrix[item_name][other_item] += 1
+
+        # Calculate summary statistics
+        summary_stats = {}
+        for item, ranks in total_ranks.items():
+            avg_rank = ranks / count_ranks[item]
+            rank_list = [rank for rank, count in rank_distribution[item].items() for _ in range(count)]
+            std_dev = np.std(rank_list)
+            summary_stats[item] = {
+                'average_rank': avg_rank,
+                'std_dev': std_dev,
+                'rank_distribution': dict(rank_distribution[item])
+            }
+
+        # Compile the report
+        report = {
+            'summary_statistics': summary_stats,
+            'comparison_matrix': dict(comparison_matrix)
+        }
+        print(report, "report")
+
+        return report
+    except Exception as e:
+        print(f"\n\nException: {e}\n\n")
+        return Response({"isSuccess": False, "reports": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 def categorize_scale_generate_scale_specific_report(scale_type, score):
@@ -184,6 +241,15 @@ def categorize_scale_generate_scale_specific_report(scale_type, score):
         }
         return response_
 
+    elif scale_type == "ranking scale" or scale_type == "ranking":
+        report = generate_ranking_scale_report(score)
+        response_ = {
+            "scale_type": scale_type,
+            "no_of_scales": len(score),
+            "ranking_scale_report": generate_ranking_scale_report(score)
+        }
+        return response_
+
 
 def aggregate_percent_sum_scores(instances):
     # Check if instances list is empty or malformed
@@ -269,7 +335,7 @@ def scalewise_report(request, scale_id):
 
     scale_type = result['data'][0]["scale_data"]["scale_type"]
     print(scale_type, "scale_type\n\n")
-    scale_types = ["nps scale", "npslite scale", "stapel scale", "likert scale", "percent scale", "percent_sum scale"]
+    scale_types = ["nps scale", "npslite scale", "stapel scale", "likert scale", "percent scale", "percent_sum scale", "ranking scale"]
 
     if scale_type not in scale_types:
         return Response(
@@ -286,6 +352,16 @@ def scalewise_report(request, scale_id):
     #     print(scores, "scoresssss\n\n")
     #     all_scores = aggregate_percent_sum_scores(scores)
     # print(all_scores, "all_scoresssssss umar\n\n\n")
+    if scale_type == "ranking scale":
+        print("accessing ranking scale")
+        # Extract scores for ranking scale
+        print(f"data: {result['data']}\n\n")
+        rankings = result['data'][0]['rankings']
+        print(rankings, "rankings\n\n")
+        report = generate_ranking_scale_report(rankings)
+        print(report, "report\n\n")
+        report["summary_statistics"] = {**{"scale_type": scale_type}, **report["summary_statistics"]}
+        return Response({"report": report}, status=status.HTTP_200_OK)
     if scale_type != "percent scale" or scale_type != "percent_sum scale":
         print(f"accessing if part ..{scale_type}..")
         all_scores = extract_scores(result)
@@ -293,8 +369,6 @@ def scalewise_report(request, scale_id):
             passed = aggregate_percent_sum_scores(all_scores)
     elif scale_type != "percent_sum scale":
         print("accessing else part")
-
-
         for i in result['data']:
             print(i, "i\n\n")
             passed.append(i['score'])
@@ -319,7 +393,7 @@ def scalewise_report(request, scale_id):
     print(reports, "reportsssss\n\n")
     # Statricks API call
     print(f"\n\nscale_type: ...{scale_type}...\n\n")
-    if scale_type != "likert scale":
+    if scale_type == "nps scale" or scale_type == "npslite scale":
         print("accessing statricks api")
         if scale_type == "percent_sum scale":
             response_json = stattricks_api("evaluation_module", random_number, 16, 3, {"list1": passed})
@@ -364,6 +438,7 @@ def fetch_scale_data(field_add):
     Fetches scale data from the database.
     """
     try:
+        print(field_add, "field_adddd\n\n")
         response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                     "1094", "ABCDE", "fetch", field_add, "nil")
         result = json.loads(response)
