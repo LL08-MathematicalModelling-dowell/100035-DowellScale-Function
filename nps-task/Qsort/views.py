@@ -382,10 +382,12 @@ def ResponseAPI(request):
             return Response({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
                                 status=status.HTTP_200_OK)
         else:
-            field_add = {"scale_data.scale_id": id}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                    "1094", "ABCDE", "fetch", field_add, "nil")
+            field_add = {"_id": id}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                     "1093", "ABCDE", "fetch",
+                                     field_add, "nil")
             data = json.loads(x)
+            print(data, "data\n\n")
             if data.get('data') == []:
                 return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
             return Response({"data": data['data']}, status=status.HTTP_200_OK)
