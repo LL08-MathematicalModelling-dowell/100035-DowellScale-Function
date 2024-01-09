@@ -115,9 +115,10 @@ def CreateScale(request):
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                         field_add, "nil")
                 settings_json = json.loads(x)
+                print(settings_json, "settings_json\n\n")
                 if not settings_json.get('data'):
                     return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
-                return Response({"Success": x, "Response": field_add}, status=status.HTTP_200_OK)
+                return Response({"Response":settings_json}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"Error": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -332,7 +333,7 @@ def ResponseAPI(request):
                     event = get_event_id()
                     add = {
                         "event_id": event,
-                        "_id": payload["scale_id"],
+                        "scale_id": payload["scale_id"],
                         "results": results,
                         "user": payload["user"],
                         "name": payload["name"],
@@ -357,10 +358,13 @@ def ResponseAPI(request):
                     x = json.loads(x)
 
                     data_dict = x
+                    print(data_dict, "data_dict\n\n")
                     if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
 
                         results = move_last_to_start(user_info)
-                        return Response({"Success": data_dict}, status=status.HTTP_200_OK)
+                        print(add["event_id"], "event_id\n\n")
+                        add["event_id"] = add["event_id"]["event_id"]
+                        return Response({"Success": "true", "data": add}, status=status.HTTP_200_OK)
                     elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][
                                                                                                   0:6] == 'E11000':
                         return Response({"Error": "Response Already Exists"}, status=status.HTTP_400_BAD_REQUEST)
@@ -382,12 +386,13 @@ def ResponseAPI(request):
             return Response({"Response": "Please input Scale Id in payload", "Avalaible Scales": z["data"]},
                                 status=status.HTTP_200_OK)
         else:
-            field_add = {"_id": id}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale",
-                                     "1093", "ABCDE", "fetch",
-                                     field_add, "nil")
+            # field_add = {"_id": id, "scale_data.scale_type": "ranking scale"}
+            field_add = {"scale_id": id}
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                     "scale_reports",
+                                     "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(x)
             print(data, "data\n\n")
             if data.get('data') == []:
                 return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
-            return Response({"data": data['data']}, status=status.HTTP_200_OK)
+            return Response({"Success":"true","data": data['data']}, status=status.HTTP_200_OK)

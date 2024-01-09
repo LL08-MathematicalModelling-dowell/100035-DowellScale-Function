@@ -206,6 +206,7 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
     previous_response = json.loads(previous_response)["data"]
 
 
+
     event_id = get_event_id()
     # Check if scale exists
     field_add = {"_id": scale_id}

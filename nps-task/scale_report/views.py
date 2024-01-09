@@ -328,7 +328,6 @@ def scalewise_report(request, scale_id):
 
     # Update field_add based on scale_type
     field_add = {"scale_data.scale_id": scale_id}
-
     result = fetch_scale_data(field_add)
     if not result["success"]:
         return Response(result["response"], status=result["status"])
@@ -439,6 +438,7 @@ def fetch_scale_data(field_add):
     """
     try:
         print(field_add, "field_adddd\n\n")
+
         response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                     "1094", "ABCDE", "fetch", field_add, "nil")
         result = json.loads(response)
