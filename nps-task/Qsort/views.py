@@ -40,7 +40,6 @@ def CreateScale(request):
         payload = request.data
 
         for field in required_fields:
-            # print(f"Checking for {field}")
             if field not in payload:
                 return Response({"Error": f"Missing required field: {field}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -110,12 +109,10 @@ def CreateScale(request):
                                     status=status.HTTP_200_OK)
             else:
                 field_add = {"_id": scale_id}
-                # print(x)
-                
+
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
                                         field_add, "nil")
                 settings_json = json.loads(x)
-                print(settings_json, "settings_json\n\n")
                 if not settings_json.get('data'):
                     return Response({"error": "scale not found"}, status=status.HTTP_404_NOT_FOUND)
                 return Response({"Response":settings_json}, status=status.HTTP_200_OK)
@@ -195,9 +192,6 @@ def ResponseAPI(request):
                     # except:
                     required_fields = ['disagree', 'neutral', 'agree', 'sort_order', 'product_name', 'scalecolor',
                                        'fontstyle', 'fontcolor']
-                    # print(sum(
-                    #     [len(data["statements"]) for key, data in payload.items() if
-                    #      key in ["disagree", "neutral", "agree"]]))
                     total_statements = sum(
                         [len(data["statements"]) for key, data in payload.items() if
                          key in ["disagree", "neutral", "agree"]])
@@ -212,8 +206,6 @@ def ResponseAPI(request):
                         if group in payload:
                             all_cards.extend([stmt["card"] for stmt in payload[group]['statements']])
                     all_cards = sorted(list(map(int, all_cards)))  # Convert to integers and sort
-                    print(all_cards, "cards\n\n")
-                    print(list(range(1, total_statements + 1)), "range\n\n")
                     if all_cards != list(range(1, total_statements + 1)):
                         return Response({"Error": "Card numbers are not continuous or missing."},
                                             status=status.HTTP_400_BAD_REQUEST)
@@ -301,7 +293,6 @@ def ResponseAPI(request):
                                                    key=lambda x: str(x['card']).split('-')[1] if '-' in str(
                                                        x['card']) else x[
                                                        'card'])
-                        # print(statements)
                         # Assign scores to statements based on their card numbers, but maintain the original order for output
                         scored_statements = [{'card': s['card'], 'statement': s['text'], 'score': None} for s in
                                              statements]
@@ -358,11 +349,8 @@ def ResponseAPI(request):
                     x = json.loads(x)
 
                     data_dict = x
-                    print(data_dict, "data_dict\n\n")
                     if data_dict['isSuccess'] == 'true' or data_dict['isSuccess'] == True:
 
-                        results = move_last_to_start(user_info)
-                        print(add["event_id"], "event_id\n\n")
                         add["event_id"] = add["event_id"]["event_id"]
                         return Response({"Success": "true", "data": add}, status=status.HTTP_200_OK)
                     elif data_dict['isSuccess'] == 'false' or data_dict['isSuccess'] == False and data_dict['error'][
@@ -392,7 +380,6 @@ def ResponseAPI(request):
                                      "scale_reports",
                                      "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(x)
-            print(data, "data\n\n")
             if data.get('data') == []:
                 return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)            
             return Response({"Success":"true","data": data['data']}, status=status.HTTP_200_OK)

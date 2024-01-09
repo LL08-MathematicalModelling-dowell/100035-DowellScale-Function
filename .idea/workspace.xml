@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="868b820d-f752-432a-9da3-f3bacec6f10c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nps-task/Qsort/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/Qsort/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/percent/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/percent/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nps-task/scale_report/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/nps-task/scale_report/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -338,7 +335,7 @@
       <workItem from="1704630450030" duration="585000" />
       <workItem from="1704708375097" duration="8524000" />
       <workItem from="1704775339159" duration="828000" />
-      <workItem from="1704798444907" duration="2459000" />
+      <workItem from="1704798444907" duration="2848000" />
     </task>
     <servers />
   </component>
