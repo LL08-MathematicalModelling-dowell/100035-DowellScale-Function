@@ -99,13 +99,77 @@ def evaluation_editor(request, product_name, doc_no):
 def Target_API(request):
     # get all response from this API payload
 
+    """
+    Fetching scales reports based on date_range they were created. 
+    
+    """
+    
+    period = request.data.get("period")
+
+    if not period:
+        return Response({"isSuccess": False , "message" : "period is required"})
+
+
+    database_details = {
+            "database" : "dowellscale",
+            "collection" : "scale_reports",
+            'fields':['eventId']
+        }
+
+
+    time_input = {
+            'column_name': 'date_created',
+            'period': period,
+            "time_type_in_db" : 'iso'
+        }
+    
+    if period.lower().strip() =="custom":
+        start_date = request.data.get("start_date")
+        end_date = request.data.get("end_date")
+
+        if not (start_date and end_date):
+            return Response({"isSuccess" : True , "error_message" : "start_date or end_date parameters not sent"} ,
+                            status = status.HTTP_400_BAD_REQUEST)
+        
+        DATE_REGEX = r"\d{1,5}[-/]\d{1,3}[-/]\d{1,5}"
+
+        import re
+        
+        if not (re.search(DATE_REGEX , start_date) and re.search(DATE_REGEX, end_date)):
+            return Response({"isSuccess" : True , "error_message" : "start_date or end_date are not in date formats"} ,
+                            status = status.HTTP_400_BAD_REQUEST)
+        
+        time_input["start_point"] = start_date
+        time_input["end_point"] = end_date
+        
+
+    distribution_input={
+            'normal': 1,
+            
+        }
+    
+    target_api_request = {
+        "database_details" : database_details,
+        "time_input" : time_input, 
+        "distribution_input" : distribution_input,
+    }
+
+
+
     payload = request.data
     user_type = {}
     if "details" in payload:
         user_type["details"] = payload.pop("details")
     print(f"payload: {payload}...")
+
+
     # Make a GET request to the original API with the payload
-    response = requests.post("http://100032.pythonanywhere.com/api/targeted_population/", json=payload)
+    response = requests.post("http://100032.pythonanywhere.com/api/targeted_population/",
+                              json=target_api_request , headers={"content-type" : "application/json"})
+    
+   
+    
+
 
     # print(f"response: {response.json()}...")
     """
@@ -144,16 +208,16 @@ def Target_API(request):
             print("End Date:", end_date)
         except:
             pass
-    """
+    
     x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                          "1094", "ABCDE", "fetch")
     print(f"x: {x}...")
-    if response.json()['normal']['data']:
+
+    if response.json()['normal']['data'][""]:
         for i in response.json()['normal']['data']:
-            for j in i:
                 # print(f"j: {j}...")
                 # print(f"{j['_id']}")
-                field_add = {"_id": j['_id']}
+                field_add = {"_id":i['_id']}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                      "1094", "ABCDE", "fetch", field_add, "nil")
                 # print(f"x: {x}...x")
@@ -174,7 +238,13 @@ def Target_API(request):
     #     return JsonResponse(response.json(), safe=False)
 
     # If the request failed, return an error response
-    return JsonResponse({"error": "Failed to retrieve data from the original API."}, status=500)
+
+    """
+    if response.status_code != 200 and response.status_code != 500:
+        return Response(response.text , status = status.HTTP_400_BAD_REQUEST)
+    elif response.status_code == 500:
+        return Response("Server down. Try again later" , status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return JsonResponse({"data" : response.json()["normal"]["data"]["eventId"]}, status=200)
 
 def evaluation_editor_process_id(request, process_id, doc_no):
     random_number = f"{process_id}{generate_random_number()}"
