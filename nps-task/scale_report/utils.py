@@ -107,10 +107,9 @@ def get_all_scores(scales_data , score_type = "int"):
     all_scores = []
     for x in scales_data["data"]: 
         score = x.get("score", None)
-        if score:
+
+        if not score:
             continue
-
-
 
         score = score.get("score") or isinstance(x.get("score") , dict) or x["score"][0].get('score') or score.get("scorescale_id")
 

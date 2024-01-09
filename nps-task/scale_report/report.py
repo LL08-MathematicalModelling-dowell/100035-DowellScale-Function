@@ -187,10 +187,10 @@ class StatisticsReport:
         reports = {}
 
         
+        
         statricks_api_response_json = stattricks_api("evaluation_module", generate_random_number() , 16, 3,
                                                 {"list1": all_scores})
-
-
+        
         if isinstance(statricks_api_response_json , dict):
             
             
@@ -278,7 +278,6 @@ class LikertScaleReport(ScaleReportBaseClass):
     @staticmethod
     def _get_label_selection(scale_id):
 
-
         likert_scale = dowellconnection(
                 "dowellscale", "bangalore", "dowellscale", "scale", "scale",
                                         "1093", "ABCDE", "fetch", {"_id" : scale_id}, "nil"
@@ -351,14 +350,10 @@ class ThurststoneScaleReport(ScaleReportBaseClass):
 
     def _get_scale_settings(self):
         scale_id = self._scale_response_data["data"][0]["scale_data"]["scale_id"]
-        print("scale_id" , scale_id)
         self.scale_settings = json.loads(dowellconnection(
                 "dowellscale", "bangalore", "dowellscale", "scale", "scale",
                                         "1093", "ABCDE", "fetch", {"_id" : scale_id}, "nil"
             ))
-        print("afdsadf" , self.scale_settings)
-
-
     
     def _get_all_scores(self):
         self._all_scores = []
@@ -431,17 +426,6 @@ class QSortScaleReport(ScaleReportBaseClass):
     def report(self, all_scores, **kwargs):
         self._gather_scores_()
         return self._statement_scores
-    
-
-class PairedComparisonScaleReport(ScaleReportBaseClass):
-
-    scale_report_type = "paired comparison scale report"
-
-    def _get_all_scores(self):
-        self._all_scores = []
-        for score in self._scale_response_data["data"]:
-            self._all_scores.append(score["ranking"])
-        return self._all_scores
 
 
 
