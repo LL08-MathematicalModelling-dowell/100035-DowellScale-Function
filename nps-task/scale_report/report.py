@@ -379,22 +379,31 @@ class ThurststoneScaleReport(ScaleReportBaseClass):
            
     
     def __gather_statement_scores(self):
-        self._statememt_scores = defaultdict(list)
+        self._statememt_scores = defaultdict(lambda : {"categories" : [] , "scores" : [] })
 
         for statements in self._all_scores:
             if isinstance(statements , list):
                 for statements_dict in statements:
                     keys = tuple(statements_dict.keys())
                     
-                    self._statememt_scores[statements_dict[keys[0]]].append(self._find_score_category
+                    self._statememt_scores[statements_dict[keys[0]]]["categories"].append(self._find_score_category
                                                                             (statements_dict.get(keys[1]))
+                            )
+                    self._statememt_scores[statements_dict[keys[0]]]["scores"].append(
+                                                                    statements_dict.get(keys[1])
                             )
         
 
     def report(self , scale_report_object : ScaleReportObject):
         self._get_scale_settings()
         self.__gather_statement_scores()
-        return self._statememt_scores
+        report = defaultdict(dict)
+        for statements in self._statememt_scores:
+            report[statements]["mode"] = mode(self._statememt_scores[statements]["categories"])
+            report[statements]["median"] = median(self._statememt_scores[statements]["categories"])
+            report[statements]["range"] = find_range(self._statememt_scores[statements]["scores"])
+            
+        return report
 
 
 class QSortScaleReport(ScaleReportBaseClass):
