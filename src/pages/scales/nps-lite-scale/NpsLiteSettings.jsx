@@ -81,47 +81,49 @@ const NpsLiteSettings = () => {
 //     }
 //   }
 const MasterLinkFunction = async () => {
-    try {
-      // Prepare request data for master link creation
-      const requestData = {
-        qrcode_type: 'Link',
-        quantity: 1,
-        company_id: 'Living Lab Scales',
-        document_name: 'Living Lab Scales',
-        links: publicLinks.map((link) => ({ link })),
-      };
+  try {
+    // Prepare request data for master link creation
+    const requestData = {
+      qrcode_type: 'Link',
+      quantity: 1,
+      company_id: 'Living Lab Scales',
+      document_name: 'Living Lab Scales',
+      links: publicLinks.map((link) => ({ link })),
+    };
 
-      console.log(requestData);
+    console.log(requestData);
 
-      // Post request to create master link
-      const data = await axios.post(
-        'https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/',
-        requestData
-      );
+    // Post request to create master link
+    const data = await axios.post(
+      'https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/',
+      requestData
+    );
 
-      const result = data.data;
+    const result = data.data;
 
-      if (result.error) {
-        setIsLoading(false);
-        return;
-      } else {
-        // Set master link and handle modal toggle
-        setMasterLink(result.qrcodes[0].masterlink);
-        console.log('result.qrcodes[0].qrcode_id');
-        setQrCodeURL(result.qrcodes[0].qrcode_id);
-        console.log(result.qrcodes[0].qrcode_id);
-        console.log('result.qrcodes[0].links[0].response.link_id');
-        console.log(result.qrcodes[0].links[0].response.link_id);
-        handleToggleMasterlinkModal();
-        setIsLoading(false);
-        toast.success(result.response);
-      }
-    } catch (error) {
+    if (result.error) {
       setIsLoading(false);
-      toast.error(error.response);
-
-      // console.log("Error", error.response);
+      return;
+    } else {
+      console.log(publicLinks, "yesssssssssssssssssssssssssssssssssssss")
+      // Set master link and handle modal toggle
+      console.log(result, "The results")
+      setMasterLink(result.qrcodes[0].masterlink);
+      console.log('result.qrcodes[0].qrcode_id');
+      setQrCodeURL(result.qrcodes[0].qrcode_id);
+      console.log(result.qrcodes[0].qrcode_id);
+      console.log('result.qrcodes[0].links[0].response.link_id');
+      console.log(result.qrcodes[0].links[0].response.link_id);
+      handleToggleMasterlinkModal();
+      setIsLoading(false);
+      toast.success(result.response);
     }
+  } catch (error) {
+    setIsLoading(false);
+    toast.error(error.response);
+
+    // console.log("Error", error.response);
+  }
   };
 
   const createMasterLink = async (e) => {
@@ -172,7 +174,7 @@ const MasterLinkFunction = async () => {
       }
       for (
         let i = 0;
-        i < scale.no_of_scales && i < flattenedArray.length;
+        i < scale?.[0].settings?.no_of_scales && i < flattenedArray.length;
         i++
       ) {
         // Append the current element to the current window.location.href
@@ -184,6 +186,7 @@ const MasterLinkFunction = async () => {
       }
 
       SetpublicLinks(all_public_links);
+      console.log("hhhhhhhhhBBBBBBBBBbbCCCCCCCCCKKKKK", all_public_links)
     } catch (error) {
       setIsLoading(false);
       toast.error('Insufficient public members');
@@ -381,6 +384,7 @@ const MasterLinkFunction = async () => {
                         >   
                             {isLoading ? 'Saving Response' : 'Save Response'}
                         </Button> */}
+                        <div className="flex justify-end gap-3 mt-5">
                         {!publicLink && (
             <>
               <Button width={'3/4'} onClick={handleToggleUpdateModal}>
@@ -391,10 +395,11 @@ const MasterLinkFunction = async () => {
               </Button>
             </>
           )}
+          </div>
           {publicLink && (
           <>
             {!isButtonHidden && (
-              <div className="flex items-center justify-center my-4">
+              <div className="flex items-center justify-center my-4" style={{backgroundColor: "red"}}>
                 <Button width={'3/12'} primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
