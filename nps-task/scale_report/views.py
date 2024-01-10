@@ -20,9 +20,12 @@ def scalewise_report(request , scale_id):
     """
 
     try:
-        field_add = {"scale_data.scale_id": scale_id}
+        field_add = {
+        "$or": [
+        {"scale_data.scale_id": scale_id},
+        {"scale_id": scale_id}
+    ]}
         scale_response_data = fetch_scale_response(field_add)
-
         
         scale_report = ScaleReportObject(scale_response_data)
 

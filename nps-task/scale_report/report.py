@@ -115,11 +115,11 @@ class ScaleReportObject:
         scale_data = self.scale_response_data["data"][0].get("scale_data", None)
 
 
-
-        if not scale_data:
-           raise NoScaleDataFound("The scale has no scale")
-        
-        self._scale_id = scale_data["scale_id"]
+        if scale_data:
+           
+            self._scale_id = scale_data.get("scale_id")
+        else:
+            self._scale_id = self.scale_response_data["data"][0].get("scale_id")
 
         self._check_for_scale_type()
 
@@ -163,7 +163,13 @@ class ScaleReportObject:
             scale_data = scale.get("scale_data", None)
 
             if not scale_data:
-                continue
+                scale_type = scale.get("scale_type" , None)
+
+                if not scale_type:
+                    continue
+                
+                else:
+                    break
 
             scale_type = scale_data.get("scale_type" , None)
 
@@ -403,12 +409,15 @@ class ThurststoneScaleReport(ScaleReportBaseClass):
             report[statements]["median"] = median(self._statememt_scores[statements]["categories"])
             report[statements]["range"] = find_range(self._statememt_scores[statements]["scores"])
             
+            
         return report
 
 
 class QSortScaleReport(ScaleReportBaseClass):
 
-    scale_report_type = "qsort scale"
+    scale_report_type = "Qsort"
+
+    scales_score_length_threshold = 0
     
     def _get_all_scores(self):
         self._all_scores = []
@@ -417,24 +426,37 @@ class QSortScaleReport(ScaleReportBaseClass):
         return self._all_scores
 
     def _populate_dictionary(self , dictionary , in_place_dict , values):
-        from itertools import zip_longest
-        for key , value in zip_longest(dictionary["statements"] , dictionary["scores"]) :
-            if key is not None:
-                in_place_dict[key["text"]][0].append(values)
-                in_place_dict[key["text"]][0].append(value)
+        for dicts in dictionary:
+            if "statement" in dicts and "score" in dicts:
+                in_place_dict[dicts["statement"]]["categories"].append(values)
+                in_place_dict[dicts["statement"]]["scores"].append(dicts["score"])
 
     
     def _gather_scores_(self):
-        self._statement_scores = defaultdict(lambda : [[] , []])
+        self._statement_scores = defaultdict(lambda : {"categories" : [] , "scores" : [] })
+
+        self._modes_of_categories = {"Disagree" : 0 , "Agree" : 0 , "Neutral" : 0}
 
         for statement in self._all_scores:
             self._populate_dictionary(statement["Disagree"] , self._statement_scores , "Disagree")
             self._populate_dictionary(statement["Agree"] , self._statement_scores , "Agree")
-            self._populate_dictionary(statement["neutral"] , self._statement_scores , "neutral")
+            self._populate_dictionary(statement["Neutral"] , self._statement_scores , "Neutral")
+
+            self._modes_of_categories["Disagree"] += len(statement["Disagree"])
+            self._modes_of_categories["Agree"] += len(statement["Agree"])
+            self._modes_of_categories["Neutral"] += len(statement["Neutral"])
+
+        self._statement_scores.update(self._modes_of_categories)
+        return self._statement_scores
+
+
+
+    def sum_statements_under_categories(self):
+        pass
+
 
     def report(self, all_scores, **kwargs):
-        self._gather_scores_()
-        return self._statement_scores
+        return self._gather_scores_()
 
 
 
