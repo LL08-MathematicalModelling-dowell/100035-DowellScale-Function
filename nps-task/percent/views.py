@@ -14,7 +14,7 @@ from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
 
 
-# CREATE SCALE SETTINGS
+# CREATE SCALE SETTINGS PERCENT SCALE
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
     if request.method == 'POST':
