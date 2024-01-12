@@ -55,6 +55,7 @@ import { StrictMode } from 'react';
 import NPSResponse from './pages/scales/nps-scale/NPSResponse.jsx';
 import PercentScale from './pages/scales/percent-scale/PercentScale.jsx';
 import CreatePercentScale from './pages/scales/percent-scale/CreatePercentScale.jsx';
+import PercentScaleSettings from './pages/scales/percent-scale/PercentScaleSettings.jsx';
 
 const basePath = '/100035-DowellScale-Function/';
 const router = createBrowserRouter([
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/pc-scale`,
         element: <PairedScale />,
+      },
+      {
+        path: `${basePath}/percent-scale-settings/:slug`,
+        element: <PercentScaleSettings />,
       },
       {
         path: `${basePath}/percent-scale`,

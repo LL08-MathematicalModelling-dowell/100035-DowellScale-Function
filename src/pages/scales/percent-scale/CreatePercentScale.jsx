@@ -25,31 +25,17 @@ const CreatePercentScale = () => {
         'orientation'
     ]
     
-    const [formData, setFormData] = useState({
-          orientation: "",
-          user: "yes",  //should be boolean
-          question: "",
-          username: "Ndoneambrose",
-          scalecolor: "#E5E7E8",
-          numberrating: 10,
-          no_of_scales: 3,
-          roundcolor: "#E5E7E8",
-          fontcolor: "#E5E7E8",
-          fontstyle: "",
-          time: 0,
-          template_name: "testing5350",
-          name: "",
-          text: "good+neutral+best",
-          left: "",
-          right: "",
-          center: "",
-          // scale-category: "nps scale",
-          scaleCategory: "nps scale",
-          show_total_score: "true" //should be boolean
-
-        
-
-      
+    const [formData, setFormData] = useState({       
+      username : "natan", // your username
+      time : 100, // time (in seconds) within which the respondent should provide an answer. Set "00" to disable time restrictions
+      scale_name : "", // unique name identifier for the scale
+      no_of_scale : 1, // number of instances of the scales you wish to create with the same settings
+      orientation : "vertical", // orientation of the scale-- "horizontal"/"vertical"
+      scale_color : "ffff", // scale background color
+      product_count : 3, // number of products to be rated
+      product_names : ["brand2", "brand4", "brand5"], // names of products to be rated in a list
+      user : "yes" // assign "yes" when the inputs are coming through an end user
+   
   })
 
 
@@ -94,26 +80,17 @@ const CreatePercentScale = () => {
     
 
     const payload = {
-        orientation: formData.orientation,
-        scale_id: "64e8744218f0a24fb16b0ee2",
-        user: "yes",  //should be boolean
-        username: "Ndoneambrose",
-        scalecolor: formData.scalecolor,
-        numberrating: 10,
-        no_of_scales: formData.no_of_scales,
-        roundcolor: formData.roundcolor,
-        fontcolor: formData.fontcolor,
-        fontstyle:formData.fontstyle,
-        time: formData.time,
-        template_name: "testing5350",
-        name: formData.name,
-        text: "good+neutral+best",
-        left: formData.left,
-        right: formData.right,
-        center: formData.center,
-        // scale-category: "nps scale",
-        scaleCategory: "nps scale",
-        show_total_score: "true" //should be boolean
+        
+          username : formData.username, // your username
+          time : formData.time, // time (in seconds) within which the respondent should provide an answer. Set "00" to disable time restrictions
+          scale_name : formData.scale_name, // unique name identifier for the scale
+          no_of_scale : formData.no_of_scale, // number of instances of the scales you wish to create with the same settings
+          orientation : formData.orientation, // orientation of the scale-- "horizontal"/"vertical"
+          scale_color : formData.scale_color, // scale background color
+          product_count : formData.product_count, // number of products to be rated
+          product_names : formData.product_names, // names of products to be rated in a list
+          user : formData.user// assign "yes" when the inputs are coming through an end user
+       
     }
 
     // for(const field of requiredFields){
@@ -126,12 +103,22 @@ const CreatePercentScale = () => {
         setIsLoading(true);
         const response = await createScale('percent-scale', payload);
         console.log(response, '8* respon')
-        if(response.status===200){
+        // if(response.status===200){
             toast.success('scale created');
-            // setTimeout(()=>{
-            //     navigateTo(`/100035-DowellScale-Function/percent-scale-settings/${response?.data?.data?.scale_id}`)
-            // },2000)
-          }
+            const data = JSON.parse(response.data.success);
+
+            // Extract the value of the "inserted_id" field
+            const insertedId = data.inserted_id;
+        
+            // Use the extracted value as needed
+            console.log(insertedId);
+            console.log(response.data.event_id)
+            // const targetObject = response?.data.find(obj => obj.settings.name === 'Painting2d2d');
+
+            setTimeout(()=>{
+                navigateTo(`/100035-DowellScale-Function/percent-scale-settings/${insertedId}`)
+            },2000)
+          // }
     } catch (error) {
         console.log(error);
         toast.error('an error occured');
@@ -153,8 +140,8 @@ const CreatePercentScale = () => {
         <div className='w-full'>
           <CustomTextInput 
             label='Name of Scale'
-            name='name'
-            value={formData.name}
+            name='scale_name'
+            value={formData.scale_name}
             type='text'
             handleChange={handleChange}
             placeholder='Name of Scale'

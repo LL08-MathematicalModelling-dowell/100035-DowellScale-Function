@@ -26,7 +26,7 @@ const PercentScale = () => {
     
 
     useEffect(()=>{
-        fetchScaleData('nps-lite-scale');
+        fetchScaleData('percent-scale');
     },[]);
 
     const handleSelectScore = (score)=>{
@@ -38,12 +38,13 @@ const PercentScale = () => {
         return <Fallback />;
     }
   return (
-    <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
-        <div className='border border-primary  m-auto py-4 px-5'>
-            <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
-            >
-                <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
-                    <h2 className='flex items-center gap-2 p-2 font-medium'>
+    <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
+    <div className='w-full px-5 py-4 m-auto border border-primary lg:w-10/12'>
+        <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
+        // style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}
+        >
+            <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
+                <h2 className='flex items-center gap-2 p-2 font-medium'>
                         <span className=''>
                         <MdManageHistory className='text-primary'/>
                         </span> Scale History
