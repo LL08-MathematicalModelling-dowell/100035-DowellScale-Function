@@ -236,7 +236,6 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
                                     {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
     user_dets = json.loads(user_details)
     if len(user_dets['data']) >= 1:
-        print(previous_response)
         b = [l['score']['score'] for l in previous_response if
              l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0]['event_id']]
 

@@ -205,12 +205,16 @@ def submit_response_view(request):
             # Check if scale exists
             scale = dowellconnection("dowellscale", "bangalore", "dowellscale",
                                      "scale", "scale", "1093", "ABCDE", "fetch", {"_id": scale_id}, "nil")
-            if not scale:
-                return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
 
             # Check if scale is of type "paired-comparison scale"
             scale_settings = json.loads(scale)
-            if scale_settings['data'][0]['settings'].get('scale-category') != 'paired-comparison scale':
+            if scale_settings.get("data") == None:
+                return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
+            scale_settings = scale_settings["data"]
+            if len(scale_settings) == 0 or scale_settings[0].get("settings") == None:
+                return Response({"error": "Scale not found."}, status=status.HTTP_404_NOT_FOUND)
+            scale_settings = scale_settings[0]["settings"]
+            if scale_settings.get('scale-category') != 'paired-comparison scale':
                 return Response({"error": "Invalid scale type."}, status=status.HTTP_400_BAD_REQUEST)
             
             field_add = {"username": username, "scale_data.scale_id": scale_id}
@@ -239,13 +243,26 @@ def submit_response_view(request):
         except Exception as e:
             print(f"error: {e}")
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == "GET":
+        params = request.GET
+        id = params.get("scale_id")
+        if id:
+            # Retrieve specific response by scale_id
+            field_add = {"_id": id}
+            scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                     "scale_reports",
+                                     "1094", "ABCDE", "fetch", field_add, "nil")
+            data = json.loads(scale)
+            if data.get('data') is None or len(data.get("data")) == 0:
+                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"data": data['data'][0]}, status=status.HTTP_200_OK)
         
 def response_submit_loop(scale_settings, username, scale_id, products_ranking, brand_name, product_name, process_id=None, document_data=None):
-    if len(products_ranking) != scale_settings["data"][0]["settings"]["total_pairs"]:
+    if len(products_ranking) != scale_settings["total_pairs"]:
         return Response({"error": "Scale Responses incomplete"}, status=status.HTTP_400_BAD_REQUEST)
     event_id = get_event_id()
-    item_list = scale_settings["data"][0]["settings"]["item_list"]
-    paired_items = scale_settings["data"][0]["settings"]["paired_items"]
+    item_list = scale_settings["item_list"]
+    paired_items = scale_settings["paired_items"]
     for i in range(len(paired_items)):
         if products_ranking[i] not in paired_items[i]:
             return Response({"error": f"Product selected in position {i} is not in the pair"}, status=status.HTTP_400_BAD_REQUEST)

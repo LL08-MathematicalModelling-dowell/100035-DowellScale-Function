@@ -56,8 +56,7 @@ def total_score_fun(id):
                                      "1094", "ABCDE", "fetch", field_add, "nil")
     data = json.loads(response_data)
     existing_responses = data["data"]
-
-    total_score = sum(int(i['score']['score']) for i in data['data'])
+    total_score = sum(int(i['score']['score']) for i in existing_responses)
 
     all_scores = [i['score'] for i in data['data']]
 
@@ -489,11 +488,11 @@ def nps_response_view_submit(request, api_key=None):
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
         params = request.GET
-        id = params.get("id")
+        id = params.get("scale_id")
         try:
             field_add = {"scale_data.scale_type": "nps scale"}
             if id != None:
-                field_add["_id"] = id
+                field_add["scale_data.scale_id"] = id
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                              "scale_reports",
                                              "1094", "ABCDE", "fetch", field_add, "nil")
@@ -532,13 +531,14 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
 
     category = find_category(score)
 
-    overall_category, _, _, _, _, existing_responses = total_score_fun(
-        scale_id)
+
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "fetch",
                                     {"scale_id": scale_id, "username": user, "instance_id": instance_id}, "nil")
     user_dets = json.loads(user_details)
     if len(user_dets['data']) >= 1:
+        overall_category, _, _, _, _, existing_responses = total_score_fun(scale_id)
+
         b = [l['score']['score'] for l in existing_responses if
              l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0][
                  'event_id']]
@@ -546,9 +546,10 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
 
         return Response({"error": "Scale Response Exists!", "current_score": b[0], "Category": category},
                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
     event_id = get_event_id()
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
-                  "scorescale_id": score, "category": category}
+                  "score": score, "category": category}
 
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
@@ -596,8 +597,7 @@ def scale_settings_api_view(request):
 @api_view(['GET', ])
 def single_scale_settings_api_view(request, id=None):
     try:
-        # field_add = {"_id": id }
-        field_add = {"settings.template_name": id, }
+        field_add = {"_id": id }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                              "fetch", field_add, "nil")
         settings_json = json.loads(x)
@@ -712,14 +712,12 @@ def new_nps_create(request):
                     "fontcolor": response.get('fontcolor'),
                     "fomat": fomat,
                     "time": time,
-                    "image_label_format": image_label_format,
                     "fontstyle": fontstyle,
                     "template_name": template_name,
                     "name": name,
                     "text": text,
                     "left": left,
                     "right": right,
-                    "custom_emoji_format": custom_emoji_format,
                     "center": center,
                     "allow_resp": response.get('allow_resp', True),
                     "scale_category": "nps scale",
@@ -727,10 +725,16 @@ def new_nps_create(request):
                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
             }
+
+            if image_label_format:
+                field_add['settings']['image_label_format'] = image_label_format
+            if custom_emoji_format:
+                field_add['settings']['custom_emoji_format'] = custom_emoji_format
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                              "ABCDE",
                                              "insert", field_add, "nil")
             field_add['scale_id'] = json.loads(response_data)['inserted_id']
+
             # Should be inserted in a thread
             details = {"scale_id": json.loads(response_data)['inserted_id'], "event_id": event_ID, "username": username}
             user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
@@ -854,6 +858,7 @@ def new_nps_create(request):
         try:
             params = request.GET
             scale_id = params.get('scale_id')
+            print("Yes",scale_id)
             if not scale_id:
                 field_add = {"settings.scale_category": "nps scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
@@ -951,7 +956,6 @@ def redirect_view(request):
         elif api_resp['success'] is False:
             error_message = api_resp['message']
             return error_response(request, {"success": False, "msg": error_message}, status.HTTP_400_BAD_REQUEST)
-
     except Exception as e:
         return error_response(request, {"success": False, "error": f"Provide required fields"}, status.HTTP_400_BAD_REQUEST)
 

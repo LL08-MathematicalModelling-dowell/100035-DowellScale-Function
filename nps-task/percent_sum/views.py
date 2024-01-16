@@ -40,7 +40,7 @@ def settings_api_view_create(request):
                 user = response['user']
             except KeyError as error:
                 return Response({"error": f"{error.args[0]} missing or mispelt"}, status=status.HTTP_400_BAD_REQUEST)
-            if 2 < product_count > 10:
+            if product_count < 2 or product_count > 10:
                 return Response({"error": "Product count should be between 2 to 10"},
                                 status=status.HTTP_400_BAD_REQUEST)
             if len(product_names) != int(product_count):
@@ -75,10 +75,10 @@ def settings_api_view_create(request):
 
     elif request.method == 'GET':
         param = request.GET
-        scale_id = param.get('scale_id', None)
+        scale_id = param.get('scale_id')
         if scale_id:
             try:
-                field_add = {"_id": scale_id, "settings.scale_category": "percent_sum scale"}
+                field_add = {"_id": scale_id}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                         "find", field_add, "nil")
                 settings_json = json.loads(x)
@@ -171,11 +171,11 @@ def percent_sum_response_submit(request):
                                                               "document_name": response_data.get('document_name', ""),
                                                               "page": response_data.get('page', "")},
                                                               "user_type": response_data.get('user_type', ""),
-                                                              "id": response_data['_id']}
+                                                              "id": response_data.get('_id')}
                                              }
                     success = response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id, document_data)
                     all_results.append(success.data)
-                return Response({"data": all_results}, status=status.HTTP_200_OK)
+                return Response(all_results)
             else:
                 scores = response_data['score']
                 scale_id = response_data['scale_id']
@@ -184,16 +184,16 @@ def percent_sum_response_submit(request):
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "GET":
-        response = request.data
+        params = request.GET
+        id = params.get("scale_id")
         try:
-            if "scale_id" in response:
-                id = response['scale_id']
-                field_add = {"scale_data.scale_id": id, "scale_data.scale_type": "percent_sum scale"}
+            if id:
+                field_add = {"_id": id, "scale_data.scale_type": "percent_sum scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
-                data = json.loads(response_data)
-                return Response({"data": json.loads(response_data)})
+                data = json.loads(response_data).get("data")[0]
+                return Response({"data": data})
             else:
                 return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -201,35 +201,26 @@ def percent_sum_response_submit(request):
 
 
 def response_submit_loop(scores, scale_id, username, brand_name, product_name, instance_id, process_id=None, document_data=None):
-    field_add = {"scale_data.scale_id": scale_id}
+    # Check if response already exists for this event
+    field_add = {"username": username, "scale_data.scale_id": scale_id, "scale_data.scale_type": "percent_sum scale",
+                "scale_data.instance_id": instance_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-                                         "1094", "ABCDE", "fetch",
-                                         field_add, "nil")
-    previous_response = json.loads(previous_response)["data"]
-
-
-    user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
-                                    "ABCDE", "fetch",
-                                    {"scale_id": scale_id, "username": username, "instance_id": instance_id}, "nil")
-    user_dets = json.loads(user_details)
-    print("This is the previous response", previous_response)
-    print("This is user dets", user_dets)
-    if len(user_dets['data']) >= 1:
-        b = [l['score']['score'] for l in previous_response if
-             l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0][
-                 'event_id']]
-
-        return Response({"error": "Scale Response Exists!", "current_score": b[0]},
-                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
+                                        "1094", "ABCDE", "fetch",
+                                        field_add, "nil")
+    previous_response = json.loads(previous_response)
+    previous_response = previous_response.get('data')
+    if len(previous_response) > 0:
+        return Response({"error": "You have already submitted a response for this scale."},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     event_id = get_event_id()
     # Check if scale exists
-    field_add = {"_id": scale_id, "settings.scale_category": "percent_sum scale"}
+    field_add = {"_id": scale_id}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
                                      "fetch", field_add, "nil")
     data = json.loads(default_scale)
-    if data.get('data') is None:
+    if data.get('data') is None or data.get('data') == []:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
     scale = data.get('data')[0]
     settings = scale["settings"]

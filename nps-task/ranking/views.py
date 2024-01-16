@@ -1,20 +1,16 @@
 import random
 import datetime
 import json
-import requests
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from nps.dowellconnection import dowellconnection
 from rest_framework import status
 from nps.login import get_user_profile
-import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
-from itertools import count
-import random
+import re
 
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -64,7 +60,9 @@ def settings_api_view_create(request):
             return Response({"error": "Number of items does not match length of items list."},
                             status=status.HTTP_400_BAD_REQUEST)
         if stages_arrangement == 'Alphabetically ordered':
-            stages.sort()
+            stages = sorted(stages)
+    
+            
         elif stages_arrangement == 'Shuffled (Randomly)':
             random.shuffle(stages)
         elif stages_arrangement == 'Using ID numbers':
@@ -131,10 +129,10 @@ def settings_api_view_create(request):
                 field_add = {"_id": scale_id}
                 x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "fetch", field_add, "nil")
-
-                return Response(json.loads(x)['data'], status=status.HTTP_200_OK)
+                setting = json.loads(x)['data'][0]
+                return Response(setting, status=status.HTTP_200_OK)
             except Exception as e:
-                return Response({"error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Scale does not exist."}, status=status.HTTP_404_NOT_FOUND)
         else:
             field_add = {"settings.scale_category": "ranking scale"}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -160,14 +158,25 @@ def settings_api_view_create(request):
                                  field_add, "nil")
             settings = json.loads(x)['data'][0]['settings']
         except Exception as e:
-            return Response({"error": "Scale does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Scale does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
         for key in settings.keys():
             if key in data:
                 settings[key] = data[key]
         stages = settings['stages']
+        num_of_stages = settings['num_of_stages']
+        item_count = settings['item_count']
+        item_list = settings['item_list']
+        
+        if len(stages) != num_of_stages:
+            return Response({"error": "Number of stages does not match length of stages list."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if item_count != len(item_list):
+            return Response({"error": "Number of items does not match length of items list."},
+                            status=status.HTTP_400_BAD_REQUEST)
         if settings['stages_arrangement'] == 'Alphabetically ordered':
             list(stages).sort()
+    
         elif settings['stages_arrangement'] == 'Shuffled (Randomly)':
             random.shuffle(stages)
         elif settings['stages_arrangement'] == 'Using ID numbers':
@@ -202,13 +211,13 @@ def response_submit_api_view(request):
                                      "scale_reports",
                                      "1094", "ABCDE", "fetch", field_add, "nil")
             data = json.loads(scale)
-            if data.get('data') is None:
-                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            if not data.get('data', None):
+                return Response({"Error": "Scale Response does not exist."}, status=status.HTTP_404_NOT_FOUND)
             return Response({"data": data['data']}, status=status.HTTP_200_OK)
         else:
             # Return all ranking scale responses
             field_add = {"settings.scale_category": "ranking scale"}
-            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "fetch",
+            x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                                  field_add, "nil")
             settings_list = []
             for item in json.loads(x)['data']:
@@ -230,7 +239,7 @@ def response_submit_api_view(request):
                 return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 username = response['username']
-                brand_name = response['brand_name'],
+                brand_name = response['brand_name']
                 product_name = response['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
@@ -272,7 +281,7 @@ def response_submit_api_view(request):
                 results.append(result)
                 if result.get('error', None):
                     return Response(result, status=status.HTTP_400_BAD_REQUEST)
-            return Response(results)
+            return Response(results, status=status.HTTP_201_CREATED)
         else:
             instance_id = response.get('instance_id')
             try:
@@ -300,13 +309,14 @@ def response_submit_api_view(request):
 
             result = response_submit_loop(username, scale_id, responses, instance_id)
             result = result.data
-            return Response(result)
+            if result.get('error', None):
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            return Response(result, status=status.HTTP_201_CREATED)
 
 
 def response_submit_loop(username, scale_id, responses, instance_id, process_id=None, document_data=None):
-    # # Check if response already exists for this event
-    field_add = {"username": username, "scale_data.scale_id": scale_id, "scale_data.scale_type": "ranking scale",
-                 "scale_data.instance_id": instance_id}
+    # Check if response already exists for this event
+    field_add = {"scale_data.scale_id": scale_id, "scale_data.scale_type": "ranking scale", "scale_data.instance_id": instance_id}
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                          "1094", "ABCDE", "fetch",
                                          field_add, "nil")
@@ -388,12 +398,18 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
                                         {"scale_id": scale_id, "event_id": event_id, "instance_id": instance_id,
                                          "username": username}, "nil")
         response_id = json.loads(x)['inserted_id']
-        return Response({"success": True, "response_id": response_id, "payload": field_add})
+        
+        # renamed the response data variable to data
+        return Response({"success": True, "response_id": response_id, "data": field_add})
 
 
     except Exception as e:
         print(e)
         return Response({"Success": False, "Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
 
 def dowell_scale_admin(request):
