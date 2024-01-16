@@ -26,6 +26,8 @@ def scalewise_report(request , scale_id):
         {"scale_id": scale_id}
     ]}
         scale_response_data = fetch_scale_response(field_add)
+
+        #print("scale_response" , scale_response_data)
         
         scale_report = ScaleReportObject(scale_response_data)
 
