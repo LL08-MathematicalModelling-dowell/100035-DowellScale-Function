@@ -39,6 +39,10 @@ const Home = () => {
       name: 'Percent Scale',
       slug: 'percent-scale',
     },
+    {
+      name: 'Percent Sum Scale',
+      slug: 'percent-sum-scale',
+    }
   ];
   // const navigateTo = useNavigate();
 
