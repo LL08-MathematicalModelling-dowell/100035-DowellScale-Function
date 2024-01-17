@@ -1,4 +1,4 @@
-## This is the official documentation for the DoWell Scale APIs
+## This is the official documentation for the DoWell Scale APIs.
 - ## NPS scale
    - Description:
         Net Promoter Score (NPS) is a measure used to gauge customer loyalty, satisfaction, and enthusiasm with a company that’s calculated by asking customers one question: “On a scale from 0 to 10, how likely are you to recommend this product/company to a friend or colleague?”The NPS scale is usually an 11 point rating scale ranging from 0 to 10. 0 is considered as the worst and 10 being the best. However, the scale is not limited to this and can vary from company to company.
