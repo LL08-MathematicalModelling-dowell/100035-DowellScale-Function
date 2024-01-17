@@ -1,15 +1,15 @@
 import json
 import numpy as np
+import pandas as pd
 
 from abc import ABC , abstractmethod
 from collections import Counter , defaultdict
+from itertools import permutations
 
 from scipy import stats
 
 from EvaluationModule.calculate_function import stattricks_api , generate_random_number , dowellconnection , calculate_stapel_scale_category , calculate_nps_category
 from EvaluationModule.views import categorize_scale_generate_scale_specific_report
-
-
 
 from .exceptions import (
     NoScaleDataFound , 
@@ -25,8 +25,6 @@ from .utils import (
     mode,
     likert_label_map,
     get_key_by_value,
-    pearson_correlation,
-    independent_t_test,
     get_percentage_occurrence)
 
 
@@ -420,11 +418,23 @@ class ThurststoneScaleReport(ScaleReportBaseClass):
         self._get_scale_settings()
         self.__gather_statement_scores()
         report = defaultdict(dict)
+        report_counts = {}
+
         for statements in self._statememt_scores:
             report[statements]["mode"] = mode(self._statememt_scores[statements]["categories"])
             report[statements]["median"] = median(self._statememt_scores[statements]["categories"])
             report[statements]["range"] = find_range(self._statememt_scores[statements]["scores"])
-        
+            report[statements]["mean"] = np.mean(self._statememt_scores[statements]["scores"])
+            report[statements]["std"] = np.std(self._statememt_scores[statements]["scores"])
+            report[statements]["count"] = Counter(self._statememt_scores[statements]["categories"])
+
+            report_counts[statements] = Counter(self._statememt_scores[statements]["categories"])
+
+
+        dataframe = pd.DataFrame.from_dict(report_counts , orient = "index").T
+        dataframe = dataframe.fillna(0)
+
+        report["correllation_matrix"]= dataframe.corr().to_dict(orient="index")
             
         return report
 
@@ -681,9 +691,94 @@ class NpsLiteScaleReport(ScaleReportBaseClass):
         }
 
         return response_
+
+class PairedComparisonScaleReport(ScaleReportBaseClass):
+    scale_report_type = "paired-comparison scale"
+
+    
+
+    def _get_all_scores(self):
+        self._all_scores = []
+        for score in self._scale_response_data["data"]:
+            value = score.get("ranking")
+            if not value:
+                continue
+            self._all_scores.append(value)
+        return self._all_scores
+    
+    def _scale_settings(self , scale_id):
+
+        paired_scale = dowellconnection(
+                "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                        "1093", "ABCDE", "fetch", {"_id" : scale_id}, "nil"
+            )
         
+        paired_scale = json.loads(paired_scale)
 
         
+        if isinstance(paired_scale , str) or isinstance(paired_scale , dict):
+
+                self._item_list = paired_scale["data"][0]["settings"].get("item_list")
+                self._total_pairs = paired_scale["data"][0]["settings"].get("total_pairs")
+
+        else:
+            raise Exception("Can't fetch scale settings for likert scale. Try again")
+    
+    def _get_scale_id(self):
+        data = self._scale_response_data["data"][0]
+
+        scale_data = data.get("scale_data")
+
+        if not scale_data:
+            scale_id =  data.get("scale_id")
+            if not scale_id:
+                raise Exception("No Scale Id found. Inconsistent response schema")
+            return scale_id
+        
+        scale_id = scale_data.get("scale_id")
+        if not scale_id:
+            raise Exception("No Scale Id found. Inconsistent response schema")
+        return scale_id
+
+    
+    def report(self, all_scores, **kwargs):
+        scale_id = self._get_scale_id()
+        self._scale_settings(scale_id)
+
+        report_con = {}
+
+        frequency_distribution = {num : [] for num in range(1 , self._total_pairs + 1)}
+
+        for scores in self._all_scores:
+            for pair , score in zip(frequency_distribution.keys() , scores[:self._total_pairs]):
+                if score not in self._item_list:
+                    try:
+                        score = scores[self._total_pairs : self._total_pairs + 1][0]
+                    except:
+                        continue
+                frequency_distribution[pair].append(score)
+            
+
+        report_con.update(frequency_distribution)
+
+        if len(frequency_distribution) > 1:
+            pairs = list(permutations(frequency_distribution.keys() , 2))
+
+            pairs_statistic = {p : {} for p in pairs}
+
+            from statsmodels.stats.contingency_tables import mcnemar
+
+            for pair in pairs:
+                pairs_statistic[pair]["mcnemar test"] = mcnemar(frequency_distribution[pair[0]] , 
+                                                frequency_distribution[pair[1]])
+                
+
+            report_con.update(pairs_statistic)
+
+        return report_con
+
+
+    
 
         
 
