@@ -24,8 +24,10 @@ from .utils import (
     median, 
     mode,
     likert_label_map,
+    get_percentile,
     get_key_by_value,
-    get_percentage_occurrence)
+    get_percentage_occurrence,
+    chi_square_test)
 
 
 class ScaleReportBaseClass(ABC):
@@ -226,9 +228,16 @@ class NpsScaleReport(ScaleReportBaseClass):
 
 
     def report(self , scale_report_object : ScaleReportObject):
+
         reports = {}
+        numpy_scores = np.array(self._all_scores)
         reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , self._all_scores)
+
+        reports["percentiles"] = get_percentile(numpy_scores)
         reports.update(StatisticsReport.statistics_report(self._all_scores))
+
+        if "poisson_case_results" in reports:
+            reports["covariance value"] =  (reports["poisson_case_results"]["standardDeviation"]["list1"] / reports["poisson_case_results"]["mean"]["list1"]) * 100
 
         return reports
     
@@ -435,6 +444,8 @@ class ThurststoneScaleReport(ScaleReportBaseClass):
         dataframe = dataframe.fillna(0)
 
         report["correllation_matrix"]= dataframe.corr().to_dict(orient="index")
+
+        report["chi_square values"] = chi_square_test(dataframe)
             
         return report
 
@@ -632,7 +643,9 @@ class PercentScaleReport(ScaleReportBaseClass):
             "no_of_scales": len(self._all_scores),
             "aggregated_score_list": self._all_scores,
             #"percent_total_score": len(self._all_scores) * 10,
-            "report": self.calculate_percent_scale_score(self._all_scores)
+            "report": self.calculate_percent_scale_score(self._all_scores),
+            "percentile" : get_percentile(np.array(self._all_scores)),
+            "statistics" : StatisticsReport.statistics_report(self._all_scores)
         }
         return response_
 
@@ -747,7 +760,7 @@ class PairedComparisonScaleReport(ScaleReportBaseClass):
 
         report_con = {}
 
-        frequency_distribution = {num : [] for num in range(1 , self._total_pairs + 1)}
+        frequency_distribution = {num : defaultdict(int) for num in range(1 , self._total_pairs + 1)}
 
         for scores in self._all_scores:
             for pair , score in zip(frequency_distribution.keys() , scores[:self._total_pairs]):
@@ -756,12 +769,22 @@ class PairedComparisonScaleReport(ScaleReportBaseClass):
                         score = scores[self._total_pairs : self._total_pairs + 1][0]
                     except:
                         continue
-                frequency_distribution[pair].append(score)
-            
+                frequency_distribution[pair][score] += 1
+    
 
         report_con.update(frequency_distribution)
 
         if len(frequency_distribution) > 1:
+
+            dataframe = pd.DataFrame.from_dict(frequency_distribution , orient='index')
+
+            report_con["chi_square values"] = chi_square_test(dataframe)
+
+            from statsmodels.stats.contingency_tables import mcnemar
+
+            report_con["mcneamr_test"] = mcnemar(dataframe)
+
+            """
             pairs = list(permutations(frequency_distribution.keys() , 2))
 
             pairs_statistic = {p : {} for p in pairs}
@@ -774,6 +797,8 @@ class PairedComparisonScaleReport(ScaleReportBaseClass):
                 
 
             report_con.update(pairs_statistic)
+
+            """
 
         return report_con
 

@@ -14,4 +14,9 @@ class NoScaleType(Exception):
         Scale type has no scale type
     """
 
+class ScaleSettingsFetchError(Exception):
+    """
+        Can't fetch Scale Settings. 
+    """
+
 
