@@ -254,8 +254,9 @@ const NPSScaleSettings = () => {
       );
 
       const result = pub_links.data;
+      console.log(result, "hhhhhhhhhhhhhhhhhhhhhhhhhb")
       setUserInfo(result.userinfo);
-
+      
       const PublicLinks = [];
       const all_public_links = [];
 
