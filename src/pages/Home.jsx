@@ -34,6 +34,14 @@ const Home = () => {
     {
       name: 'Likert scale',
       slug: 'likert-scale',
+    },
+    {
+      name: 'Percent Scale',
+      slug: 'percent-scale',
+    },
+    {
+      name: 'Percent Sum Scale',
+      slug: 'percent-sum-scale',
     }
   ];
   // const navigateTo = useNavigate();

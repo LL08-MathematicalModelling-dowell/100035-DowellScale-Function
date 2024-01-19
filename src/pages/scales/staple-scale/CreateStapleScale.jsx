@@ -30,7 +30,7 @@ const CreateStapleScale = () => {
         username: "Natan",
         orientation: "",
         spacing_unit: 1,
-        scale_upper_limit: 10,
+        scale_upper_limit: 0,
         scalecolor: "#8f1e1e",
         roundcolor: "#938585",
         fontcolor: "#000000",
@@ -112,7 +112,7 @@ const CreateStapleScale = () => {
         username: "Natan",
         orientation: formData.orientation,
         spacing_unit: 1,
-        scale_upper_limit: 10,
+        scale_upper_limit: formData.scale_upper_limit,
         scalecolor: formData.scalecolor,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
@@ -242,6 +242,19 @@ const CreateStapleScale = () => {
                   className="w-full"
               />
           </div>
+          <div className="w-full">
+              <div className="flex items-center gap-3">
+                <p>Scale upper limit</p>
+              </div>
+                  <CustomTextInput
+                      name="scale_upper_limit"
+                      type="number"
+                      placeholder="enter upper limit"
+                      value={formData.scale_upper_limit}
+                      handleChange={handleChange}
+                      style={{borderRadius:"4px"}}
+                  />
+          </div>
           <div className='w-full'>
               <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">format</label>
               <select 
@@ -328,7 +341,7 @@ const CreateStapleScale = () => {
         </div>
         <div className='flex justify-end gap-3'>
         {isLoading ? <Fallback/> : <button onClick={handleSubmitStapleScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
-          <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button>
+          {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
         </div>
       </div>
       {showEmojiPalette && (
