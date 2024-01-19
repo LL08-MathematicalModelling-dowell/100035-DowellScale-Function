@@ -355,20 +355,27 @@ class PerpetualMappingScaleReport(ScaleReportBaseClass):
             items_report_x["mode"] , items_report_y["mode"] =  mode(values["x"]) , mode(values["y"])
             items_report_x["median"] , items_report_y["median"] = mode(values["x"]) , mode(values["y"])
             items_report_x["range"] , items_report_y["range"] = find_range(values["x"]) , find_range(values["y"])
+            items_report_x["std"] , items_report_y["std"] = np.array(values["x"]).std() , np.array(values["y"]).std()
+            items_report_x["percentile"] , items_report_y["percentile"] = get_percentile(values["x"]) , get_percentile(values["y"])
 
-            values["x"].append(3)
-            values["y"].append(3)
 
-            print(values["x"] , values["y"])
+            correlation_coe , correllation_p_value = stats.pearsonr(values["x"] , values["y"])
 
-            reports[keys] = [items_report_x , items_report_y ,
-                              {"pearson correlation" : stats.pearsonr(values["x"] , values["y"]),
-                               "t-test": stats.ttest_ind(values["x"] , values["y"]),
-                               "simple-regression" : stats.linregress(values["x"] , values["y"])},
-                             ]
+            t_test_p_value , t_statistic = stats.ttest_ind(values["x"] , values["y"])
 
-            print(reports)
+            slope , intercept , r_value , linear_reg_p_value , std_err = stats.linregress(values["x"] , values["y"])
 
+            reports[keys] = {"x" : items_report_x  ,  "y" : items_report_y ,
+                              "t_test" : {"p_value" : t_test_p_value , "t_statistic" : t_statistic},
+                               "pearson_correllation": {"coefficient" : correlation_coe , 
+                                                        "p_value" : correllation_p_value },
+                               "simple-regression" : {
+                                        "slope" : slope , 
+                                        "intercept" : intercept,
+                                        "r-value" : r_value , 
+                                        "p_value" : linear_reg_p_value,
+                                        "std_err" : std_err
+                               }}
 
         return reports
     
@@ -549,6 +556,7 @@ class RankingScaleReport(ScaleReportBaseClass):
 
             # Compile the report
         report = {
+            "scale_type" : self.scale_report_type,
             'summary_statistics': summary_stats,
             'comparison_matrix': dict(comparison_matrix)
         }
@@ -636,8 +644,7 @@ class PercentScaleReport(ScaleReportBaseClass):
 
     def report(self, all_scores, **kwargs):
 
-        
-
+    
         response_ = {
             "scale_type": self.scale_report_type,
             "no_of_scales": len(self._all_scores),
@@ -758,7 +765,7 @@ class PairedComparisonScaleReport(ScaleReportBaseClass):
         scale_id = self._get_scale_id()
         self._scale_settings(scale_id)
 
-        report_con = {}
+        report_con = {"scale_type" , self.scale_report_type}
 
         frequency_distribution = {num : defaultdict(int) for num in range(1 , self._total_pairs + 1)}
 

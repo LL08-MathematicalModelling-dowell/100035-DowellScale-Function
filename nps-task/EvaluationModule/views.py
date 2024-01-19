@@ -651,8 +651,7 @@ def get_brand_product(request):
             "nil"
         )
 
-    return Response({"success": data_future.result()}, status=status.HTTP_200_OK)
-
+    return Response({"success": data_future.result()}, status=status.HTTP_200_OK)    
 @api_view(["GET" ,])
 def scalewise_report(request , scale_id):
     """
