@@ -53,6 +53,11 @@ import {
 } from './pages/scales/likert-scale';
 import { StrictMode } from 'react';
 import NPSResponse from './pages/scales/nps-scale/NPSResponse.jsx';
+import PercentScale from './pages/scales/percent-scale/PercentScale.jsx';
+import CreatePercentScale from './pages/scales/percent-scale/CreatePercentScale.jsx';
+import PercentScaleSettings from './pages/scales/percent-scale/PercentScaleSettings.jsx';
+import PercentSumScale from './pages/scales/percent-sum-scale.jsx/PercentSumScale.jsx';
+import CreatePercentSumScale from './pages/scales/percent-sum-scale.jsx/CreatePercentSumScale.jsx';
 
 const basePath = '/100035-DowellScale-Function/';
 const router = createBrowserRouter([
@@ -69,6 +74,23 @@ const router = createBrowserRouter([
         element: <PairedScale />,
       },
       {
+        path: `${basePath}/percent-scale-settings/:slug`,
+        element: <PercentScaleSettings />,
+      },
+      {
+        path: `${basePath}/percent-scale`,
+        element: <PercentScale />,
+      },
+      {
+        path:`${basePath}/create-percent-scale`,
+        element:<CreatePercentScale/>
+      },
+      
+      {
+        path:`${basePath}/create-percent-sum-scale`,
+        element:<CreatePercentSumScale/>
+      },
+      {
         path: `${basePath}/pm-scale`,
         element: <PerceptualScale />,
       },
@@ -79,6 +101,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/nps-scale`,
         element: <NPSScale />,
+      },
+      {
+        path: `${basePath}/percent-sum-scale`,
+        element: <PercentSumScale />,
       },
       {
         path: `${basePath}/create-scale`,

@@ -13,7 +13,7 @@ import { Button } from '../../../components/button';
 const StapleScale = () => {
     const { slug } = useParams();
     const { isLoading, scaleData, fetchScaleData } = useGetScale();
-    const [selectedScore, setSelectedScore] = useState(-6);
+    const [selectedScore, setSelectedScore] = useState();
     const navigateTo = useNavigate();
 
     // const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -58,12 +58,15 @@ const StapleScale = () => {
                 </div>
                 <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
                     <h3 className='py-5 text-sm font-medium text-center'>SCALE</h3>
-                    <div className='grid grid-cols-4 gap-3 px-2 py-6 bg-gray-300 md:grid-cols-11 md:px-1'>
+                    <div className='grid  md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center bg-gray-300' style={{borderRadius:'8px'}}>
                         {scores.map((score, index)=>(
                             <button 
                                 key={index}
                                 onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index - 5  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={`rounded-lg ${
+                                    scores[index] == selectedScore
+                                    ? 'bg-white' : 'bg-primary text-white'
+                                    }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                             >{score}</button>
                         ))}
                     </div>
