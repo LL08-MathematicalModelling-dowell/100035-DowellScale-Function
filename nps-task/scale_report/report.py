@@ -1,12 +1,15 @@
 import json
+import numpy as np
+import pandas as pd
 
 from abc import ABC , abstractmethod
 from collections import Counter , defaultdict
+from itertools import permutations
 
-from EvaluationModule.calculate_function import stattricks_api , generate_random_number , dowellconnection , calculate_stapel_scale_category
+from scipy import stats
+
+from EvaluationModule.calculate_function import stattricks_api , generate_random_number , dowellconnection , calculate_stapel_scale_category , calculate_nps_category
 from EvaluationModule.views import categorize_scale_generate_scale_specific_report
-
-
 
 from .exceptions import (
     NoScaleDataFound , 
@@ -21,8 +24,10 @@ from .utils import (
     median, 
     mode,
     likert_label_map,
+    get_percentile,
     get_key_by_value,
-    get_percentage_occurrence)
+    get_percentage_occurrence,
+    chi_square_test)
 
 
 class ScaleReportBaseClass(ABC):
@@ -115,11 +120,11 @@ class ScaleReportObject:
         scale_data = self.scale_response_data["data"][0].get("scale_data", None)
 
 
-
-        if not scale_data:
-           raise NoScaleDataFound("The scale has no scale")
-        
-        self._scale_id = scale_data["scale_id"]
+        if scale_data:
+           
+            self._scale_id = scale_data.get("scale_id")
+        else:
+            self._scale_id = self.scale_response_data["data"][0].get("scale_id")
 
         self._check_for_scale_type()
 
@@ -163,7 +168,13 @@ class ScaleReportObject:
             scale_data = scale.get("scale_data", None)
 
             if not scale_data:
-                continue
+                scale_type = scale.get("scale_type" , None)
+
+                if not scale_type:
+                    continue
+                
+                else:
+                    break
 
             scale_type = scale_data.get("scale_type" , None)
 
@@ -217,9 +228,16 @@ class NpsScaleReport(ScaleReportBaseClass):
 
 
     def report(self , scale_report_object : ScaleReportObject):
+
         reports = {}
+        numpy_scores = np.array(self._all_scores)
         reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , self._all_scores)
+
+        reports["percentiles"] = get_percentile(numpy_scores)
         reports.update(StatisticsReport.statistics_report(self._all_scores))
+
+        if "poisson_case_results" in reports:
+            reports["covariance value"] =  (reports["poisson_case_results"]["standardDeviation"]["list1"] / reports["poisson_case_results"]["mean"]["list1"]) * 100
 
         return reports
     
@@ -337,9 +355,27 @@ class PerpetualMappingScaleReport(ScaleReportBaseClass):
             items_report_x["mode"] , items_report_y["mode"] =  mode(values["x"]) , mode(values["y"])
             items_report_x["median"] , items_report_y["median"] = mode(values["x"]) , mode(values["y"])
             items_report_x["range"] , items_report_y["range"] = find_range(values["x"]) , find_range(values["y"])
+            items_report_x["std"] , items_report_y["std"] = np.array(values["x"]).std() , np.array(values["y"]).std()
+            items_report_x["percentile"] , items_report_y["percentile"] = get_percentile(values["x"]) , get_percentile(values["y"])
 
 
-            reports[keys] = [items_report_x , items_report_y]
+            correlation_coe , correllation_p_value = stats.pearsonr(values["x"] , values["y"])
+
+            t_test_p_value , t_statistic = stats.ttest_ind(values["x"] , values["y"])
+
+            slope , intercept , r_value , linear_reg_p_value , std_err = stats.linregress(values["x"] , values["y"])
+
+            reports[keys] = {"x" : items_report_x  ,  "y" : items_report_y ,
+                              "t_test" : {"p_value" : t_test_p_value , "t_statistic" : t_statistic},
+                               "pearson_correllation": {"coefficient" : correlation_coe , 
+                                                        "p_value" : correllation_p_value },
+                               "simple-regression" : {
+                                        "slope" : slope , 
+                                        "intercept" : intercept,
+                                        "r-value" : r_value , 
+                                        "p_value" : linear_reg_p_value,
+                                        "std_err" : std_err
+                               }}
 
         return reports
     
@@ -379,27 +415,53 @@ class ThurststoneScaleReport(ScaleReportBaseClass):
            
     
     def __gather_statement_scores(self):
-        self._statememt_scores = defaultdict(list)
+        self._statememt_scores = defaultdict(lambda : {"categories" : [] , "scores" : [] })
 
         for statements in self._all_scores:
             if isinstance(statements , list):
                 for statements_dict in statements:
                     keys = tuple(statements_dict.keys())
                     
-                    self._statememt_scores[statements_dict[keys[0]]].append(self._find_score_category
+                    self._statememt_scores[statements_dict[keys[0]]]["categories"].append(self._find_score_category
                                                                             (statements_dict.get(keys[1]))
+                            )
+                    self._statememt_scores[statements_dict[keys[0]]]["scores"].append(
+                                                                    statements_dict.get(keys[1])
                             )
         
 
     def report(self , scale_report_object : ScaleReportObject):
         self._get_scale_settings()
         self.__gather_statement_scores()
-        return self._statememt_scores
+        report = defaultdict(dict)
+        report_counts = {}
+
+        for statements in self._statememt_scores:
+            report[statements]["mode"] = mode(self._statememt_scores[statements]["categories"])
+            report[statements]["median"] = median(self._statememt_scores[statements]["categories"])
+            report[statements]["range"] = find_range(self._statememt_scores[statements]["scores"])
+            report[statements]["mean"] = np.mean(self._statememt_scores[statements]["scores"])
+            report[statements]["std"] = np.std(self._statememt_scores[statements]["scores"])
+            report[statements]["count"] = Counter(self._statememt_scores[statements]["categories"])
+
+            report_counts[statements] = Counter(self._statememt_scores[statements]["categories"])
+
+
+        dataframe = pd.DataFrame.from_dict(report_counts , orient = "index").T
+        dataframe = dataframe.fillna(0)
+
+        report["correllation_matrix"]= dataframe.corr().to_dict(orient="index")
+
+        report["chi_square values"] = chi_square_test(dataframe)
+            
+        return report
 
 
 class QSortScaleReport(ScaleReportBaseClass):
 
-    scale_report_type = "qsort scale"
+    scale_report_type = "Qsort"
+
+    scales_score_length_threshold = 0
     
     def _get_all_scores(self):
         self._all_scores = []
@@ -408,33 +470,347 @@ class QSortScaleReport(ScaleReportBaseClass):
         return self._all_scores
 
     def _populate_dictionary(self , dictionary , in_place_dict , values):
-        from itertools import zip_longest
-        for key , value in zip_longest(dictionary["statements"] , dictionary["scores"]) :
-            if key is not None:
-                in_place_dict[key["text"]][0].append(values)
-                in_place_dict[key["text"]][0].append(value)
+        for dicts in dictionary:
+            if "statement" in dicts and "score" in dicts:
+                in_place_dict[dicts["statement"]]["categories"].append(values)
+                in_place_dict[dicts["statement"]]["scores"].append(dicts["score"])
 
     
     def _gather_scores_(self):
-        self._statement_scores = defaultdict(lambda : [[] , []])
+        self._statement_scores = defaultdict(lambda : {"categories" : [] , "scores" : [] })
+
+        self._modes_of_categories = {"Disagree" : 0 , "Agree" : 0 , "Neutral" : 0}
 
         for statement in self._all_scores:
             self._populate_dictionary(statement["Disagree"] , self._statement_scores , "Disagree")
             self._populate_dictionary(statement["Agree"] , self._statement_scores , "Agree")
-            self._populate_dictionary(statement["neutral"] , self._statement_scores , "neutral")
+            self._populate_dictionary(statement["Neutral"] , self._statement_scores , "Neutral")
 
-    def report(self, all_scores, **kwargs):
-        self._gather_scores_()
+            self._modes_of_categories["Disagree"] += len(statement["Disagree"])
+            self._modes_of_categories["Agree"] += len(statement["Agree"])
+            self._modes_of_categories["Neutral"] += len(statement["Neutral"])
+
+        self._statement_scores.update(self._modes_of_categories)
         return self._statement_scores
 
 
 
+    def sum_statements_under_categories(self):
+        pass
 
+
+    def report(self, all_scores, **kwargs):
+
+        return self._gather_scores_()
+
+
+class RankingScaleReport(ScaleReportBaseClass):
+
+    scale_report_type = "ranking scale"
+    scales_score_length_threshold = 0
+
+
+    def _get_all_scores(self):
+        self._all_scores = []
+        for score in self._scale_response_data["data"]:
+            self._all_scores.append(score["rankings"])
+        return self._all_scores
+
+    def report(self, all_scores, **kwargs):
+            
+        rank_distribution = defaultdict(lambda: defaultdict(int))
+        total_ranks = defaultdict(int)
+        count_ranks = defaultdict(int)
+        comparison_matrix = defaultdict(lambda: defaultdict(int))
+
+        for rankings in self._all_scores:
+            # Process each ranking submission
+            for stage_ranking in rankings:
+                print(stage_ranking, "stage_ranking")
+                for rank_info in stage_ranking['stage_rankings']:
+                    item_name = rank_info['name']
+                    rank = rank_info['rank']
+
+                    # Update rank distribution and totals
+                    rank_distribution[item_name][rank] += 1
+                    total_ranks[item_name] += rank
+                    count_ranks[item_name] += 1
+
+                    # Update comparison matrix
+                    for other_item in rank_distribution:
+                        if other_item != item_name:
+                            if rank_distribution[other_item][rank] > 0:
+                                comparison_matrix[item_name][other_item] += 1
+
+            # Calculate summary statistics
+        summary_stats = {}
+        for item, ranks in total_ranks.items():
+                avg_rank = ranks / count_ranks[item]
+                rank_list = [rank for rank, count in rank_distribution[item].items() for _ in range(count)]
+                std_dev = np.std(rank_list)
+                summary_stats[item] = {
+                    'average_rank': avg_rank,
+                    'std_dev': std_dev,
+                    'rank_distribution': dict(rank_distribution[item])
+                }
+
+            # Compile the report
+        report = {
+            "scale_type" : self.scale_report_type,
+            'summary_statistics': summary_stats,
+            'comparison_matrix': dict(comparison_matrix)
+        }
+
+        return report
+
+
+
+class PercentSumScaleReport(ScaleReportBaseClass):
+    scale_report_type = "percent_sum scale"
+
+    def _get_all_scores(self):
+        self._all_scores = get_all_scores(self._scale_response_data)
+        return self._all_scores
+
+    def score_average(self):
+
+        if not self._all_scores or not self._all_scores[0]:
+            return []
+
+        num_categories = len(self._all_scores[0])
+        aggregate = [0] * num_categories  # Initialize aggregate list for each score category
+
+        for instance in self._all_scores:
+            for i, score in enumerate(instance):
+                aggregate[i] += score
+
+        # Calculate the average for each category
+        num_instances = len(self._all_scores)
+        average_scores = [total / num_instances for total in aggregate]
+
+        return average_scores
+
+        """
+        max_score = max(max(instance) for instance in self._all_scores)
+
+        # Calculate average score for each category
+        num_categories = len(self._all_scores[0])
+        category_averages = [0] * num_categories
+        for instance in self._all_scores:
+            for i, score_ in enumerate(instance):
+                category_averages[i] += score_
+        category_averages = [total / len(score) for total in category_averages]
+
+        # Calculate total score for each instance
+        total_scores_per_instance = [sum(instance) for instance in self._all_scores]
+
+        # Calculate average score across all instances
+        average_score = sum(total_scores_per_instance) / len(self._all_scores)
+
+        """
+
+    def report(self, all_scores, **kwargs):
+        # Check if instances list is empty or malformed
+        response_ = {
+            "scale_type": self.scale_report_type,
+            "no_of_scales": len(self._all_scores),
+            "average_score": self.score_average(),
+            "max_total_score": max(self._all_scores),
+        }
+       
+        return response_
+
+
+class PercentScaleReport(ScaleReportBaseClass):
+    scale_report_type = "percent scale"
+
+    scales_score_length_threshold = 0
+
+    def _get_all_scores(self):
+        
+        self._all_scores = []
+        for score in self._scale_response_data["data"]:
+            value = score.get("score")
+            if not value:
+                continue
+            self._all_scores.extend(value)
+        return self._all_scores
+
+    def calculate_percent_scale_score(self , aggregate_scores, max_score=100):
+    # Assuming max_score is the maximum possible score for each product
+        total_possible_score = max_score * len(aggregate_scores)
+        percent_scores = [(score / total_possible_score) * 100 for score in aggregate_scores]
+        return percent_scores
+
+    def report(self, all_scores, **kwargs):
+
+    
+        response_ = {
+            "scale_type": self.scale_report_type,
+            "no_of_scales": len(self._all_scores),
+            "aggregated_score_list": self._all_scores,
+            #"percent_total_score": len(self._all_scores) * 10,
+            "report": self.calculate_percent_scale_score(self._all_scores),
+            "percentile" : get_percentile(np.array(self._all_scores)),
+            "statistics" : StatisticsReport.statistics_report(self._all_scores)
+        }
+        return response_
+
+
+
+class NpsLiteScaleReport(ScaleReportBaseClass):
+    scale_report_type = "npslite scale"
+        
+    def _get_all_scores(self):
+        self._all_scores = get_all_scores(self._scale_response_data , score_type="str")
+        return self._all_scores
+    
+    def categorize_nps_score(self , nps_score):
+        if nps_score > 0:
+            return "Promoter"
+        elif nps_score == 0:
+            return "Passive"
+        else:
+            return "Detractor"
+
+    def basic_nps_score(self , responses):
+        promoters = responses.count(3)
+        detractors = responses.count(1)
+        total_responses = len(responses)
+
+        if total_responses == 0:
+            return 0  # Avoid division by zero if there are no responses
+
+        nps_score = (promoters - detractors) / total_responses * 100
+        return nps_score
+    
+    def weighted_nps_score(self , responses, w1=0.7, w2=0.3):
+        # Assigning weights based on the score
+        weighted_scores = [(w1 if r == 3 else w2 if r == 1 else 0.5) for r in responses]
+        promoters_weighted = sum(w for r, w in zip(responses, weighted_scores) if r == 3)
+        detractors_weighted = sum(w for r, w in zip(responses, weighted_scores) if r == 1)
+        total_weighted = sum(weighted_scores)
+        nps_score = (promoters_weighted - detractors_weighted) / total_weighted * 100
+        return nps_score
+    
+    def report(self, all_scores, **kwargs):
+
+        score_length = len(self._all_scores)
+        basic_score = self.basic_nps_score(self._all_scores)
+        weighted_score = self.weighted_nps_score(self._all_scores)
+
+        response_ = {
+            "scale_type": self.scale_report_type,
+            "no_of_scales": score_length,
+            "npslite_total_score":score_length * 10,
+            "score_list": self._all_scores,
+            "Basic NPSlite Score": basic_score,
+            "Weighted NPSlite Score": weighted_score,
+            "Basic NPSlite Category": self.categorize_nps_score(basic_score),
+            "Weighted NPSlite Category": self.categorize_nps_score(weighted_score),
+        }
+
+        return response_
+
+class PairedComparisonScaleReport(ScaleReportBaseClass):
+    scale_report_type = "paired-comparison scale"
+
+    
+
+    def _get_all_scores(self):
+        self._all_scores = []
+        for score in self._scale_response_data["data"]:
+            value = score.get("ranking")
+            if not value:
+                continue
+            self._all_scores.append(value)
+        return self._all_scores
+    
+    def _scale_settings(self , scale_id):
+
+        paired_scale = dowellconnection(
+                "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                        "1093", "ABCDE", "fetch", {"_id" : scale_id}, "nil"
+            )
+        
+        paired_scale = json.loads(paired_scale)
 
         
+        if isinstance(paired_scale , str) or isinstance(paired_scale , dict):
 
+                self._item_list = paired_scale["data"][0]["settings"].get("item_list")
+                self._total_pairs = paired_scale["data"][0]["settings"].get("total_pairs")
 
+        else:
+            raise Exception("Can't fetch scale settings for likert scale. Try again")
+    
+    def _get_scale_id(self):
+        data = self._scale_response_data["data"][0]
+
+        scale_data = data.get("scale_data")
+
+        if not scale_data:
+            scale_id =  data.get("scale_id")
+            if not scale_id:
+                raise Exception("No Scale Id found. Inconsistent response schema")
+            return scale_id
         
+        scale_id = scale_data.get("scale_id")
+        if not scale_id:
+            raise Exception("No Scale Id found. Inconsistent response schema")
+        return scale_id
+
+    
+    def report(self, all_scores, **kwargs):
+        scale_id = self._get_scale_id()
+        self._scale_settings(scale_id)
+
+        report_con = {"scale_type" , self.scale_report_type}
+
+        frequency_distribution = {num : defaultdict(int) for num in range(1 , self._total_pairs + 1)}
+
+        for scores in self._all_scores:
+            for pair , score in zip(frequency_distribution.keys() , scores[:self._total_pairs]):
+                if score not in self._item_list:
+                    try:
+                        score = scores[self._total_pairs : self._total_pairs + 1][0]
+                    except:
+                        continue
+                frequency_distribution[pair][score] += 1
+    
+
+        report_con.update(frequency_distribution)
+
+        if len(frequency_distribution) > 1:
+
+            dataframe = pd.DataFrame.from_dict(frequency_distribution , orient='index')
+
+            report_con["chi_square values"] = chi_square_test(dataframe)
+
+            from statsmodels.stats.contingency_tables import mcnemar
+
+            report_con["mcneamr_test"] = mcnemar(dataframe)
+
+            """
+            pairs = list(permutations(frequency_distribution.keys() , 2))
+
+            pairs_statistic = {p : {} for p in pairs}
+
+            from statsmodels.stats.contingency_tables import mcnemar
+
+            for pair in pairs:
+                pairs_statistic[pair]["mcnemar test"] = mcnemar(frequency_distribution[pair[0]] , 
+                                                frequency_distribution[pair[1]])
+                
+
+            report_con.update(pairs_statistic)
+
+            """
+
+        return report_con
+
+
+    
 
         
 

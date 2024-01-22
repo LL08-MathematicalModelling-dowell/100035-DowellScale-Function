@@ -1,7 +1,11 @@
 import requests
 import json
+import numpy as np
 
 from collections import Counter
+
+
+from scipy.stats import chi2_contingency
 
 
 from EvaluationModule.calculate_function import dowellconnection
@@ -116,7 +120,7 @@ def get_all_scores(scales_data , score_type = "int"):
         if not score:
             continue
 
-        if score_type != "int":
+        if not isinstance(score , str):
             all_scores.append(score)
         else:
             all_scores.append(int(score))
@@ -168,3 +172,12 @@ def get_percentage_occurrence(counter_dict):
 def get_key_by_value(counter_dict , value):
     return list(counter_dict.keys())[list(counter_dict.values()).index(value)]
 
+def chi_square_test(data):
+    chi2_stat, p_value, dof, expected = chi2_contingency(data)
+
+    return chi2_stat , p_value , dof , expected
+
+def get_percentile(data):
+    percentile_ranges = [25 ,50 , 75]
+    return {percentile  : result for result , percentile in zip(np.percentile(data
+                                                    , percentile_ranges) , percentile_ranges)}
