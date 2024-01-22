@@ -5,7 +5,6 @@ app_name="evaluation_module"
 
 urlpatterns = [
     path('scale/reports/<str:product_name>/<str:doc_no>', evaluation_editor, name="evaluation"),
-    path("scale/scale_id/reports/<str:scale_id>" , scalewise_report , name = "scalewise_report"),
     path('scale/reports/csv/<str:product_name>/<str:doc_no>', csv_new, name="csv_new"),
     path('scale/reports/username/<str:username>/<str:scale_category>', by_username, name="by_username"),
     # Rest endpoints
