@@ -44,8 +44,14 @@ class ScaleReportBaseClass(ABC):
     
     def _validation(self):
         self._all_scores = self._get_all_scores()
+
+
+
+        if isinstance(self._all_scores , pd.DataFrame):
+            if self._all_scores.shape[0] < self.scales_score_length_threshold:
+                raise Exception("We need more than three response to be able to create a report")
         if len(self._all_scores) < self.scales_score_length_threshold:
-             raise Exception("We need more than three response to be able to create a report")
+                raise Exception("We need more than three response to be able to create a report")
     
 
     @abstractmethod
@@ -196,8 +202,6 @@ class StatisticsReport:
     @staticmethod
     def _get_statricks_api(all_scores):
         reports = {}
-
-        
         
         statricks_api_response_json = stattricks_api("evaluation_module", generate_random_number() , 16, 3,
                                                 {"list1": all_scores})
@@ -223,23 +227,46 @@ class NpsScaleReport(ScaleReportBaseClass):
     scale_report_type = "nps scale"
 
     def _get_all_scores(self):
-        self._all_scores = get_all_scores(self._scale_response_data , score_type= "int" )
+        self._all_scores = pd.DataFrame(self._scale_response_data["data"])
+        self._all_scores["product_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("product_name"))
+        self._all_scores["brand_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("brand_name"))
+        self._all_scores["category"] = self._all_scores["score"].apply(lambda df_ : df_.get("category"))
+        self._all_scores["scores"] = self._all_scores["score"].apply(lambda df_ : df_.get("score"))
+
+        print("Was there")
+
+        print("Tijani")
+
         return self._all_scores
+    
+    def set_chi_square_result(self , field):
+         if self._all_scores[field].nunique() > 1:
+
+            df_ = self._all_scores.groupby([field, "category"]).apply(lambda df: df["scores"].count()).reset_index(name='count')
+            
+            self.reports.update({f"{field} chi-square" : chi_square_test(df_.pivot_table(index = field , columns = "category" , values = "count"))})
+
+
+
 
 
     def report(self , scale_report_object : ScaleReportObject):
 
-        reports = {}
-        numpy_scores = np.array(self._all_scores)
-        reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , self._all_scores)
+        self.reports = {}
+        self.reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , self._all_scores["scores"].to_list())
 
-        reports["percentiles"] = get_percentile(numpy_scores)
-        reports.update(StatisticsReport.statistics_report(self._all_scores))
+        self.reports["percentiles"] = get_percentile(np.array(self._all_scores["scores"]))
+        self.reports.update(StatisticsReport.statistics_report(self._all_scores["scores"].to_list()))
 
-        if "poisson_case_results" in reports:
-            reports["covariance value"] =  (reports["poisson_case_results"]["standardDeviation"]["list1"] / reports["poisson_case_results"]["mean"]["list1"]) * 100
+        if "poisson_case_results" in self.reports:
+            self.reports["covariance value"] =  (self.reports["poisson_case_results"]["standardDeviation"]["list1"] / self.reports["poisson_case_results"]["mean"]["list1"]) * 100
 
-        return reports
+
+        self.set_chi_square_result("product_name")
+        self.set_chi_square_result("brand_name")
+
+
+        return self.reports
     
 
 
