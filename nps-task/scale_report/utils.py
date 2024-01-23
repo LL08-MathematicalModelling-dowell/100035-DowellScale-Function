@@ -120,7 +120,7 @@ def get_all_scores(scales_data , score_type = "int"):
         if not score:
             continue
 
-        if not isinstance(score , str):
+        if score_type != "int":
             all_scores.append(score)
         else:
             all_scores.append(int(score))

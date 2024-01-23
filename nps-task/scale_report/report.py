@@ -557,6 +557,7 @@ class RankingScaleReport(ScaleReportBaseClass):
             # Compile the report
         report = {
             "scale_type" : self.scale_report_type,
+             "no_of_responses" : len(self._all_scores),
             'summary_statistics': summary_stats,
             'comparison_matrix': dict(comparison_matrix)
         }
@@ -569,7 +570,7 @@ class PercentSumScaleReport(ScaleReportBaseClass):
     scale_report_type = "percent_sum scale"
 
     def _get_all_scores(self):
-        self._all_scores = get_all_scores(self._scale_response_data)
+        self._all_scores = get_all_scores(self._scale_response_data , score_type = "str")
         return self._all_scores
 
     def score_average(self):
@@ -765,7 +766,8 @@ class PairedComparisonScaleReport(ScaleReportBaseClass):
         scale_id = self._get_scale_id()
         self._scale_settings(scale_id)
 
-        report_con = {"scale_type" , self.scale_report_type}
+        report_con = {"scale_type" : self.scale_report_type,
+                        "no_of_responses" : len(self._all_scores)}
 
         frequency_distribution = {num : defaultdict(int) for num in range(1 , self._total_pairs + 1)}
 
