@@ -228,26 +228,40 @@ class NpsScaleReport(ScaleReportBaseClass):
 
     def _get_all_scores(self):
         self._all_scores = pd.DataFrame(self._scale_response_data["data"])
+        
+        
         self._all_scores["product_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("product_name"))
         self._all_scores["brand_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("brand_name"))
         self._all_scores["category"] = self._all_scores["score"].apply(lambda df_ : df_.get("category"))
         self._all_scores["scores"] = self._all_scores["score"].apply(lambda df_ : df_.get("score"))
-
-        print("Was there")
-
-        print("Tijani")
+        self._all_scores["date_created"] = pd.to_datetime(self._all_scores['date_created'])
 
         return self._all_scores
+
+
+    def create_group(self , field):
+        return self._all_scores.pivot_table(index = self._all_scores.index , columns=field , values="scores")
+
+
+    def category_group_contigency_table(self , field : str):
+        df_ = (self._all_scores.groupby([field, "category"]).apply(lambda df: df["scores"].count())
+                            .reset_index(name='count')
+                            .pivot_table(index = field , columns = "category" , values = "count"))
+        return df_
     
-    def set_chi_square_result(self , field):
+    def set_chi_square_result(self , dataframe: pd.DataFrame ,  field : str):
          if self._all_scores[field].nunique() > 1:
-
-            df_ = self._all_scores.groupby([field, "category"]).apply(lambda df: df["scores"].count()).reset_index(name='count')
             
-            self.reports.update({f"{field} chi-square" : chi_square_test(df_.pivot_table(index = field , columns = "category" , values = "count"))})
+            self.reports.update({f"{field} chi-square" : chi_square_test(dataframe)})
 
 
+    def time_groups(self , dataframe : pd.DataFrame , column_name_with_date_values: str):
+        df_ = (dataframe.groupby([pd.Grouper(key=column_name_with_date_values , freq=pd.Timedelta(hours=3)) ,"category"]).apply(lambda df: df["scores"].count())
+                .reset_index(name="count")
+                .pivot_table(index = "date_created" , columns = "category" , values = "count")
+                .fillna(0))
 
+        return df_
 
 
     def report(self , scale_report_object : ScaleReportObject):
@@ -261,10 +275,14 @@ class NpsScaleReport(ScaleReportBaseClass):
         if "poisson_case_results" in self.reports:
             self.reports["covariance value"] =  (self.reports["poisson_case_results"]["standardDeviation"]["list1"] / self.reports["poisson_case_results"]["mean"]["list1"]) * 100
 
+        self.set_chi_square_result(self.category_group_contigency_table("product_name") ,"product_name")
+        self.set_chi_square_result(self.category_group_contigency_table("brand_name") , "brand_name")
+        self.set_chi_square_result(self.time_groups(self._all_scores , "date_created") , "date_created")
 
-        self.set_chi_square_result("product_name")
-        self.set_chi_square_result("brand_name")
+        product_name_group = self.create_group("product_name")
 
+        if len(product_name_group.columns) > 1 :
+            self.reports.update(product_name_group.corr().to_dict(orient="records"))
 
         return self.reports
     
@@ -686,12 +704,8 @@ class PercentScaleReport(ScaleReportBaseClass):
 
 
 
-class NpsLiteScaleReport(ScaleReportBaseClass):
+class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
     scale_report_type = "npslite scale"
-        
-    def _get_all_scores(self):
-        self._all_scores = get_all_scores(self._scale_response_data , score_type="str")
-        return self._all_scores
     
     def categorize_nps_score(self , nps_score):
         if nps_score > 0:
@@ -723,15 +737,16 @@ class NpsLiteScaleReport(ScaleReportBaseClass):
     
     def report(self, all_scores, **kwargs):
 
-        score_length = len(self._all_scores)
-        basic_score = self.basic_nps_score(self._all_scores)
-        weighted_score = self.weighted_nps_score(self._all_scores)
+        print(self._all_scores)
+
+        score_length = self._all_scores.shape[0]
+        basic_score = self.basic_nps_score(self._all_scores["scores"].to_list())
+        weighted_score = self.weighted_nps_score(self._all_scores["scores"].to_list())
 
         response_ = {
             "scale_type": self.scale_report_type,
             "no_of_scales": score_length,
             "npslite_total_score":score_length * 10,
-            "score_list": self._all_scores,
             "Basic NPSlite Score": basic_score,
             "Weighted NPSlite Score": weighted_score,
             "Basic NPSlite Category": self.categorize_nps_score(basic_score),
