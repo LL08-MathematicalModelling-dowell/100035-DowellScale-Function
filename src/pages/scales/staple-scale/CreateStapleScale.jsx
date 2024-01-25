@@ -111,12 +111,12 @@ const CreateStapleScale = () => {
     const payload = {
         username: "Natan",
         orientation: formData.orientation,
-        spacing_unit: 1,
+        spacing_unit: Number(formData.spacing_unit),
         scale_upper_limit: formData.scale_upper_limit,
         scalecolor: formData.scalecolor,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
-        fomat: formData.fomat === 'Emojis' ? selectedEmojis : scores,
+        fomat: formData.fomat === 'Emojis' ? selectedEmojis : formData.fomat,
         time: formData.time,
         name: formData.name,
         left: formData.left,
@@ -251,6 +251,19 @@ const CreateStapleScale = () => {
                       type="number"
                       placeholder="enter upper limit"
                       value={formData.scale_upper_limit}
+                      handleChange={handleChange}
+                      style={{borderRadius:"4px"}}
+                  />
+          </div>
+          <div className="w-full">
+              <div className="flex items-center gap-3">
+                <p>Space unit</p>
+              </div>
+                  <CustomTextInput
+                      name="spacing_unit"
+                      type="number"
+                      placeholder="enter space Unit"
+                      value={formData.spacing_unit}
                       handleChange={handleChange}
                       style={{borderRadius:"4px"}}
                   />
