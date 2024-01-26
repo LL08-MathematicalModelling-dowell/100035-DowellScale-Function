@@ -5,7 +5,7 @@ import numpy as np
 from collections import Counter
 
 
-from scipy.stats import chi2_contingency
+from scipy.stats import chi2_contingency , ttest_ind
 
 
 from EvaluationModule.calculate_function import dowellconnection
@@ -169,13 +169,18 @@ def get_percentage_occurrence(counter_dict):
 
     return percentage_dict
 
+
+def t_test(group1 , group2):
+    t_test_p_value , t_statistic = ttest_ind(group1 , group2)
+    return {"p_value" : t_test_p_value , "t_statisitic" : t_statistic}
+
 def get_key_by_value(counter_dict , value):
     return list(counter_dict.keys())[list(counter_dict.values()).index(value)]
 
 def chi_square_test(data):
     chi2_stat, p_value, dof, expected = chi2_contingency(data)
-
-    return chi2_stat , p_value , dof , expected
+    
+    return {"chi2_stat" : chi2_stat , "p_value" :  p_value , "dof" : dof , "expected" : expected}
 
 def get_percentile(data):
     percentile_ranges = [25 ,50 , 75]

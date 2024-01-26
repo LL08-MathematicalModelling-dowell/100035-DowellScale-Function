@@ -11,6 +11,8 @@ from scipy import stats
 from EvaluationModule.calculate_function import stattricks_api , generate_random_number , dowellconnection , calculate_stapel_scale_category , calculate_nps_category
 from EvaluationModule.views import categorize_scale_generate_scale_specific_report
 
+from paired_comparison.utils import generate_pairs
+
 from .exceptions import (
     NoScaleDataFound , 
     NoScaleResponseFound,
@@ -27,7 +29,8 @@ from .utils import (
     get_percentile,
     get_key_by_value,
     get_percentage_occurrence,
-    chi_square_test)
+    chi_square_test,
+    t_test)
 
 
 class ScaleReportBaseClass(ABC):
@@ -262,6 +265,12 @@ class NpsScaleReport(ScaleReportBaseClass):
                 .fillna(0))
 
         return df_
+    
+    def p_value_test(self , dataframe : pd.DataFrame):
+        pairs = generate_pairs(dataframe.columns)
+        for pair in pairs:
+            self.reports.update({f"{pair[0]-pair[1]} t-test" : t_test(dataframe[pair[0]] , dataframe[pair[1]])})
+            
 
 
     def report(self , scale_report_object : ScaleReportObject):
@@ -271,6 +280,7 @@ class NpsScaleReport(ScaleReportBaseClass):
 
         self.reports["percentiles"] = get_percentile(np.array(self._all_scores["scores"]))
         self.reports.update(StatisticsReport.statistics_report(self._all_scores["scores"].to_list()))
+        self.reports["one_sample_t_test"] = stats.ttest_1samp(self._all_scores["scores"].to_list() , 5)
 
         if "poisson_case_results" in self.reports:
             self.reports["covariance value"] =  (self.reports["poisson_case_results"]["standardDeviation"]["list1"] / self.reports["poisson_case_results"]["mean"]["list1"]) * 100
@@ -283,6 +293,8 @@ class NpsScaleReport(ScaleReportBaseClass):
 
         if len(product_name_group.columns) > 1 :
             self.reports.update(product_name_group.corr().to_dict(orient="records"))
+
+            self.p_value_test(product_name_group)
 
         return self.reports
     
@@ -706,6 +718,14 @@ class PercentScaleReport(ScaleReportBaseClass):
 
 class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
     scale_report_type = "npslite scale"
+
+
+    def _get_all_scores(self):
+        self._all_scores = super()._get_all_scores()
+        self._all_scores["category"] = self._all_scores["scores"].apply(self.categorize_nps_score)
+
+        print(self._all_scores["scores"])
+        return self._all_scores
     
     def categorize_nps_score(self , nps_score):
         if nps_score > 0:
@@ -737,13 +757,11 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
     
     def report(self, all_scores, **kwargs):
 
-        print(self._all_scores)
-
         score_length = self._all_scores.shape[0]
         basic_score = self.basic_nps_score(self._all_scores["scores"].to_list())
         weighted_score = self.weighted_nps_score(self._all_scores["scores"].to_list())
 
-        response_ = {
+        self.reports = {
             "scale_type": self.scale_report_type,
             "no_of_scales": score_length,
             "npslite_total_score":score_length * 10,
@@ -751,9 +769,23 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
             "Weighted NPSlite Score": weighted_score,
             "Basic NPSlite Category": self.categorize_nps_score(basic_score),
             "Weighted NPSlite Category": self.categorize_nps_score(weighted_score),
+            "percentile" : get_percentile(self._all_scores["scores"].to_list())
         }
 
-        return response_
+        self.set_chi_square_result(self.category_group_contigency_table("product_name") ,"product_name")
+        self.set_chi_square_result(self.category_group_contigency_table("brand_name") , "brand_name")
+        self.set_chi_square_result(self.time_groups(self._all_scores , "date_created") , "date_created")
+
+        self.reports["one_sample_t_test"] = stats.ttest_1samp(self._all_scores["scores"].to_list() , 5)
+
+        product_name_group = self.create_group("product_name")
+
+        if len(product_name_group.columns) > 1 :
+            self.reports.update(product_name_group.corr().to_dict(orient="records"))
+
+            self.p_value_test(product_name_group)
+
+        return self.reports
 
 class PairedComparisonScaleReport(ScaleReportBaseClass):
     scale_report_type = "paired-comparison scale"
