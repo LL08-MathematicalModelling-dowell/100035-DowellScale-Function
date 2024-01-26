@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 function App() {
   useEffect(()=>{
     const redirectToScale = () =>{
-        window.location.href = "https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?api_key=8929316691761631726";
+        window.location.href = "https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/nps-scale-settings/65b34f29bc0907d765249849/?public_link=8KPwGXFewqju&code=&instance_id=1";
     }
     redirectToScale()
   },[])
