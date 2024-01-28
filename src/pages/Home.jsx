@@ -42,6 +42,10 @@ const Home = () => {
     {
       name: 'Percent Sum Scale',
       slug: 'percent-sum-scale',
+    },
+    {
+      name: 'NPS scale Second part',
+      slug: 'nps-second-part',
     }
   ];
   // const navigateTo = useNavigate();
