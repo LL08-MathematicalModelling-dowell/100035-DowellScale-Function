@@ -53,6 +53,7 @@ import {
 } from './pages/scales/likert-scale';
 import { StrictMode } from 'react';
 import NPSResponse from './pages/scales/nps-scale/NPSResponse.jsx';
+import NpsScaleSecondPart from './pages/scales/nps-scale-second-part/NpsScaleSecondPart.jsx';
 import PercentScale from './pages/scales/percent-scale/PercentScale.jsx';
 import CreatePercentScale from './pages/scales/percent-scale/CreatePercentScale.jsx';
 import PercentScaleSettings from './pages/scales/percent-scale/PercentScaleSettings.jsx';
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/pm-scale`,
         element: <PerceptualScale />,
+      },
+      {
+        path: `${basePath}/nps-second-part`,
+        element: <NpsScaleSecondPart />,
       },
       {
         path: `${basePath}/ranking-scale`,
