@@ -10,6 +10,7 @@ from scipy import stats
 
 from EvaluationModule.calculate_function import stattricks_api , generate_random_number , dowellconnection , calculate_stapel_scale_category , calculate_nps_category
 from EvaluationModule.views import categorize_scale_generate_scale_specific_report
+from EvaluationModule.normality import Normality_api
 
 from paired_comparison.utils import generate_pairs
 
@@ -205,8 +206,8 @@ class StatisticsReport:
     @staticmethod
     def _get_statricks_api(all_scores):
         reports = {}
-        
-        statricks_api_response_json = stattricks_api("evaluation_module", generate_random_number() , 16, 3,
+        random_number = generate_random_number()
+        statricks_api_response_json = stattricks_api("evaluation_module", random_number  , 16, 3,
                                                 {"list1": all_scores})
         
         if isinstance(statricks_api_response_json , dict):
@@ -214,9 +215,15 @@ class StatisticsReport:
             
             poison_case_results = statricks_api_response_json.get("poison case results", {})
             normal_case_results = statricks_api_response_json.get("normal case results", {})
+
+            reports["normality_check"] =  Normality_api(random_number)
         
             reports["poisson_case_results"] = poison_case_results 
             reports["normal_case_results"]= normal_case_results
+
+        
+            
+        
 
         return reports
 
@@ -282,9 +289,11 @@ class NpsScaleReport(ScaleReportBaseClass):
         self.reports.update(StatisticsReport.statistics_report(self._all_scores["scores"].to_list()))
         self.reports["one_sample_t_test"] = stats.ttest_1samp(self._all_scores["scores"].to_list() , 5)
 
+        """
         if "poisson_case_results" in self.reports:
             self.reports["covariance value"] =  (self.reports["poisson_case_results"]["standardDeviation"]["list1"] / self.reports["poisson_case_results"]["mean"]["list1"]) * 100
 
+        
         self.set_chi_square_result(self.category_group_contigency_table("product_name") ,"product_name")
         self.set_chi_square_result(self.category_group_contigency_table("brand_name") , "brand_name")
         self.set_chi_square_result(self.time_groups(self._all_scores , "date_created") , "date_created")
@@ -295,6 +304,9 @@ class NpsScaleReport(ScaleReportBaseClass):
             self.reports.update(product_name_group.corr().to_dict(orient="records"))
 
             self.p_value_test(product_name_group)
+
+        
+        """
 
         return self.reports
     
@@ -772,6 +784,8 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
             "percentile" : get_percentile(self._all_scores["scores"].to_list())
         }
 
+        """
+
         self.set_chi_square_result(self.category_group_contigency_table("product_name") ,"product_name")
         self.set_chi_square_result(self.category_group_contigency_table("brand_name") , "brand_name")
         self.set_chi_square_result(self.time_groups(self._all_scores , "date_created") , "date_created")
@@ -784,6 +798,8 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
             self.reports.update(product_name_group.corr().to_dict(orient="records"))
 
             self.p_value_test(product_name_group)
+
+        """
 
         return self.reports
 
