@@ -26,7 +26,7 @@ const NPSScaleSettings = () => {
   const [qrCodeId, setQrCodeId] = useState('');
   const [scale, setScale] = useState(null);
   const [scaleResponse, setScaleResponse] = useState([]);
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState([]);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,8 +36,12 @@ const NPSScaleSettings = () => {
   const link_id = queryParams.get('link_id');
   const qrcode_id = queryParams.get('qrcode_id');
   const [isButtonHidden, setIsButtonHidden] = useState(false);
+  const [instance, setInstance] = useState(false)
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  let currentUserInstance = new URLSearchParams(window.location.search).get(
+    'instance_id'
+  )
 
   const handleButtonHideClick = () => {
     // Perform the click action
@@ -180,7 +184,16 @@ const NPSScaleSettings = () => {
           `https://100035.pythonanywhere.com/api/nps_responses_create?scale_id=${slug}`
         );
         setScaleResponse((response.data.data.data[0]).score);
-        setResponse(response.data)
+
+        (response.data.data.data).map((value) =>{
+          if((value.score.instance_id).charAt(0) === currentUserInstance) {
+            setInstance(true)
+          }else {
+            setInstance(false)
+          }
+        })
+
+        setResponse((response.data.data.data))
       } catch (error) {
         console.error(error);
       } finally {
@@ -193,7 +206,9 @@ const NPSScaleSettings = () => {
   }, [slug]);
   
   console.log("This is the scale response", scaleResponse.score)
-  console.log("This is the scale score", response)
+  console.log("This is the scale score", (response))
+
+  console.log("HHHHHHHHHHHHHHHHHHHHHHHHTTTTTTTTT", instance)
   const MasterLinkFunction = async () => {
     try {
       // Prepare request data for master link creation
@@ -363,7 +378,7 @@ const NPSScaleSettings = () => {
                       key={index}
                       id = {index}
                       onClick={() => handleSelectScore(score)}
-                      disabled = {scaleResponse.length === 0 ? false : true}
+                      disabled = {!instance ? false : true}
                       className={`rounded-lg ${
                         index == selectedScore
                           ? `bg-primary`
@@ -371,11 +386,11 @@ const NPSScaleSettings = () => {
                       }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                       style={
                         index == selectedScore || scaleResponse.score === index
-                          ? {
+                          ? (instance ? {
                              backgroundColor: 'green',
                               color: 'white',
-                            }
-                          : {  backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
+                            } : {backgroundColor: scale?.roundcolor,color: scale?.fontcolor })
+                          : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
                       }
 
                       onMouseEnter={() => {scale?.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
@@ -457,7 +472,7 @@ const NPSScaleSettings = () => {
           <>
             {!isButtonHidden && (
               <div className="flex items-center justify-center my-4">
-                {scaleResponse.length === 0 && <Button width={'3/12'} primary onClick={submitResponse}>
+                {!instance && <Button width={'3/12'} primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
                }

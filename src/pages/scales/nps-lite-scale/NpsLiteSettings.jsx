@@ -360,7 +360,7 @@ const NpsLiteSettings = () => {
               style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "", borderRadius:"8px" }}
             >
               {scale &&
-                (Array.isArray(scale?.fomat) ? scale.fomat : scale?.label_selection).map(
+                (scale?.label_selection).map(
                   (score, index) => (
                     <button
                       key={index}
@@ -375,7 +375,7 @@ const NpsLiteSettings = () => {
                              backgroundColor: 'green',
                               color: 'white',
                             }
-                          : {  backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
+                          : {  backgroundColor: scale?.roundcolor, color: scale?.fontcolor }
                       }
                     >
                       {score}
