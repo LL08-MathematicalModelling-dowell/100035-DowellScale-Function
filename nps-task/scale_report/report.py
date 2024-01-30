@@ -10,6 +10,9 @@ from scipy import stats
 
 from EvaluationModule.calculate_function import stattricks_api , generate_random_number , dowellconnection , calculate_stapel_scale_category , calculate_nps_category
 from EvaluationModule.views import categorize_scale_generate_scale_specific_report
+from EvaluationModule.normality import Normality_api
+
+from paired_comparison.utils import generate_pairs
 
 from .exceptions import (
     NoScaleDataFound , 
@@ -27,7 +30,8 @@ from .utils import (
     get_percentile,
     get_key_by_value,
     get_percentage_occurrence,
-    chi_square_test)
+    chi_square_test,
+    t_test)
 
 
 class ScaleReportBaseClass(ABC):
@@ -44,8 +48,14 @@ class ScaleReportBaseClass(ABC):
     
     def _validation(self):
         self._all_scores = self._get_all_scores()
+
+
+
+        if isinstance(self._all_scores , pd.DataFrame):
+            if self._all_scores.shape[0] < self.scales_score_length_threshold:
+                raise Exception("We need more than three response to be able to create a report")
         if len(self._all_scores) < self.scales_score_length_threshold:
-             raise Exception("We need more than three response to be able to create a report")
+                raise Exception("We need more than three response to be able to create a report")
     
 
     @abstractmethod
@@ -196,10 +206,8 @@ class StatisticsReport:
     @staticmethod
     def _get_statricks_api(all_scores):
         reports = {}
-
-        
-        
-        statricks_api_response_json = stattricks_api("evaluation_module", generate_random_number() , 16, 3,
+        random_number = generate_random_number()
+        statricks_api_response_json = stattricks_api("evaluation_module", random_number  , 16, 3,
                                                 {"list1": all_scores})
         
         if isinstance(statricks_api_response_json , dict):
@@ -207,9 +215,15 @@ class StatisticsReport:
             
             poison_case_results = statricks_api_response_json.get("poison case results", {})
             normal_case_results = statricks_api_response_json.get("normal case results", {})
+
+            reports["normality_check"] =  Normality_api(random_number)
         
             reports["poisson_case_results"] = poison_case_results 
             reports["normal_case_results"]= normal_case_results
+
+        
+            
+        
 
         return reports
 
@@ -223,23 +237,78 @@ class NpsScaleReport(ScaleReportBaseClass):
     scale_report_type = "nps scale"
 
     def _get_all_scores(self):
-        self._all_scores = get_all_scores(self._scale_response_data , score_type= "int" )
+        self._all_scores = pd.DataFrame(self._scale_response_data["data"])
+        
+        
+        self._all_scores["product_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("product_name"))
+        self._all_scores["brand_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("brand_name"))
+        self._all_scores["category"] = self._all_scores["score"].apply(lambda df_ : df_.get("category"))
+        self._all_scores["scores"] = self._all_scores["score"].apply(lambda df_ : df_.get("score"))
+        self._all_scores["date_created"] = pd.to_datetime(self._all_scores['date_created'])
+
         return self._all_scores
+
+
+    def create_group(self , field):
+        return self._all_scores.pivot_table(index = self._all_scores.index , columns=field , values="scores")
+
+
+    def category_group_contigency_table(self , field : str):
+        df_ = (self._all_scores.groupby([field, "category"]).apply(lambda df: df["scores"].count())
+                            .reset_index(name='count')
+                            .pivot_table(index = field , columns = "category" , values = "count"))
+        return df_
+    
+    def set_chi_square_result(self , dataframe: pd.DataFrame ,  field : str):
+         if self._all_scores[field].nunique() > 1:
+            
+            self.reports.update({f"{field} chi-square" : chi_square_test(dataframe)})
+
+
+    def time_groups(self , dataframe : pd.DataFrame , column_name_with_date_values: str):
+        df_ = (dataframe.groupby([pd.Grouper(key=column_name_with_date_values , freq=pd.Timedelta(hours=3)) ,"category"]).apply(lambda df: df["scores"].count())
+                .reset_index(name="count")
+                .pivot_table(index = "date_created" , columns = "category" , values = "count")
+                .fillna(0))
+
+        return df_
+    
+    def p_value_test(self , dataframe : pd.DataFrame):
+        pairs = generate_pairs(dataframe.columns)
+        for pair in pairs:
+            self.reports.update({f"{pair[0]-pair[1]} t-test" : t_test(dataframe[pair[0]] , dataframe[pair[1]])})
+            
 
 
     def report(self , scale_report_object : ScaleReportObject):
 
-        reports = {}
-        numpy_scores = np.array(self._all_scores)
-        reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , self._all_scores)
+        self.reports = {}
+        self.reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , self._all_scores["scores"].to_list())
 
-        reports["percentiles"] = get_percentile(numpy_scores)
-        reports.update(StatisticsReport.statistics_report(self._all_scores))
+        self.reports["percentiles"] = get_percentile(np.array(self._all_scores["scores"]))
+        self.reports.update(StatisticsReport.statistics_report(self._all_scores["scores"].to_list()))
+        self.reports["one_sample_t_test"] = stats.ttest_1samp(self._all_scores["scores"].to_list() , 5)
 
-        if "poisson_case_results" in reports:
-            reports["covariance value"] =  (reports["poisson_case_results"]["standardDeviation"]["list1"] / reports["poisson_case_results"]["mean"]["list1"]) * 100
+        """
+        if "poisson_case_results" in self.reports:
+            self.reports["covariance value"] =  (self.reports["poisson_case_results"]["standardDeviation"]["list1"] / self.reports["poisson_case_results"]["mean"]["list1"]) * 100
 
-        return reports
+        
+        self.set_chi_square_result(self.category_group_contigency_table("product_name") ,"product_name")
+        self.set_chi_square_result(self.category_group_contigency_table("brand_name") , "brand_name")
+        self.set_chi_square_result(self.time_groups(self._all_scores , "date_created") , "date_created")
+
+        product_name_group = self.create_group("product_name")
+
+        if len(product_name_group.columns) > 1 :
+            self.reports.update(product_name_group.corr().to_dict(orient="records"))
+
+            self.p_value_test(product_name_group)
+
+        
+        """
+
+        return self.reports
     
 
 
@@ -557,6 +626,7 @@ class RankingScaleReport(ScaleReportBaseClass):
             # Compile the report
         report = {
             "scale_type" : self.scale_report_type,
+             "no_of_responses" : len(self._all_scores),
             'summary_statistics': summary_stats,
             'comparison_matrix': dict(comparison_matrix)
         }
@@ -569,7 +639,7 @@ class PercentSumScaleReport(ScaleReportBaseClass):
     scale_report_type = "percent_sum scale"
 
     def _get_all_scores(self):
-        self._all_scores = get_all_scores(self._scale_response_data)
+        self._all_scores = get_all_scores(self._scale_response_data , score_type = "str")
         return self._all_scores
 
     def score_average(self):
@@ -658,11 +728,15 @@ class PercentScaleReport(ScaleReportBaseClass):
 
 
 
-class NpsLiteScaleReport(ScaleReportBaseClass):
+class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
     scale_report_type = "npslite scale"
-        
+
+
     def _get_all_scores(self):
-        self._all_scores = get_all_scores(self._scale_response_data , score_type="str")
+        self._all_scores = super()._get_all_scores()
+        self._all_scores["category"] = self._all_scores["scores"].apply(self.categorize_nps_score)
+
+        print(self._all_scores["scores"])
         return self._all_scores
     
     def categorize_nps_score(self , nps_score):
@@ -695,22 +769,39 @@ class NpsLiteScaleReport(ScaleReportBaseClass):
     
     def report(self, all_scores, **kwargs):
 
-        score_length = len(self._all_scores)
-        basic_score = self.basic_nps_score(self._all_scores)
-        weighted_score = self.weighted_nps_score(self._all_scores)
+        score_length = self._all_scores.shape[0]
+        basic_score = self.basic_nps_score(self._all_scores["scores"].to_list())
+        weighted_score = self.weighted_nps_score(self._all_scores["scores"].to_list())
 
-        response_ = {
+        self.reports = {
             "scale_type": self.scale_report_type,
             "no_of_scales": score_length,
             "npslite_total_score":score_length * 10,
-            "score_list": self._all_scores,
             "Basic NPSlite Score": basic_score,
             "Weighted NPSlite Score": weighted_score,
             "Basic NPSlite Category": self.categorize_nps_score(basic_score),
             "Weighted NPSlite Category": self.categorize_nps_score(weighted_score),
+            "percentile" : get_percentile(self._all_scores["scores"].to_list())
         }
 
-        return response_
+        """
+
+        self.set_chi_square_result(self.category_group_contigency_table("product_name") ,"product_name")
+        self.set_chi_square_result(self.category_group_contigency_table("brand_name") , "brand_name")
+        self.set_chi_square_result(self.time_groups(self._all_scores , "date_created") , "date_created")
+
+        self.reports["one_sample_t_test"] = stats.ttest_1samp(self._all_scores["scores"].to_list() , 5)
+
+        product_name_group = self.create_group("product_name")
+
+        if len(product_name_group.columns) > 1 :
+            self.reports.update(product_name_group.corr().to_dict(orient="records"))
+
+            self.p_value_test(product_name_group)
+
+        """
+
+        return self.reports
 
 class PairedComparisonScaleReport(ScaleReportBaseClass):
     scale_report_type = "paired-comparison scale"
@@ -765,7 +856,8 @@ class PairedComparisonScaleReport(ScaleReportBaseClass):
         scale_id = self._get_scale_id()
         self._scale_settings(scale_id)
 
-        report_con = {"scale_type" , self.scale_report_type}
+        report_con = {"scale_type" : self.scale_report_type,
+                        "no_of_responses" : len(self._all_scores)}
 
         frequency_distribution = {num : defaultdict(int) for num in range(1 , self._total_pairs + 1)}
 
