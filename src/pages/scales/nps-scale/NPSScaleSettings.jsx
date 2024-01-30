@@ -378,18 +378,18 @@ const NPSScaleSettings = () => {
                       key={index}
                       id = {index}
                       onClick={() => handleSelectScore(score)}
-                      disabled = {!instance ? false : true}
+                      disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
                       className={`rounded-lg ${
                         index == selectedScore
                           ? `bg-primary`
                           : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
                       }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                       style={
-                        index == selectedScore || scaleResponse.score === index
-                          ? (instance ? {
+                        index == selectedScore || (scaleResponse.score === index && instance)
+                          ? {
                              backgroundColor: 'green',
                               color: 'white',
-                            } : {backgroundColor: scale?.roundcolor,color: scale?.fontcolor })
+                            } 
                           : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
                       }
 
