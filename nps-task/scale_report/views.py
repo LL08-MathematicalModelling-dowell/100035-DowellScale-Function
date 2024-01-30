@@ -27,7 +27,7 @@ def scalewise_report(request , scale_id):
     ]}
         scale_response_data = fetch_scale_response(field_add)
 
-        #print("scale_response" , scale_response_data)
+        print("scale_response" , scale_response_data)
         
         scale_report = ScaleReportObject(scale_response_data)
 
@@ -37,5 +37,6 @@ def scalewise_report(request , scale_id):
         return Response({"is_error" : False , "report" : r } , status = status.HTTP_200_OK)
     
     except Exception as e:
+        raise e
         return Response({"is_error" : True , "report" : str(e) } , status = status.HTTP_400_BAD_REQUEST)
     
