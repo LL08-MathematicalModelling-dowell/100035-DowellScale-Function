@@ -781,11 +781,16 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
             "Weighted NPSlite Score": weighted_score,
             "Basic NPSlite Category": self.categorize_nps_score(basic_score),
             "Weighted NPSlite Category": self.categorize_nps_score(weighted_score),
-            "percentile" : get_percentile(self._all_scores["scores"].to_list())
+            "percentile" : get_percentile(self._all_scores["scores"].to_list()),
+            "frequency_table" : self._all_scores["category"].value_counts().to_dict(),
+            
         }
+
+        self.reports.update(StatisticsReport._get_statricks_api(self._all_scores["scores"].to_list()))
 
         """
 
+        
         self.set_chi_square_result(self.category_group_contigency_table("product_name") ,"product_name")
         self.set_chi_square_result(self.category_group_contigency_table("brand_name") , "brand_name")
         self.set_chi_square_result(self.time_groups(self._all_scores , "date_created") , "date_created")
