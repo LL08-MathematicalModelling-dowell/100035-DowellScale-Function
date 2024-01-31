@@ -308,6 +308,16 @@ console.log('====================================');
             />
           </div>
           <div className="w-full">
+            <CustomTextInput
+              label="No of scales"
+              name="no_of_scales"
+              value={formData.no_of_scales}
+              type="text"
+              handleChange={handleChange}
+              placeholder="Enter no of scales"
+            />
+          </div>
+          <div className="w-full">
             <div className="flex items-center gap-3">
               {timeOn && (
                 <button onClick={handleToggleTime}>
@@ -332,24 +342,14 @@ console.log('====================================');
               />
             )}
           </div>
-          <div className="w-full">
-            <CustomTextInput
-              label="No of scales"
-              name="no_of_scales"
-              value={formData.no_of_scales}
-              type="text"
-              handleChange={handleChange}
-              placeholder="Enter no of scales"
-            />
-          </div>
         </div>
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end gap-3" style={{backgroundColor:'red'}}>
           {isLoading ? (
             <Fallback />
           ) : (
             <button
               onClick={handleSubmitNPSScale}
-              className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium"
+              className="w-full py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium"
             >
               Save
             </button>

@@ -113,6 +113,8 @@ const NPSScaleSettings = () => {
       }
     } catch (error) {
       console.log(error);
+      console.log("GGGGGGGGGGGG")
+      toast.error(error.response.data.error);
     } finally {
       setIsLoading(false);
     }
@@ -229,6 +231,8 @@ const NPSScaleSettings = () => {
       );
 
       const result = data.data;
+      console.log("result", result)
+      setQrCodeURL(result.qrcodes[0].qrcode_image_url);
 
       if (result.error) {
         setIsLoading(false);
@@ -237,7 +241,7 @@ const NPSScaleSettings = () => {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
         console.log('result.qrcodes[0].qrcode_id');
-        setQrCodeURL(result.qrcodes[0].qrcode_id);
+        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
         console.log(result.qrcodes[0].qrcode_id);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
@@ -361,14 +365,14 @@ const NPSScaleSettings = () => {
       <div className="w-full py-4 m-auto md:px-5 lg:w-7/12" style={{marginTop: scale?.orientation === "Vertical" ? "400px" : ""}}>
         <h1 className="py-5 text-[2rem] font-small text-center">{scale?.name}</h1>
         <div
-          className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
+          className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center`}
         >
-          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
-            {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
+          <div className="items-center justify-center flex-1 w-full h-full md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
+            <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
             On a scale of 0-10, how likely are you to recommend the product to your friends?
-            </h3>}
+            </h3>
             <div
-              className={`grid  md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
+              className={`grid md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-${scale?.scalecolor}`}
               style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "" }}
             >
               {scale &&
