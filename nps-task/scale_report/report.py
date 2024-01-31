@@ -736,13 +736,12 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
         self._all_scores = super()._get_all_scores()
         self._all_scores["category"] = self._all_scores["scores"].apply(self.categorize_nps_score)
 
-        print(self._all_scores["scores"])
         return self._all_scores
     
     def categorize_nps_score(self , nps_score):
-        if nps_score > 0:
+        if nps_score == 3:
             return "Promoter"
-        elif nps_score == 0:
+        elif nps_score == 2:
             return "Passive"
         else:
             return "Detractor"
@@ -781,11 +780,16 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
             "Weighted NPSlite Score": weighted_score,
             "Basic NPSlite Category": self.categorize_nps_score(basic_score),
             "Weighted NPSlite Category": self.categorize_nps_score(weighted_score),
-            "percentile" : get_percentile(self._all_scores["scores"].to_list())
+            "percentile" : get_percentile(self._all_scores["scores"].to_list()),
+            "frequency_table" : self._all_scores["category"].value_counts().to_dict(),
+            
         }
+
+        self.reports.update(StatisticsReport._get_statricks_api(self._all_scores["scores"].to_list()))
 
         """
 
+        
         self.set_chi_square_result(self.category_group_contigency_table("product_name") ,"product_name")
         self.set_chi_square_result(self.category_group_contigency_table("brand_name") , "brand_name")
         self.set_chi_square_result(self.time_groups(self._all_scores , "date_created") , "date_created")
@@ -805,8 +809,6 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
 
 class PairedComparisonScaleReport(ScaleReportBaseClass):
     scale_report_type = "paired-comparison scale"
-
-    
 
     def _get_all_scores(self):
         self._all_scores = []
