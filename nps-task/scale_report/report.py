@@ -736,13 +736,12 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
         self._all_scores = super()._get_all_scores()
         self._all_scores["category"] = self._all_scores["scores"].apply(self.categorize_nps_score)
 
-        print(self._all_scores["scores"])
         return self._all_scores
     
     def categorize_nps_score(self , nps_score):
-        if nps_score > 0:
+        if nps_score == 3:
             return "Promoter"
-        elif nps_score == 0:
+        elif nps_score == 2:
             return "Passive"
         else:
             return "Detractor"
@@ -810,8 +809,6 @@ class NpsLiteScaleReport(NpsScaleReport , ScaleReportBaseClass):
 
 class PairedComparisonScaleReport(ScaleReportBaseClass):
     scale_report_type = "paired-comparison scale"
-
-    
 
     def _get_all_scores(self):
         self._all_scores = []
