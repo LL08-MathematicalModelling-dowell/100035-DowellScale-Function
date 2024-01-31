@@ -12,7 +12,7 @@ const LikertScaleMasterink = ({
   const textToCopy = link;
   const textAreaRef = useRef(null);
 
-  const handleCopyClick = () => {
+  const handleCopyClick = (link,type) => {
     // Create a textarea element, set its value, and append it to the document
     const textArea = document.createElement('textarea');
     textArea.value = textToCopy;
@@ -28,7 +28,7 @@ const LikertScaleMasterink = ({
     document.body.removeChild(textArea);
 
     // Optionally, you can provide user feedback (e.g., show a tooltip)
-    toast.success('Masterlink copied to clipboard!');
+    toast.success(`${type} copied to clipboard!`);
   };
   return (
     <div className="fixed top-0 left-0 flex flex-col justify-center w-full h-screen bg-primary/40">
@@ -55,7 +55,7 @@ const LikertScaleMasterink = ({
               </p>
               {/* </div> */}
               <AiOutlineCopy
-                onClick={() => handleCopyClick(link)}
+                onClick={() => handleCopyClick(link,"Masterlink")}
                 size={50}
                 color="bg-[#1A8753]"
                 className="inline text-[#1A8753] cursor-pointer "
@@ -83,7 +83,7 @@ const LikertScaleMasterink = ({
                   {public_link}
                 </p>
                 <AiOutlineCopy
-                  onClick={() => handleCopyClick(public_link)}
+                  onClick={() => handleCopyClick(public_link,"Public Link")}
                   size={50}
                   color="bg-[#1A8753]"
                   className="inline text-[#1A8753] cursor-pointer "

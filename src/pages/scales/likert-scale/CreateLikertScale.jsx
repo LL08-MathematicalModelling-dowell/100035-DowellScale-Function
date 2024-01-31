@@ -502,7 +502,7 @@ console.log('====================================');
           {isLoading ? (
             <Fallback />
           ) : (
-            <button
+            <button style={{width:"100%"}}
               onClick={handleSubmitLikertScale}
               className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium"
             >

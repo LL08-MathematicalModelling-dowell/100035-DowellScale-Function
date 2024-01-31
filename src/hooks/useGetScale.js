@@ -8,6 +8,8 @@ const useGetScale = () => {
     const fetchScaleData = async (scaleType) => {
         console.log(scaleType, 'scaleType')
         const endPoint = 
+        
+        scaleType === 'percent-scale' ? 'https://100035.pythonanywhere.com/percent-sum/api/percent-sum-settings/'  :
         scaleType === 'ranking-scale' 
         ? 'https://100035.pythonanywhere.com/ranking/api/ranking_settings_create'
         : scaleType==='nps-scale' ? 'https://100035.pythonanywhere.com/api/nps_create' 
