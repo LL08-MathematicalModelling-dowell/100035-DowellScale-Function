@@ -113,7 +113,6 @@ const NPSScaleSettings = () => {
       }
     } catch (error) {
       console.log(error);
-      console.log("GGGGGGGGGGGG")
       toast.error(error.response.data.error);
     } finally {
       setIsLoading(false);

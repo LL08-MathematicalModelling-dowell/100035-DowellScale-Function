@@ -37,6 +37,7 @@ const NpsLiteSettings = () => {
   const link_id = queryParams.get('link_id');
   const qrcode_id = queryParams.get('qrcode_id');
   const [isButtonHidden, setIsButtonHidden] = useState(false);
+  const [scaleArr, setScaleArr] = useState([])
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -58,7 +59,7 @@ const NpsLiteSettings = () => {
   };
 
   const handleSelectScore = (score, index) => {
-    setSelectedScore(score);
+    setSelectedScore(index + 1);
     setSelectedIndex(index)
   };
 
@@ -163,6 +164,11 @@ const NpsLiteSettings = () => {
         );
         console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhttttttt",response.data[0].settings);
         setScale(response.data[0].settings);
+        let arr = []
+        arr.push(response.data[0].settings.left)
+        arr.push(response.data[0].settings.center)
+        arr.push(response.data[0].settings.right)
+        setScaleArr(arr)
       } catch (error) {
         console.error(error);
       } finally {
@@ -197,6 +203,7 @@ const NpsLiteSettings = () => {
   
   console.log("This is the scale response", scaleResponse.score)
   console.log("This is the scale score", response)
+  console.log("HHHHHHHHHHHHHHH",scaleArr)
   const MasterLinkFunction = async () => {
     try {
       // Prepare request data for master link creation
@@ -217,6 +224,8 @@ const NpsLiteSettings = () => {
       );
 
       const result = data.data;
+      console.log("result", result)
+      setQrCodeURL(result.qrcodes[0].qrcode_image_url);
 
       if (result.error) {
         setIsLoading(false);
@@ -225,7 +234,7 @@ const NpsLiteSettings = () => {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
         console.log('result.qrcodes[0].qrcode_id');
-        setQrCodeURL(result.qrcodes[0].qrcode_id);
+        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
         console.log(result.qrcodes[0].qrcode_id);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
@@ -356,13 +365,34 @@ const NpsLiteSettings = () => {
             How likely are you to recommend the product to your friends?
             </h3>}
             <div
-              className={`grid  md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
-              style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "", borderRadius:"8px" }}
+              className={`grid  md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center`}
+              style={{display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "", borderRadius:"8px" }}
             >
-              {scale &&
-                (scale?.label_selection).map(
+              {scale && 
+              scale?.label_selection ?
+                (scale?.label_selection).toReversed().map(
                   (score, index) => (
                     <button
+                      key={index}
+                      id = {index}
+                      onClick={() => handleSelectScore(score, index)}
+                      disabled = {scaleResponse.length === 0 ? false : true}
+                      className={`rounded-lg ${index  === selectedScore
+                        ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                      style={
+                        index == selectedIndex || scaleResponse.score === index
+                          ? {
+                             backgroundColor: 'green',
+                              color: 'white',
+                            }
+                          : {  backgroundColor: scale?.scalecolor, color: scale?.fontcolor }
+                      }
+                    >
+                      {score}
+                    </button>
+                  )
+                ) : scaleArr.map((score, index) =>(
+                  <button
                       key={index}
                       id = {index}
                       onClick={() => handleSelectScore(score, index)}
@@ -380,8 +410,7 @@ const NpsLiteSettings = () => {
                     >
                       {score}
                     </button>
-                  )
-                )}
+                ))}
             </div>
 
             {/* <div className="flex items-center justify-between my-3">
