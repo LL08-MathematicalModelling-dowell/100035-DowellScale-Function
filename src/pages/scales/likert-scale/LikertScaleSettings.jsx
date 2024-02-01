@@ -191,6 +191,7 @@ const LikertScaleSettings = () => {
         );
         setScaleResponse((response.data));
         setResponse(response.data)
+        alert("S")
         console.log(response.data, "hhhhhhhhhhhhhhhhhhhhhhhhhh")
       } catch (error) {
         console.error(error);
@@ -223,9 +224,9 @@ const LikertScaleSettings = () => {
         'https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/',
         requestData
       );
-
+        console.log(data.data.qrcode_image_url)
       const result = data.data;
-
+        console.log(result.qrcodes[0].qrcode_image_url)
       if (result.error) {
         setIsLoading(false);
         return;
@@ -233,10 +234,10 @@ const LikertScaleSettings = () => {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
         console.log('result.qrcodes[0].qrcode_id');
-        setQrCodeURL(result.qrcodes[0].qrcode_id);
-        console.log(result.qrcodes[0].qrcode_id);
+        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
+        console.log(result.qrcodes[0].qrcode_id,"                 ##ED#E#");
         console.log('result.qrcodes[0].links[0].response.link_id');
-        console.log(result.qrcodes[0].links[0].response.link_id);
+        console.log(result.qrcodes[0].qrcode_image_url);
         handleToggleMasterlinkModal();
         setIsLoading(false);
         toast.success(result.response);

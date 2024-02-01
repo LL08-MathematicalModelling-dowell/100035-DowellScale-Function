@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
@@ -72,27 +72,43 @@ const CreatePercentSumScale = () => {
     setTimeOn(!timeOn);
   } 
 
+  const arr = useMemo(() => {
+    // Initialize the array here
+    return [
+      
+    ];
+  }, []); 
   const orientation = ['Vertical', 'Horizontal']
   const format = ['Numbers', 'Emojis']
 
   const handleSubmitNPSScale = async()=>{
-
-    
-
+    const secondIndexesArray = arr.map(subarray => subarray[1]);
+    console.log(secondIndexesArray)
+    setFormData({...formData,product_names:secondIndexesArray})
     const payload = {
         
-          username : formData.username, // your username
-          time : formData.time, // time (in seconds) within which the respondent should provide an answer. Set "00" to disable time restrictions
-          scale_name : formData.scale_name, // unique name identifier for the scale
-          no_of_scale : formData.no_of_scale, // number of instances of the scales you wish to create with the same settings
-          orientation : formData.orientation, // orientation of the scale-- "horizontal"/"vertical"
-          scale_color : formData.scale_color, // scale background color
-          product_count : formData.product_count, // number of products to be rated
-          product_names : formData.product_names, // names of products to be rated in a list
-          user : formData.user// assign "yes" when the inputs are coming through an end user
-       
+          // username : formData.username, // your username
+          // time : formData.time, // time (in seconds) within which the respondent should provide an answer. Set "00" to disable time restrictions
+          // scale_name : formData.scale_name, // unique name identifier for the scale
+          // no_of_scale : formData.no_of_scale, // number of instances of the scales you wish to create with the same settings
+          // orientation : formData.orientation, // orientation of the scale-- "horizontal"/"vertical"
+          // scale_color : formData.scale_color, // scale background color
+          // product_count : formData.product_count, // number of products to be rated
+          // product_names : formData.product_names, // names of products to be rated in a list
+          // user : "yes"// assign "yes" when the inputs are coming through an end user
+          
+        username : formData.username, // your username
+        time : formData.time, // time (in seconds) within which the respondent should provide an answer. Set "00" to disable time restrictions
+        scale_name : formData.scale_name, // unique name identifier for the scale
+        no_of_scale : formData.no_of_scale, // number of instances of the scales you wish to create with the same settings
+        orientation : formData.orientation, // orientation of the scale-- "horizontal"/"vertical"
+        scale_color : formData.scale_color, // scale background color
+        product_count : 3, // total number of products you wish to rate
+        product_names : secondIndexesArray, // name of each product
+        user : formData.user // assign "yes" when the inputs are coming through an end user
+         
     }
-
+    console.log(payload)
     // for(const field of requiredFields){
     //     if(!formData[field]){
     //         toast.error(`Please complete the "${field}" field.`);
@@ -101,12 +117,12 @@ const CreatePercentSumScale = () => {
     // }
     try {
         setIsLoading(true);
-        const response = await createScale('percent-scale', payload);
+        const response = await createScale('percent-sum-scale', payload);
         console.log(response, '8* respon')
         // if(response.status===200){
             toast.success('scale created');
             const data = JSON.parse(response.data.success);
-
+            console.log(data)
             // Extract the value of the "inserted_id" field
             const insertedId = data.inserted_id;
         
@@ -116,7 +132,7 @@ const CreatePercentSumScale = () => {
             // const targetObject = response?.data.find(obj => obj.settings.name === 'Painting2d2d');
 
             setTimeout(()=>{
-                navigateTo(`/100035-DowellScale-Function/percent-scale-settings/${insertedId}`)
+                navigateTo(`/100035-DowellScale-Function/percent-sum-scale-settings/${insertedId}`)
             },2000)
           // }
     } catch (error) {
@@ -126,7 +142,25 @@ const CreatePercentSumScale = () => {
         setIsLoading(false);
     }
 }
+const handleArr = (e,index) =>{
+  const indexToUpdate = 1; // The index you want to update
+const newValue = "newModifiedValue"; // The new value
 
+const indexToUpdateExists = arr.some(subarray => subarray[0] === index);
+
+if (indexToUpdateExists) {
+    // Update the existing subarray
+    arr.forEach(subarray => {
+        if (subarray[0] === index) {
+            subarray[1] = e.target.value;
+        }
+    });
+} else {
+    // Push a new subarray
+    arr.push([index, e.target.value]);
+}
+console.log(arr)
+}
   return (
   <div className='flex flex-col items-center justify-center w-full h-screen font-Montserrat'>
     <div className='w-full p-5 border md:w-7/12'>
@@ -201,7 +235,7 @@ const CreatePercentSumScale = () => {
         <CustomTextInput 
           label='No of scales'
           name='no_of_scales'
-          value={formData.no_of_scales}
+          value={formData.no_of_scale}
           type='text'
           handleChange={handleChange}
           placeholder='Enter no of scales'
@@ -215,13 +249,13 @@ const CreatePercentSumScale = () => {
           type='number'
           min={2} max={10}
           handleChange={handleChange}
-          placeholder='Enter no of scales'
+          placeholder='Enter Product Count'
         />
         
             {Array.from({ length: formData.product_count }, (_, index) => (
                 <>
                 <label>Product {index+1} Name:</label>
-        <input key={index} type="text" placeholder={`Product ${index + 1}`} />
+        <input key={index} type="text" placeholder={`Product ${index + 1}`}  onChange={e=>handleArr(e,index+1)}   />
         </>
       ))}
 
