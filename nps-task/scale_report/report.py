@@ -4,7 +4,7 @@ import pandas as pd
 
 from abc import ABC , abstractmethod
 from collections import Counter , defaultdict
-from itertools import permutations
+from collections.abc import Mapping
 
 from scipy import stats
 
@@ -15,9 +15,11 @@ from EvaluationModule.normality import Normality_api
 from paired_comparison.utils import generate_pairs
 
 from .exceptions import (
+    ScaleReportError
     NoScaleDataFound , 
     NoScaleResponseFound,
-    NoScaleType
+    NoScaleType,
+    ScaleSettingsFetchError
 )
 
 from .utils import (
@@ -32,6 +34,32 @@ from .utils import (
     get_percentage_occurrence,
     chi_square_test,
     t_test)
+
+
+
+class ReportSchema(Mapping, object):
+    def __init__(self, scale_type , number_of_response , **kwargs):
+        data = {"scale_type" : scale_type , "number_of_response" : number_of_response}
+        data.update(kwargs)
+        self._data = dict(data)
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __iter__(self):
+        return iter(self._data)
+
+    def __len__(self):
+        return len(self._data)
+
+    def __repr__(self):
+        return repr(self._data)
+
+    def __setitem__(self, key, value):
+        self._data[key] = value
+
+    def __delitem__(self, key):
+        del self._data[key]
 
 
 class ScaleReportBaseClass(ABC):
@@ -53,9 +81,9 @@ class ScaleReportBaseClass(ABC):
 
         if isinstance(self._all_scores , pd.DataFrame):
             if self._all_scores.shape[0] < self.scales_score_length_threshold:
-                raise Exception("We need more than three response to be able to create a report")
+                raise ScaleReportError("We need more than three response to be able to create a report")
         if len(self._all_scores) < self.scales_score_length_threshold:
-                raise Exception("We need more than three response to be able to create a report")
+                raise ScaleReportError("We need more than three response to be able to create a report")
     
 
     @abstractmethod
@@ -143,7 +171,7 @@ class ScaleReportObject:
 
     def _scale_type_validation(self):
         if self._scale_type not in self.allowed_scale_types:
-            raise TypeError(f"Can not generate scale report for {self._scale_type}")
+            raise ScaleReportError(f"Can not generate scale report for {self._scale_type}")
         
 
     def _get_all_scores(self):
@@ -378,7 +406,7 @@ class LikertScaleReport(ScaleReportBaseClass):
 
                 return label_selection
 
-        raise Exception("Can't fetch scale settings for likert scale. Try again")
+        raise ScaleSettingsFetchError("Can't fetch scale settings for likert scale. Try again")
 
 
     
@@ -835,7 +863,7 @@ class PairedComparisonScaleReport(ScaleReportBaseClass):
                 self._total_pairs = paired_scale["data"][0]["settings"].get("total_pairs")
 
         else:
-            raise Exception("Can't fetch scale settings for likert scale. Try again")
+            raise ScaleReportError("Can't fetch scale settings for likert scale. Try again")
     
     def _get_scale_id(self):
         data = self._scale_response_data["data"][0]
@@ -845,12 +873,12 @@ class PairedComparisonScaleReport(ScaleReportBaseClass):
         if not scale_data:
             scale_id =  data.get("scale_id")
             if not scale_id:
-                raise Exception("No Scale Id found. Inconsistent response schema")
+                raise ScaleReportError("No Scale Id found. Inconsistent response schema")
             return scale_id
         
         scale_id = scale_data.get("scale_id")
         if not scale_id:
-            raise Exception("No Scale Id found. Inconsistent response schema")
+            raise ScaleReportError("No Scale Id found. Inconsistent response schema")
         return scale_id
 
     
