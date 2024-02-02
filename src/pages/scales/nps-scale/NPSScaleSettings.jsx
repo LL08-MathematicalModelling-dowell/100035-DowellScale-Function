@@ -26,7 +26,7 @@ const NPSScaleSettings = () => {
   const [qrCodeId, setQrCodeId] = useState('');
   const [scale, setScale] = useState(null);
   const [scaleResponse, setScaleResponse] = useState([]);
-  const [response, setResponse] = useState(null);
+  const [response, setResponse] = useState([]);
   const [publicLinks, SetpublicLinks] = useState(null);
   const [selectedScore, setSelectedScore] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,8 +36,12 @@ const NPSScaleSettings = () => {
   const link_id = queryParams.get('link_id');
   const qrcode_id = queryParams.get('qrcode_id');
   const [isButtonHidden, setIsButtonHidden] = useState(false);
+  const [instance, setInstance] = useState(false)
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  let currentUserInstance = new URLSearchParams(window.location.search).get(
+    'instance_id'
+  )
 
   const handleButtonHideClick = () => {
     // Perform the click action
@@ -65,13 +69,13 @@ const NPSScaleSettings = () => {
   // };
 
   const submitResponse = async () => {
-    const info = await axios.post(
-      'https://100093.pythonanywhere.com/api/userinfo/',
-      {
-        // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
-        session_id: sessionStorage.getItem('session_id'),
-      }
-    );
+    // const info = await axios.post(
+    //   'https://100093.pythonanywhere.com/api/userinfo/',
+    //   {
+    //     // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
+    //     session_id: sessionStorage.getItem('session_id'),
+    //   }
+    // );
 
     // const result = info.data;
     // console.log(result.userinfo);
@@ -109,6 +113,7 @@ const NPSScaleSettings = () => {
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.error);
     } finally {
       setIsLoading(false);
     }
@@ -179,8 +184,19 @@ const NPSScaleSettings = () => {
         const response = await axios.get(
           `https://100035.pythonanywhere.com/api/nps_responses_create?scale_id=${slug}`
         );
-        setScaleResponse((response.data.data.data[0]).score);
-        setResponse(response.data)
+
+        (response.data.data.data).map((value) =>{
+          if((value.process_id) === link_id) {
+            setScaleResponse((value.score));
+          if((value.score.instance_id).charAt(0) === currentUserInstance) {
+            setInstance(true)
+          }else {
+            setInstance(false)
+          }
+        }
+        })
+
+        setResponse((response.data.data.data))
       } catch (error) {
         console.error(error);
       } finally {
@@ -193,7 +209,9 @@ const NPSScaleSettings = () => {
   }, [slug]);
   
   console.log("This is the scale response", scaleResponse.score)
-  console.log("This is the scale score", response)
+  console.log("This is the scale score", (response))
+
+  console.log("HHHHHHHHHHHHHHHHHHHHHHHHTTTTTTTTT", instance)
   const MasterLinkFunction = async () => {
     try {
       // Prepare request data for master link creation
@@ -214,6 +232,8 @@ const NPSScaleSettings = () => {
       );
 
       const result = data.data;
+      console.log("result", result)
+      setQrCodeURL(result.qrcodes[0].qrcode_image_url);
 
       if (result.error) {
         setIsLoading(false);
@@ -222,7 +242,7 @@ const NPSScaleSettings = () => {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
         console.log('result.qrcodes[0].qrcode_id');
-        setQrCodeURL(result.qrcodes[0].qrcode_id);
+        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
         console.log(result.qrcodes[0].qrcode_id);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
@@ -254,8 +274,9 @@ const NPSScaleSettings = () => {
       );
 
       const result = pub_links.data;
+      console.log(result, "hhhhhhhhhhhhhhhhhhhhhhhhhb")
       setUserInfo(result.userinfo);
-      console.log(result, "hhhhhhhhhhhhhhhhhhhhhtttttttttttt")
+      
       const PublicLinks = [];
       const all_public_links = [];
 
@@ -345,14 +366,14 @@ const NPSScaleSettings = () => {
       <div className="w-full py-4 m-auto md:px-5 lg:w-7/12" style={{marginTop: scale?.orientation === "Vertical" ? "400px" : ""}}>
         <h1 className="py-5 text-[2rem] font-small text-center">{scale?.name}</h1>
         <div
-          className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
+          className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center`}
         >
-          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
-            {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
+          <div className="items-center justify-center flex-1 w-full h-full md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
+            <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
             On a scale of 0-10, how likely are you to recommend the product to your friends?
-            </h3>}
+            </h3>
             <div
-              className={`grid  md:gap-3 md:px-2 py-6  bg-${scale?.scalecolor} grid-cols-11 md:px-1 items-center justify-center place-items-center`}
+              className={`grid md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-${scale?.scalecolor}`}
               style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "" }}
             >
               {scale &&
@@ -362,19 +383,19 @@ const NPSScaleSettings = () => {
                       key={index}
                       id = {index}
                       onClick={() => handleSelectScore(score)}
-                      disabled = {scaleResponse.length === 0 ? false : true}
+                      disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
                       className={`rounded-lg ${
                         index == selectedScore
                           ? `bg-primary`
                           : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
                       }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                       style={
-                        index == selectedScore || scaleResponse.score === index
+                        index == selectedScore || (scaleResponse.score === index && instance)
                           ? {
                              backgroundColor: 'green',
                               color: 'white',
-                            }
-                          : {  backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
+                            } 
+                          : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
                       }
 
                       onMouseEnter={() => {scale?.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
@@ -456,7 +477,7 @@ const NPSScaleSettings = () => {
           <>
             {!isButtonHidden && (
               <div className="flex items-center justify-center my-4">
-                {scaleResponse.length === 0 && <Button width={'3/12'} primary onClick={submitResponse}>
+                {!instance && <Button width={'3/12'} primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
                }

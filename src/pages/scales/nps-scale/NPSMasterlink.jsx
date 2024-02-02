@@ -12,10 +12,10 @@ const NPSMasterlink = ({
   const textToCopy = link;
   const textAreaRef = useRef(null);
 
-  const handleCopyClick = () => {
+  const handleCopyClick = (val) => {
     // Create a textarea element, set its value, and append it to the document
     const textArea = document.createElement('textarea');
-    textArea.value = textToCopy;
+    textArea.value = val;
     document.body.appendChild(textArea);
 
     // Select the text in the textarea
@@ -28,7 +28,7 @@ const NPSMasterlink = ({
     document.body.removeChild(textArea);
 
     // Optionally, you can provide user feedback (e.g., show a tooltip)
-    toast.success('Masterlink copied to clipboard!');
+    toast.success(val === link ? 'Masterlink copied to clipboard!': 'Public link copied to clipboard!');
   };
   return (
     <div className="fixed top-0 left-0 flex flex-col justify-center w-full h-screen bg-primary/40">

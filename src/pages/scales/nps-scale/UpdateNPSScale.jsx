@@ -361,6 +361,16 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
                 />
               </div>
               <div className="w-full">
+                <CustomTextInput
+                  label="No of scales"
+                  name="no_of_scales"
+                  value={updateFormData.no_of_scales}
+                  type="text"
+                  handleChange={handleChange}
+                  placeholder="Enter no of scales"
+                />
+              </div>
+              <div className="w-full">
                 <div className="flex items-center gap-3">
                   {timeOn && (
                     <button onClick={handleToggleTime}>
@@ -381,16 +391,6 @@ const UpdateNPSScale = ({ handleToggleUpdateModal }) => {
                     placeholder="enter a valid time"
                   />
                 )}
-              </div>
-              <div className="w-full">
-                <CustomTextInput
-                  label="No of scales"
-                  name="no_of_scales"
-                  value={updateFormData.no_of_scales}
-                  type="text"
-                  handleChange={handleChange}
-                  placeholder="Enter no of scales"
-                />
               </div>
             </div>
             <Button primary width={'full'} onClick={handleUpdateNPSScale}>
