@@ -33,8 +33,8 @@ const NPSScale = () => {
     }
   return (
     <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
-        <div className='w-full px-5 py-4 m-auto border border-primary lg:w-10/12'>
-            <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
+        <div className='w-full h-full flex items-center'>
+            <div className={`h-full md:h-full w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             // style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}
             >
                 <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
@@ -70,9 +70,9 @@ const NPSScale = () => {
                     }
 
                 </div>
-                <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
+                <div className='flex-1 flex flex-col items-center justify-center w-full h-full p-2 border stage lg:w-5/12'>
                     <h3 className='py-5 text-sm font-medium text-center'>SCALE</h3>
-                    <div className= 'grid  md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center bg-gray-300'>
+                    <div className= 'w-full grid  md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center bg-gray-300'>
                         {scores.map((score, index)=>(
                             // <button 
                             //     key={index}
@@ -91,7 +91,7 @@ const NPSScale = () => {
                     </button>
                         ))}
                     </div>
-                    <div className='flex items-center justify-between my-3'>
+                    <div className='w-full flex items-center justify-between my-3'>
                         <h4>Very unlikely</h4>
                         <h4>Select score</h4>
                         <h4>Very likely</h4>

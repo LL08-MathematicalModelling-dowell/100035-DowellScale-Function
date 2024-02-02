@@ -37,8 +37,8 @@ const NpsLiteScale = () => {
     }
   return (
     <div className='h-screen  flex flex-col items-center justify-center font-Montserrat font-medium'>
-        <div className='border border-primary  m-auto py-4 px-5'>
-            <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
+        <div className='w-full h-full flex items-center'>
+            <div className={`h-full md:h-full w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
             >
                 <div className={`h-full w-full lg:w-3/12 border overflow-y-auto`}>
                     <h2 className='flex items-center gap-2 p-2 font-medium'>
@@ -53,9 +53,9 @@ const NpsLiteScale = () => {
                     ))}
 
                 </div>
-                <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
+                <div className='flex-1 flex flex-col items-center justify-center w-full h-full p-2 border stage lg:w-5/12'>
                     <h3 className='text-center py-5 text-sm font-medium'>SCALE</h3>
-                    <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
+                    <div className='w-full flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1'>
                        
                         {
                             level.map((score, index)=>(

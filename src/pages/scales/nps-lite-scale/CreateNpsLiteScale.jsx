@@ -6,24 +6,18 @@ import { useCreateScale } from '../../../hooks/useCreateScale';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
 import { fontStyles } from '../../../utils/fontStyles';
+import { NPSLiteEmojiPicker } from '../../../components/emoji-picker';
 
 
 const CreateNpsLiteScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [displayedTime, setDisplayedTime] = useState(0); 
+    const [displayedTime, setDisplayedTime] = useState(0);
+    const [selectedEmojis, setSelectedEmojis] = useState([]);
+    const [showEmojiPalette, setShowEmojiPalette] = useState(false);
     
     const createScale  = useCreateScale();
     const navigateTo = useNavigate();
-
-
-    const requiredFields = [
-        'name',
-        'left',
-        'right',
-        'center',
-        'orientation'
-    ]
     
     const [formData, setFormData] = useState({
           orientation: "",
@@ -33,7 +27,6 @@ const CreateNpsLiteScale = () => {
           scalecolor: "#E5E7E8",
           numberrating: 10,
           no_of_scales: 3,
-          roundcolor: "#E5E7E8",
           fontcolor: "#E5E7E8",
           fontstyle: "",
           time: 0,
@@ -46,16 +39,30 @@ const CreateNpsLiteScale = () => {
           // scale-category: "nps scale",
           scaleCategory: "nps scale",
           show_total_score: "true" //should be boolean
-
-        
-
-      
   })
 
+  const requiredFields = [
+    'name',
+    'left',
+    'right',
+    'center',
+    'orientation'
+]
 
+  const handleToggleEmojiPellete = ()=>{
+    setShowEmojiPalette(!showEmojiPalette)
+  }
+
+  console.log(selectedEmojis, "------------------------", Object.assign({}, selectedEmojis))
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setFormData({ ...formData, [name]:value });
+    if (name === 'fomat' && value === 'emoji') {
+      console.log('fomat selected:', value)
+      handleToggleEmojiPellete();
+    } else {
+      setShowEmojiPalette(false);
+    }
   }
 
 
@@ -87,7 +94,7 @@ const CreateNpsLiteScale = () => {
   } 
 
   const orientation = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis']
+  const format = ['Numbers', 'emoji']
 
   const handleSubmitNPSScale = async()=>{
 
@@ -101,10 +108,11 @@ const CreateNpsLiteScale = () => {
         scalecolor: formData.scalecolor,
         numberrating: 10,
         no_of_scales: formData.no_of_scales,
-        roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
+        fomat:formData.fomat,
         fontstyle:formData.fontstyle,
         time: formData.time,
+        custom_emoji_format: Object.assign({}, selectedEmojis),
         template_name: "testing5350",
         name: formData.name,
         text: "good+neutral+best",
@@ -118,8 +126,13 @@ const CreateNpsLiteScale = () => {
 
     for(const field of requiredFields){
         if(!formData[field]){
+          if(formData.format === "emoji" && field === 'left','center', 'right') {
+
+          }else {
             toast.error(`Please complete the "${field}" field.`);
             return;
+          }
+            
         }
     }
     try {
@@ -190,19 +203,6 @@ const CreateNpsLiteScale = () => {
             className="w-full"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor='roundcolor'>round color</label>
-          <input 
-            label='round color'
-            name="roundcolor"
-            autoComplete="given-name"
-            type="color"
-            placeholder='round color'
-            value={formData.roundcolor}
-            onChange={handleChange}
-            className="w-full"
-          />
-        </div>
        <div className="flex flex-col gap-2">
         <label htmlFor='fontcolor'>font color</label>
         <input 
@@ -233,11 +233,31 @@ const CreateNpsLiteScale = () => {
           ))}
         </select>
       </div>
+      <div className="w-full">
+                <label
+                  htmlFor="format"
+                  className="mb-1 ml-1 text-sm font-normal"
+                >
+                  format
+                </label>
+                <select
+                  label="Select a format"
+                  name="fomat"
+                  className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+                  value={formData.fomat}
+                  onChange={handleChange}
+                >
+                <option value={'Select format'}>-- Select format --</option>
+                  {format.map((format, i) => (
+                    <option key={i}>{format}</option>
+                  ))}
+                </select>
+              </div>
       <div className='w-full'>
         <CustomTextInput 
           label='left'
           name='left'
-          value={formData.left}
+          value={formData.fomat === 'emoji' ? selectedEmojis[0] :formData.left}
           type='text'
           handleChange={handleChange}
           placeholder='enter scale left'
@@ -247,7 +267,7 @@ const CreateNpsLiteScale = () => {
         <CustomTextInput 
           label='center'
           name='center'
-          value={formData.center}
+          value={ formData.fomat === 'emoji' ? selectedEmojis[1] : formData.center}
           type='text'
           handleChange={handleChange}
           placeholder='enter scale center'
@@ -257,7 +277,7 @@ const CreateNpsLiteScale = () => {
         <CustomTextInput 
           label='right'
           name='right'
-          value={formData.right}
+          value={formData.fomat === 'emoji' ? selectedEmojis[2] : formData.right}
           type='text'
           handleChange={handleChange}
           placeholder='enter scale right'
@@ -291,9 +311,18 @@ const CreateNpsLiteScale = () => {
           placeholder='Enter no of scales'
         />
       </div>
+      {showEmojiPalette && (
+            <NPSLiteEmojiPicker
+            setSelectedEmojis={setSelectedEmojis}
+            selectedEmojis={selectedEmojis}
+            no_of_emojis = {3}
+            // handleEmojiSelect={handleEmojiSelect}
+            handleToggleEmojiPellete={handleToggleEmojiPellete}
+            />
+          )}
       </div>
       <div className='flex justify-end gap-3'>
-        {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
+        {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='w-full py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
         {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
       </div>
     </div>
