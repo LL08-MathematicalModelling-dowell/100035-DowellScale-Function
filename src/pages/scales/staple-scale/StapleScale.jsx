@@ -59,12 +59,13 @@ const StapleScale = () => {
                 <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
                     <h3 className='py-5 text-sm font-medium text-center'>SCALE</h3>
                     <div  className= 'grid gap-3 md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center bg-gray-300'
-                style={{display:'flex', alignItems:'center',fontSize: 'small', overflow: 'auto',marginTop:"20%"}}>
+                style={{display:'flex', alignItems:'center',fontSize: 'small', overflow: 'auto',marginTop:"20%",gap:"2%",justifyContent:"space-evenly"}}>
                         {scores.map((score, index)=>(
                             <button 
                                 key={index}
+                                style={{borderRadius:"10%"}}
                                 onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index - 5  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={` ${selectedScore === score? 'bg-primary text-white'  : 'bg-white text-primary'} text-primary h-[3.8rem] w-[3.8rem]`}
                             >{score}</button>
                         ))}
                     </div>

@@ -279,15 +279,15 @@ const StapleScaleSettings = () => {
                         {singleScaleData && (Array.isArray(singleScaleData.settings.fomat) ? singleScaleData.settings?.fomat : scores).map((score, index)=>(
                             <button 
                                 key={index}
+                                style={{borderRadius:"20%"}}
                                 onClick={()=>handleSelectScore(score)}
-                                className={`rounded-full ${index - 5  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={` ${selectedScore === score? 'bg-primary text-white'  : 'bg-white text-primary'} text-primary h-[3.8rem] w-[3.8rem]`}
                             >{score}</button>
                         ))}
                     </div>
                     <div className='flex items-center justify-between my-3'>
-                        <h4>Very unlikely</h4>
-                        <h4>Select score</h4>
-                        <h4>Very likely</h4>
+                        <h4>{singleScaleData?.settings.left}</h4>
+                        <h4>{singleScaleData?.settings.right}</h4>
                     </div>
             
                     <div className="flex justify-end gap-3">
