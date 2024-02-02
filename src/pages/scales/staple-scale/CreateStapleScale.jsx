@@ -30,7 +30,7 @@ const CreateStapleScale = () => {
         username: "Natan",
         orientation: "",
         spacing_unit: 1,
-        scale_upper_limit: 0,
+        scale_upper_limit: 10,
         scalecolor: "#8f1e1e",
         roundcolor: "#938585",
         fontcolor: "#000000",
@@ -112,11 +112,11 @@ const CreateStapleScale = () => {
         username: "Natan",
         orientation: formData.orientation,
         spacing_unit: 1,
-        scale_upper_limit: 10,
+        // scale_upper_limit: 10,
         scalecolor: formData.scalecolor,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
-        fomat: formData.fomat === 'Emojis' ? selectedEmojis : formData.fomat,
+        fomat: formData.fomat === 'Emojis' ? selectedEmojis : scores,
         time: formData.time,
         name: formData.name,
         left: formData.left,
@@ -244,6 +244,16 @@ const CreateStapleScale = () => {
               />
           </div>
           <div className='w-full'>
+            <CustomTextInput 
+                label='Scale Upper Limit'
+                name='scale_upper_limit'
+                value={formData.scale_upper_limit}
+                type='number'
+                handleChange={handleChange}
+                placeholder='enter scale upper limit'
+            />
+          </div>
+          <div className='w-full'>
               <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">format</label>
               <select 
                   label="Select a format" 
@@ -327,9 +337,8 @@ const CreateStapleScale = () => {
               }
           </div>
         </div>
-        <div className='flex justify-end gap-3'>
-        {isLoading ? <Fallback/> : <button onClick={handleSubmitStapleScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
-          {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
+        <div  className='flex justify-center gap-3'>
+        {isLoading ? <Fallback/> : <button style={{width:"100%"}} onClick={handleSubmitStapleScale} className='py-2 px-3 bg-primary text-white min-w-[10rem]  hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
         </div>
       </div>
       {showEmojiPalette && (

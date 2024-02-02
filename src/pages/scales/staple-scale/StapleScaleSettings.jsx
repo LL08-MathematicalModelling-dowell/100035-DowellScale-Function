@@ -281,7 +281,7 @@ const StapleScaleSettings = () => {
                                 key={index}
                                 style={{borderRadius:"20%"}}
                                 onClick={()=>handleSelectScore(score)}
-                                className={` ${index - 5  > selectedScore ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={` ${selectedScore === score? 'bg-primary text-white'  : 'bg-white text-primary'} text-primary h-[3.8rem] w-[3.8rem]`}
                             >{score}</button>
                         ))}
                     </div>
