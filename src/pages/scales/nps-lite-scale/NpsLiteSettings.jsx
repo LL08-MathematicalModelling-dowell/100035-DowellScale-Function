@@ -417,7 +417,7 @@ const NpsLiteSettings = () => {
 
                       }
                     >
-                      {(scale?.custom_emoji_format).length !== 0 ? (scale?.custom_emoji_format)[index] : score}
+                      {score === "" ? (scale?.custom_emoji_format)[index] : score}
                     </button>
                   )
                 ) : scaleArr.map((score, index) =>(
