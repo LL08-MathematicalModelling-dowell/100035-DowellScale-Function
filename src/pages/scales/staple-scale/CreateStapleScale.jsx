@@ -326,9 +326,9 @@ const CreateStapleScale = () => {
               }
           </div>
         </div>
-        <div className='flex justify-end gap-3'>
-        {isLoading ? <Fallback/> : <button onClick={handleSubmitStapleScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
-          <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button>
+        <div  className='flex justify-center gap-3'>
+        {isLoading ? <Fallback/> : <button style={{width:"50%"}} onClick={handleSubmitStapleScale} className='py-2 px-3 bg-primary text-white min-w-[10rem]  hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
+          <button style={{width:"50%"}} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button>
         </div>
       </div>
       {showEmojiPalette && (
