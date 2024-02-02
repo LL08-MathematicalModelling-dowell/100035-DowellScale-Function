@@ -15,7 +15,7 @@ from EvaluationModule.normality import Normality_api
 from paired_comparison.utils import generate_pairs
 
 from .exceptions import (
-    ScaleReportError
+    ScaleReportError,
     NoScaleDataFound , 
     NoScaleResponseFound,
     NoScaleType,
@@ -63,20 +63,52 @@ class ReportSchema(Mapping, object):
 
 
 class ScaleReportBaseClass(ABC):
+    """
+    This is an abstract class for each scale type report. Each scale type report is subclassing this class to create it's report
+    The class validates the scores and makes sure each scale type has a report function 
+
+    Attributes:
+        class_variable:
+            scale_report_type (None , str): value is the scale type e.g scale_report_type = "nps scale"
+            scales_score_length_threshold (int) : specifies the minimum number of responses needed to create a response.
+        instance variable:
+            scale_response (dict): A dictionary that would contain all the scale responses for a scale particular scale id
+
+            
+    """
+
 
     scale_report_type = None
     scales_score_length_threshold = 3
 
-    def __init__(self , scale_response : list) -> None:
+    def __init__(self , scale_response : dict) -> None:
         super().__init__()  
 
         self._scale_response_data = scale_response
         self._validation()
+        self.reports = ReportSchema(self.scale_report_type , self._get_score_length())
+
+
+    def _get_score_length(self):
+        """
+        Methods that get the number of score responses for a particular scale
+        
+        """
+
+        # Checks if the _all_scores is pandas Dataframe
+        if isinstance(self._all_scores , pd.DataFrame):
+            return self._all_scores["scores"].shape[0]
+
+        # Checks if the _all_scores is a list
+        if isinstance(self._all_scores , list):
+            return len(self._all_scores)
 
     
     def _validation(self):
+        """
+        Method checks if the scale responses pass the length threshold test. 
+        """
         self._all_scores = self._get_all_scores()
-
 
 
         if isinstance(self._all_scores , pd.DataFrame):
@@ -89,26 +121,31 @@ class ScaleReportBaseClass(ABC):
     @abstractmethod
     def _get_all_scores(self):
         """
-            Not implemented
+            Method to implemented by the subclass. Here the subclass handles the logic of extracting the scores
+            from the scale_response_data
         """
 
     @abstractmethod
     def report(self , all_scores , **kwargs):
 
         """
-            Not implemented yet
+            Method to be implemented by the subclass. Here the subclass handles the logic of report
+            from the scale_response data
         """
 
 
 class ScaleReportObject:
 
     """
-        A class that returns a scale report
+        This is basically like an Interfact class that gets the scale data and delagates it to the appropriate 
+        scale type to handle the generation of the report. 
+
+        Attributes:
+            scales_responses_data (dict) : 
+                Working on the 
     """
 
-    allowed_scale_types = None
-
-    def __init__(self , scale_responses_data : str):
+    def __init__(self , scale_responses_data : dict):
 
 
         self.scale_response_data = scale_responses_data
@@ -587,7 +624,6 @@ class QSortScaleReport(ScaleReportBaseClass):
             self._modes_of_categories["Agree"] += len(statement["Agree"])
             self._modes_of_categories["Neutral"] += len(statement["Neutral"])
 
-        self._statement_scores.update(self._modes_of_categories)
         return self._statement_scores
 
 
@@ -598,7 +634,11 @@ class QSortScaleReport(ScaleReportBaseClass):
 
     def report(self, all_scores, **kwargs):
 
-        return self._gather_scores_()
+        self.reports["reports by statments"] = self._gather_scores_()
+
+        self.reports["frequency table"] = self._modes_of_categories
+
+        return self.reports
 
 
 class RankingScaleReport(ScaleReportBaseClass):

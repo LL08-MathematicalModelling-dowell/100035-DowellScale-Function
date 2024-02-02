@@ -3,12 +3,11 @@ import json
 import numpy as np
 
 from collections import Counter
-
-
 from scipy.stats import chi2_contingency , ttest_ind
 
-
 from EvaluationModule.calculate_function import dowellconnection
+
+from .exceptions import NoScaleResponseFound
 
 
 likert_label_map = {
@@ -69,12 +68,12 @@ def fetch_scale_response(field_add : dict):
         result= json.loads(result) 
 
         if not isinstance(result , dict):
-            raise Exception("Error while fetching data from scale_reports")
+            raise NoScaleResponseFound("Error while fetching data from scale_reports")
         
         return  result
 
     except:
-            raise Exception("Error while fetching scale responses.")
+            raise NoScaleResponseFound("Error while fetching scale responses.")
 
 
 def targeted_population(database_details, time_input , distribution_input , stage_input_list ,  binomial = None , bernoulli = None):
