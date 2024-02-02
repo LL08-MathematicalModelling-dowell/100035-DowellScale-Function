@@ -57,7 +57,7 @@ const CreateNpsLiteScale = () => {
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setFormData({ ...formData, [name]:value });
-    if (name === 'fomat' && value === 'Emojis') {
+    if (name === 'fomat' && value === 'emoji') {
       console.log('fomat selected:', value)
       handleToggleEmojiPellete();
     } else {
@@ -94,7 +94,7 @@ const CreateNpsLiteScale = () => {
   } 
 
   const orientation = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis']
+  const format = ['Numbers', 'emoji']
 
   const handleSubmitNPSScale = async()=>{
 
@@ -126,8 +126,13 @@ const CreateNpsLiteScale = () => {
 
     for(const field of requiredFields){
         if(!formData[field]){
+          if(formData.format === "emoji" && field === 'left','center', 'right') {
+
+          }else {
             toast.error(`Please complete the "${field}" field.`);
             return;
+          }
+            
         }
     }
     try {
@@ -252,7 +257,7 @@ const CreateNpsLiteScale = () => {
         <CustomTextInput 
           label='left'
           name='left'
-          value={formData.fomat === 'Emojis' ? selectedEmojis[0] :formData.left}
+          value={formData.fomat === 'emoji' ? selectedEmojis[0] :formData.left}
           type='text'
           handleChange={handleChange}
           placeholder='enter scale left'
@@ -262,7 +267,7 @@ const CreateNpsLiteScale = () => {
         <CustomTextInput 
           label='center'
           name='center'
-          value={ formData.fomat === 'Emojis' ? selectedEmojis[1] : formData.center}
+          value={ formData.fomat === 'emoji' ? selectedEmojis[1] : formData.center}
           type='text'
           handleChange={handleChange}
           placeholder='enter scale center'
@@ -272,7 +277,7 @@ const CreateNpsLiteScale = () => {
         <CustomTextInput 
           label='right'
           name='right'
-          value={formData.fomat === 'Emojis' ? selectedEmojis[2] : formData.right}
+          value={formData.fomat === 'emoji' ? selectedEmojis[2] : formData.right}
           type='text'
           handleChange={handleChange}
           placeholder='enter scale right'
@@ -317,7 +322,7 @@ const CreateNpsLiteScale = () => {
           )}
       </div>
       <div className='flex justify-end gap-3'>
-        {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
+        {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='w-full py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
         {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
       </div>
     </div>
