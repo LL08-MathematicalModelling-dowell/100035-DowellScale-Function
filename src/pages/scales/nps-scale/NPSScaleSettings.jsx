@@ -69,13 +69,13 @@ const NPSScaleSettings = () => {
   // };
 
   const submitResponse = async () => {
-    const info = await axios.post(
-      'https://100093.pythonanywhere.com/api/userinfo/',
-      {
-        // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
-        session_id: sessionStorage.getItem('session_id'),
-      }
-    );
+    // const info = await axios.post(
+    //   'https://100093.pythonanywhere.com/api/userinfo/',
+    //   {
+    //     // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
+    //     session_id: sessionStorage.getItem('session_id'),
+    //   }
+    // );
 
     // const result = info.data;
     // console.log(result.userinfo);
@@ -184,14 +184,16 @@ const NPSScaleSettings = () => {
         const response = await axios.get(
           `https://100035.pythonanywhere.com/api/nps_responses_create?scale_id=${slug}`
         );
-        setScaleResponse((response.data.data.data[0]).score);
 
         (response.data.data.data).map((value) =>{
+          if((value.process_id) === link_id) {
+            setScaleResponse((value.score));
           if((value.score.instance_id).charAt(0) === currentUserInstance) {
             setInstance(true)
           }else {
             setInstance(false)
           }
+        }
         })
 
         setResponse((response.data.data.data))

@@ -38,8 +38,12 @@ const NpsLiteSettings = () => {
   const qrcode_id = queryParams.get('qrcode_id');
   const [isButtonHidden, setIsButtonHidden] = useState(false);
   const [scaleArr, setScaleArr] = useState([])
+  const [instance, setInstance] = useState(false)
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  let currentUserInstance = new URLSearchParams(window.location.search).get(
+    'instance_id'
+  )
 
   const handleButtonHideClick = () => {
     // Perform the click action
@@ -67,14 +71,15 @@ const NpsLiteSettings = () => {
   //   await fetchSingleScaleData(scaleId);
   // };
 
-  const submitResponse = async () => {
-    const info = await axios.post(
-      'https://100093.pythonanywhere.com/api/userinfo/',
-      {
-        // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
-        session_id: sessionStorage.getItem('session_id'),
-      }
-    );
+  const submitResponse = async (e) => {
+    e.preventDefault()
+    // const info = await axios.post(
+    //   'https://100093.pythonanywhere.com/api/userinfo/',
+    //   {
+    //     // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
+    //     session_id: sessionStorage.getItem('session_id'),
+    //   }
+    // );
 
     // const result = info.data;
     // console.log(result.userinfo);
@@ -101,6 +106,7 @@ const NpsLiteSettings = () => {
         payload
       );
       const result = response.data;
+
       console.log(result.success);
       if (result.error) {
         setIsLoading(false);
@@ -116,6 +122,8 @@ const NpsLiteSettings = () => {
       setIsLoading(false);
     }
   };
+
+  console.log("HHHHHHHHHHHHHHHHHHHHHHHHTTTTTTTTT", instance)
    
   const finalizeMasterlink = async () => {
     setIsLoading(true);
@@ -187,9 +195,19 @@ const NpsLiteSettings = () => {
         const response = await axios.get(
           `https://100035.pythonanywhere.com/nps-lite/api/nps-lite-response?id=${slug}`
         );
-        setScaleResponse((response.data.data.data[0]).score);
+        
+        (response.data.data.data).map((value) =>{
+          if((value.process_id) === link_id) {
+            setScaleResponse((value.score));
+          if((value.score.instance_id).charAt(0) === currentUserInstance) {
+            setInstance(true)
+          }else {
+            setInstance(false)
+          }
+        }
+        })
+
         setResponse(response.data)
-        console.log("hhhhhhhhhhhhhhhhhbbbbbbb", response.data)
       } catch (error) {
         console.error(error);
       } finally {
@@ -366,7 +384,7 @@ const NpsLiteSettings = () => {
             </h3>}
             <div
               className={`grid  md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center`}
-              style={{display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "", borderRadius:"8px" }}
+              style={{display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "", alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "", borderRadius:"8px" }}
             >
               {scale && 
               scale?.label_selection ?
@@ -376,19 +394,30 @@ const NpsLiteSettings = () => {
                       key={index}
                       id = {index}
                       onClick={() => handleSelectScore(score, index)}
-                      disabled = {scaleResponse.length === 0 ? false : true}
+                      disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
                       className={`rounded-lg ${index  === selectedScore
                         ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+
+                        // style={
+                        //   index == selectedScore || (scaleResponse.score === index && instance)
+                        //     ? {
+                        //        backgroundColor: 'green',
+                        //         color: 'white',
+                        //       } 
+                        //     : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
+                        // }
+
                       style={
-                        index == selectedIndex || scaleResponse.score === index
+                        index == selectedIndex || (scaleResponse.score -1) === index && instance
                           ? {
                              backgroundColor: 'green',
-                              color: 'white',
+                              color: 'white', width: '30%'
                             }
-                          : {  backgroundColor: scale?.scalecolor, color: scale?.fontcolor }
+                          : {  backgroundColor: scale?.scalecolor, color: scale?.fontcolor, width: '30%' }
+
                       }
                     >
-                      {score}
+                      {(scale?.custom_emoji_format).length !== 0 ? (scale?.custom_emoji_format)[index] : score}
                     </button>
                   )
                 ) : scaleArr.map((score, index) =>(
@@ -436,7 +465,7 @@ const NpsLiteSettings = () => {
           <>
             {!isButtonHidden && (
               <div className="flex items-center justify-center my-4">
-                {scaleResponse.length === 0 && <Button width={'3/12'} primary onClick={submitResponse}>
+                {!instance && <Button width={'3/12'} primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
                }
