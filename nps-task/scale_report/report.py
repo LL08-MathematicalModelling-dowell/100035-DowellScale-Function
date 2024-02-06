@@ -403,7 +403,7 @@ class LikertScaleReport(ScaleReportBaseClass):
 
     @staticmethod
     def convert_all_likert_label(label_selection , labels_list):
-        return [LikertScaleReport.convert_likert_label(label_selection , label) for label in labels_list]
+        return [LikertScaleReport.convert_likert_label(label_selection , label) + 1 for label in labels_list]
 
 
     @staticmethod
@@ -445,20 +445,28 @@ class LikertScaleReport(ScaleReportBaseClass):
 
         raise ScaleSettingsFetchError("Can't fetch scale settings for likert scale. Try again")
 
+    def independent_sample_t_test(self , label_scale_selection , scores):
+        if label_scale_selection % 2 != 0:
+            return stats.ttest_1samp(scores , round(label_scale_selection / 2) - 1)
+        return None
 
     
     def report(self , scale_report_object : ScaleReportObject):
-        reports ={}
+        
 
         label_selection = LikertScaleReport._get_label_selection(scale_report_object.scale_id)
 
         all_scores = LikertScaleReport.convert_all_likert_label(label_selection , self._all_scores)
 
-        reports["categorize_scale_report"] = LikertScaleReport.likert_scale_report(label_selection , self._all_scores)
+        self.reports["categorize_scale_report"] = LikertScaleReport.likert_scale_report(label_selection , self._all_scores)
 
-        reports.update(StatisticsReport.statistics_report(all_scores))
+        self.reports["statisitcs"] = StatisticsReport.statistics_report(all_scores)
+        self.reports["one_sample_test"] = self.independent_sample_t_test(label_selection , all_scores)
 
-        return reports
+        print(pd.DataFrame(Counter(self._all_scores)))
+        #self.reports["corr_matrix"] = pd.DataFr
+
+        return self.reports
     
 
 class PerpetualMappingScaleReport(ScaleReportBaseClass):
