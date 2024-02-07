@@ -169,11 +169,11 @@ const CreatePercentScale = () => {
           <label htmlFor='scalecolor'>Slider Color</label>
           <input 
             label='scale color'
-            name="scalecolor"
+            name="scale_color"
             autoComplete="given-name"
             type="color"
             placeholder='scale color'
-            value={formData.scalecolor}
+            value={formData.scale_color}
             onChange={handleChange}
             className="w-full"
           />
@@ -209,7 +209,7 @@ const CreatePercentScale = () => {
       </div>
       </div>
       <div className='flex justify-end gap-3'>
-        {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
+        {isLoading ? <Fallback/> : <button  style={{width:"100%"}} onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
         {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
       </div>
     </div>
