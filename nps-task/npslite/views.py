@@ -195,7 +195,7 @@ def submit_response_view(request):
         try:
             field_add = {"scale_data.scale_type": "npslite scale"}
             if id != None:
-                field_add["_id"] = id
+                field_add["scale_data.scale_id"] = id
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                 "scale_reports",
                                                 "1094", "ABCDE", "fetch", field_add, "nil")
@@ -260,7 +260,7 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
     # Insert new response into database
     response = {
         "event_id": event_id,
-        "scale_data": {"scale_id": scale_id, "scale_type": "npslite scale", "instance_id": instance_id},
+        "scale_data": {"scale_id": scale_id, "scale_type": "npslite scale"},
         "brand_data": {"brand_name": brand_name, "product_name": product_name},
         "score": score_data,
         "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
