@@ -112,7 +112,7 @@ const CreateStapleScale = () => {
         username: "Natan",
         orientation: formData.orientation,
         spacing_unit: 1,
-        // scale_upper_limit: 10,
+        scale_upper_limit: formData.scale_upper_limit,
         scalecolor: formData.scalecolor,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
@@ -122,7 +122,6 @@ const CreateStapleScale = () => {
         left: formData.left,
         right: formData.right,
         fontstyle: formData.fontstyle,
-        scale_upper_limit:formData.scale_upper_limit
        
         // username: "Natan", // your username
         // orientation: "horizontal", // orientation of the scale-- "horizontal"/"vertical"
@@ -251,6 +250,16 @@ const CreateStapleScale = () => {
                 type='number'
                 handleChange={handleChange}
                 placeholder='enter scale upper limit'
+            />
+          </div>
+          <div className='w-full'>
+            <CustomTextInput 
+                label='spacing_unit'
+                name='spacing_unit'
+                value={formData.spacing_unit}
+                type='number'
+                handleChange={handleChange}
+                placeholder='enter scale spacing'
             />
           </div>
           <div className='w-full'>
