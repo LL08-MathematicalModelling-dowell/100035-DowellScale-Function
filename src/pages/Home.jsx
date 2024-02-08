@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import SideBar from './SideBar';
 
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import ScaleCard from './ScaleCard';
 // import Cookies from 'universal-cookie';
 
 const Home = () => {
@@ -10,38 +12,56 @@ const Home = () => {
     {
       name: 'nps lite scale',
       slug: 'nps-lite-scale',
+      description: 'Net promoter score (NPS) is a widely used market research metric that is based on a single survey question',
+      image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/nps-scale-150x150.png'
     },
     {
       name: 'nps scale',
       slug: 'nps-scale',
+      description: 'Net promoter score (NPS) is a widely used market research metric that is based on a single survey question',
+      image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/nps-scale-150x150.png'
     },
     {
       name: 'staple scale',
       slug: 'staple-scale',
+      description: 'Stapel Scale is a unipolar rating scale designed to measure the respondent’s attitude towards the object or event',
+      image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/staple-scale-150x150.png'
     },
     {
       name: 'ranking scale',
       slug: 'ranking-scale',
+      description: 'Ranking scales are commonly used to identify customer preferences, prioritize product features, and understand the importance of different factors',
+      image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/staple-scale-150x150.png'
     },
     {
-      name: 'paired scale comparison',
+      name: 'paired comparison',
       slug: 'pc-scale',
+      description: 'A paired comparison scale presents the respondent with two choices and calls for a preference . For example, the respondent is asked which color he or she likes better, red or blue, and a similar process is repeated throughout the scale items',
+      image: 'https://storage.googleapis.com/fplswordpressblog/2023/06/Paired-Comparison-Scale-in-Surveys-Purpose-Implementation-Analysis.jpg'
     },
     {
-      name: 'perceptual mapping scale',
+      name: 'perceptual mapping',
       slug: 'pm-scale',
+      description: 'Perceptual mapping or market mapping is a diagrammatic technique used by asset marketers that attempts to visually display the perceptions of customers or potential customers',
+      image: 'https://www.perceptualmaps.com/wp-content/uploads/2023/05/example-perceptual-map-for-fast-food-1-1.png'
     },
     {
       name: 'Likert scale',
-      slug: 'likert-scale',
+      slug: 'likert-scale', 
+      description: 'A Likert scale is a psychometric scale commonly involved in research that employs questionnaires.',
+      image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/Likert-Scale-150x150.jpg'
     },
     {
       name: 'Percent Scale',
       slug: 'percent-scale',
+      description: 'A percentage point or percent point is the unit for the arithmetic difference between two percentages.',
+      image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/percentage-scale-150x150.png'
     },
     {
       name: 'Percent Sum Scale',
       slug: 'percent-sum-scale',
+      description: 'A percentage sum scale',
+      image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/percentage-scale-150x150.png'
     },
     {
       name: 'NPS scale Second part',
@@ -125,7 +145,7 @@ const Home = () => {
 
   useEffect(() => {
     const session_id = searchParams.get("session_id");
-    console.log(window.location.href)
+    console.log("HHHHHHHHHHHHHHHHHHH",window.location.href)
     if (!session_id) {
       window.location.href =
         "https://100014.pythonanywhere.com/?redirect_url=" +
@@ -139,16 +159,22 @@ const Home = () => {
 
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="grid w-6/12 grid-cols-1 gap-4 lg:grid-cols-2">
+    <div className="flex">
+      <SideBar />
+      <div className="" style={{display:'flex', flexWrap: 'wrap', justifyContent: 'center'}}>
         {scaleTypes.map((scale) => (
-          <Link
-            to={`/100035-DowellScale-Function/${scale.slug}`}
-            key={scale.slug}
-            className="w-full px-2 py-8 my-1 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
-          >
-            {scale.name}
-          </Link>
+          <ScaleCard scaleName={scale.name} 
+          description={scale.description}
+          imageSource={scale.image}
+          slug={scale.slug} 
+          key={scale.slug}/>
+          // <Link
+          //   to={`/100035-DowellScale-Function/${scale.slug}`}
+          //   key={scale.slug}
+          //   className="w-full px-2 py-8 my-1 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
+          // >
+          //   {scale.name}
+          // </Link>
         ))}
       </div>
     </div>
