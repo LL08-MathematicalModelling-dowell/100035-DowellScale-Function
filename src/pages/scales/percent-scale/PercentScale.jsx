@@ -58,8 +58,8 @@ const PercentScale = () => {
 
                 </div>
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
-                <h1 style={{textAlign:'center'}}>Percent Scale</h1>
-                <div class="slidecontainer" style={{ alignItems:'center',fontSize: 'small', overflow: 'auto',marginTop:"25%",gap:"2%",justifyContent:"space-evenly"}}
+                <h1 style={{textAlign:'center',marginTop:"10%"}}>Percent Scale</h1>             
+                <div class="slidecontainer" style={{ alignItems:'center',fontSize: 'small', overflow: 'auto',marginTop:"20%",gap:"2%",justifyContent:"space-evenly"}}
               >
   
   
