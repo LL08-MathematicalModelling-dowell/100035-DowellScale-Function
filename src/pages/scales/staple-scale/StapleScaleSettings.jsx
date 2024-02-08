@@ -37,10 +37,10 @@ const StapleScaleSettings = () => {
     const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
       useState(false);
     
-
-    const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
-
-    console.log(singleScaleData, 'singleScaleData **')
+const [score,setScore] =useState()
+    // const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
+console.log(score)
+    // console.log(singleScaleData.settings.scale, 'singleScaleData **')
 
     const handleSelectScore = (score)=>{
       setSelectedScore(score);
@@ -252,16 +252,18 @@ const StapleScaleSettings = () => {
             setIsLoading(true);
             const response = await axios.get(`https://100035.pythonanywhere.com/ranking/api/ranking_settings_create?scale_id=${slug}`);
             setSingleScaleData(response.data); 
-            console.log(response.data.settings.name)
+            console.log(response.data.settings,'s')
+            setScore(response.data.settings.scale)
         } catch (error) {
             console.error(error);
         } finally {
             setIsLoading(false);
         }
       }
+      if(!score)
       fetchData();
     //   console.log(scale.settings.name)
-  }, [slug]);
+  }, [slug,score]);
 
 
 
@@ -275,13 +277,13 @@ const StapleScaleSettings = () => {
             >
                 <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
                     <h3 className='py-5 text-sm font-medium text-center'>Scale Name: {singleScaleData?.settings.name}</h3>
-                    <div className='grid grid-cols-4 gap-3 px-2 py-6 bg-gray-300 md:grid-cols-11 md:px-1'>
-                        {singleScaleData && (Array.isArray(singleScaleData.settings.fomat) ? singleScaleData.settings?.fomat : scores).map((score, index)=>(
+                    <div className=' bg-gray-300 ' style={{gap:"10px",display:"flex",justifyContent:"space-around",height:"5em",}}>
+                        {singleScaleData && score?.map((score, index)=>(
                             <button 
                                 key={index}
-                                style={{borderRadius:"20%"}}
+                                style={{borderRadius:"20%",width:"2em",height:"2em",alignItems:"center",marginTop:"1.5em"}}
                                 onClick={()=>handleSelectScore(score)}
-                                className={` ${selectedScore === score? 'bg-primary text-white'  : 'bg-white text-primary'} text-primary h-[3.8rem] w-[3.8rem]`}
+                                className={` ${selectedScore === score? 'bg-primary text-white'  : 'bg-white text-primary'} text-primary `}
                             >{score}</button>
                         ))}
                     </div>
