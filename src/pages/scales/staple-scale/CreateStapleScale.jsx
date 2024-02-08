@@ -30,7 +30,7 @@ const CreateStapleScale = () => {
         username: "Natan",
         orientation: "",
         spacing_unit: 1,
-        scale_upper_limit: 0,
+        scale_upper_limit: 10,
         scalecolor: "#8f1e1e",
         roundcolor: "#938585",
         fontcolor: "#000000",
@@ -40,6 +40,7 @@ const CreateStapleScale = () => {
         left: "",
         right: " ",
         fontstyle: " ",
+        
 
       //   {
       //     "username": "Natan",
@@ -111,17 +112,17 @@ const CreateStapleScale = () => {
     const payload = {
         username: "Natan",
         orientation: formData.orientation,
-        spacing_unit: Number(formData.spacing_unit),
-        scale_upper_limit: formData.scale_upper_limit,
         scalecolor: formData.scalecolor,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
-        fomat: formData.fomat === 'Emojis' ? selectedEmojis : formData.fomat,
+        fomat: formData.fomat === 'Emojis' ? selectedEmojis : scores,
         time: formData.time,
         name: formData.name,
         left: formData.left,
         right: formData.right,
         fontstyle: formData.fontstyle,
+        scale_upper_limit:formData.scale_upper_limit,
+        spacing_unit:formData.spacing_unit
        
         // username: "Natan", // your username
         // orientation: "horizontal", // orientation of the scale-- "horizontal"/"vertical"
@@ -242,31 +243,25 @@ const CreateStapleScale = () => {
                   className="w-full"
               />
           </div>
-          <div className="w-full">
-              <div className="flex items-center gap-3">
-                <p>Scale upper limit</p>
-              </div>
-                  <CustomTextInput
-                      name="scale_upper_limit"
-                      type="number"
-                      placeholder="enter upper limit"
-                      value={formData.scale_upper_limit}
-                      handleChange={handleChange}
-                      style={{borderRadius:"4px"}}
-                  />
+          <div className='w-full'>
+            <CustomTextInput 
+                label='Scale Upper Limit'
+                name='scale_upper_limit'
+                value={formData.scale_upper_limit}
+                type='number'
+                handleChange={handleChange}
+                placeholder='enter scale upper limit'
+            />
           </div>
-          <div className="w-full">
-              <div className="flex items-center gap-3">
-                <p>Space unit</p>
-              </div>
-                  <CustomTextInput
-                      name="spacing_unit"
-                      type="number"
-                      placeholder="enter space Unit"
-                      value={formData.spacing_unit}
-                      handleChange={handleChange}
-                      style={{borderRadius:"4px"}}
-                  />
+          <div className='w-full'>
+            <CustomTextInput 
+                label='Spacing Unit'
+                name='spacing_unit'
+                value={formData.spacing_unit}
+                type='number'
+                handleChange={handleChange}
+                placeholder='enter scale upper limit'
+            />
           </div>
           <div className='w-full'>
               <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">format</label>
@@ -352,9 +347,8 @@ const CreateStapleScale = () => {
               }
           </div>
         </div>
-        <div className='flex justify-end gap-3'>
-        {isLoading ? <Fallback/> : <button onClick={handleSubmitStapleScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
-          {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
+        <div  className='flex justify-center gap-3'>
+        {isLoading ? <Fallback/> : <button style={{width:"100%"}} onClick={handleSubmitStapleScale} className='py-2 px-3 bg-primary text-white min-w-[10rem]  hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
         </div>
       </div>
       {showEmojiPalette && (

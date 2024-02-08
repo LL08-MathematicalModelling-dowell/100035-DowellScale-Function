@@ -342,8 +342,8 @@ const MasterLinkFunction = async () => {
       {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
   return (
     <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
-        <div className='w-full px-5 py-4 m-auto border border-primary lg:w-9/12'>
-            <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
+        <div className='w-full px-5 py-4 m-auto border border-primary lg:w-9/12' style={{height:"60%"}}>
+            <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height:"100%"}} 
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>{scale?.settings?.name}</h3>
@@ -351,7 +351,7 @@ const MasterLinkFunction = async () => {
                     <div class="slidecontainer" style={{marginTop:"9em"}}>
   
   
-  <input type="range" min="1" max="100" onChange={e=>setSliderValue(e.target.value)} className="slider" id="myRange"/>
+  <input type="range" min="1" max="100" onChange={e=>setSliderValue(e.target.value)} style={{background:scale?.settings?.scale_color}}  className="slider" id="myRange"/>
   <h4 style={{textAlign:"center"}}>{sliderValue}%</h4>
 </div>
                     </div>

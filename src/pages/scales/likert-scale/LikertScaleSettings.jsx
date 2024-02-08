@@ -170,7 +170,7 @@ const LikertScaleSettings = () => {
           `https://100035.pythonanywhere.com/likert/likert-scale_create?scale_id=${slug}`
         );
         console.log(response.data.success, "hhhhhhhhhhbbbbbbbbbbbffttt");
-        setScale(response.data.success);
+        setScale(response.data.settings.scale);
       } catch (error) {
         console.error(error);
       } finally {
