@@ -37,5 +37,6 @@ def scalewise_report(request , scale_id):
         return Response({"is_error" : False , "report" : r } , status = status.HTTP_200_OK)
     
     except ScaleReportError as e:
+
         return Response({"is_error" : True , "report" : str(e) } , status = status.HTTP_400_BAD_REQUEST)
     
