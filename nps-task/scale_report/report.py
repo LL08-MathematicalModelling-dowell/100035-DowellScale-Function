@@ -43,6 +43,11 @@ class ReportSchema(Mapping, object):
         data.update(kwargs)
         self._data = dict(data)
 
+    def update(self , other_dict : dict):
+        if not isinstance(other_dict , dict):
+            raise Exception("Can't find the other dict")
+        self._data.update(other_dict)
+
     def __getitem__(self, key):
         return self._data[key]
 
@@ -79,6 +84,7 @@ class ScaleReportBaseClass(ABC):
 
 
     scale_report_type = None
+    df_score_column_name = "scores"
     scales_score_length_threshold = 3
 
     def __init__(self , scale_response : dict) -> None:
@@ -97,7 +103,7 @@ class ScaleReportBaseClass(ABC):
 
         # Checks if the _all_scores is pandas Dataframe
         if isinstance(self._all_scores , pd.DataFrame):
-            return self._all_scores["scores"].shape[0]
+            return self._all_scores[self.df_score_column_name].shape[0]
 
         # Checks if the _all_scores is a list
         if isinstance(self._all_scores , list):
@@ -395,11 +401,19 @@ class StapelScaleReport(ScaleReportBaseClass):
 class LikertScaleReport(ScaleReportBaseClass):
 
     scale_report_type = "likert scale"
+    df_score_column_name = "category"
 
 
     def _get_all_scores(self):
-        self._all_scores = get_all_scores(self._scale_response_data , score_type= "text" )
+        self._all_scores = pd.DataFrame(self._scale_response_data["data"])
+
+       
+        self._all_scores["brand_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("brand_name"))
+        self._all_scores["category"] = self._all_scores["score"].apply(lambda df_ : df_.get("score"))
+        self._all_scores["date_created"] = pd.to_datetime(self._all_scores['date_created'])
+        
         return self._all_scores
+
 
     @staticmethod
     def convert_all_likert_label(label_selection , labels_list):
@@ -407,7 +421,7 @@ class LikertScaleReport(ScaleReportBaseClass):
 
 
     @staticmethod
-    def convert_likert_label(label_selection , label):
+    def convert_likert_label(label , label_selection):
         return get_key_by_value(likert_label_map[label_selection] , label)
     
 
@@ -447,23 +461,28 @@ class LikertScaleReport(ScaleReportBaseClass):
 
     def independent_sample_t_test(self , label_scale_selection , scores):
         if label_scale_selection % 2 != 0:
-            return stats.ttest_1samp(scores , round(label_scale_selection / 2) - 1)
+            t_statistic , p_value =  stats.ttest_1samp(scores , round(label_scale_selection / 2) - 1)
+            return {"t_statistic" : t_statistic ,  "p_value" : p_value}
         return None
+
+    def group_by_(self, column):
+        return self._all_scores.pivot_table(index = "_id" , values = "scores" , columns=column)
 
     
     def report(self , scale_report_object : ScaleReportObject):
-        
 
         label_selection = LikertScaleReport._get_label_selection(scale_report_object.scale_id)
 
-        all_scores = LikertScaleReport.convert_all_likert_label(label_selection , self._all_scores)
+        self._all_scores["scores"] = self._all_scores["category"].apply(LikertScaleReport.convert_likert_label , args=(label_selection , ))
 
-        self.reports["categorize_scale_report"] = LikertScaleReport.likert_scale_report(label_selection , self._all_scores)
+        scores = self._all_scores["scores"].to_list()
+        categories = self._all_scores["category"].to_list()
 
-        self.reports["statisitcs"] = StatisticsReport.statistics_report(all_scores)
-        self.reports["one_sample_test"] = self.independent_sample_t_test(label_selection , all_scores)
+        self.reports["categorize_scale_report"] = LikertScaleReport.likert_scale_report(label_selection , categories)
 
-        print(pd.DataFrame(Counter(self._all_scores)))
+        self.reports["statisitcs"] = StatisticsReport.statistics_report(scores)
+        self.reports["one_sample_test"] = self.independent_sample_t_test(label_selection , scores)
+
         #self.reports["corr_matrix"] = pd.DataFr
 
         return self.reports
