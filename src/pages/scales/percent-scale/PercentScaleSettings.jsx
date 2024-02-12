@@ -342,16 +342,24 @@ const MasterLinkFunction = async () => {
       {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
   return (
     <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
-        <div className='w-full px-5 py-4 m-auto border border-primary lg:w-9/12' >
+        <div className='w-full px-5 py-4 m-auto  lg:w-9/12' >
             <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height:"100%"}} 
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>{scale?.settings?.name}</h3>
-                    <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1 az' style={{height:"60%"}}>
+                    <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1 az' >
                     <div class="slidecontainer" style={{marginTop:"2em"}}>
   
   
-  <input type="range" min="1" max="100" onChange={e=>setSliderValue(e.target.value)} style={{background:scale?.settings?.scale_color}}  className="slider" id="myRange"/>
+  <input type="range" min="1" max="100" onChange={e=>setSliderValue(e.target.value)}   style={{
+     accentColor:scale?.settings.scale_color,color:"pink",marginLeft:scale?.settings.orientation === "Vertical" ? "40%" : "15%",    WebkitAppearance: scale?.settings.orientation === "Vertical" ? 'slider-vertical' : "slider-horizontal",height:scale?.settings.orientation === "Vertical" &&  "30em" ,width:scale?.settings.orientation === "Horizontal" &&  "70%" ,// Include the Webkit style
+  }} />
+
+
+
+
+
+
   <h4 style={{textAlign:"center"}}>{sliderValue}%</h4>
 </div>
                     </div>
