@@ -103,8 +103,6 @@ const CreateStapleScale = () => {
     setTimeOn(!timeOn);
   } 
 
-
-
   const orientation = ['Vertical', 'Horizontal']
   const format = ['Numbers', 'Emojis',]
 
@@ -122,7 +120,7 @@ const CreateStapleScale = () => {
         right: formData.right,
         fontstyle: formData.fontstyle,
         scale_upper_limit:formData.scale_upper_limit,
-        spacing_unit:formData.spacing_unit
+        spacing_unit:Number(formData.spacing_unit)
        
         // username: "Natan", // your username
         // orientation: "horizontal", // orientation of the scale-- "horizontal"/"vertical"

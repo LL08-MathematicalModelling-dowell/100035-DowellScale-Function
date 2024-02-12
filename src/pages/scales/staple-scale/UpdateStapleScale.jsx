@@ -32,6 +32,7 @@ const UpdateStapleScale = () => {
     const username = settings?.username
     const scalecolor = settings?.scalecolor
     const scale_upper_limit = settings?.scale_upper_limit
+    const spacing_unit = Number(settings?.spacing_unit)
     const roundcolor = settings?.roundcolor
     const fontcolor = settings?.fontcolor
     const fontstyle = settings?.fontstyle
@@ -46,6 +47,7 @@ const UpdateStapleScale = () => {
         orientation,
         username,
         scalecolor,
+        spacing_unit,
         scale_upper_limit,
         roundcolor,
         fontcolor,
@@ -78,6 +80,7 @@ const UpdateStapleScale = () => {
     scale_id: "658d482a7e1af17c0914ea2d", // scale_id of scale to be updated
     // values to change in the scale ==>
     fomat: "emoji",
+    spacing_unit: 1,
     scale_upper_limit: 10,
     time: "60",
     name: "scalename",
@@ -94,8 +97,8 @@ const UpdateStapleScale = () => {
 
   const handleChange = (e)=>{
     const { name, value } = e.target;
-    // alert(value)
-    setUpdateFormData({ ...updateFormData, name:value });
+    setUpdateFormData({ ...updateFormData, [name]:value });
+    // setUpdateFormData({ ...updateFormData, name:value });
     if (name === 'fomat' && value === 'Emojis') {
       handleToggleEmojiPellete();
     } else {
@@ -128,6 +131,7 @@ const UpdateStapleScale = () => {
       setUpdateFormData({
         orientation: settings?.orientation || '',
         scale_upper_limit:settings?.scale_upper_limit || 10,
+        spacing_unit:settings?.spacing_unit || 1,
         scale_id: _id || '',
         user: true, 
         username: settings?.username || '',
@@ -243,6 +247,26 @@ const UpdateStapleScale = () => {
                   onChange={handleChange}
                   className="w-full"
               />
+          </div>
+          <div className='w-full'>
+            <CustomTextInput 
+                label='Scale Upper Limit'
+                name='scale_upper_limit'
+                value={updateFormData.scale_upper_limit}
+                type='number'
+                handleChange={handleChange}
+                placeholder='enter scale upper limit'
+            />
+          </div>
+          <div className='w-full'>
+            <CustomTextInput 
+                label='Spacing Unit'
+                name='spacing_unit'
+                value={updateFormData.spacing_unit}
+                type='number'
+                handleChange={handleChange}
+                placeholder='enter scale upper limit'
+            />
           </div>
           <div className='w-full'>
               <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">format</label>
