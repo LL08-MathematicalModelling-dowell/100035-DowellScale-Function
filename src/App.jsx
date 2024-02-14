@@ -11,10 +11,12 @@ function App() {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const publicLink = queryParams.get('public_link');
+  const location = useLocation();
+  const isHome = location.pathname === '/100035-DowellScale-Function/';
   return (
     <div>
       <ToastContainer />
-      {!publicLink && <Navbar />}
+      {!publicLink && !isHome && <Navbar />}
       <FetchUserContextProvider>
         <Outlet />
       </FetchUserContextProvider>
