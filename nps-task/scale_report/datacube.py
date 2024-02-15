@@ -1,6 +1,8 @@
 import requests
 import json
 
+from .exceptions import AlreadyExistsError , DatacubeError , CollectionNotFoundError , DatabaseNotFoundError
+
 class Datacube:
 
     url = "https://datacube.uxlivinglab.online/db_api/"
@@ -8,27 +10,34 @@ class Datacube:
     def __init__(self , db_name , col_name) -> None:
         self.db = db_name
         self.collection = col_name
-        pass
+        self.api_key = None
 
-    @classmethod
-    def add_collection(cls , db_name : str , col_name : str):
-        data = {
-            "api_key": "your-dowell-api-key",
-            "db_name": db_name,
-            "coll_names": col_name,
-        "num_collections": 1
+
+    @property
+    def connection_info(self):
+        """Information about the datacube connection made by the client."""
+        return {
+            "db_name": self.db,
+            "api_key": self.api_key,
         }
 
-        response = requests.post(cls.url + "add_collection/", json=data)
-        if response.status_code != 200:
-            return {"is_error" : True , "message" : response.text}
+
+    def add_collection(self , col_name : str):
+        data = {
+            **self.connection_info,
+            "coll_names": col_name,
+            "num_collections": 1
+        }
+
+
+        response = requests.post(self.db + "add_collection/", json=data)
+        self._handle_response_errors(response)
         
         return {"is_error" : False , "message" : response.text}
     
     def find(self , query: dict , limit : int = 1 , offset : int = 0):
         data = {
-            "api_key": "your-dowell-api-key",
-            "db_name": self.db,
+            **self.connection_info,
             "coll_name":self.collection,
             "operation": "fetch",
             "filters": query,
@@ -37,8 +46,7 @@ class Datacube:
         }
 
         response = requests.post(self.url + "get_data4/", json=data)
-        if response.status_code != 200:
-            return {"is_error" : True , "message" : response.text}
+        self._handle_error_response(response)
         
         return {"is_error" : False , "message" : response.text}
         
@@ -46,8 +54,7 @@ class Datacube:
     def insert(self , data : dict):
         data = {
     
-            "api_key": "your-dowell-api-key",
-            "db_name": self.db,
+            **self.connection_info,
             "coll_name": self.collection,
             "operation": "insert",
             "data": data
@@ -55,36 +62,49 @@ class Datacube:
         }
 
         response = requests.post(self.url + "crud/", json=data)
-        if response.status_code != 200:
-            return {"is_error" : True , "message" : response.text}
+        self._handle_error_response(response)
         
         return {"is_error" : False , "message" : response.text}
     
     def update(self ,  id : dict , data : dict):
         data = {
-            "api_key": "your-dowell-api-key",
-            "db_name": "dowell",
+            **self.connection_info,
             "coll_name": "test",
             "operation": "update",
-            "query" : {"_id": "64f6fac8ac03855a010559f2"},
-            "update_data": {
-            "id": "101001010101",
-            "info": {'name': "dowell"},
-            "records": [{
-            "record": "1",
-        "type": "overall_updated"
-            }]
-        }
+            "query" :id ,
+            "update_data":  data, 
         }
 
         response = requests.put(self.url, json=data)
-        print(response.text)        
+        self._handle_error_response(response)
+
+        return response.json()
+
+    def _handle_error_response(self, response: requests.Response):
+        """
+        Handles errors in the connection response, if any. 
+        Raises the appropriate exception for response error.
+        """
+        message = response.json().get("message", "")
+        was_successful = response.json().get("success", False)
+        if not was_successful or not response.ok:
+            if 400 <= response.status_code < 500:
+                if response.status_code == 404:
+                    if "collection" in message.lower():
+                        raise CollectionNotFoundError(message)
+                    raise DatabaseNotFoundError(message)
+                
+                elif response.status_code == 409:
+                    raise AlreadyExistsError(message)
+                raise ConnectionError(f"Code{response.status_code} {message}")
+            
+            raise DatacubeError(f"Code{response.status_code} {message}")
+        return None        
     
     def delete(self , query : dict):
         data = {
     
-            "api_key": "your-dowell-api-key",
-            "db_name": self.db,
+            **self.connection_info,
             "coll_name": self.collection,
             "operation": "delete",
             "query": query
@@ -92,10 +112,14 @@ class Datacube:
         }
 
         response = requests.delete(self.url + "crud/", json=data)
-        if response.status_code != 200:
-            return {"is_error" : True , "message" : response.text}
-        
+        self._handle_error_response(response)
+
         return {"is_error" : False , "message" : response.text}
     
+
+class DBModels:
+    """
+    A class that models the Django Models but for the Datacube collection under the dowellscale application. 
+    """
 
         
