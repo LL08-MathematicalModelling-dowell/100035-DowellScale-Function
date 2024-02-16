@@ -14,6 +14,8 @@ from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
 from .utils import assign_statement
 
+from api.utils import dowell_time_asian_culta
+
 
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
@@ -65,7 +67,7 @@ def settings_api_view_create(request):
                                       "label_input": label_input, "user": user,
                                       "custom_emoji_format": custom_emoji_format,
                                       "allow_resp": response.get('allow_resp', True),
-                                      "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                      "date_created": dowell_time_asian_culta().get("current_time")
                                       }
                          }
 
@@ -131,8 +133,8 @@ def settings_api_view_create(request):
                     settings[key] = response[key]
             settings['name'] = response.get('scale_name', settings["name"])
             settings["scale_category"] = "likert scale"
-            settings["date_updated"] = datetime.datetime.now().strftime(
-                "%Y-%m-%d %H:%M:%S")
+            settings["date_updated"] = dowell_time_asian_culta().get("current_time")
+            print("Asian time" , dowell_time_asian_culta().get("current_time"))
             update_field = {"settings": settings}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                  field_add, update_field)
@@ -257,7 +259,7 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
             "scale_data": {"scale_id": scale_id, "scale_type": "likert scale"},
             "brand_data": {"brand_name": brand_name, "product_name": product_name},
             "score": score_data,
-            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "date_created": dowell_time_asian_culta().get("current_time")
         }
     if process_id:
         response["process_id"] = process_id

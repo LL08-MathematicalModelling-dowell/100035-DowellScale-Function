@@ -4,6 +4,9 @@ import json
 from django.shortcuts import render, redirect, HttpResponse
 from .dowellconnection import dowellconnection
 from .eventID import get_event_id
+from api.utils import dowell_time_asian_culta
+
+
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from dowellnps_scale_function.settings import public_url
@@ -116,7 +119,7 @@ def custom_configuration_view(request):
                 "scale_id": scale_id,
                 "scale_label": scale_label,
                 "default_name": None,
-                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "date_created": dowell_time_asian_culta().get("current_time")
             }
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -154,7 +157,7 @@ def custom_configuration_view(request):
                 "template_id": settings['template_id'],
                 "scale_label": scale_label,
                 "date_created": settings['date_created'],
-                "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "date_updated": dowell_time_asian_culta().get("current_time")
             }
             return Response({"success": "Successfully Updated", "data": update_field})
         except:
@@ -246,7 +249,7 @@ def settings_api_view_create(request):
                 "allow_resp": False,
                 "scale-category": "nps scale",
                 "show_total_score": 'true',
-                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "date_created": dowell_time_asian_culta().get("current_time")
             }
         }
 
@@ -309,7 +312,7 @@ def settings_api_view_create(request):
                 "center": center,
                 "scale-category": "nps scale",
                 "show_total_score": 'true',
-                "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "date_updated": dowell_time_asian_culta().get("current_time")
             }
         }
 
@@ -457,6 +460,7 @@ def nps_response_view_submit(request):
             score_data = {"instance_id": f"{instance_id}/{number_of_scale}", "score": score, "category": category}
             if int(instance_id) > int(number_of_scale):
                 return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
+            
             field_add = {"event_id": event_id, "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
                          "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
                          "score": [score_data]}
@@ -586,7 +590,7 @@ def dowell_editor_admin(request, id):
                                              "allow_resp": allow_resp, "template_name": template_name, "name": name,
                                              "text": text, "left": left, "right": right, "center": center,
                                              "scale-category": "nps scale", "show_total_score": show_total,
-                                             "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+                                             "date_updated": dowell_time_asian_culta().get("current_time")}}
 
                 cache_key = f"api_cache:{id}"
                 cached_response = cache.get(cache_key)
@@ -633,7 +637,7 @@ def dowell_editor_admin(request, id):
                              "left": left,
                              "right": right, "scale": scale,
                              "scale-category": "stapel scale",
-                             "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+                             "date_updated": dowell_time_asian_culta().get("current_time")}}
 
             return render(request, 'nps/editor_stapel_scale.html', context)
 
@@ -654,7 +658,7 @@ def dowell_editor_admin(request, id):
                                              "time": time, "template_name": template_name,
                                              "number_of_scales": number_of_scales, "name": name,
                                              "scale-category": "percent scale",
-                                             "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}}
+                                             "date_updated": dowell_time_asian_culta().get("current_time")}}
 
                 cache_key = f"api_cache:{id}"
                 cached_response = cache.get(cache_key)

@@ -1,6 +1,8 @@
 import requests
 import json
 
+from dataclasses import dataclass
+
 from .exceptions import AlreadyExistsError , DatacubeError , CollectionNotFoundError , DatabaseNotFoundError
 
 class Datacube:
@@ -35,7 +37,7 @@ class Datacube:
         
         return {"is_error" : False , "message" : response.text}
     
-    def find(self , query: dict , limit : int = 1 , offset : int = 0):
+    def fetch(self , query: dict , limit : int = 1 , offset : int = 0):
         data = {
             **self.connection_info,
             "coll_name":self.collection,
@@ -116,10 +118,25 @@ class Datacube:
 
         return {"is_error" : False , "message" : response.text}
     
+@dataclass
+class ScaleData:
+    scale_id: str
+    scale_type : str
+    
+@dataclass
+class Response:
+    scale_data : ScaleData
 
-class DBModels:
-    """
-    A class that models the Django Models but for the Datacube collection under the dowellscale application. 
-    """
+    def __init__(self , scale_data) -> None:
+        pass
+    
 
-        
+    def save(self):
+        """
+        Function that saves the response. 
+        """
+    
+    def delete(self):
+        """
+        Function that would delete a response
+        """
