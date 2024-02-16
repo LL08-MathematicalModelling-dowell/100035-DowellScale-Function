@@ -17,6 +17,8 @@ from dowellnps_scale_function.settings import public_url
 from django.core.files.storage import default_storage
 from concurrent.futures import ThreadPoolExecutor
 
+from api.utils import dowell_time_asian_culta
+
 
 # CREATE SCALE SETTINGS
 @api_view(['POST', 'PUT', 'GET'])
@@ -102,7 +104,7 @@ def settings_api_view_create(request):
                              "scale_category": "stapel scale",
                              "allow_resp": response.get('allow_resp', True),
                              "no_of_scales": no_of_scales,
-                             "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                             "date_created": dowell_time_asian_culta().get("current_time")
                          }
                          }
 
@@ -173,7 +175,7 @@ def settings_api_view_create(request):
                                          "scale": scale,
                                          "allow_resp": allow_resp,
                                          "scale_category": "stapel scale",
-                                         "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                         "date_updated": dowell_time_asian_culta().get("current_time")
                                          }
                             }
 
