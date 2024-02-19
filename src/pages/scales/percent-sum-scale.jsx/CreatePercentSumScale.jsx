@@ -87,26 +87,17 @@ const CreatePercentSumScale = () => {
     setFormData({...formData,product_names:secondIndexesArray})
     const payload = {
         
-          // username : formData.username, // your username
-          // time : formData.time, // time (in seconds) within which the respondent should provide an answer. Set "00" to disable time restrictions
-          // scale_name : formData.scale_name, // unique name identifier for the scale
-          // no_of_scale : formData.no_of_scale, // number of instances of the scales you wish to create with the same settings
-          // orientation : formData.orientation, // orientation of the scale-- "horizontal"/"vertical"
-          // scale_color : formData.scale_color, // scale background color
-          // product_count : formData.product_count, // number of products to be rated
-          // product_names : formData.product_names, // names of products to be rated in a list
-          // user : "yes"// assign "yes" when the inputs are coming through an end user
-          
-        username : formData.username, // your username
+        
+        username : formData.user, // your username
         time : formData.time, // time (in seconds) within which the respondent should provide an answer. Set "00" to disable time restrictions
         scale_name : formData.scale_name, // unique name identifier for the scale
         no_of_scale : formData.no_of_scale, // number of instances of the scales you wish to create with the same settings
         orientation : formData.orientation, // orientation of the scale-- "horizontal"/"vertical"
         scale_color : formData.scale_color, // scale background color
-        product_count : 3, // total number of products you wish to rate
+        product_count : parseInt(formData.product_count), // total number of products you wish to rate
         product_names : secondIndexesArray, // name of each product
         user : formData.user // assign "yes" when the inputs are coming through an end user
-         
+       
     }
     console.log(payload)
     // for(const field of requiredFields){

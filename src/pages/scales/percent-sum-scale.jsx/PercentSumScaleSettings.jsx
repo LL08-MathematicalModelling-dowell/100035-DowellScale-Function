@@ -11,8 +11,9 @@ import NPSLiteMasterLink from "../nps-lite-scale/NPSLiteMasterLink";
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 import UpdatePercentSumScale from "./UpdatePercentScale";
 const PercentSumScaleSettings = () => {
-  const [sliderValue,setSliderValue] = useState(0)
-  const[sliderValue2,setSliderValue2] = useState(0)
+  const [sliderValue,setSliderValue] = useState([])
+  const [firstVal,setFirstVal] = useState()
+  // const[sliderValue2,setSliderValue2] = useState([])
     const { slug } = useParams();
     const [scale, setScale] = useState(null);
     const [selectedScore, setSelectedScore] = useState(-1);
@@ -40,49 +41,12 @@ const PercentSumScaleSettings = () => {
     const link_id = queryParams.get('link_id');
     const qrcode_id = queryParams.get('qrcode_id');
     const [isButtonHidden, setIsButtonHidden] = useState(false);
-  
+
     // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     console.log(scale, 'scale**')
 
 
-//   const submitResponse = async()=>{
-
-//     const payload = {
-//         // user: "natan",
-//         // scale_id: "64afe7d3aad77b181847190a",
-//         // event_id: "1689249744727624",
-//         // scale_category: "npslite scale",
-//         // response: selectedScore
-//         scale_id: "656b707c129273f39b974377", // scale_id of scale the response is for
-//         score: "selectedScore", // user score selection
-//         process_id: "LivingLabScales", 
-//         instance_id:2,//no. of scales
-//         brand_name:"livingLabScales",
-//         product_name:"livingLabScales",
-//         username:  sessionStorage.getItem('session_id') //session id
-
-        
-    
-//     }
-
-//     console.log(payload)
-//     try {
-//         setIsLoading(true);
-//         const response = await saveResponse(payload);
-//         console.log(response)
-//         // if(status===200){
-//         //     toast.success('successfully updated');
-//         //     setTimeout(()=>{
-//         //         navigateTo(`/nps-scale/${sigleScaleData[0]?._id}`);
-//         //     },2000)
-//         //   }
-//     } catch (error) {
-//         console.log(error);
-//     }finally{
-//         setIsLoading(false);
-//     }
-//   }
 const MasterLinkFunction = async () => {
     try {
       // Prepare request data for master link creation
@@ -340,6 +304,31 @@ const MasterLinkFunction = async () => {
   if (loading) {
     return <Fallback />;
   }
+let valuesSubArray=[]
+  const handleChange = (e,index) =>{
+    if(index===0)
+    {
+        setFirstVal(e.target.value)
+        console.log(e.target.value)
+    }
+    else{
+    const value = e.target.value
+    const existingIndex = sliderValue.findIndex(item => item[0] === index);
+
+    if (existingIndex !== -1) {
+      // If the index exists, update its corresponding value
+      const updatedSliderValue = [...sliderValue];
+      updatedSliderValue[existingIndex] = [index, value];
+      setSliderValue(updatedSliderValue);
+    } else {
+      // If the index doesn't exist, add a new entry to sliderValue
+      setSliderValue([...sliderValue, [index, value]]);
+    }
+    console.log(sliderValue)
+     valuesSubArray = sliderValue.map(item => item[1]);
+    console.log(valuesSubArray)
+  }
+  }
       {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
   return (
     <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
@@ -351,42 +340,28 @@ const MasterLinkFunction = async () => {
                     <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1 az' >
                     <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2' >
                 <h1 style={{textAlign:'center'}}>Percent Sum Scale</h1>
-                {/* <div class="slidecontainer" style={{marginTop:"3em"}}>
-                <input type="range" min="1" max="100" className="slider" id="myRange"/>
-                <h4 style={{textAlign:"center"}}>{sliderValue}%</h4>
-                </div>
-                    
-                <div class="slidecontainer" style={{marginTop:"2em"}}>
-                <input type="range" min="1" max={100-sliderValue}  className="slider" id="myRange"/>
-                <h4 style={{textAlign:"center"}}>{sliderValue2}%</h4>
-                </div> */}
-                <div style={{display: scale?.settings.orientation === "Vertical" && "flex",justifyContent:"center"}}>
-  <input type="range" min="1" max="100" onChange={e=>setSliderValue(e.target.value)}   style={{
-     accentColor:scale?.settings.scale_color,    WebkitAppearance: scale?.settings.orientation === "Vertical" ? 'slider-vertical' : "slider-horizontal",height:scale?.settings.orientation === "Vertical" &&  "30em" ,width:scale?.settings.orientation === "Horizontal" &&  "70%" ,// Include the Webkit style
-  }} /><h4 style={{textAlign:"center"}}>{sliderValue}%</h4>
-  
-  <input type="range"   min="1" max={100-sliderValue}  onChange={e=>setSliderValue2(e.target.value)}   style={{
-     accentColor:scale?.settings.scale_color,color:"pink",    WebkitAppearance: scale?.settings.orientation === "Vertical" ? 'slider-vertical' : "slider-horizontal",height:scale?.settings.orientation === "Vertical" &&  "30em" ,width:scale?.settings.orientation === "Horizontal" &&  "70%" ,// Include the Webkit style
-  }} /><h4 style={{textAlign:"center"}}>{sliderValue2}%</h4>
-                </div>
+                {
+                scale?.settings?.product_names && scale?.settings?.product_names.map((m, index) => (
+                  <div key={index} style={{ display: scale?.settings.orientation === "Vertical" && "flex", justifyContent: "center" }}>
+                    <input
+                      type="range"
+                      min="1"
+                      max={index===0? "100" : (100-firstVal)/(scale?.settings?.product_names.length-1)}
+                      onChange={e=>handleChange(e,index)}
+                      style={{
+                        accentColor: scale?.settings.scale_color,
+                        WebkitAppearance: scale?.settings.orientation === "Vertical" ? 'slider-vertical' : "slider-horizontal",
+                        height: scale?.settings.orientation === "Vertical" && "30em",
+                        width: scale?.settings.orientation === "Horizontal" && "100%",
+                      }}
+                    />
+                    <h4 style={{ textAlign: "center" }}>{m}</h4>
+                  </div>
+                ))
+}
                 </div>                  </div>
-                    {/* <div className='flex items-center justify-between my-3'>
-                        <h4>Very unlikely</h4>
-                        <h4>Select score</h4>
-                        <h4>Very likely</h4>
-                    </div>
-             */}
+                  
                     <div className="flex gap-3 justify-end">
-                        {/* {scale && scale.map((scale, index)=>(
-                            <Button width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/update-nps-lite-scale/${scale._id}`)} key={index}>update scale</Button>
-                        ))}
-                        <Button 
-                            onClick={submitResponse}
-                            width={'3/4'} 
-                            primary
-                        >   
-                            {isLoading ? 'Saving Response' : 'Save Response'}
-                        </Button> */}
                         {!publicLink && (
             <>
               <Button width={'3/4'} onClick={handleToggleUpdateModal}>

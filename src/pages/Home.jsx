@@ -7,6 +7,17 @@ import ScaleCard from './ScaleCard';
 // import Cookies from 'universal-cookie';
 
 const Home = () => {
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsSidebarVisible(window.innerWidth > 600);
+    }
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Check initial width
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   // const cookie = new Cookies();
   const scaleTypes = [
     {
@@ -160,7 +171,9 @@ const Home = () => {
 
   return (
     <div className="flex">
-      <SideBar />
+       {/* <div className='sidebar' > */}
+       {isSidebarVisible && <SideBar />}
+        {/* </div> */}
       <div className="" style={{display:'flex', flexWrap: 'wrap', justifyContent: 'center'}}>
         {scaleTypes.map((scale) => (
           <ScaleCard scaleName={scale.name} 
