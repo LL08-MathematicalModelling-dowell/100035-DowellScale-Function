@@ -28,7 +28,7 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
     // const scale_id = settings?.scale_id
     // const user = settings?.user
     const username = settings?.username
-    const scalecolor = settings?.scalecolor
+    const scale_color = settings?.scale_color
     const no_of_scale = settings?.no_of_scales
     const time = settings?.time
     const name = settings?.name
@@ -38,7 +38,7 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
       Object.assign({}, { 
         orientation,
         username,
-        scalecolor,
+        scale_color,
         no_of_scale,
         time,
         name,
@@ -53,7 +53,7 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
     user: "yes",
     username: "Ndoneambrose",
     orientation:updateFormData.orientation,
-    scalecolor:updateFormData.scalecolor,
+    scale_color:updateFormData.scale_color,
     no_of_scales:updateFormData.no_of_scale,
     time: updateFormData.time,
     name:updateFormData.name,
@@ -106,7 +106,7 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
         scale_id: _id || '',
         user: true, 
         username: settings?.username || '',
-        scalecolor: settings?.scalecolor || '',
+        scale_color: settings?.scale_color || '',
         no_of_scales: settings?.no_of_scales || 0,
         time: settings?.time || 0,
         name: settings?.name || '',
@@ -196,11 +196,11 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
                 <label htmlFor="scalecolor">scale color</label>
                 <input
                   label="scale color"
-                  name="scalecolor"
+                  name="scale_color"
                   autoComplete="given-name"
                   type="color"
                   placeholder="scale color"
-                  value={updateFormData.scalecolor}
+                  value={updateFormData.scale_color}
                   onChange={handleChange}
                   className="w-full"
                 />
