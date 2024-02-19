@@ -63,8 +63,13 @@ const NpsLiteSettings = () => {
   };
 
   const handleSelectScore = (score, index) => {
-    setSelectedScore(index + 1);
+    if(scale?.fomat === 'emoji') {
+      setSelectedScore(index);
     setSelectedIndex(index)
+    } else {
+      setSelectedScore(index + 1);
+      setSelectedIndex(index)
+    }
   };
 
   // const handleFetchSingleScale = async (scaleId) => {
