@@ -339,10 +339,14 @@ let valuesSubArray=[]
                     <h3 className='text-center py-5 text-sm font-medium'>{scale?.settings?.name}</h3>
                     <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1 az' >
                     <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2' >
+                    <div style={{display:"flex",justifyContent:"center"}}>
+                    
+                    </div>
                 <h1 style={{textAlign:'center'}}>Percent Sum Scale</h1>
+                <div  style={{ display: scale?.settings.orientation === "Vertical" && "flex", justifyContent: "center" }}>
                 {
                 scale?.settings?.product_names && scale?.settings?.product_names.map((m, index) => (
-                  <div key={index} style={{ display: scale?.settings.orientation === "Vertical" && "flex", justifyContent: "center" }}>
+                  <div>
                     <input
                       type="range"
                       min="1"
@@ -351,7 +355,7 @@ let valuesSubArray=[]
                       style={{
                         accentColor: scale?.settings.scale_color,
                         WebkitAppearance: scale?.settings.orientation === "Vertical" ? 'slider-vertical' : "slider-horizontal",
-                        height: scale?.settings.orientation === "Vertical" && "30em",
+                        height: scale?.settings.orientation === "Vertical" && "100%",
                         width: scale?.settings.orientation === "Horizontal" && "100%",
                       }}
                     />
@@ -359,6 +363,7 @@ let valuesSubArray=[]
                   </div>
                 ))
 }
+</div>
                 </div>                  </div>
                   
                     <div className="flex gap-3 justify-end">
