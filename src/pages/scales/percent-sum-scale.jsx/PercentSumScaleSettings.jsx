@@ -343,15 +343,15 @@ const MasterLinkFunction = async () => {
       {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
   return (
     <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
-        <div className='w-full px-5 py-4 m-auto border border-primary lg:w-9/12'>
-            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} 
+        <div className='w-full px-5 py-4 m-auto  lg:w-9/12'>
+            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height: scale?.settings.orientation === "Vertical" && "100%",marginTop:"12em"}}
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>{scale?.settings?.name}</h3>
-                    <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1 az'>
-                    <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
+                    <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1 az' >
+                    <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2' >
                 <h1 style={{textAlign:'center'}}>Percent Sum Scale</h1>
-                <div class="slidecontainer" style={{marginTop:"3em"}}>
+                {/* <div class="slidecontainer" style={{marginTop:"3em"}}>
                 <input type="range" min="1" max="100" className="slider" id="myRange"/>
                 <h4 style={{textAlign:"center"}}>{sliderValue}%</h4>
                 </div>
@@ -359,8 +359,16 @@ const MasterLinkFunction = async () => {
                 <div class="slidecontainer" style={{marginTop:"2em"}}>
                 <input type="range" min="1" max={100-sliderValue}  className="slider" id="myRange"/>
                 <h4 style={{textAlign:"center"}}>{sliderValue2}%</h4>
+                </div> */}
+                <div style={{display: scale?.settings.orientation === "Vertical" && "flex",justifyContent:"center"}}>
+  <input type="range" min="1" max="100" onChange={e=>setSliderValue(e.target.value)}   style={{
+     accentColor:scale?.settings.scale_color,    WebkitAppearance: scale?.settings.orientation === "Vertical" ? 'slider-vertical' : "slider-horizontal",height:scale?.settings.orientation === "Vertical" &&  "30em" ,width:scale?.settings.orientation === "Horizontal" &&  "70%" ,// Include the Webkit style
+  }} /><h4 style={{textAlign:"center"}}>{sliderValue}%</h4>
+  
+  <input type="range"   min="1" max={100-sliderValue}  onChange={e=>setSliderValue2(e.target.value)}   style={{
+     accentColor:scale?.settings.scale_color,color:"pink",    WebkitAppearance: scale?.settings.orientation === "Vertical" ? 'slider-vertical' : "slider-horizontal",height:scale?.settings.orientation === "Vertical" &&  "30em" ,width:scale?.settings.orientation === "Horizontal" &&  "70%" ,// Include the Webkit style
+  }} /><h4 style={{textAlign:"center"}}>{sliderValue2}%</h4>
                 </div>
-                
                 </div>                  </div>
                     {/* <div className='flex items-center justify-between my-3'>
                         <h4>Very unlikely</h4>

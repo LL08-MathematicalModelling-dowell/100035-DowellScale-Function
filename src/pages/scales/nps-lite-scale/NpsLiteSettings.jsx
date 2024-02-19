@@ -365,7 +365,7 @@ const NpsLiteSettings = () => {
   //   return <Fallback />;
   // }
   return (
-    <div className="flex flex-col items-center justify-center h-screen font-medium">
+    <div className="flex flex-col items-center justify-center font-medium">
       {publicLink && (
         <img
           src={dowellLogo}
@@ -383,20 +383,20 @@ const NpsLiteSettings = () => {
             How likely are you to recommend the product to your friends?
             </h3>}
             <div
-              className={`grid  md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center`}
-              style={{display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "", alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "", borderRadius:"8px" }}
+              className={`grid  gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center`}
+              style={{display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "", alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "50%" : "", borderRadius:"8px"}}
             >
               {scale && 
-              scale?.label_selection ?
-                (scale?.label_selection).toReversed().map(
-                  (score, index) => (
-                    <button
-                      key={index}
-                      id = {index}
-                      onClick={() => handleSelectScore(score, index)}
-                      disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
-                      className={`rounded-lg ${index  === selectedScore
-                        ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+              // scale?.label_selection ?
+                // (scale?.label_selection).toReversed().map(
+                //   (score, index) => (
+                //     <button
+                //       key={index}
+                //       id = {index}
+                //       onClick={() => handleSelectScore(score, index)}
+                //       disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
+                //       className={`rounded-lg ${index  === selectedScore
+                //         ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
 
                         // style={
                         //   index == selectedScore || (scaleResponse.score === index && instance)
@@ -407,20 +407,21 @@ const NpsLiteSettings = () => {
                         //     : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
                         // }
 
-                      style={
-                        index == selectedIndex || (scaleResponse.score -1) === index && instance
-                          ? {
-                             backgroundColor: 'green',
-                              color: 'white', width: '30%'
-                            }
-                          : {  backgroundColor: scale?.scalecolor, color: scale?.fontcolor, width: '30%' }
+                      // style={
+                      //   index == selectedIndex || (scaleResponse.score -1) === index && instance
+                      //     ? {
+                      //        backgroundColor: 'green',
+                      //         color: 'white', width: '30%'
+                      //       }
+                      //     : {  backgroundColor: scale?.scalecolor, color: scale?.fontcolor, width: '30%' }
 
-                      }
-                    >
-                      {score === "" ? (scale?.custom_emoji_format)[index] : score}
-                    </button>
-                  )
-                ) : scaleArr.map((score, index) =>(
+                //       }
+                //     >
+                //       {score === "" ? (scale?.custom_emoji_format)[index] : score}
+                //     </button>
+                //   )
+                // ) : 
+                scaleArr.map((score, index) =>(
                   <button
                       key={index}
                       id = {index}
@@ -429,15 +430,15 @@ const NpsLiteSettings = () => {
                       className={`rounded-lg ${index  === selectedScore
                         ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
                       style={
-                        index == selectedIndex || scaleResponse.score === index
-                          ? {
-                             backgroundColor: 'green',
-                              color: 'white',
-                            }
-                          : {  backgroundColor: scale?.roundcolor, color: scale?.fontcolor }
+                        index == selectedIndex || (scaleResponse.score -1) === index && instance
+                        ? {
+                           backgroundColor: 'green',
+                            color: 'white', width: '30%'
+                          }
+                        : {  backgroundColor: scale?.scalecolor, color: scale?.fontcolor, width: '30%' }
                       }
                     >
-                      {score}
+                      {score === "" ? (scale?.custom_emoji_format)[index] : score}
                     </button>
                 ))}
             </div>

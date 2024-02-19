@@ -14,10 +14,11 @@ const StapleScaleSettings = () => {
     // const { loading, singleScaleData, fetchSingleScaleData } = useGetSingleScale();
         const[singleScaleData,setSingleScaleData] = useState()
     const [scale, setScale] = useState(null);
-    const [selectedScore, setSelectedScore] = useState(-6);
+    const [selectedScore, setSelectedScore] = useState();
     const [isLoading, setIsLoading] = useState(false);
     // const [loading, setLoading] = useState(false);
     const saveResponse = useSaveStapleScaleResponse();
+    const [scaleResponse, setScaleResponse] = useState([]);
     const navigateTo = useNavigate();
     const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
     const [masterLink, setMasterLink] = useState('');
@@ -277,14 +278,26 @@ console.log(score)
             >
                 <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
                     <h3 className='py-5 text-sm font-medium text-center'>Scale Name: {singleScaleData?.settings.name}</h3>
-                    <div className=' bg-gray-300 ' style={{gap:"10px",display:"flex",justifyContent:"space-around",height:"5em",}}>
-                        {singleScaleData && score?.map((score, index)=>(
+                    <div className=' bg-gray-300 ' style={{gap:"10px",display:"flex",justifyContent:"space-around",height:"5em", backgroundColor: singleScaleData?.settings.scalecolor}}>
+                        {singleScaleData && score?.map((sco, index)=>(
                             <button 
                                 key={index}
-                                style={{borderRadius:"20%",width:"2em",height:"2em",alignItems:"center",marginTop:"1.5em"}}
-                                onClick={()=>handleSelectScore(score)}
-                                className={` ${selectedScore === score? 'bg-primary text-white'  : 'bg-white text-primary'} text-primary `}
-                            >{score}</button>
+                                // style={{borderRadius:"20%",width:"2em",height:"2em",alignItems:"center",marginTop:"1.5em"}}
+                                onClick={()=>handleSelectScore(sco)}
+                                className={`rounded-lg ${
+                                  score[index] == selectedScore
+                                    ? `bg-primary`
+                                    : `bg-[${singleScaleData?.settings.roundcolor}] text-[${singleScaleData?.settings.fontcolor}]`
+                                }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                                style={
+                                  score[index] == selectedScore || (scaleResponse.score === score[index])
+                                    ? {
+                                       backgroundColor: 'green',
+                                        color: 'white',
+                                      } 
+                                    : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
+                                }
+                            >{sco}</button>
                         ))}
                     </div>
                     <div className='flex items-center justify-between my-3'>
