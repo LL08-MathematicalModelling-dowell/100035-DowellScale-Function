@@ -12,6 +12,8 @@ from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
 import re
 
+from api.utils import dowell_time_asian_culta
+
 
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
@@ -101,7 +103,7 @@ def settings_api_view_create(request):
                 "start_with_zero": start_with_zero,
                 "reference": reference,
                 "display_ranks": display_ranks,
-                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "date_created":  dowell_time_asian_culta().get("current_time"),
                 "username": username
         }
         }
@@ -189,7 +191,7 @@ def settings_api_view_create(request):
         elif settings['stages_arrangement'] == 'Programmer\'s Choice':
             pass
         settings["scale_category"] = "ranking scale"
-        settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        settings["date_updated"] =  dowell_time_asian_culta().get("current_time")
 
         update_field = {"settings": settings}
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
@@ -382,7 +384,7 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
                      "scale_data": {"scale_id": scale_id, "scale_type": "ranking scale", "instance_id": instance_id},
                      "brand_data": {"brand_name": responses["brand_name"], "product_name": responses["product_name"]},
                      "rankings": responses['rankings'],
-                     "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                     "date_created":  dowell_time_asian_culta().get("current_time")
                      }
 
         if process_id:

@@ -8,6 +8,9 @@ from nps.eventID import get_event_id
 from Qsort.views import dowellshuffling_function
 
 
+from api.utils import dowell_time_asian_culta
+
+
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
     if request.method == 'POST':
@@ -73,7 +76,7 @@ def settings_api_view_create(request):
                             "statement_count": statement_count, "statements": statements, "sorting_order": sorting_order,
                             "percentage_accuracy": percentage_accuracy, "min_allowed_score": min_allowed_score,
                             "max_allowed_score": max_allowed_score, "allow_resp": allow_resp,
-                            "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            "date_created":  dowell_time_asian_culta().get("current_time")
                             }
                 }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
@@ -163,8 +166,7 @@ def settings_api_view_create(request):
         settings["statements"] = statements
         settings["statement_count"] = statement_count
         settings["sorting_order"] = sorting_order
-        settings["date_updated"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S")
+        settings["date_updated"] =  dowell_time_asian_culta().get("current_time")
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                 field_add, {"settings":settings})
         return Response({"success": "Successfully Updated ", "data": settings})
@@ -397,7 +399,7 @@ def response_submit_loop(username, scale_id, response, instance_id, process_id=N
         "response_attitude": response_attitude,
         "attitude_percentage": attitude_percentage,
         "overall_user_attitude": overall_user_attitude,
-        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "date_created":  dowell_time_asian_culta().get("current_time")
     }
     if document_data:
         field_add['document_data'] = document_data

@@ -14,6 +14,7 @@ import urllib
 from django.views.decorators.clickjacking import xframe_options_exempt
 from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
+from api.utils import dowell_time_asian_culta
 
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -57,7 +58,7 @@ def settings_api_view_create(request):
                                       "allow_resp": response.get('allow_resp', True),
 
                                       "product_names": product_names, "product_count": product_count,
-                                      "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                      "date_created": dowell_time_asian_culta().get("current_time")
                                       }
                          }
 
@@ -118,7 +119,7 @@ def settings_api_view_create(request):
                     settings[key] = response[key]
             settings['name'] = response.get('scale_name', settings["name"])
             settings["scale_category"] = "percent_sum scale"
-            settings["date_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            settings["date_updated"] = dowell_time_asian_culta().get("current_time")
             update_field = {"settings": settings}
             x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                  field_add, update_field)
@@ -257,7 +258,7 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
                 "scale_data": {"scale_id": scale_id, "scale_type": "percent_sum scale", "instance_id": instance_id},
                 "score": score_data,
                 "brand_data": {"brand_name": brand_name, "product_name": product_name},
-                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "date_created": dowell_time_asian_culta().get("current_time")
             }
     if process_id:
         response ["process_id"] = process_id

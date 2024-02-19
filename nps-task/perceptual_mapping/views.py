@@ -6,6 +6,8 @@ from rest_framework import status
 import datetime
 from nps.eventID import get_event_id
 
+from api.utils import dowell_time_asian_culta
+
 
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
@@ -70,7 +72,7 @@ def settings_api_view_create(request):
                                   "Y_bottom": Y_bottom, "marker_color": marker_color, "center": (0,0), "position": "center",
                                    "marker_type": marker_type, "x_range": x_range, "y_range": y_range, "X_upper_limit": X_upper_limit, "Y_upper_limit": Y_upper_limit,
                                   "allow_resp": allow_resp, "X_spacing": X_spacing, "Y_spacing": Y_spacing, 
-                                  "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                  "date_created": dowell_time_asian_culta().get("current_time")
                                   }
                      }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
@@ -181,8 +183,7 @@ def settings_api_view_create(request):
 
         if Y_upper_limit or Y_spacing:
             settings["y_range"] = y_range
-        settings["date_updated"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S")
+        settings["date_updated"] =  dowell_time_asian_culta().get("current_time")
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update",
                                 field_add, {"settings" : settings})
         return Response({"success": "Successfully Updated ", "data": settings})
@@ -370,7 +371,7 @@ def response_submit_loop(username, scale_id, responses, instance_id, process_id=
                     "scale_data": {"scale_id": scale_id, "scale_type": "perceptual_mapping scale",  "instance_id": instance_id},
                     "brand_data": {"brand_name": responses['brand_name'], "product_name": responses['product_name']},
                     "positions": positions,
-                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    "date_created": dowell_time_asian_culta().get("current_time")
                 }
     if document_data:
         field_add['document_data'] = document_data
