@@ -7,7 +7,7 @@ import { useUpdateResponse } from "../../../hooks/useUpdateResponse";
 import CustomTextInput from "../../../components/forms/inputs/CustomTextInput";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
-import { EmojiPicker } from '../../../components/emoji-picker';
+import { NPSLiteEmojiPicker } from '../../../components/emoji-picker';
 
 const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
 
@@ -41,6 +41,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
     const left = settings?.left
     const right = settings?.right
     const center = settings?.center
+    const custom_emoji_format = settings?.custom_emoji_format
     const show_total_score = settings?.show_total_score
     
 
@@ -61,6 +62,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
         left,
         right,
         center,
+        custom_emoji_format,
         show_total_score,
         scale_category: "nps scale"
       })
@@ -78,14 +80,15 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
     no_of_scales:updateFormData.no_of_scales,
     roundcolor:updateFormData.roundcolor,
     fontcolor:updateFormData.fontcolor,
-    fomat:updateFormData.fomat === 'Emojis' ? selectedEmojis : scores,
+    fomat:updateFormData.fomat,
     time: updateFormData.time,
+    custom_emoji_format: (Object.assign({}, selectedEmojis)).length === 0 ? updateFormData.custom_emoji_format : Object.assign({}, selectedEmojis),
     template_name:updateFormData.template_name,
     name:updateFormData.name,
     text:updateFormData.text,
-    left:updateFormData.left,
-    right:updateFormData.right,
-    center: updateFormData.center,
+    left: updateFormData.fomat === 'emoji' ? "" : updateFormData.left,
+    right: updateFormData.fomat === 'emoji' ? "" : updateFormData.right,
+    center: updateFormData.fomat === 'emoji' ? "" :  updateFormData.center,
     // scale-category: "nps scale",
     show_total_score: updateFormData.show_total_score
   }
@@ -97,7 +100,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setUpdateFormData({ ...updateFormData, [name]:value });
-    if (name === 'fomat' && value === 'Emojis') {
+    if (name === 'fomat' && value === 'emoji') {
       console.log('fomat selected:', value)
       handleToggleEmojiPellete();
     } else {
@@ -110,7 +113,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
   } 
 
   const orientationDB = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis']
+  const format = ['Numbers', 'emoji']
 
     const handleFetchSingleScale = async (scaleId) => {
       try {
@@ -129,6 +132,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
       fetchData();
   }, [slug]);
 
+  console.log(Object.assign({}, selectedEmojis), "TTTTTTTTTTTTTTTTTT")
   useEffect(() => {
     if (settings) {
       setUpdateFormData({
@@ -142,6 +146,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
         roundcolor: settings?.roundcolor || '',
         fontcolor: settings?.fontcolor || '',
         fomat: settings?.fomat || '',
+        custom_emoji_format: settings?.custom_emoji_format || Object.assign({}, selectedEmojis),
         time: settings?.time || 0,
         template_name: settings?.template_name || '',
         name: settings?.name || '',
@@ -245,7 +250,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
                   className="w-full"
                 />
               </div>
-              <div className="flex flex-col gap-2">
+              {/* <div className="flex flex-col gap-2">
                 <label htmlFor="roundcolor">round color</label>
                 <input
                   label="round color"
@@ -257,7 +262,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
                   onChange={handleChange}
                   className="w-full"
                 />
-              </div>
+              </div> */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="fontcolor">font color</label>
                 <input
@@ -295,7 +300,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
                 <CustomTextInput
                   label="left"
                   name="left"
-                  value={updateFormData.left}
+                  value={updateFormData.left === "" && updateFormData.fomat === 'emoji' ? selectedEmojis.length !== 0 ? selectedEmojis[0] : custom_emoji_format[0] :  updateFormData.left}
                   type="text"
                   handleChange={handleChange}
                   placeholder="enter scale left"
@@ -305,7 +310,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
                 <CustomTextInput
                   label="center"
                   name="center"
-                  value={updateFormData.center}
+                  value={updateFormData.center === "" && updateFormData.fomat === 'emoji' ? selectedEmojis.length !== 0 ? selectedEmojis[1] : custom_emoji_format[1] :  updateFormData.center}
                   type="text"
                   handleChange={handleChange}
                   placeholder="enter scale center"
@@ -315,7 +320,7 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
                 <CustomTextInput
                   label="right"
                   name="right"
-                  value={updateFormData.right}
+                  value={updateFormData.right === "" && updateFormData.fomat === 'emoji' ? selectedEmojis.length !== 0 ? selectedEmojis[2] : custom_emoji_format[2] :  updateFormData.right}
                   type="text"
                   handleChange={handleChange}
                   placeholder="enter scale right"
@@ -359,11 +364,12 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
             </Button>
           </div>
           {showEmojiPalette && (
-            <EmojiPicker
-              setSelectedEmojis={setSelectedEmojis}
-              selectedEmojis={selectedEmojis}
-              // handleEmojiSelect={handleEmojiSelect}
-              handleToggleEmojiPellete={handleToggleEmojiPellete}
+            <NPSLiteEmojiPicker
+            setSelectedEmojis={setSelectedEmojis}
+            selectedEmojis={selectedEmojis}
+            no_of_emojis = {3}
+            // handleEmojiSelect={handleEmojiSelect}
+            handleToggleEmojiPellete={handleToggleEmojiPellete}
             />
           )}
         </div>

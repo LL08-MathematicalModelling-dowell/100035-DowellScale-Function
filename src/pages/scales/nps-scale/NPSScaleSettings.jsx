@@ -60,8 +60,12 @@ const NPSScaleSettings = () => {
     setShowMasterLinkSuccessModal(!showMasterLinkSuccessModal);
   };
 
-  const handleSelectScore = (score) => {
-    setSelectedScore(score);
+  const handleSelectScore = (score, index) => {
+    if(typeof(score) === "string") {
+      setSelectedScore(index);
+    }else {
+      setSelectedScore(score);
+    }
   };
 
   // const handleFetchSingleScale = async (scaleId) => {
@@ -355,7 +359,7 @@ const NPSScaleSettings = () => {
   //   return <Fallback />;
   // }
   return (
-    <div className="flex flex-col items-center justify-center h-screen font-medium" >
+    <div className="flex flex-col items-center justify-center font-medium" >
       {publicLink && (
         <img
           src={dowellLogo}
@@ -363,7 +367,7 @@ const NPSScaleSettings = () => {
           className="cursor-pointer w-52"
         />
       )}
-      <div className="w-full py-4 m-auto md:px-5 lg:w-7/12" style={{marginTop: scale?.orientation === "Vertical" ? "400px" : ""}}>
+      <div className="w-full py-4 m-auto md:px-5 lg:w-7/12" style={{marginTop: scale?.orientation === "Vertical" ? "40px" : ""}}>
         <h1 className="py-5 text-[2rem] font-small text-center">{scale?.name}</h1>
         <div
           className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center`}
@@ -373,8 +377,8 @@ const NPSScaleSettings = () => {
             On a scale of 0-10, how likely are you to recommend the product to your friends?
             </h3>
             <div
-              className={`grid md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-${scale?.scalecolor}`}
-              style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "" }}
+              className={`grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-${scale?.scalecolor}`}
+              style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : ""}}
             >
               {scale &&
                 (Array.isArray(scale?.fomat) ? scale.fomat : scores).map(
@@ -382,7 +386,7 @@ const NPSScaleSettings = () => {
                     <button
                       key={index}
                       id = {index}
-                      onClick={() => handleSelectScore(score)}
+                      onClick={() => handleSelectScore(score, index)}
                       disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
                       className={`rounded-lg ${
                         index == selectedScore
