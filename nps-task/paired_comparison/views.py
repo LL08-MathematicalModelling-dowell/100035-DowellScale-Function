@@ -11,6 +11,8 @@ from django.core.files.storage import default_storage
 import uuid
 import os
 
+from api.utils import dowell_time_asian_culta
+
 
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
@@ -80,7 +82,7 @@ def settings_api_view_create(request):
                             "name": name,
                             "image_paths": image_paths,
                             "scale-category": "paired-comparison scale",
-                             "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                             "date_created":  dowell_time_asian_culta().get("current_time")
                              }
         }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "insert",
@@ -154,8 +156,7 @@ def settings_api_view_create(request):
                 settings["total_items"] = item_count
                 settings["total_pairs"] = total_pairs
             settings["scale-category"] = "paired-comparison scale"
-            settings["date_updated"] = datetime.datetime.now().strftime(
-                "%Y-%m-%d %H:%M:%S")
+            settings["date_updated"] =  dowell_time_asian_culta().get("current_time")
             if images_dict != {}:
                 for file in images_dict.values():
                     _, type = str(file).split(".")
@@ -292,7 +293,7 @@ def response_submit_loop(scale_settings, username, scale_id, products_ranking, b
         "scale_data": {"scale_id": scale_id, "scale_type": "paired-comparison scale"},
         "brand_data": {"brand_name": brand_name, "product_name": product_name},
         "ranking": ranking,
-        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "date_created":  dowell_time_asian_culta().get("current_time")
     }
     if process_id:
         response["process_id"] = process_id
