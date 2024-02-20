@@ -133,8 +133,8 @@ const MasterLinkFunction = async () => {
         window.location.href.lastIndexOf('/') + 1
       );
       console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
-      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale?.[0].settings?.no_of_scales)
-      if(flattenedArray.length < scale?.[0].settings?.no_of_scales) {
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale?.settings?.no_of_scales)
+      if(flattenedArray.length < scale?.settings?.no_of_scales) {
        return toast.error('Insufficient public members');
       }
       for (
@@ -153,6 +153,7 @@ const MasterLinkFunction = async () => {
       SetpublicLinks(all_public_links);
     } catch (error) {
       setIsLoading(false);
+      console.log(error)
       toast.error('Insufficient public members');
       // console.log("Error", "Insufficient public members");
     }
@@ -208,10 +209,21 @@ const MasterLinkFunction = async () => {
     // const result = info.data;
     // console.log(result.userinfo);
     // setUserInfo(result.userinfo);
-
+    const arr=[firstVal,sliderValue]
+    console.log(arr)
     const payload = {
-      scale_id: slug,
-      score: selectedScore[1],
+      
+      scale_id: scale._id, // scale_id of scale settings this response is for
+      score: [40, 60], // score for each product in the product list
+        // total must not exceed 100
+      username: "natan", // name of user
+      instance_id: "2",
+      process_id: "1",
+      brand_name: "envue",
+      product_name: "testprod"
+      
+      // scale_id: slug,
+      // score: selectedScore[1],
       // process_id: link_id,
       // instance_id: new URLSearchParams(window.location.search).get(
       //   'instance_id'
@@ -221,11 +233,11 @@ const MasterLinkFunction = async () => {
       // username: new URLSearchParams(window.location.search).get('public_link'),
       // scale_id: "65806be4b3e62ca5274d5e03", // scale_id of scale the response is for
     // score: "Good", // user score selection
-    process_id: "sefwef5444", 
-    instance_id:1,
-    brand_name:"question",
-    product_name:"answer",
-    username: "ndoneambse"
+    // process_id: "sefwef5444", 
+    // instance_id:1,
+    // brand_name:"question",
+    // product_name:"answer",
+    // username: "ndoneambse"
     };
     console.log(payload);
     console.log("processID:",link_id)
@@ -234,7 +246,7 @@ const MasterLinkFunction = async () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "https://100035.pythonanywhere.com/nps-lite/api/nps-lite-response",
+        "https://100035.pythonanywhere.com/nps-lite/api/percent-sum-response-create",
         // 'https://100035.pythonanywhere.com/api/nps_responses_create',
         payload
       );
@@ -281,7 +293,7 @@ const MasterLinkFunction = async () => {
     MasterLinkFunction();
   }, [publicLinks]);
 
-  
+
   useEffect(() => {
       const fetchData = async () => {
         try {

@@ -10,6 +10,7 @@ import UpdateNPSScale from './UpdateNPSScale';
 import NPSMasterlink from './NPSMasterlink';
 import dowellLogo from '../../../assets/dowell-logo.png';
 import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
+import Draggable from 'react-draggable';
 
 const NPSScaleSettings = () => {
   const { slug } = useParams();
@@ -42,7 +43,24 @@ const NPSScaleSettings = () => {
   let currentUserInstance = new URLSearchParams(window.location.search).get(
     'instance_id'
   )
+  const [buttonPositions, setButtonPositions] = useState(Array.from({ length: scores.length }, (_, index) => index));
 
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData('index', index.toString());
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, targetIndex) => {
+    const draggedIndex = parseInt(e.dataTransfer.getData('index'));
+    const newButtonPositions = [...buttonPositions];
+    const temp = newButtonPositions[draggedIndex];
+    newButtonPositions[draggedIndex] = newButtonPositions[targetIndex];
+    newButtonPositions[targetIndex] = temp;
+    setButtonPositions(newButtonPositions);
+  };
   const handleButtonHideClick = () => {
     // Perform the click action
 
@@ -376,34 +394,38 @@ const NPSScaleSettings = () => {
               className={`grid md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-${scale?.scalecolor}`}
               style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : "" }}
             >
-              {scale &&
-                (Array.isArray(scale?.fomat) ? scale.fomat : scores).map(
-                  (score, index) => (
-                    <button
-                      key={index}
-                      id = {index}
-                      onClick={() => handleSelectScore(score)}
-                      disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
-                      className={`rounded-lg ${
-                        index == selectedScore
-                          ? `bg-primary`
-                          : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
-                      }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
-                      style={
-                        index == selectedScore || (scaleResponse.score === index && instance)
-                          ? {
-                             backgroundColor: 'green',
-                              color: 'white',
-                            } 
-                          : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
-                      }
-
-                      onMouseEnter={() => {scale?.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
-                    >
-                      {score}
-                    </button>
-                  )
-                )}
+               {scale && (Array.isArray(scale?.fomat) ? scale.fomat : scores).map((score, index) => (
+        <div
+          key={index}
+          draggable
+          onDragStart={(e) => handleDragStart(e, index)}
+          onDragOver={(e) => handleDragOver(e, index)}
+          onDrop={(e) => handleDrop(e, index)}
+          className="draggable-item"
+          style={{ order: buttonPositions[index] }}
+        >
+          <button
+            onClick={() => handleSelectScore(score)}
+            disabled={scaleResponse.length === 0 ? false : (instance ? true : false)}
+            className={`rounded-lg ${
+              index === selectedScore
+                ? `bg-primary`
+                : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
+            }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+            style={
+              index === selectedScore || (scaleResponse.score === index && instance)
+                ? {
+                    backgroundColor: 'green',
+                    color: 'white',
+                  }
+                : { backgroundColor: scale?.roundcolor, color: scale?.fontcolor }
+            }
+            onMouseEnter={() => { scale?.orientation === "Vertical" ? handleMouseEnter(index) : "" }}
+          >
+            {score}
+          </button>
+        </div>
+      ))}
             </div>
             <div className="flex items-center justify-between my-3">
               <h4
