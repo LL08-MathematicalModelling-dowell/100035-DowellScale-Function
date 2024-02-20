@@ -232,7 +232,7 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
                 <CustomTextInput
                   label="No of scales"
                   name="no_of_scales"
-                  value={updateFormData.no_of_scales}
+                  value={updateFormData.no_of_scale}
                   type="text"
                   handleChange={handleChange}
                   placeholder="Enter no of scales"

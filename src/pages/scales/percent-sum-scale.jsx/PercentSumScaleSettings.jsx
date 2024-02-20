@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
-import axios from "axios";
+import axios, { all } from "axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveResponse } from "../../../hooks/useSaveResponse";
@@ -75,7 +75,7 @@ const MasterLinkFunction = async () => {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
         console.log('result.qrcodes[0].qrcode_id');
-        setQrCodeURL(result.qrcodes[0].qrcode_id);
+        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
         console.log(result.qrcodes[0].qrcode_id);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
@@ -93,6 +93,14 @@ const MasterLinkFunction = async () => {
 
   const createMasterLink = async (e) => {
     e.preventDefault();
+    
+    valuesSubArray = sliderValue.map(item => item[1]);
+    console.log(valuesSubArray)
+    const parsedSliderVal = valuesSubArray.flat().map(val => parseInt(val));
+
+// Create the new array with firstVal followed by sliderVal elements
+const newArr = [parseInt(firstVal),parseInt(...valuesSubArray)];
+    console.log(newArr)
     setIsLoading(true);
     const session_id = sessionStorage.getItem('session_id');
     console.log(session_id);
@@ -105,7 +113,7 @@ const MasterLinkFunction = async () => {
           session_id: sessionStorage.getItem('session_id'),
         }
       );
-
+console.log(pub_links.data)
       const result = pub_links.data;
       setUserInfo(result.userinfo);
       console.log(result, "hhhhhhhhhhhhhhhhhhhhhtttttttttttt")
@@ -137,9 +145,10 @@ const MasterLinkFunction = async () => {
       if(flattenedArray.length < scale?.settings?.no_of_scales) {
        return toast.error('Insufficient public members');
       }
+      console.log(scale.settings.no_of_scales)
       for (
         let i = 0;
-        i < scale.no_of_scales && i < flattenedArray.length;
+        i < scale.settings.no_of_scales && i < flattenedArray.length;
         i++
       ) {
         // Append the current element to the current window.location.href
@@ -149,8 +158,9 @@ const MasterLinkFunction = async () => {
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
       }
-
+      
       SetpublicLinks(all_public_links);
+      console.log(all_public_links)
     } catch (error) {
       setIsLoading(false);
       console.log(error)
@@ -246,7 +256,7 @@ const MasterLinkFunction = async () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "https://100035.pythonanywhere.com/nps-lite/api/percent-sum-response-create",
+        "https://100035.pythonanywhere.com/percent-sum/api/percent-sum-response-create/",
         // 'https://100035.pythonanywhere.com/api/nps_responses_create',
         payload
       );
@@ -345,7 +355,7 @@ let valuesSubArray=[]
   return (
     <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
         <div className='w-full px-5 py-4 m-auto  lg:w-9/12'>
-            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height: scale?.settings.orientation === "Vertical" && "100%",marginTop:"12em"}}
+            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height: scale?.settings.orientation === "Vertical" ? "100%" : "50%",marginTop:"12em"}}
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>{scale?.settings?.name}</h3>
@@ -393,7 +403,7 @@ let valuesSubArray=[]
           <>
             {!isButtonHidden && (
               <div className="flex items-center justify-center my-4">
-                <Button width={'3/12'} primary onClick={submitResponse}>
+                <Button  primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
               </div>

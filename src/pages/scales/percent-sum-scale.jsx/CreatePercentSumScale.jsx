@@ -29,7 +29,7 @@ const CreatePercentSumScale = () => {
       username : "natan", // your username
       time : 100, // time (in seconds) within which the respondent should provide an answer. Set "00" to disable time restrictions
       scale_name : "", // unique name identifier for the scale
-      no_of_scale : 1, // number of instances of the scales you wish to create with the same settings
+      no_of_scale : null, // number of instances of the scales you wish to create with the same settings
       orientation : "vertical", // orientation of the scale-- "horizontal"/"vertical"
       scale_color : "ffff", // scale background color
       product_count : 2, // number of products to be rated
@@ -194,11 +194,11 @@ console.log(arr)
           <label htmlFor='scalecolor'>Slider Color</label>
           <input 
             label='scale color'
-            name="scalecolor"
+            name="scale_color"
             autoComplete="given-name"
             type="color"
             placeholder='scale color'
-            value={formData.scalecolor}
+            value={formData.scale_color}
             onChange={handleChange}
             className="w-full"
           />
@@ -225,7 +225,7 @@ console.log(arr)
       <div className='w-full'>
         <CustomTextInput 
           label='No of scales'
-          name='no_of_scales'
+          name='no_of_scale'
           value={formData.no_of_scale}
           type='text'
           handleChange={handleChange}
