@@ -147,7 +147,7 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
 
   return (
  <div className="fixed top-0 left-0 flex flex-col justify-center w-full h-screen bg-primary/40">
-      <div className="relative w-9/12 p-5 m-auto bg-white border">
+      <div className="relative p-5 m-auto bg-white border" style={{width:"73%"}}>
         <button
           onClick={handleToggleUpdateModal}
           className="absolute px-2 text-white bg-red-500 rounded-full right-2 top-2"
@@ -155,7 +155,7 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
           x
         </button>
         <div className="flex flex-col items-center justify-center w-full font-Montserrat">
-          <div className="w-full p-5 border md:w-9/12">
+          <div className=" p-5 border md:w-9/12" >
             <div className="w-7/12 m-auto">
               <h2 className="mb-3 text-sm font-medium text-center capitalize">
                 update {settings?.name} scale

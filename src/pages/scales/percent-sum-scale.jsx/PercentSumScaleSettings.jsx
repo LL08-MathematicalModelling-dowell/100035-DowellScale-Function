@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 import axios, { all } from "axios";
+import dowellLogo from '../../../assets/dowell-logo.png';
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveResponse } from "../../../hooks/useSaveResponse";
@@ -11,6 +12,7 @@ import NPSLiteMasterLink from "../nps-lite-scale/NPSLiteMasterLink";
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 import UpdatePercentSumScale from "./UpdatePercentScale";
 const PercentSumScaleSettings = () => {
+  const [sliderValues,setSliderValues]= useState([])
   const [sliderValue,setSliderValue] = useState([])
   const [firstVal,setFirstVal] = useState()
   // const[sliderValue2,setSliderValue2] = useState([])
@@ -21,7 +23,7 @@ const PercentSumScaleSettings = () => {
     const [loading, setLoading] = useState(false);
     const saveResponse = useSaveResponse();
     const navigateTo = useNavigate();
-    
+    const [instance,setInstance] = useState()
     const [scores,setScores]=useState([]);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
@@ -40,7 +42,9 @@ const PercentSumScaleSettings = () => {
     const publicLink = queryParams.get('public_link');
     const link_id = queryParams.get('link_id');
     const qrcode_id = queryParams.get('qrcode_id');
+    const[scaleResponse,setScaleResponse] = useState()
     const [isButtonHidden, setIsButtonHidden] = useState(false);
+    const [response,setResponse] = useState()
 
     // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -219,12 +223,19 @@ console.log(pub_links.data)
     // const result = info.data;
     // console.log(result.userinfo);
     // setUserInfo(result.userinfo);
-    const arr=[firstVal,sliderValue]
-    console.log(arr)
+    valuesSubArray = sliderValue.map(item => item[1]);
+    const newArr = [parseInt(firstVal),parseInt(...valuesSubArray)];
+    if(newArr.length !== scale?.settings?.product_names)
+    {
+      toast.error("Rate the scales First!")
+
+    }
+    else{
+console.log(newArr)
     const payload = {
       
       scale_id: scale._id, // scale_id of scale settings this response is for
-      score: [40, 60], // score for each product in the product list
+      score: newArr, // score for each product in the product list
         // total must not exceed 100
       username: "natan", // name of user
       instance_id: "2",
@@ -232,22 +243,6 @@ console.log(pub_links.data)
       brand_name: "envue",
       product_name: "testprod"
       
-      // scale_id: slug,
-      // score: selectedScore[1],
-      // process_id: link_id,
-      // instance_id: new URLSearchParams(window.location.search).get(
-      //   'instance_id'
-      // ),
-      // brand_name: 'Living Lab Scales',
-      // product_name: 'Living Lab Scales',
-      // username: new URLSearchParams(window.location.search).get('public_link'),
-      // scale_id: "65806be4b3e62ca5274d5e03", // scale_id of scale the response is for
-    // score: "Good", // user score selection
-    // process_id: "sefwef5444", 
-    // instance_id:1,
-    // brand_name:"question",
-    // product_name:"answer",
-    // username: "ndoneambse"
     };
     console.log(payload);
     console.log("processID:",link_id)
@@ -261,9 +256,10 @@ console.log(pub_links.data)
         payload
       );
       const result = response.data;
-      console.log(result.success);
+      console.log(result);
       if (result.error) {
         setIsLoading(false);
+        toast.error("error")
         return;
       } else {
         handleButtonHideClick();
@@ -271,11 +267,44 @@ console.log(pub_links.data)
         finalizeMasterlink();
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Response Already Sumbitted");
     } finally {
       setIsLoading(false);
     }
+  }
   };
+  useEffect(() => {
+
+    const fetchResponseData = async () => {
+      //   await handleFetchSingleScale(slug);
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `https://100035.pythonanywhere.com/percent-sum/api/percent-sum-response-create?scale_id=${slug}`
+        );
+        console.log("L",response)
+        (response.data.data.data).map((value) =>{
+          if((value.process_id) === link_id) {
+            setScaleResponse((value.score));
+          if((value.score.instance_id).charAt(0) === currentUserInstance) {
+            setInstance(true)
+          }else {
+            setInstance(false)
+          }
+        }
+        })
+
+        setResponse(response.data)
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if(publicLink) {
+      fetchResponseData();
+    }
+  }, [slug]);
 
   const finalizeMasterlink = async () => {
     setIsLoading(true);
@@ -311,9 +340,19 @@ console.log(pub_links.data)
             const response = await axios.get(`https://100035.pythonanywhere.com/percent/api/percent_settings_create/?scale_id=${slug}`);
             setScale(response.data); 
             console.log(response.data)
-            // const newArray = response.new.settings.label_selection.map((item, index) => [index + 1, item]);
-            // setScores(newArray);
-            console.log(scores)
+            const newArray = response.new.settings.label_selection.map((item, index) => [index + 1, item]);
+            setScores(newArray);
+            console.log(response.data)
+            // (response.data.data.data).map((value) =>{
+            //   if((value.process_id) === link_id) {
+            //     setScale((value.score));
+            //   if((value.score.instance_id).charAt(0) === currentUserInstance) {
+            //     setInstance(true)
+            //   }else {
+            //     setInstance(false)
+            //   }
+            // }
+            // })
         } catch (error) {
             console.error(error);
         } finally {
@@ -336,15 +375,20 @@ let valuesSubArray=[]
     else{
     const value = e.target.value
     const existingIndex = sliderValue.findIndex(item => item[0] === index);
+    
 
     if (existingIndex !== -1) {
       // If the index exists, update its corresponding value
       const updatedSliderValue = [...sliderValue];
       updatedSliderValue[existingIndex] = [index, value];
       setSliderValue(updatedSliderValue);
+      setSliderValues(updatedSliderValue.map(m=>m[1]))
+      console.log(sliderValues)
     } else {
       // If the index doesn't exist, add a new entry to sliderValue
       setSliderValue([...sliderValue, [index, value]]);
+      setSliderValues([...sliderValues,value])
+      console.log(sliderValues)
     }
     console.log(sliderValue)
      valuesSubArray = sliderValue.map(item => item[1]);
@@ -353,9 +397,16 @@ let valuesSubArray=[]
   }
       {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
   return (
-    <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
+    <div className="flex flex-col items-center justify-center h-screen font-medium" >
+     {publicLink && (
+        <img
+          src={dowellLogo}
+          alt="Dowell Logo"
+          className="cursor-pointer w-52"
+        />
+      )}
         <div className='w-full px-5 py-4 m-auto  lg:w-9/12'>
-            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height: scale?.settings.orientation === "Vertical" ? "100%" : "50%",marginTop:"12em"}}
+            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height: scale?.settings.orientation === "Vertical" ? "100%" : "70%",}}
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>{scale?.settings?.name}</h3>
@@ -381,20 +432,22 @@ let valuesSubArray=[]
                         width: scale?.settings.orientation === "Horizontal" && "100%",
                       }}
                     />
-                    <h4 style={{ textAlign: "center" }}>{m}</h4>
+                    <div style={{display:"flex",justifyContent:"space-between"}}>
+                    <h4>0</h4><h4>{m}</h4><h4>{index===0 ? firstVal  : sliderValues[index-1]}</h4>
+                    </div>
                   </div>
                 ))
 }
 </div>
                 </div>                  </div>
                   
-                    <div className="flex gap-3 justify-end">
+                    <div className="flex gap-3 justify-end" style={{paddingBottom:"4%"}}>
                         {!publicLink && (
             <>
-              <Button width={'3/4'} onClick={handleToggleUpdateModal}>
+              <Button  onClick={handleToggleUpdateModal}>
               Update scale
               </Button>
-              <Button width={'3/4'} primary onClick={createMasterLink}>
+              <Button  primary onClick={createMasterLink}>
                 {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
               </Button>
             </>
@@ -402,14 +455,26 @@ let valuesSubArray=[]
           {publicLink && (
           <>
             {!isButtonHidden && (
-              <div className="flex items-center justify-center my-4">
+              <div className="flex items-center justify-center my-4" style={{paddingBottom:"2%"}}>
+                {!instance && <Button primary onClick={submitResponse}>
+                  {isLoading ? 'Submitting' : 'Submit'}
+                </Button>
+               }
+              </div>
+            )}
+          </>
+        )}
+          {/* {publicLink && (
+          <>
+            {!isButtonHidden && (
+              <div className="flex items-center justify-center my-4" style={{paddingBottom:"2%"}}>
                 <Button  primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
               </div>
             )}
           </>
-        )}
+        )} */}
         {showMasterLinkSuccessModal && (
         <MasterlinkSuccessModal
           handleToggleMasterlinkSuccessModal={
