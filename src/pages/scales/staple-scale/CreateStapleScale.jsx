@@ -354,7 +354,7 @@ const CreateStapleScale = () => {
         <StapelEmojiPicker
         setSelectedEmojis={setSelectedEmojis}
         selectedEmojis={selectedEmojis}
-        no_of_emojis = {Math.floor(formData.scale_upper_limit /formDataupdateFormData.spacing_unit) * 2}
+        no_of_emojis = {Math.floor(formData.scale_upper_limit /formData.spacing_unit) * 2}
         // handleEmojiSelect={handleEmojiSelect}
         handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
