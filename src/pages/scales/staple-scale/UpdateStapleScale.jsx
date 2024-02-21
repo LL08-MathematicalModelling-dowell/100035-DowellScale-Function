@@ -8,7 +8,7 @@ import { useUpdateResponse } from "../../../hooks/useUpdateResponse";
 import CustomTextInput from "../../../components/forms/inputs/CustomTextInput";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
-import { EmojiPicker } from '../../../components/emoji-picker';
+import { StapelEmojiPicker } from '../../../components/emoji-picker';
 
 const UpdateStapleScale = () => {
 
@@ -40,7 +40,8 @@ const UpdateStapleScale = () => {
     const time = settings?.time
     const name = settings?.name
     const left = settings?.left
-    const right = settings?.right    
+    const right = settings?.right  
+    const custom_emoji_format = settings?.custom_emoji_format
     
   const [updateFormData, setUpdateFormData] = useState(
       Object.assign({}, { 
@@ -52,6 +53,7 @@ const UpdateStapleScale = () => {
         roundcolor,
         fontcolor,
         fomat,
+        custom_emoji_format,
         time,
         name,
         left,
@@ -99,7 +101,7 @@ const UpdateStapleScale = () => {
     const { name, value } = e.target;
     setUpdateFormData({ ...updateFormData, [name]:value });
     // setUpdateFormData({ ...updateFormData, name:value });
-    if (name === 'fomat' && value === 'Emojis') {
+    if (name === 'fomat' && value === 'emoji') {
       handleToggleEmojiPellete();
     } else {
       setShowEmojiPalette(false);
@@ -112,7 +114,7 @@ const UpdateStapleScale = () => {
   } 
 
   const orientationDB = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis']
+  const format = ['Numbers', 'emoji']
 
 
   useEffect(() => {
@@ -139,6 +141,7 @@ const UpdateStapleScale = () => {
         roundcolor: settings?.roundcolor || '',
         fontcolor: settings?.fontcolor || '',
         fomat: settings?.fomat || '',
+        custom_emoji_format: settings?.custom_emoji_format || '',
         time: settings?.time || 0,
         name: settings?.name || '',
         text: settings?.text || '',
@@ -326,11 +329,12 @@ const UpdateStapleScale = () => {
         <Button primary width={'full'} onClick={ handleUpdateStapleScale }>Update scale</Button>
       </div>
       {showEmojiPalette && (
-        <EmojiPicker
-            setSelectedEmojis={setSelectedEmojis}
-            selectedEmojis={selectedEmojis}
-            // handleEmojiSelect={handleEmojiSelect}
-            handleToggleEmojiPellete={handleToggleEmojiPellete}
+        <StapelEmojiPicker
+        setSelectedEmojis={setSelectedEmojis}
+        selectedEmojis={selectedEmojis}
+        no_of_emojis = { Math.floor(updateFormData.scale_upper_limit / updateFormData.spacing_unit) * 2}
+        // handleEmojiSelect={handleEmojiSelect}
+        handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
         )}
     </div>
