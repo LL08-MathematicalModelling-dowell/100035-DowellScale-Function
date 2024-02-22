@@ -23,7 +23,7 @@ const PercentSumScaleSettings = () => {
     const [loading, setLoading] = useState(false);
     const saveResponse = useSaveResponse();
     const navigateTo = useNavigate();
-    const [instance,setInstance] = useState()
+    const [instance,setInstance] = useState(false)
     const [scores,setScores]=useState([]);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
@@ -47,7 +47,10 @@ const PercentSumScaleSettings = () => {
     const [response,setResponse] = useState()
 
     // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
+    let currentUserInstance = new URLSearchParams(window.location.search).get(
+      'instance_id'
+    )
+  
     console.log(scale, 'scale**')
 
 
@@ -225,12 +228,15 @@ console.log(pub_links.data)
     // setUserInfo(result.userinfo);
     valuesSubArray = sliderValue.map(item => item[1]);
     const newArr = [parseInt(firstVal),parseInt(...valuesSubArray)];
-    if(newArr.length !== scale?.settings?.product_names)
-    {
-      toast.error("Rate the scales First!")
+    // if(newArr.length !== scale?.settings?.product_names)
+    // {
+    //   toast.error("Rate the scales First!")
 
-    }
-    else{
+    // }
+    // else{
+      console.log(new URLSearchParams(window.location.search).get(
+        'instance_id'
+      ))
 console.log(newArr)
     const payload = {
       
@@ -238,7 +244,10 @@ console.log(newArr)
       score: newArr, // score for each product in the product list
         // total must not exceed 100
       username: "natan", // name of user
-      instance_id: "2",
+      instance_id: new URLSearchParams(window.location.search).get(
+        'instance_id'
+      ),
+      
       process_id: "1",
       brand_name: "envue",
       product_name: "testprod"
@@ -271,7 +280,7 @@ console.log(newArr)
     } finally {
       setIsLoading(false);
     }
-  }
+  // }
   };
   useEffect(() => {
 
@@ -282,17 +291,19 @@ console.log(newArr)
         const response = await axios.get(
           `https://100035.pythonanywhere.com/percent-sum/api/percent-sum-response-create?scale_id=${slug}`
         );
-        console.log("L",response)
-        (response.data.data.data).map((value) =>{
-          if((value.process_id) === link_id) {
-            setScaleResponse((value.score));
-          if((value.score.instance_id).charAt(0) === currentUserInstance) {
-            setInstance(true)
-          }else {
-            setInstance(false)
+        
+        console.log(currentUserInstance)
+        console.log("L",response.data.data.score.instance_id.charAt(0))
+        // (response.data.data.data).map((value) =>{
+          if((response.data.data.process_id) === link_id) {
+            setScaleResponse((response.data.data.score));
           }
-        }
-        })
+          if(response.data.data.score.instance_id.charAt(0) === currentUserInstance) {
+            setInstance(true)
+          }
+          
+        
+        // })
 
         setResponse(response.data)
       } catch (error) {
@@ -304,7 +315,7 @@ console.log(newArr)
     if(publicLink) {
       fetchResponseData();
     }
-  }, [slug]);
+  }, [slug,publicLink]);
 
   const finalizeMasterlink = async () => {
     setIsLoading(true);
@@ -340,20 +351,9 @@ console.log(newArr)
             const response = await axios.get(`https://100035.pythonanywhere.com/percent/api/percent_settings_create/?scale_id=${slug}`);
             setScale(response.data); 
             console.log(response.data)
-            const newArray = response.new.settings.label_selection.map((item, index) => [index + 1, item]);
             setScores(newArray);
             console.log(response.data)
-            // (response.data.data.data).map((value) =>{
-            //   if((value.process_id) === link_id) {
-            //     setScale((value.score));
-            //   if((value.score.instance_id).charAt(0) === currentUserInstance) {
-            //     setInstance(true)
-            //   }else {
-            //     setInstance(false)
-            //   }
-            // }
-            // })
-        } catch (error) {
+                    } catch (error) {
             console.error(error);
         } finally {
             setLoading(false);
@@ -406,7 +406,7 @@ let valuesSubArray=[]
         />
       )}
         <div className='w-full px-5 py-4 m-auto  lg:w-9/12'>
-            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height: scale?.settings.orientation === "Vertical" ? "100%" : "70%",}}
+            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height: "70%",}}
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>{scale?.settings?.name}</h3>
@@ -419,9 +419,9 @@ let valuesSubArray=[]
                 <div  style={{ display: scale?.settings.orientation === "Vertical" && "flex", justifyContent: "center" }}>
                 {
                 scale?.settings?.product_names && scale?.settings?.product_names.map((m, index) => (
-                  <div>
+                  <div style={{display: scale?.settings.orientation === "Vertical" && "flex"}}>
                     <input
-                      type="range"
+                      type="range" disabled={instance}
                       min="1"
                       max={index===0? "100" : (100-firstVal)/(scale?.settings?.product_names.length-1)}
                       onChange={e=>handleChange(e,index)}
@@ -432,8 +432,10 @@ let valuesSubArray=[]
                         width: scale?.settings.orientation === "Horizontal" && "100%",
                       }}
                     />
-                    <div style={{display:"flex",justifyContent:"space-between"}}>
-                    <h4>0</h4><h4>{m}</h4><h4>{index===0 ? firstVal  : sliderValues[index-1]}</h4>
+                    <div style={{display:scale?.settings.orientation === "Vertical" ? "grid" : "flex",justifyContent:"space-between"}}>
+                    { scale?.settings.orientation === "Vertical" ? <><h4>{0}</h4><h4>{m}</h4><h4>{index===0 ? firstVal  : sliderValues[index-1]}</h4></>
+                    : <><h4>{index===0 ? firstVal  : sliderValues[index-1]}</h4><h4>{m}</h4><h4>{0}</h4></>
+                    }
                     </div>
                   </div>
                 ))
