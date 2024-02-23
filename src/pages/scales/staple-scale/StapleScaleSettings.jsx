@@ -39,6 +39,8 @@ const StapleScaleSettings = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
       useState(false);
+    const  [response, setResponse] = useState([]);
+    const [instance, setInstance] = useState(false)
     
 const [score,setScore] =useState()
     // const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
@@ -47,7 +49,6 @@ console.log(score)
 
     const handleSelectScore = (score)=>{
       setSelectedScore(score);
-      console.log(score, "TTTTTTTTTTTTTTTTTTTTTYYYYYYYYYYYYYYYYYYYYYYYY")
   }
 
     const handleFetchSingleScale = async(scaleId)=>{
@@ -287,6 +288,40 @@ console.log(score)
     //   console.log(scale.settings.name)
   }, [slug,score]);
 
+  useEffect(() => {
+
+    const fetchResponseData = async () => {
+      //   await handleFetchSingleScale(slug);
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `https://100035.pythonanywhere.com/stapel/api/stapel_responses?scale_id=${slug}`
+        );
+
+        
+        (response.data.data).map((value) =>{
+          if((value.process_id) === link_id) {
+            setScaleResponse((value.score));
+          if((value.score.instance_id).charAt(0) === currentUserInstance) {
+            setInstance(true)
+          }else {
+            setInstance(false)
+          }
+        }
+        })
+
+        setResponse((response.data.data.data))
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if(publicLink) {
+      fetchResponseData();
+    }
+  }, [slug]);
+
 
 
   if (isLoading) {
@@ -369,9 +404,11 @@ console.log(score)
           <>
             {!isButtonHidden && (
               <div className="flex items-center justify-center my-4">
-                <Button primary onClick={submitResponse}>
+                {
+                !instance &&<Button primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
+                }
               </div>
             )}
           </>

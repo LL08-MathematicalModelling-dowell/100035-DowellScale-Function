@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Fallback from '../../../components/Fallback';
 import axios from 'axios';
-import CustomCanvas from '../../../components/CustomCanvas';
+// import CustomCanvas from '../../../components/CustomCanvas';
 import { Box } from '../../../components/Box';
 
 const SinglePerceptualScaleSettings = () => {
@@ -13,7 +13,7 @@ const SinglePerceptualScaleSettings = () => {
   // const x_range = data.settings.x_range[0];
   // const Y_range = data.settings.y_range[0];
 
-  const fetchScalesSettings = async (id) => {
+  const fetchScalesSettings = async () => {
     try {
       let headersList = {
         Accept: '*/*',
@@ -35,18 +35,23 @@ const SinglePerceptualScaleSettings = () => {
       setIsLoading(false);
     }
   };
-
+  
+  fetchScalesSettings()
   useEffect(() => {
+    console.log(id, "GGGGGGGGGGGGGGGGGGGGGGGGGGGG")
+    if(data)
     fetchScalesSettings(id);
-  }, [id]);
+  }, [id, data]);
 
-  const customCanva = useMemo(() => {
-    // Perform some expensive computation based on data
-    return <CustomCanvas xAxisRange={8} yAxisRange={5} />;
-  }, []);
-  if (isLoading) {
-    return <Fallback />;
-  }
+  
+
+  // const customCanva = useMemo(() => {
+  //   // Perform some expensive computation based on data
+  //   return <CustomCanvas xAxisRange={8} yAxisRange={5} />;
+  // }, []);
+  // if (isLoading) {
+  //   return <Fallback />;
+  // }
   return (
     <div className="m-4">
       <h1 className="text-2xl font-bold text-center uppercase">
@@ -54,18 +59,18 @@ const SinglePerceptualScaleSettings = () => {
       </h1>
       <div className="flex flex-col items-center justify-center px-20 m-10 border-2 border-black lg:px-0">
         <h1 className="p-4 text-2xl font-bold text-center uppercase">
-          {data.settings.name}
+          {data.name}
         </h1>
         <div className="flex flex-col lg:flex-row border-2 border-black rounded-lg w-full xl:w-[60%] lg:w-[80%] h-3/5 ">
           <div className="flex flex-wrap items-center justify-center p-4 mx-auto lg:w-3/4">
-            {customCanva}
+            {/* {customCanva} */}
           </div>
           <div className="flex flex-col flex-wrap items-center w-full p-4 mx-auto border border-black lg:w-1/4">
             <h1 className="mt-4 text-2xl font-medium text-center underline">
               AVAILABLE ITEMS
             </h1>
             <div className="flex flex-col ">
-              {Object.values(data.settings.item_list).map((e, index) => (
+              {(data.settings.item_list).map((e, index) => (
                 <div key={index} className="my-4 ">
                   {/* {e} */}
                   <Box name={e} />

@@ -62,10 +62,6 @@ const Home = () => {
       slug: 'percent-sum-scale',
       description: 'A percentage sum scale',
       image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/percentage-scale-150x150.png'
-    },
-    {
-      name: 'NPS scale Second part',
-      slug: 'nps-second-part',
     }
   ];
   // const navigateTo = useNavigate();
