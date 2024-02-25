@@ -294,22 +294,22 @@ def stapel_response_view_submit(request):
         except Exception as e:
             return Response({"Exception": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
     elif request.method == "GET":
-        response = request.data
+        params = request.GET
+        id = params.get("scale_id")
         try:
-            if "scale_id" in response:
-                id = response['scale_id']
-                field_add = {"scale_data.scale_id": id, "scale_data.scale_category": "stapel scale"}
-                response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
-                                                 "scale_reports",
-                                                 "1094", "ABCDE", "fetch", field_add, "nil")
-                data = json.loads(response_data)
-                return Response({"data": json.loads(response_data)})
-            else:
-                return Response({"data": "Scale Id must be provided"}, status=status.HTTP_400_BAD_REQUEST)
+            field_add = {"scale_data.scale_type": "stapel scale"}
+            if id != None:
+                field_add["scale_data.scale_id"] = id
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
+                                             "scale_reports",
+                                             "1094", "ABCDE", "fetch", field_add, "nil")
+            data = json.loads(response_data)
+            if data.get("data") == []:
+                return Response({"error": "Scale response not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"data": json.loads(response_data)})
         except:
-            return Response({"error": "Response does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "An error occcured"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def is_emoji(character):

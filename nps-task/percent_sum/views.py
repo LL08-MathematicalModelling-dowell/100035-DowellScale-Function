@@ -139,7 +139,7 @@ def percent_sum_response_submit(request):
                 product_name = response_data['product_name']
             except KeyError as e:
                 return Response({"error": f"Missing required parameter {e}"}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             process_id = response_data['process_id']
             if not isinstance(process_id, str):
                 return Response({"error": "The process ID should be a string."}, status=status.HTTP_400_BAD_REQUEST)
@@ -188,7 +188,7 @@ def percent_sum_response_submit(request):
         id = params.get("scale_id")
         try:
             if id:
-                field_add = {"_id": id, "scale_data.scale_type": "percent_sum scale"}
+                field_add = {"scale_data.scale_id": id, "scale_data.scale_type": "percent_sum scale"}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")
@@ -224,7 +224,7 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
     scale = data.get('data')[0]
     settings = scale["settings"]
-    
+
     if settings['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
     number_of_scale = settings['no_of_scales']
@@ -261,10 +261,10 @@ def response_submit_loop(scores, scale_id, username, brand_name, product_name, i
             }
     if process_id:
         response ["process_id"] = process_id
-        
+
     if document_data:
         response["document_data"] = document_data
-        
+
     response_id = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                    "1094",
                                    "ABCDE", "insert", response, "nil")

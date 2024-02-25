@@ -14,13 +14,10 @@ from nps.eventID import get_event_id
 from dowellnps_scale_function.settings import public_url
 from .utils import assign_statement
 
-<<<<<<< HEAD
 # Api
-=======
 from api.utils import dowell_time_asian_culta
 
 
->>>>>>> tijani-branch
 @api_view(['POST', 'GET', 'PUT'])
 def settings_api_view_create(request):
     if request.method == 'POST':
@@ -214,7 +211,7 @@ def response_submit_loop(username, scale_id, score, brand_name, product_name, in
     previous_response = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094", "ABCDE", "fetch",
                             field_add, "nil")
     previous_response = json.loads(previous_response)
-    previous_response = previous_response.get('data')            
+    previous_response = previous_response.get('data')
     field_add = {"_id": scale_id, "settings.scale_category": "likert scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
                                      "ABCDE",
