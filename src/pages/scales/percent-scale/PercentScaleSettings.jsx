@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
-import axios from "axios";
+import axios, { all } from "axios";
+import dowellLogo from '../../../assets/dowell-logo.png';
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveResponse } from "../../../hooks/useSaveResponse";
@@ -9,9 +10,12 @@ import { Button } from "../../../components/button";
 import UpdateNpsLite from "../nps-lite-scale/UpdateNpsLite";
 import NPSLiteMasterLink from "../nps-lite-scale/NPSLiteMasterLink";
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
-import UpdatePercentScale from "./UpdatePercentScale";
-const PercentScaleSettings = () => {
-  const [sliderValue,setSliderValue] = useState(50)
+import UpdatePercentSumScale from "./UpdatePercentScale";
+const PercentSumScaleSettings = () => {
+  const [sliderValues,setSliderValues]= useState([])
+  const [sliderValue,setSliderValue] = useState([])
+  const [firstVal,setFirstVal] = useState()
+  // const[sliderValue2,setSliderValue2] = useState([])
     const { slug } = useParams();
     const [scale, setScale] = useState(null);
     const [selectedScore, setSelectedScore] = useState(-1);
@@ -19,7 +23,7 @@ const PercentScaleSettings = () => {
     const [loading, setLoading] = useState(false);
     const saveResponse = useSaveResponse();
     const navigateTo = useNavigate();
-    
+    const [instance,setInstance] = useState(false)
     const [scores,setScores]=useState([]);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
@@ -38,50 +42,18 @@ const PercentScaleSettings = () => {
     const publicLink = queryParams.get('public_link');
     const link_id = queryParams.get('link_id');
     const qrcode_id = queryParams.get('qrcode_id');
+    const[scaleResponse,setScaleResponse] = useState()
     const [isButtonHidden, setIsButtonHidden] = useState(false);
-  
-    // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const [response,setResponse] = useState()
 
+    // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let currentUserInstance = new URLSearchParams(window.location.search).get(
+      'instance_id'
+    )
+  
     console.log(scale, 'scale**')
 
 
-//   const submitResponse = async()=>{
-
-//     const payload = {
-//         // user: "natan",
-//         // scale_id: "64afe7d3aad77b181847190a",
-//         // event_id: "1689249744727624",
-//         // scale_category: "npslite scale",
-//         // response: selectedScore
-//         scale_id: "656b707c129273f39b974377", // scale_id of scale the response is for
-//         score: "selectedScore", // user score selection
-//         process_id: "LivingLabScales", 
-//         instance_id:2,//no. of scales
-//         brand_name:"livingLabScales",
-//         product_name:"livingLabScales",
-//         username:  sessionStorage.getItem('session_id') //session id
-
-        
-    
-//     }
-
-//     console.log(payload)
-//     try {
-//         setIsLoading(true);
-//         const response = await saveResponse(payload);
-//         console.log(response)
-//         // if(status===200){
-//         //     toast.success('successfully updated');
-//         //     setTimeout(()=>{
-//         //         navigateTo(`/nps-scale/${sigleScaleData[0]?._id}`);
-//         //     },2000)
-//         //   }
-//     } catch (error) {
-//         console.log(error);
-//     }finally{
-//         setIsLoading(false);
-//     }
-//   }
 const MasterLinkFunction = async () => {
     try {
       // Prepare request data for master link creation
@@ -110,7 +82,7 @@ const MasterLinkFunction = async () => {
         // Set master link and handle modal toggle
         setMasterLink(result.qrcodes[0].masterlink);
         console.log('result.qrcodes[0].qrcode_id');
-        setQrCodeURL(result.qrcodes[0].qrcode_id);
+        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
         console.log(result.qrcodes[0].qrcode_id);
         console.log('result.qrcodes[0].links[0].response.link_id');
         console.log(result.qrcodes[0].links[0].response.link_id);
@@ -128,6 +100,14 @@ const MasterLinkFunction = async () => {
 
   const createMasterLink = async (e) => {
     e.preventDefault();
+    
+    valuesSubArray = sliderValue.map(item => item[1]);
+    console.log(valuesSubArray)
+    const parsedSliderVal = valuesSubArray.flat().map(val => parseInt(val));
+
+// Create the new array with firstVal followed by sliderVal elements
+const newArr = [parseInt(firstVal),parseInt(...valuesSubArray)];
+    console.log(newArr)
     setIsLoading(true);
     const session_id = sessionStorage.getItem('session_id');
     console.log(session_id);
@@ -140,7 +120,7 @@ const MasterLinkFunction = async () => {
           session_id: sessionStorage.getItem('session_id'),
         }
       );
-
+console.log(pub_links.data)
       const result = pub_links.data;
       setUserInfo(result.userinfo);
       console.log(result, "hhhhhhhhhhhhhhhhhhhhhtttttttttttt")
@@ -168,13 +148,14 @@ const MasterLinkFunction = async () => {
         window.location.href.lastIndexOf('/') + 1
       );
       console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
-      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale?.[0].settings?.no_of_scales)
-      if(flattenedArray.length < scale?.[0].settings?.no_of_scales) {
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale?.settings?.no_of_scales)
+      if(flattenedArray.length < scale?.settings?.no_of_scales) {
        return toast.error('Insufficient public members');
       }
+      console.log(scale.settings.no_of_scales)
       for (
         let i = 0;
-        i < scale.no_of_scales && i < flattenedArray.length;
+        i < scale.settings.no_of_scales && i < flattenedArray.length;
         i++
       ) {
         // Append the current element to the current window.location.href
@@ -184,10 +165,12 @@ const MasterLinkFunction = async () => {
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
       }
-
+      
       SetpublicLinks(all_public_links);
+      console.log(all_public_links)
     } catch (error) {
       setIsLoading(false);
+      console.log(error)
       toast.error('Insufficient public members');
       // console.log("Error", "Insufficient public members");
     }
@@ -243,24 +226,47 @@ const MasterLinkFunction = async () => {
     // const result = info.data;
     // console.log(result.userinfo);
     // setUserInfo(result.userinfo);
+    valuesSubArray = sliderValue.map(item => item[1]);
+    const newArr = [parseInt(firstVal),parseInt(...valuesSubArray)];
+    // if(newArr.length !== scale?.settings?.product_names)
+    // {
+    //   toast.error("Rate the scales First!")
 
+    // }
+    // else{
+      console.log(new URLSearchParams(window.location.search).get(
+        'instance_id'
+      ))
+console.log(newArr)
+let sum
+for (let i = 0; i < newArr.length; i++) {
+    sum += newArr[i];
+  }
+  
+console.log(sum)
     const payload = {
-      scale_id: slug,
-      score: selectedScore[1],
-      // process_id: link_id,
+     
+      scale_id : scale._id, // scale_id of scale the response is being made to
+      username : "pfactorial", // your username
+      brand_name : "dowell",
+      product_name : "workflowAI",
+      instance_id : new URLSearchParams(window.location.search).get(
+          'instance_id'),
+      process_id : "1",
+      score :newArr // score for each product
+     
+      // scale_id: scale._id, // scale_id of scale settings this response is for
+      // score: newArr, // score for each product in the product list
+      //   // total must not exceed 100
+      // username: "natan", // name of user
       // instance_id: new URLSearchParams(window.location.search).get(
       //   'instance_id'
       // ),
-      // brand_name: 'Living Lab Scales',
-      // product_name: 'Living Lab Scales',
-      // username: new URLSearchParams(window.location.search).get('public_link'),
-      // scale_id: "65806be4b3e62ca5274d5e03", // scale_id of scale the response is for
-    // score: "Good", // user score selection
-    process_id: "sefwef5444", 
-    instance_id:1,
-    brand_name:"question",
-    product_name:"answer",
-    username: "ndoneambse"
+      
+      // process_id: "1",
+      // brand_name: "envue",
+      // product_name: "testprod"
+      
     };
     console.log(payload);
     console.log("processID:",link_id)
@@ -269,14 +275,15 @@ const MasterLinkFunction = async () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "https://100035.pythonanywhere.com/nps-lite/api/nps-lite-response",
+        "https://100035.pythonanywhere.com/percent-sum/api/percent-sum-response-create/",
         // 'https://100035.pythonanywhere.com/api/nps_responses_create',
         payload
       );
       const result = response.data;
-      console.log(result.success);
+      console.log(result);
       if (result.error) {
         setIsLoading(false);
+        toast.error("error")
         return;
       } else {
         handleButtonHideClick();
@@ -284,11 +291,47 @@ const MasterLinkFunction = async () => {
         finalizeMasterlink();
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data)
+      toast.error(error.response.data.error);
     } finally {
       setIsLoading(false);
     }
+  // }
   };
+  useEffect(() => {
+
+    const fetchResponseData = async () => {
+      //   await handleFetchSingleScale(slug);
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `https://100035.pythonanywhere.com/percent/api/percent_responses_create?scale_id=${slug}`
+        );
+        
+        console.log(currentUserInstance)
+        console.log("L",response.data.data.score.instance_id.charAt(0))
+        // (response.data.data.data).map((value) =>{
+          if((response.data.data.process_id) === link_id) {
+            setScaleResponse((response.data.data.score));
+          }
+          if(response.data.data.score.instance_id.charAt(0) === currentUserInstance) {
+            setInstance(true)
+          }
+          
+        
+        // })
+
+        setResponse(response.data)
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if(publicLink) {
+      fetchResponseData();
+    }
+  }, [slug,publicLink]);
 
   const finalizeMasterlink = async () => {
     setIsLoading(true);
@@ -316,7 +359,7 @@ const MasterLinkFunction = async () => {
     MasterLinkFunction();
   }, [publicLinks]);
 
-  
+
   useEffect(() => {
       const fetchData = async () => {
         try {
@@ -324,10 +367,9 @@ const MasterLinkFunction = async () => {
             const response = await axios.get(`https://100035.pythonanywhere.com/percent/api/percent_settings_create/?scale_id=${slug}`);
             setScale(response.data); 
             console.log(response.data)
-            // const newArray = response.new.settings.label_selection.map((item, index) => [index + 1, item]);
-            // setScores(newArray);
-            console.log(scores)
-        } catch (error) {
+            setScores(newArray);
+            console.log(response.data)
+                    } catch (error) {
             console.error(error);
         } finally {
             setLoading(false);
@@ -339,53 +381,91 @@ const MasterLinkFunction = async () => {
   if (loading) {
     return <Fallback />;
   }
+let valuesSubArray=[]
+  const handleChange = (e,index) =>{
+    if(index===0)
+    {
+        setFirstVal(e.target.value)
+        console.log(e.target.value)
+    }
+    else{
+    const value = e.target.value
+    const existingIndex = sliderValue.findIndex(item => item[0] === index);
+    
+
+    if (existingIndex !== -1) {
+      // If the index exists, update its corresponding value
+      const updatedSliderValue = [...sliderValue];
+      updatedSliderValue[existingIndex] = [index, value];
+      setSliderValue(updatedSliderValue);
+      setSliderValues(updatedSliderValue.map(m=>m[1]))
+      console.log(sliderValues)
+    } else {
+      // If the index doesn't exist, add a new entry to sliderValue
+      setSliderValue([...sliderValue, [index, value]]);
+      setSliderValues([...sliderValues,value])
+      console.log(sliderValues)
+    }
+    console.log(sliderValue)
+     valuesSubArray = sliderValue.map(item => item[1]);
+    console.log(valuesSubArray)
+  }
+  }
       {/* scale && (Array.isArray(scale?.[0]?.settings?.fomat) ? scale?.[0]?.settings?.fomat : scores).map((score, index)=>( */}
   return (
-    <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
-        <div className='w-full px-5 py-4 m-auto  lg:w-9/12' >
-            <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height:"100%"}} 
+    <div className="flex flex-col items-center justify-center h-screen font-medium" >
+     {publicLink && (
+        <img
+          src={dowellLogo}
+          alt="Dowell Logo"
+          className="cursor-pointer w-52"
+        />
+      )}
+        <div className='w-full px-5 py-4 m-auto  lg:w-9/12'>
+            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height: "70%",}}
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>{scale?.settings?.name}</h3>
                     <div className='flex justify-center md:grid-cols-11 gap-3 bg-gray-300 py-6 px-2 md:px-1 az' >
-                    <div class="slidecontainer" style={{marginTop:"2em"}}>
-  
-  
-  <input type="range" min="1" max="100" onChange={e=>setSliderValue(e.target.value)}   style={{
-     accentColor:scale?.settings.scale_color,color:"pink",marginLeft:scale?.settings.orientation === "Vertical" ? "40%" : "15%",    WebkitAppearance: scale?.settings.orientation === "Vertical" ? 'slider-vertical' : "slider-horizontal",height:scale?.settings.orientation === "Vertical" &&  "30em" ,width:scale?.settings.orientation === "Horizontal" &&  "70%" ,// Include the Webkit style
-  }} />
-
-
-
-
-
-
-  <h4 style={{textAlign:"center"}}>{sliderValue}%</h4>
+                    <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2' >
+                    <div style={{display:"flex",justifyContent:"center"}}>
+                    
+                    </div>
+                <h1 style={{textAlign:'center'}}>Percent Scale</h1>
+                <div  style={{ display: scale?.settings.orientation === "Vertical" && "flex", justifyContent: "center" }}>
+                {
+                scale?.settings?.product_names && scale?.settings?.product_names.map((m, index) => (
+                  <div style={{display: scale?.settings.orientation === "Vertical" && "flex"}}>
+                    <input
+                      type="range" disabled={instance}
+                      min="1"
+                      max="100"
+                      onChange={e=>handleChange(e,index)}
+                      style={{
+                        accentColor: scale?.settings.scale_color,
+                        WebkitAppearance: scale?.settings.orientation === "Vertical" ? 'slider-vertical' : "slider-horizontal",
+                        height: scale?.settings.orientation === "Vertical" && "100%",
+                        width: scale?.settings.orientation === "Horizontal" && "100%",
+                      }}
+                    />
+                    <div style={{display:scale?.settings.orientation === "Vertical" ? "grid" : "flex",justifyContent:"space-between"}}>
+                    { scale?.settings.orientation === "Vertical" ? <><h4>{0}</h4><h4>{m}</h4><h4>{index===0 ? firstVal  : sliderValues[index-1]}</h4></>
+                    : <><h4>{0}</h4><h4>{m}</h4><h4>{index===0 ? firstVal  : sliderValues[index-1]}</h4></>
+                    }
+                    </div>
+                  </div>
+                ))
+}
 </div>
-                    </div>
-                    {/* <div className='flex items-center justify-between my-3'>
-                        <h4>Very unlikely</h4>
-                        <h4>Select score</h4>
-                        <h4>Very likely</h4>
-                    </div>
-             */}
-                    <div className="flex gap-3 justify-end">
-                        {/* {scale && scale.map((scale, index)=>(
-                            <Button width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/update-nps-lite-scale/${scale._id}`)} key={index}>update scale</Button>
-                        ))}
-                        <Button 
-                            onClick={submitResponse}
-                            width={'3/4'} 
-                            primary
-                        >   
-                            {isLoading ? 'Saving Response' : 'Save Response'}
-                        </Button> */}
+                </div>                  </div>
+                  
+                    <div className="flex gap-3 justify-end" style={{paddingBottom:"4%"}}>
                         {!publicLink && (
             <>
-              <Button width={'3/4'} onClick={handleToggleUpdateModal}>
+              <Button  onClick={handleToggleUpdateModal}>
               Update scale
               </Button>
-              <Button width={'3/4'} primary onClick={createMasterLink}>
+              <Button  primary onClick={createMasterLink}>
                 {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
               </Button>
             </>
@@ -393,14 +473,26 @@ const MasterLinkFunction = async () => {
           {publicLink && (
           <>
             {!isButtonHidden && (
-              <div className="flex items-center justify-center my-4">
-                <Button width={'3/12'} primary onClick={submitResponse}>
+              <div className="flex items-center justify-center my-4" style={{paddingBottom:"2%"}}>
+                {!instance && <Button primary onClick={submitResponse}>
+                  {isLoading ? 'Submitting' : 'Submit'}
+                </Button>
+               }
+              </div>
+            )}
+          </>
+        )}
+          {/* {publicLink && (
+          <>
+            {!isButtonHidden && (
+              <div className="flex items-center justify-center my-4" style={{paddingBottom:"2%"}}>
+                <Button  primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
               </div>
             )}
           </>
-        )}
+        )} */}
         {showMasterLinkSuccessModal && (
         <MasterlinkSuccessModal
           handleToggleMasterlinkSuccessModal={
@@ -409,7 +501,7 @@ const MasterLinkFunction = async () => {
         />
       )}
       {showUpdateModal && (
-        <UpdatePercentScale handleToggleUpdateModal={handleToggleUpdateModal} />
+        <UpdatePercentSumScale handleToggleUpdateModal={handleToggleUpdateModal} />
       )}
       {showMasterlinkModal && (
         <NPSLiteMasterLink
@@ -429,4 +521,4 @@ const MasterLinkFunction = async () => {
   )
 }
 
-export default PercentScaleSettings
+export default PercentSumScaleSettings
