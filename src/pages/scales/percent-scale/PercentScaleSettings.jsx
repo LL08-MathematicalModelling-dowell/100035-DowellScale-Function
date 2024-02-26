@@ -226,8 +226,9 @@ console.log(pub_links.data)
     // const result = info.data;
     // console.log(result.userinfo);
     // setUserInfo(result.userinfo);
-    valuesSubArray = sliderValue.map(item => item[1]);
-    const newArr = [parseInt(firstVal),parseInt(...valuesSubArray)];
+    let valuesSubArray = sliderValue.map(item => item[1]);
+    const arr = [firstVal,...valuesSubArray];
+     const newArr = arr.map(item => parseInt(item));
     // if(newArr.length !== scale?.settings?.product_names)
     // {
     //   toast.error("Rate the scales First!")
@@ -238,12 +239,7 @@ console.log(pub_links.data)
         'instance_id'
       ))
 console.log(newArr)
-let sum
-for (let i = 0; i < newArr.length; i++) {
-    sum += newArr[i];
-  }
-  
-console.log(sum)
+
     const payload = {
      
       scale_id : scale._id, // scale_id of scale the response is being made to
@@ -275,7 +271,7 @@ console.log(sum)
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "https://100035.pythonanywhere.com/percent-sum/api/percent-sum-response-create/",
+        "https://100035.pythonanywhere.com/percent/api/percent_responses_create/",
         // 'https://100035.pythonanywhere.com/api/nps_responses_create',
         payload
       );
@@ -438,7 +434,7 @@ let valuesSubArray=[]
                   <div style={{display: scale?.settings.orientation === "Vertical" && "flex"}}>
                     <input
                       type="range" disabled={instance}
-                      min="1"
+                      min="0"
                       max="100"
                       onChange={e=>handleChange(e,index)}
                       style={{
@@ -449,7 +445,7 @@ let valuesSubArray=[]
                       }}
                     />
                     <div style={{display:scale?.settings.orientation === "Vertical" ? "grid" : "flex",justifyContent:"space-between"}}>
-                    { scale?.settings.orientation === "Vertical" ? <><h4>{0}</h4><h4>{m}</h4><h4>{index===0 ? firstVal  : sliderValues[index-1]}</h4></>
+                    { scale?.settings.orientation === "Vertical" ? <><h4>{index===0 ? firstVal  : sliderValues[index-1]}</h4><h4>{m}</h4><h4>{0}</h4></>
                     : <><h4>{0}</h4><h4>{m}</h4><h4>{index===0 ? firstVal  : sliderValues[index-1]}</h4></>
                     }
                     </div>

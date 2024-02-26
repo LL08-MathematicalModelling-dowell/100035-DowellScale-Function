@@ -226,8 +226,10 @@ console.log(pub_links.data)
     // const result = info.data;
     // console.log(result.userinfo);
     // setUserInfo(result.userinfo);
-    valuesSubArray = sliderValue.map(item => item[1]);
-    const newArr = [parseInt(firstVal),parseInt(...valuesSubArray)];
+    let valuesSubArray = sliderValue.map(item => item[1]);
+    const arr = [firstVal,...valuesSubArray];
+     const newArr = arr.map(item => parseInt(item));
+    
     // if(newArr.length !== scale?.settings?.product_names)
     // {
     //   toast.error("Rate the scales First!")
@@ -276,7 +278,7 @@ console.log(newArr)
         finalizeMasterlink();
       }
     } catch (error) {
-      toast.error("Response Already Sumbitted");
+      toast.error(error.response.data.error);
     } finally {
       setIsLoading(false);
     }

@@ -97,8 +97,10 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
 
   const handleChange = (e)=>{
     const { name, value } = e.target;
+    console.log(name,value)
     setUpdateFormData({ ...updateFormData, [name]:value });
   }
+  
 
   const handleToggleTime = ()=>{
     setTimeOn(!timeOn);
@@ -142,7 +144,8 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
   }, [settings]);
   
 
-  const handleUpdateNPSScale = async()=>{
+  const handleUpdateNPSScale = async(e)=>{
+    e.preventDefault()
     console.log(updatePayload, 'payload')
     // if(!updateFormData.fomat){
     //   toast.error('please select a format to proceed');
@@ -154,7 +157,7 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
         if(status===200){
           toast.success('successfully updated');
           setTimeout(()=>{
-              navigateTo(`/100035-DowellScale-Function/percent-scale-settings/${sigleScaleData[0]?._id}`);
+              // navigateTo(`/100035-DowellScale-Function/percent-sum-scale-settings/${sigleScaleData[0]?._id}`);
           },2000)
         }
     } catch (error) {
@@ -183,7 +186,7 @@ const UpdatePercentSumScale = ({ handleToggleUpdateModal }) => {
           <div className=" p-5 border md:w-9/12" >
             <div className="w-7/12 m-auto">
               <h2 className="mb-3 text-sm font-medium text-center capitalize">
-                update {settings?.name} scale
+                Update {settings?.name} scale
               </h2>
             </div>
             <div className="grid grid-cols-2 gap-3 mb-10 md:grid-cols-3">
