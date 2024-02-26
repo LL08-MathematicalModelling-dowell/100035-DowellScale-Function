@@ -14,7 +14,7 @@ const StapleScaleSettings = () => {
     const { slug } = useParams();
     const [userInfo, setUserInfo] = useState();
     // const { loading, singleScaleData, fetchSingleScaleData } = useGetSingleScale();
-        const[singleScaleData,setSingleScaleData] = useState()
+    const[singleScaleData,setSingleScaleData] = useState()
     const [scale, setScale] = useState(null);
     const [selectedScore, setSelectedScore] = useState();
     const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +41,9 @@ const StapleScaleSettings = () => {
       useState(false);
     const  [response, setResponse] = useState([]);
     const [instance, setInstance] = useState(false)
+    let currentUserInstance = new URLSearchParams(window.location.search).get(
+      'instance_id'
+    )
     
 const [score,setScore] =useState()
     // const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
@@ -178,7 +181,6 @@ console.log(score)
     }
   };
 
-  console.log(singleScaleData?.settings.custom_emoji_format, "HHHHHHHHHHHHHHHHHHHHHHHHHHH")
 
   const handleButtonHideClick = () => {
     // Perform the click action
@@ -295,13 +297,14 @@ console.log(score)
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `https://100035.pythonanywhere.com/stapel/api/stapel_responses?scale_id=${slug}`
+          `https://100035.pythonanywhere.com/stapel/api/stapel_responses_create?scale_id=${slug}`
         );
 
-        
-        (response.data.data).map((value) =>{
+        // console.log(response.data.data.data, "SSSSSSSSSSSSSSSSSSS")
+        (response.data.data.data).map((value) =>{
           if((value.process_id) === link_id) {
             setScaleResponse((value.score));
+            console.log(value.process_id, "YYYYYYYYYYYYYYYYYYYYYYYY")
           if((value.score.instance_id).charAt(0) === currentUserInstance) {
             setInstance(true)
           }else {
@@ -323,7 +326,7 @@ console.log(score)
   }, [slug]);
 
 
-
+console.log(instance, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
   if (isLoading) {
     return <Fallback />;
   }
@@ -352,7 +355,7 @@ console.log(score)
                                     : `bg-[${singleScaleData?.settings.roundcolor}] text-[${singleScaleData?.settings.fontcolor}]`
                                 }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                                 style={
-                                  score[index] === selectedScore || (scaleResponse.score === score[index])
+                                  score[index] === selectedScore || (scaleResponse.score === score[index]) && instance
                                     ? {
                                        backgroundColor: 'green',
                                         color: 'white',
