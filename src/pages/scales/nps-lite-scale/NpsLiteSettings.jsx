@@ -127,8 +127,6 @@ const NpsLiteSettings = () => {
       setIsLoading(false);
     }
   };
-
-  console.log("HHHHHHHHHHHHHHHHHHHHHHHHTTTTTTTTT", instance)
    
   const finalizeMasterlink = async () => {
     setIsLoading(true);

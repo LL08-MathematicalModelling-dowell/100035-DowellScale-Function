@@ -161,7 +161,7 @@ const router = createBrowserRouter([
         element: <NpsLiteSettings />,
       },
       {
-        path: `${basePath}/create-perceptual-scale-setting`,
+        path: `${basePath}/create-perceptual-scale-settings`,
         element: <CreatePerceptualScaleSettings />,
       },
       {

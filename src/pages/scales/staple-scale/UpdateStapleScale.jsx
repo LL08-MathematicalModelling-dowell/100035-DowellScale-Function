@@ -32,7 +32,7 @@ const UpdateStapleScale = () => {
     const username = settings?.username
     const scalecolor = settings?.scalecolor
     const scale_upper_limit = settings?.scale_upper_limit
-    const spacing_unit = Number(settings?.spacing_unit)
+    const spacing_unit = settings?.spacing_unit
     const roundcolor = settings?.roundcolor
     const fontcolor = settings?.fontcolor
     const fontstyle = settings?.fontstyle
@@ -99,7 +99,7 @@ const UpdateStapleScale = () => {
 
   const handleChange = (e)=>{
     const { name, value } = e.target;
-    setUpdateFormData({ ...updateFormData, [name]:value });
+    setUpdateFormData({ ...updateFormData, [name]: name === "scale_upper_limit" ||name === "spacing_unit" ? Number(value) : value });
     // setUpdateFormData({ ...updateFormData, name:value });
     if (name === 'fomat' && value === 'emoji') {
       handleToggleEmojiPellete();
@@ -158,6 +158,8 @@ const UpdateStapleScale = () => {
     //   toast.error('please select a format to proceed');
     //   return
     // }
+
+    updateFormData.custom_emoji_format = Object.assign({}, selectedEmojis)
     try {
         setIsLoading(true);
         const {status, data} = await updateResponse('staple-scale', updateFormData);
