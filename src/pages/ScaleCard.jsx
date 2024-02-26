@@ -29,9 +29,10 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
           style={{
             width: '250px',
             height: '300px',
-            background: 'lightgreen',
-            fontSize: '40px',
-            color: 'white',
+            background: '#b2dbbf ',
+            border:"12px solid black",
+            fontSize: '30px',
+            color: 'black',
             margin: '20px',
             borderRadius: '8px',
             textAlign: 'center',
@@ -42,7 +43,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
             padding: '10px',
           }}
         >
-          <img src={imageSource} style={{ width: '100px' }} alt={scaleName} />
+          <img src={imageSource} style={{ width: '100px',height:"100px",objectFit:"cover",borderRadius:"10%",background:"black" }} alt={scaleName} />
           <h6>{scaleName}</h6>
         </div>
         <div
@@ -78,7 +79,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
         to={`/100035-DowellScale-Function/${slug}`}
         key={slug}
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
-        style={{ width: '250px', marginTop: 'none' }}
+        style={{ width: '250px', marginTop: '-15px' }}
       >
         Explore
       </Link>
