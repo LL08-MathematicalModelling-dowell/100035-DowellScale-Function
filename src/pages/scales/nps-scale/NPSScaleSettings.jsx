@@ -10,6 +10,7 @@ import UpdateNPSScale from './UpdateNPSScale';
 import NPSMasterlink from './NPSMasterlink';
 import dowellLogo from '../../../assets/dowell-logo.png';
 import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
+import Draggable from 'react-draggable';
 
 const NPSScaleSettings = () => {
   const { slug } = useParams();
@@ -42,7 +43,7 @@ const NPSScaleSettings = () => {
   let currentUserInstance = new URLSearchParams(window.location.search).get(
     'instance_id'
   )
-
+  
   const handleButtonHideClick = () => {
     // Perform the click action
 
@@ -323,6 +324,7 @@ const NPSScaleSettings = () => {
       }
 
       SetpublicLinks(all_public_links);
+      console.log(all_public_links)
     } catch (error) {
       setIsLoading(false);
       toast.error('Insufficient public members');
@@ -380,7 +382,8 @@ const NPSScaleSettings = () => {
               className={`grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-${scale?.scalecolor}`}
               style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : ""}}
             >
-              {scale &&
+              User
+ {scale &&
                 (Array.isArray(scale?.fomat) ? scale.fomat : scores).map(
                   (score, index) => (
                     <button

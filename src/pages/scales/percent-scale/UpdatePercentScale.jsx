@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { toast } from 'react-toastify';
 import { useParams, useNavigate } from "react-router-dom";
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs'
@@ -29,25 +29,33 @@ const UpdatePercentScale = ({ handleToggleUpdateModal }) => {
     // const user = settings?.user
     const username = settings?.username
     const scale_color = settings?.scale_color
-    console.log(scale_color)
-    const no_of_scales = settings?.no_of_scales
+    const no_of_scale = settings?.no_of_scales
     const time = settings?.time
     const name = settings?.name
+    const product_count = settings?.product_count
+    const product_names = settings?.product_names
     
+  const arr = useMemo(() => {
+    // Initialize the array here
+    return [
+      
+    ];
+  }, []); 
 
   const [updateFormData, setUpdateFormData] = useState(
       Object.assign({}, { 
         orientation,
         username,
         scale_color,
-        no_of_scales,
+        no_of_scale,
         time,
         name,
-        scale_category: "percent scale"
+        product_count,product_names,
+        scale_category: "percent sum scale"
       })
   );
 
-
+  const secondIndexesArray = arr.map(subarray => subarray[1]);
 
   const updatePayload = {
     scale_id: _id,
@@ -55,12 +63,34 @@ const UpdatePercentScale = ({ handleToggleUpdateModal }) => {
     username: "Ndoneambrose",
     orientation:updateFormData.orientation,
     scale_color:updateFormData.scale_color,
-    no_of_scales:updateFormData.no_of_scales,
+    no_of_scales:updateFormData.no_of_scale,
     time: updateFormData.time,
     name:updateFormData.name,
+    product_count:updateFormData.product_count,
+    product_names:secondIndexesArray
     
   }
-
+  const handleArr = (e,index) =>{
+    const indexToUpdate = 1; // The index you want to update
+  const newValue = "newModifiedValue"; // The new value
+  
+  const indexToUpdateExists = arr.some(subarray => subarray[0] === index);
+  
+  if (indexToUpdateExists) {
+      // Update the existing subarray
+      arr.forEach(subarray => {
+          if (subarray[0] === index) {
+              subarray[1] = e.target.value;
+          }
+      });
+  } else {
+      // Push a new subarray
+      arr.push([index, e.target.value]);
+  }
+  handleChange(e)
+  console.log(arr)
+  }
+  
   const handleToggleEmojiPellete = ()=>{
     setShowEmojiPalette(!showEmojiPalette)
   }
@@ -68,12 +98,6 @@ const UpdatePercentScale = ({ handleToggleUpdateModal }) => {
   const handleChange = (e)=>{
     const { name, value } = e.target;
     setUpdateFormData({ ...updateFormData, [name]:value });
-    if (name === 'fomat' && value === 'Emojis') {
-      console.log('fomat selected:', value)
-      handleToggleEmojiPellete();
-    } else {
-      setShowEmojiPalette(false);
-    }
   }
 
   const handleToggleTime = ()=>{
@@ -81,8 +105,6 @@ const UpdatePercentScale = ({ handleToggleUpdateModal }) => {
   } 
 
   const orientationDB = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis']
-
     const handleFetchSingleScale = async (scaleId) => {
       try {
           await fetchSingleScaleData(scaleId);
@@ -108,9 +130,11 @@ const UpdatePercentScale = ({ handleToggleUpdateModal }) => {
         user: true, 
         username: settings?.username || '',
         scale_color: settings?.scale_color || '',
-        no_of_scales: settings?.no_of_scales || 0,
+        no_of_scale: settings?.no_of_scales || 0,
         time: settings?.time || 0,
         name: settings?.name || '',
+        product_count:settings?.product_count, 
+        product_names:settings?.product_names
         
       });
       
@@ -148,7 +172,7 @@ const UpdatePercentScale = ({ handleToggleUpdateModal }) => {
 
   return (
  <div className="fixed top-0 left-0 flex flex-col justify-center w-full h-screen bg-primary/40">
-      <div className="relative w-9/12 p-5 m-auto bg-white border">
+      <div className="relative p-5 m-auto bg-white border" style={{width:"73%"}}>
         <button
           onClick={handleToggleUpdateModal}
           className="absolute px-2 text-white bg-red-500 rounded-full right-2 top-2"
@@ -156,7 +180,7 @@ const UpdatePercentScale = ({ handleToggleUpdateModal }) => {
           x
         </button>
         <div className="flex flex-col items-center justify-center w-full font-Montserrat">
-          <div className="w-full p-5 border md:w-9/12">
+          <div className=" p-5 border md:w-9/12" >
             <div className="w-7/12 m-auto">
               <h2 className="mb-3 text-sm font-medium text-center capitalize">
                 update {settings?.name} scale
@@ -194,7 +218,7 @@ const UpdatePercentScale = ({ handleToggleUpdateModal }) => {
                 </select>
               </div>
               <div className="flex flex-col gap-2">
-                <label htmlFor="scale_color">scale color</label>
+                <label htmlFor="scalecolor">scale color</label>
                 <input
                   label="scale color"
                   name="scale_color"
@@ -233,12 +257,33 @@ const UpdatePercentScale = ({ handleToggleUpdateModal }) => {
                 <CustomTextInput
                   label="No of scales"
                   name="no_of_scales"
-                  value={updateFormData.no_of_scales}
+                  value={updateFormData.no_of_scale}
                   type="text"
                   handleChange={handleChange}
                   placeholder="Enter no of scales"
                 />
               </div>
+              <div className='w-full'>
+        <CustomTextInput 
+          label='Product Count'
+          name='product_count'
+          value={updateFormData.product_count}
+          type='number'
+          min={2} max={10}
+          handleChange={handleChange}
+          placeholder='Enter Product Count'
+        />
+        
+            {Array.from({ length: updateFormData.product_count }, (_, index) => (
+                <>
+                <label>Product {index+1} Name:</label>
+        <input key={index} type="text" placeholder={updateFormData.product_names[index]}  onChange={e=>handleArr(e,index+1)}   />
+        </>
+      ))}
+
+        
+      </div>
+     
             </div>
             <Button primary width={'full'} onClick={handleUpdateNPSScale}>
               Update scale

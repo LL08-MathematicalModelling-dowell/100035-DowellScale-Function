@@ -15,7 +15,6 @@ function App() {
   const location = useLocation();
   const isHome = location.pathname === '/100035-DowellScale-Function/';
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-
   useEffect(() => {
     function handleResize() {
       setIsSidebarVisible(window.innerWidth > 600);
@@ -25,11 +24,12 @@ function App() {
     handleResize(); // Check initial width
     return () => window.removeEventListener('resize', handleResize);
   }, []); 
+   
   
   return (
     <div>
       <ToastContainer />
-      {isHome ? !isSidebarVisible &&  <Navbar /> : <Navbar />}
+      {isHome ? !isSidebarVisible && !publicLink && <Navbar /> : !publicLink   &&  <Navbar />}
       <FetchUserContextProvider>
         <Outlet />
       </FetchUserContextProvider>

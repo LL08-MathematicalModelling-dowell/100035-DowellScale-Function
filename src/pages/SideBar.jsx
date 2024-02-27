@@ -74,7 +74,7 @@ const SideBar = () => {
      <h3 style={{marginRight: '15px'}}>DoWell Scales</h3>
      <AiOutlineMenuFold style={{fontSize: '25px', color:'#6D6E70'}} />
      </div>
-     <div style={{color: '#6D6E70', fontSize:'15px', display: 'flex', alignItems:'center', justifyContent: 'right', marginTop:'40px'}}>
+     <div style={{color: '#6D6E70', fontSize:'15px', display: 'flex', alignItems:'center', justifyContent: 'center', marginTop:'40px'}}>
      <FaPowerOff 
      style={{marginRight: '15px', fontSize: '25px', cursor:'pointer'}} onClick={handlePageChange}/>
      <FaUser style={{marginRight: '15px', fontSize: '25px', cursor:'pointer'}} onClick={handleProfile} />
@@ -86,8 +86,8 @@ const SideBar = () => {
      </Link>
      <FaEllipsisV style={{marginRight: '15px', fontSize: '25px', cursor:'pointer'}} />
      </div>
-     <div style={{color: '#D3D3D3', fontSize:'15px', display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'right', marginTop:'40px'}}>
-        <img src='https://www.scales.dowellstore.org/wp-content/uploads/2022/12/17.png' alt='User image' style={{height:'100px', borderRadius:'8px', marginRight: '15px', marginBottom: '15px'}}/>
+     <div style={{color: '#D3D3D3', fontSize:'15px', display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', marginTop:'40px'}}>
+        <img src='https://www.scales.dowellstore.org/wp-content/uploads/2022/12/17.png' alt='User image' style={{height:'100px', borderRadius:'8px', marginBottom: '15px'}}/>
         <h2>Welcome, {userInfo?.username}</h2>
      </div>
     </div>

@@ -29,7 +29,7 @@ const CreatePercentSumScale = () => {
       username : "natan", // your username
       time : 100, // time (in seconds) within which the respondent should provide an answer. Set "00" to disable time restrictions
       scale_name : "", // unique name identifier for the scale
-      no_of_scale : 1, // number of instances of the scales you wish to create with the same settings
+      no_of_scale : null, // number of instances of the scales you wish to create with the same settings
       orientation : "vertical", // orientation of the scale-- "horizontal"/"vertical"
       scale_color : "ffff", // scale background color
       product_count : 2, // number of products to be rated
@@ -156,7 +156,7 @@ console.log(arr)
   <div className='flex flex-col items-center justify-center w-full h-screen font-Montserrat'>
     <div className='w-full p-5 border md:w-7/12'>
       <div className='flex justify-between'>
-        <h2 className="mb-3 text-sm font-medium text-center capitalize">set up your Percent scale</h2>
+        <h2 className="mb-3 text-sm font-medium text-center capitalize">set up your Percent Sum scale</h2>
         {/* {timeOn && (
         <p>You have about <span className='font-bold text-primary'>{displayedTime}</span> seconds to submit your form</p>
         )} */}
@@ -194,11 +194,11 @@ console.log(arr)
           <label htmlFor='scalecolor'>Slider Color</label>
           <input 
             label='scale color'
-            name="scalecolor"
+            name="scale_color"
             autoComplete="given-name"
             type="color"
             placeholder='scale color'
-            value={formData.scalecolor}
+            value={formData.scale_color}
             onChange={handleChange}
             className="w-full"
           />
@@ -225,7 +225,7 @@ console.log(arr)
       <div className='w-full'>
         <CustomTextInput 
           label='No of scales'
-          name='no_of_scales'
+          name='no_of_scale'
           value={formData.no_of_scale}
           type='text'
           handleChange={handleChange}
@@ -253,8 +253,8 @@ console.log(arr)
         
       </div>
       </div>
-      <div className='flex justify-end gap-3'>
-        {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
+      <div className='flex gap-3'>
+        {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='py-2 px-3 bg-primary text-white min-w-[100%] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
         {/* <button className='py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Preview</button> */}
       </div>
     </div>
