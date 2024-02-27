@@ -408,7 +408,7 @@ let valuesSubArray=[]
         />
       )}
         <div className='w-full px-5 py-4 m-auto  lg:w-9/12'>
-            <div className={`h-80 md:h-80 w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{height: "70%",}}
+            <div className={`h-80  w-full  mb-28 flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{blockSize: "fit-content"}}
             >
                 <div className='stage h-full w-full lg:w-5/12 border flex-1  p-2'>
                     <h3 className='text-center py-5 text-sm font-medium'>{scale?.settings?.name}</h3>
@@ -445,7 +445,7 @@ let valuesSubArray=[]
 </div>
                 </div>                  </div>
                   
-                    <div className="flex gap-3 justify-end" style={{paddingBottom:"4%"}}>
+                    <div className="flex gap-3 justify-end" >
                         {!publicLink && (
             <>
               <Button  onClick={handleToggleUpdateModal}>
@@ -459,7 +459,7 @@ let valuesSubArray=[]
           {publicLink && (
           <>
             {!isButtonHidden && (
-              <div className="flex items-center justify-center my-4" style={{paddingBottom:"2%"}}>
+              <div className="flex items-center justify-center my-4" >
                 {!instance && <Button primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
