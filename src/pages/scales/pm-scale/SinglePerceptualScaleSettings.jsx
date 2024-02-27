@@ -2,7 +2,9 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Fallback from '../../../components/Fallback';
 import axios from 'axios';
-// import CustomCanvas from '../../../components/CustomCanvas';
+import CustomCanvas from '../../../components/CustomCanvas';
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend"
 import { Box } from '../../../components/Box';
 
 const SinglePerceptualScaleSettings = () => {
@@ -36,22 +38,21 @@ const SinglePerceptualScaleSettings = () => {
     }
   };
   
-  fetchScalesSettings()
   useEffect(() => {
-    console.log(id, "GGGGGGGGGGGGGGGGGGGGGGGGGGGG")
-    if(data)
     fetchScalesSettings(id);
-  }, [id, data]);
+  }, []);
 
   
 
-  // const customCanva = useMemo(() => {
-  //   // Perform some expensive computation based on data
-  //   return <CustomCanvas xAxisRange={8} yAxisRange={5} />;
-  // }, []);
-  // if (isLoading) {
-  //   return <Fallback />;
-  // }
+  const customCanva = useMemo(() => {
+    // Perform some expensive computation based on data
+    return (
+         <CustomCanvas xAxisRange={8} yAxisRange={5} />
+      );
+  }, []);
+  if (isLoading) {
+    return <Fallback />;
+  }
   return (
     <div className="m-4">
       <h1 className="text-2xl font-bold text-center uppercase">
@@ -62,22 +63,24 @@ const SinglePerceptualScaleSettings = () => {
           {data.name}
         </h1>
         <div className="flex flex-col lg:flex-row border-2 border-black rounded-lg w-full xl:w-[60%] lg:w-[80%] h-3/5 ">
+        <DndProvider backend={HTML5Backend}>
           <div className="flex flex-wrap items-center justify-center p-4 mx-auto lg:w-3/4">
-            {/* {customCanva} */}
+            {customCanva}
           </div>
           <div className="flex flex-col flex-wrap items-center w-full p-4 mx-auto border border-black lg:w-1/4">
             <h1 className="mt-4 text-2xl font-medium text-center underline">
               AVAILABLE ITEMS
             </h1>
             <div className="flex flex-col ">
-              {(data.settings.item_list).map((e, index) => (
+              {data.length !== 0 && (data.settings.item_list).map((e, index) => (
                 <div key={index} className="my-4 ">
                   {/* {e} */}
-                  <Box name={e} />
+                    <Box name={e} />
                 </div>
               ))}
             </div>
           </div>
+          </DndProvider>
           {/* </div> */}
         </div>
         <div className="w-full lg:w-[60%] lg:pl-4">

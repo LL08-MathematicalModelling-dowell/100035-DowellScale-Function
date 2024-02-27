@@ -106,7 +106,7 @@ const PerceptualScale = () => {
         <div className="w-full lg:w-[60%] lg:pl-4">
           <div className="flex items-center justify-center h-20 lg:justify-end">
             <Link
-              to="/create-perceptual-scale-settings"
+              to="/100035-DowellScale-Function/create-perceptual-scale-settings"
               className="px-8 py-2 text-white bg-[#1A8753] rounded-lg focus:outline-none uppercase"
             >
               Create new Scale
