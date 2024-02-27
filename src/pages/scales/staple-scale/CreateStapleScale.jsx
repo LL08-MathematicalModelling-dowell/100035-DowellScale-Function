@@ -6,7 +6,7 @@ import { useCreateScale } from '../../../hooks/useCreateScale';
 import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
 import { fontStyles } from '../../../utils/fontStyles';
-import { EmojiPicker } from '../../../components/emoji-picker';
+import { StapelEmojiPicker } from '../../../components/emoji-picker';
 
 
 const CreateStapleScale = () => {
@@ -69,7 +69,7 @@ const CreateStapleScale = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]:value });
 
-    if (name === 'fomat' && value === 'Emojis') {
+    if (name === 'fomat' && value === 'emoji') {
       handleToggleEmojiPellete();
     } else {
       setShowEmojiPalette(false);
@@ -103,10 +103,8 @@ const CreateStapleScale = () => {
     setTimeOn(!timeOn);
   } 
 
-
-
   const orientation = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis',]
+  const format = ['Numbers', 'emoji',]
 
   const handleSubmitStapleScale = async()=>{
     const payload = {
@@ -115,14 +113,15 @@ const CreateStapleScale = () => {
         scalecolor: formData.scalecolor,
         roundcolor: formData.roundcolor,
         fontcolor: formData.fontcolor,
-        fomat: formData.fomat === 'Emojis' ? selectedEmojis : scores,
+        fomat: formData.fomat,
+        custom_emoji_format: formData.fomat === 'emoji' ? Object.assign({}, selectedEmojis) : {},
         time: formData.time,
         name: formData.name,
         left: formData.left,
         right: formData.right,
         fontstyle: formData.fontstyle,
         scale_upper_limit:formData.scale_upper_limit,
-        spacing_unit:formData.spacing_unit
+        spacing_unit:Number(formData.spacing_unit)
        
         // username: "Natan", // your username
         // orientation: "horizontal", // orientation of the scale-- "horizontal"/"vertical"
@@ -352,11 +351,12 @@ const CreateStapleScale = () => {
         </div>
       </div>
       {showEmojiPalette && (
-        <EmojiPicker
-            setSelectedEmojis={setSelectedEmojis}
-            selectedEmojis={selectedEmojis}
-            // handleEmojiSelect={handleEmojiSelect}
-            handleToggleEmojiPellete={handleToggleEmojiPellete}
+        <StapelEmojiPicker
+        setSelectedEmojis={setSelectedEmojis}
+        selectedEmojis={selectedEmojis}
+        no_of_emojis = {Math.floor(formData.scale_upper_limit /formData.spacing_unit) * 2}
+        // handleEmojiSelect={handleEmojiSelect}
+        handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
         )}
     </div>

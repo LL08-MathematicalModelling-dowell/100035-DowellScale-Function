@@ -8,7 +8,7 @@ import { useUpdateResponse } from "../../../hooks/useUpdateResponse";
 import CustomTextInput from "../../../components/forms/inputs/CustomTextInput";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
-import { EmojiPicker } from '../../../components/emoji-picker';
+import { StapelEmojiPicker } from '../../../components/emoji-picker';
 
 const UpdateStapleScale = () => {
 
@@ -32,6 +32,7 @@ const UpdateStapleScale = () => {
     const username = settings?.username
     const scalecolor = settings?.scalecolor
     const scale_upper_limit = settings?.scale_upper_limit
+    const spacing_unit = settings?.spacing_unit
     const roundcolor = settings?.roundcolor
     const fontcolor = settings?.fontcolor
     const fontstyle = settings?.fontstyle
@@ -39,17 +40,20 @@ const UpdateStapleScale = () => {
     const time = settings?.time
     const name = settings?.name
     const left = settings?.left
-    const right = settings?.right    
+    const right = settings?.right  
+    const custom_emoji_format = settings?.custom_emoji_format
     
   const [updateFormData, setUpdateFormData] = useState(
       Object.assign({}, { 
         orientation,
         username,
         scalecolor,
+        spacing_unit,
         scale_upper_limit,
         roundcolor,
         fontcolor,
         fomat,
+        custom_emoji_format,
         time,
         name,
         left,
@@ -78,6 +82,7 @@ const UpdateStapleScale = () => {
     scale_id: "658d482a7e1af17c0914ea2d", // scale_id of scale to be updated
     // values to change in the scale ==>
     fomat: "emoji",
+    spacing_unit: 1,
     scale_upper_limit: 10,
     time: "60",
     name: "scalename",
@@ -94,9 +99,9 @@ const UpdateStapleScale = () => {
 
   const handleChange = (e)=>{
     const { name, value } = e.target;
-    // alert(value)
-    setUpdateFormData({ ...updateFormData, name:value });
-    if (name === 'fomat' && value === 'Emojis') {
+    setUpdateFormData({ ...updateFormData, [name]: name === "scale_upper_limit" ||name === "spacing_unit" ? Number(value) : value });
+    // setUpdateFormData({ ...updateFormData, name:value });
+    if (name === 'fomat' && value === 'emoji') {
       handleToggleEmojiPellete();
     } else {
       setShowEmojiPalette(false);
@@ -109,7 +114,7 @@ const UpdateStapleScale = () => {
   } 
 
   const orientationDB = ['Vertical', 'Horizontal']
-  const format = ['Numbers', 'Emojis']
+  const format = ['Numbers', 'emoji']
 
 
   useEffect(() => {
@@ -128,6 +133,7 @@ const UpdateStapleScale = () => {
       setUpdateFormData({
         orientation: settings?.orientation || '',
         scale_upper_limit:settings?.scale_upper_limit || 10,
+        spacing_unit:settings?.spacing_unit || 1,
         scale_id: _id || '',
         user: true, 
         username: settings?.username || '',
@@ -135,6 +141,7 @@ const UpdateStapleScale = () => {
         roundcolor: settings?.roundcolor || '',
         fontcolor: settings?.fontcolor || '',
         fomat: settings?.fomat || '',
+        custom_emoji_format: settings?.custom_emoji_format || '',
         time: settings?.time || 0,
         name: settings?.name || '',
         text: settings?.text || '',
@@ -151,6 +158,8 @@ const UpdateStapleScale = () => {
     //   toast.error('please select a format to proceed');
     //   return
     // }
+
+    updateFormData.custom_emoji_format = Object.assign({}, selectedEmojis)
     try {
         setIsLoading(true);
         const {status, data} = await updateResponse('staple-scale', updateFormData);
@@ -245,6 +254,26 @@ const UpdateStapleScale = () => {
               />
           </div>
           <div className='w-full'>
+            <CustomTextInput 
+                label='Scale Upper Limit'
+                name='scale_upper_limit'
+                value={updateFormData.scale_upper_limit}
+                type='number'
+                handleChange={handleChange}
+                placeholder='enter scale upper limit'
+            />
+          </div>
+          <div className='w-full'>
+            <CustomTextInput 
+                label='Spacing Unit'
+                name='spacing_unit'
+                value={updateFormData.spacing_unit}
+                type='number'
+                handleChange={handleChange}
+                placeholder='enter scale upper limit'
+            />
+          </div>
+          <div className='w-full'>
               <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">format</label>
               <select 
                   label="Select a format" 
@@ -302,11 +331,12 @@ const UpdateStapleScale = () => {
         <Button primary width={'full'} onClick={ handleUpdateStapleScale }>Update scale</Button>
       </div>
       {showEmojiPalette && (
-        <EmojiPicker
-            setSelectedEmojis={setSelectedEmojis}
-            selectedEmojis={selectedEmojis}
-            // handleEmojiSelect={handleEmojiSelect}
-            handleToggleEmojiPellete={handleToggleEmojiPellete}
+        <StapelEmojiPicker
+        setSelectedEmojis={setSelectedEmojis}
+        selectedEmojis={selectedEmojis}
+        no_of_emojis = { Math.floor(updateFormData.scale_upper_limit / updateFormData.spacing_unit) * 2}
+        // handleEmojiSelect={handleEmojiSelect}
+        handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
         )}
     </div>

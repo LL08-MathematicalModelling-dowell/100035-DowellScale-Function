@@ -7,17 +7,20 @@ import { useSaveStapleScaleResponse } from "../../../hooks/useSaveStapleScaleRes
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
 import NPSMasterlink from "../nps-scale/NPSMasterlink";
+import dowellLogo from '../../../assets/dowell-logo.png';
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 
 const StapleScaleSettings = () => {
     const { slug } = useParams();
+    const [userInfo, setUserInfo] = useState();
     // const { loading, singleScaleData, fetchSingleScaleData } = useGetSingleScale();
-        const[singleScaleData,setSingleScaleData] = useState()
+    const[singleScaleData,setSingleScaleData] = useState()
     const [scale, setScale] = useState(null);
-    const [selectedScore, setSelectedScore] = useState(-6);
+    const [selectedScore, setSelectedScore] = useState();
     const [isLoading, setIsLoading] = useState(false);
     // const [loading, setLoading] = useState(false);
     const saveResponse = useSaveStapleScaleResponse();
+    const [scaleResponse, setScaleResponse] = useState([]);
     const navigateTo = useNavigate();
     const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
     const [masterLink, setMasterLink] = useState('');
@@ -36,6 +39,11 @@ const StapleScaleSettings = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
       useState(false);
+    const  [response, setResponse] = useState([]);
+    const [instance, setInstance] = useState(false)
+    let currentUserInstance = new URLSearchParams(window.location.search).get(
+      'instance_id'
+    )
     
 const [score,setScore] =useState()
     // const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
@@ -109,8 +117,8 @@ console.log(score)
       );
 
       const result = pub_links.data;
+      
       setUserInfo(result.userinfo);
-
       const PublicLinks = [];
       const all_public_links = [];
 
@@ -124,6 +132,7 @@ console.log(score)
         }
       });
 
+
       const flattenedArray = [].concat(...PublicLinks);
 
       // Generate modified URLs
@@ -135,9 +144,13 @@ console.log(score)
         window.location.href.lastIndexOf('/') + 1
       );
 
+      if(flattenedArray.length < singleScaleData?.settings.no_of_scales) {
+       return toast.error('Insufficient public members');
+      }
+
       for (
         let i = 0;
-        i < scale.no_of_scales && i < flattenedArray.length;
+        i < singleScaleData?.settings.no_of_scales && i < flattenedArray.length;
         i++
       ) {
         // Append the current element to the current window.location.href
@@ -167,6 +180,7 @@ console.log(score)
         return 'black';
     }
   };
+
 
   const handleButtonHideClick = () => {
     // Perform the click action
@@ -220,11 +234,12 @@ console.log(score)
     const payload = {
         username: "Natan",
         scale_id : slug,
-        score: selectedScore || 1,
-        instance_id: 1,
+        score: selectedScore,
+        instance_id: new URLSearchParams(window.location.search).get(
+          'instance_id'),
         brand_name: "brand envue",
         product_name: "envue",
-        process_id: "1"
+        process_id: link_id
     }
 
     try {
@@ -242,6 +257,16 @@ console.log(score)
         console.log(error);
     }finally{
         setIsLoading(false);
+    }
+  }
+
+  const handleMouseEnter = (index) =>{
+    if(index === 0) {
+      const btn = document.getElementById(0)
+      btn.title = singleScaleData?.settings.left
+    } else if(index === ((singleScaleData?.settings.scale).length) - 1) {
+      const btn = document.getElementById(((singleScaleData?.settings.scale).length) - 1)
+      btn.title = singleScaleData?.settings.right
     }
   }
 
@@ -265,48 +290,128 @@ console.log(score)
     //   console.log(scale.settings.name)
   }, [slug,score]);
 
+  useEffect(() => {
+
+    const fetchResponseData = async () => {
+      //   await handleFetchSingleScale(slug);
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `https://100035.pythonanywhere.com/stapel/api/stapel_responses_create?scale_id=${slug}`
+        );
+
+        // console.log(response.data.data.data, "SSSSSSSSSSSSSSSSSSS")
+        (response.data.data.data).map((value) =>{
+          if((value.process_id) === link_id) {
+            setScaleResponse((value.score));
+            console.log(value.process_id, "YYYYYYYYYYYYYYYYYYYYYYYY")
+          if((value.score.instance_id).charAt(0) === currentUserInstance) {
+            setInstance(true)
+          }else {
+            setInstance(false)
+          }
+        }
+        })
+
+        setResponse((response.data.data.data))
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if(publicLink) {
+      fetchResponseData();
+    }
+  }, [slug]);
 
 
+console.log(instance, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
   if (isLoading) {
     return <Fallback />;
   }
   return (
-    <div className='flex flex-col items-center justify-center h-screen font-medium font-Montserrat'>
-        <div className='w-full px-5 py-4 m-auto border border-primary lg:w-9/12'>
-            <div className={`h-80 md:h-80 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} 
-            >
-                <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
-                    <h3 className='py-5 text-sm font-medium text-center'>Scale Name: {singleScaleData?.settings.name}</h3>
-                    <div className=' bg-gray-300 ' style={{gap:"10px",display:"flex",justifyContent:"space-around",height:"5em",}}>
-                        {singleScaleData && score?.map((score, index)=>(
+    <div className='h-screen flex flex-col items-center justify-center font-medium font-Montserrat'>
+      {publicLink && (
+        <img
+          src={dowellLogo}
+          alt="Dowell Logo"
+          className="cursor-pointer w-52"
+        />
+      )}
+        <div className=' py-4 m-auto border border-primary ' style={{marginTop: singleScaleData?.settings.orientation === "Vertical" ? "40px" : "", display: singleScaleData?.settings.orientation === "Vertical" ? "flex" : "", flexDirection: singleScaleData?.settings.orientation === "Vertical" ? "column" : "", alignItems: 'center'}}>
+          <div className='flex-1 w-full h-full p-2 border stage' style={{fontFamily: `${singleScaleData?.settings.fontstyle}`, display: singleScaleData?.settings.orientation === "Vertical" ? "flex" : "", flexDirection: singleScaleData?.settings.orientation === "Vertical" ? "column" : "", alignItems: 'center'}}>
+              <h3 className='py-5 text-sm font-medium text-center'>How likely are you to recommend the product to your friends?</h3>
+              <div className='`grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center' style={{ backgroundColor: singleScaleData?.settings.scalecolor, display:'flex', flexDirection: singleScaleData?.settings.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width: singleScaleData?.settings.orientation === "Vertical" ? "7rem" : ""}}>
+                        {singleScaleData && singleScaleData?.settings.fomat !== 'emoji' ?  score?.map((sco, index)=>(
                             <button 
                                 key={index}
-                                style={{borderRadius:"20%",width:"2em",height:"2em",alignItems:"center",marginTop:"1.5em"}}
-                                onClick={()=>handleSelectScore(score)}
-                                className={` ${selectedScore === score? 'bg-primary text-white'  : 'bg-white text-primary'} text-primary `}
-                            >{score}</button>
-                        ))}
+                                id= {index}
+                                // style={{borderRadius:"20%",width:"2em",height:"2em",alignItems:"center",marginTop:"1.5em"}}
+                                onClick={()=>handleSelectScore(sco)}
+                                className={`rounded-lg ${
+                                  score[index] == selectedScore
+                                    ? `bg-primary`
+                                    : `bg-[${singleScaleData?.settings.roundcolor}] text-[${singleScaleData?.settings.fontcolor}]`
+                                }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                                style={
+                                  score[index] === selectedScore || (scaleResponse.score === score[index]) && instance
+                                    ? {
+                                       backgroundColor: 'green',
+                                        color: 'white',
+                                      } 
+                                    : {backgroundColor: singleScaleData?.settings.roundcolor, color: singleScaleData?.settings?.fontcolor}
+                                }
+
+                                onMouseEnter={() => {singleScaleData?.settings.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
+                            >{sco}</button>
+                        )): score?.map((sco, index)=>(
+                          <button 
+                              key={index}
+                              id={index}
+                              // style={{borderRadius:"20%",width:"2em",height:"2em",alignItems:"center",marginTop:"1.5em"}}
+                              onClick={()=>handleSelectScore(sco)}
+                              className={`rounded-lg ${
+                                score[index] == selectedScore
+                                  ? `bg-primary`
+                                  : `bg-[${singleScaleData?.settings.roundcolor}] text-[${singleScaleData?.settings.fontcolor}]`
+                              }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                              style={
+                                score[index] === selectedScore || (scaleResponse.score === score[index])
+                                  ? {
+                                     backgroundColor: 'green',
+                                      color: 'white',
+                                    } 
+                                  : {backgroundColor: singleScaleData?.settings.roundcolor, color: singleScaleData?.settings?.fontcolor}
+                              }
+                              onMouseEnter={() => {singleScaleData?.settings.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
+                          >{(singleScaleData?.settings.custom_emoji_format)[index]}</button>
+                      ))}
                     </div>
-                    <div className='flex items-center justify-between my-3'>
+                    {
+                    singleScaleData?.settings.orientation !== "Vertical" && <div className='flex items-center justify-between my-3'>
                         <h4>{singleScaleData?.settings.left}</h4>
                         <h4>{singleScaleData?.settings.right}</h4>
                     </div>
+                    }
             
-                    <div className="flex justify-end gap-3">
+                    {!publicLink && <div className="w-full flex justify-end gap-3">
                         {/* {singleScaleData && singleScaleData.map((scale, index)=>( */}
                             <Button width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/update-staple-scale/${singleScaleData._id}`)} >update scale</Button>
                         {/* ))} */}
                         <Button width={'3/4'} primary onClick={createMasterLink}>
                 {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
               </Button>
-                    </div>
+                    </div>}
                     {publicLink && (
           <>
             {!isButtonHidden && (
               <div className="flex items-center justify-center my-4">
-                <Button width={'3/12'} primary onClick={submitResponse}>
+                {
+                !instance &&<Button primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
+                }
               </div>
             )}
           </>
@@ -331,7 +436,6 @@ console.log(score)
       )}
   
                 </div>
-            </div>
             
         </div>
     </div>

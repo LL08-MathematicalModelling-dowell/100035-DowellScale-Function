@@ -341,7 +341,7 @@ const CreatePerceptualScaleSettings = () => {
                   htmlFor="x_upper_limit"
                   className="block font-semibold text-center text-gray-600"
                 >
-                  X asix limits
+                  X axis limits
                 </label>
                 <div className="grid gap-6 mb-6 md:grid-cols-2">
                   <div>
@@ -373,7 +373,7 @@ const CreatePerceptualScaleSettings = () => {
                   htmlFor="Y_upper_limit"
                   className="block font-semibold text-center text-gray-600"
                 >
-                  Y asix limits
+                  Y axis limits
                 </label>
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
