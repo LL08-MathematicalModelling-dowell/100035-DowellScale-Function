@@ -30,7 +30,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
             width: '250px',
             height: '300px',
             background: '#b2dbbf ',
-            border:"12px solid black",
+            border:"6px solid black",
             fontSize: '30px',
             color: 'black',
             margin: '20px',
