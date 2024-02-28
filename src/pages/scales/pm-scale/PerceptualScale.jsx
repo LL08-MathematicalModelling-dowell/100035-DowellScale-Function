@@ -63,15 +63,15 @@ const PerceptualScale = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-center ">
-        <img
+        {/* <img
           src={dowellLogo}
           alt="Dowell Logo"
           className="w-32 cursor-pointer"
-        />
-        <p className="my-2 text-4xl text-[#1A8753]">
+        /> */}
+        <p className="my-2 text-4xl text-[#1A8753] invisible md:visible">
           Dowell Perceptual Mapping Scales Settings
         </p>
-        <div className="flex flex-col  lg:flex-row border-2 border-black w-full lg:w-[60%] h-2/5">
+        <div className="flex flex-col  lg:flex-row border w-full lg:w-full lg:h-screen h-2/5">
           <div className="p-4 overflow-scroll overflow-x-hidden lg:w-1/4 ">
             <h1 className="text-sm font-medium text-center underline">
               Scale History
@@ -87,8 +87,11 @@ const PerceptualScale = () => {
               ))}
             </div>
           </div>
+          <p className="my-2 text-4xl text-[#1A8753] lg:hidden">
+          Dowell Perceptual Mapping Scales Settings
+        </p>
 
-          <div className="flex flex-col flex-wrap items-center justify-center mx-auto border border-black lg:p-4 lg:w-3/4">
+          <div className="flex flex-col flex-wrap items-center justify-center mx-auto border lg:p-4 lg:w-3/4">
             <div
               className="flex flex-row flex-wrap justify-center h-[350px] "
               style={{ zoom: 1 }}
@@ -103,7 +106,7 @@ const PerceptualScale = () => {
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-[60%] lg:pl-4">
+        <div className="w-full lg:w-full lg:pl-4">
           <div className="flex items-center justify-center h-20 lg:justify-end">
             <Link
               to="/100035-DowellScale-Function/create-perceptual-scale-settings"
