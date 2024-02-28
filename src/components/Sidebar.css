@@ -1,7 +1,7 @@
-@media screen and (min-width: 600px) {
-    /* Styles for viewport width >= 600px */
-    body {
-      background-color: lightblue;
+@media screen and (max-width: 600px) {
+    .sidebar{
+      display: none;
+      height: 100em;
     }
-  }
+}
   

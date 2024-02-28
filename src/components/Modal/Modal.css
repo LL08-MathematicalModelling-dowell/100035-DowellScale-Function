@@ -1,0 +1,45 @@
+/* Modal Styling */
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 400px; /* Adjust width as needed */
+  position: fixed; /* Fixed position to stay fixed relative to the viewport */
+  top: 25%; /* Center vertically */
+  left: 25%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Center both horizontally and vertically */
+  z-index: 9999; /* Ensure modal appears above other content */
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 250px; /* Adjust sidebar width as needed */
+  background-color: #f2f2f2;
+  float: left;
+}
+
+/* Main Content Styling */
+.main {
+  margin-left: 250px; /* Adjust margin to accommodate sidebar width */
+}
+
+/* Icon Styling */
+.icon {
+  margin-right: 15px;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+/* Show modal when icon is hovered */
+.icon:hover + .modal {
+  display: block;
+}
+
+/* Close button styling */
+.modal-header button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
