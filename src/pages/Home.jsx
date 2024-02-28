@@ -167,6 +167,7 @@ const Home = () => {
 
   return (
     <div className="flex">
+    
        {/* <div className='sidebar' > */}
        {isSidebarVisible && <SideBar />}
         {/* </div> */}
@@ -179,6 +180,7 @@ const Home = () => {
           key={scale.slug}/>
         ))}
       </div>
+      
     </div>
   );
 };

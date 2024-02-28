@@ -24,7 +24,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <ReactCardFlip isFlipped={isFlipped} flipDirection="vertical">
+      <ReactCardFlip isFlipped={isFlipped} containerStyle={{height:"300px",marginBottom:"20px"}} flipDirection="vertical">
         <div
           style={{
             width: '250px',
@@ -40,7 +40,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '10px',
+            // padding: '10px',
           }}
         >
           <img src={imageSource} style={{ width: '100px',height:"100px",objectFit:"cover",borderRadius:"10%",background:"black" }} alt={scaleName} />
@@ -64,7 +64,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
           <button
             style={{
               width: '150px',
-              padding: '10px',
+              // padding: '10px',
               fontSize: '20px',
               background: '#f5d9fa',
               fontWeight: 'bold',
@@ -79,7 +79,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
         to={`/100035-DowellScale-Function/${slug}`}
         key={slug}
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
-        style={{ width: '250px', marginTop: '-15px' }}
+        style={{ width: '250px',marginTop:"10px" }}
       >
         Explore
       </Link>
