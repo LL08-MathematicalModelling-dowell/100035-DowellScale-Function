@@ -153,7 +153,7 @@ const CreatePerceptualScaleSettings = () => {
   return (
     <div className="mx-auto mt-8 lg:container ">
       <form
-        className="lg:w-[100%] w-full mx-auto border-4 border-gray-500 bg-[#d9edf7] shadow-md p-8"
+        className="lg:w-[100%] w-full mx-auto border bg-[#d9edf7] shadow-md p-8"
         onSubmit={handleSubmit}
       >
         <div className="w-full max-w-md mx-auto">
