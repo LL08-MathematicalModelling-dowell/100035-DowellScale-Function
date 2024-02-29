@@ -1,11 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Changa:wght@200..800&family=Noto+Serif+Khojki:wght@400..700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
 body{
-  font-family: "Nunito Sans", sans-serif;
+  font-family: "Changa", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 .perceptual-mapping-graph {
     position: relative;
