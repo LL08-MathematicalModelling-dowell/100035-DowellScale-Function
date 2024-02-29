@@ -93,7 +93,7 @@ const PerceptualScale = () => {
 
           <div className="flex flex-col flex-wrap items-center justify-center mx-auto border lg:p-4 lg:w-3/4">
             <div
-              className="flex flex-row flex-wrap justify-center h-[350px] "
+              className="flex flex-row flex-wrap justify-center h-full w-full "
               style={{ zoom: 1 }}
             >
               <Chart

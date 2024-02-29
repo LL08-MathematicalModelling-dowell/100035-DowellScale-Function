@@ -55,25 +55,22 @@ const SinglePerceptualScaleSettings = () => {
   }
   return (
     <div className="m-4">
-      <h1 className="text-2xl font-bold text-center uppercase">
-        Your Perceptual Mapping Scale
-      </h1>
-      <div className="flex flex-col items-center justify-center px-20 m-10 border-2 border-black lg:px-0">
+      <div className="flex flex-col items-center justify-center px-20 lg:px-0">
         <h1 className="p-4 text-2xl font-bold text-center uppercase">
-          {data.name}
+          {data.settings.name}
         </h1>
-        <div className="flex flex-col lg:flex-row border-2 border-black rounded-lg w-full xl:w-[60%] lg:w-[80%] h-3/5 ">
+        <div className="flex flex-col lg:flex-row border rounded-lg w-full xl:w-full lg:w-full h-screen ">
         <DndProvider backend={HTML5Backend}>
           <div className="flex flex-wrap items-center justify-center p-4 mx-auto lg:w-3/4">
             {customCanva}
           </div>
-          <div className="flex flex-col flex-wrap items-center w-full p-4 mx-auto border border-black lg:w-1/4">
+          <div className="flex flex-col flex-wrap items-center border">
             <h1 className="mt-4 text-2xl font-medium text-center underline">
               AVAILABLE ITEMS
             </h1>
-            <div className="flex flex-col ">
+            <div className="flex flex-col" >
               {data.length !== 0 && (data.settings.item_list).map((e, index) => (
-                <div key={index} className="my-4 ">
+                <div key={index} className="my-1 ">
                   {/* {e} */}
                     <Box name={e} />
                 </div>
