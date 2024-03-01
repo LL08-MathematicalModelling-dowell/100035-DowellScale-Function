@@ -14,7 +14,7 @@ const CreatePerceptualScaleSettings = () => {
     fontcolor: '',
     fontstyle: '',
     scale_color: '',
-    roundcolor: '',
+    // roundcolor: '',
     time: 0,
     item_list: inputValues,
     no_of_scale: 0,
@@ -111,7 +111,7 @@ const CreatePerceptualScaleSettings = () => {
           fontcolor: '',
           fontstyle: '',
           scale_color: '',
-          roundcolor: '',
+          // roundcolor: '',
           time: 0,
           item_list: inputValues,
           no_of_scale: 0,
@@ -153,7 +153,7 @@ const CreatePerceptualScaleSettings = () => {
   return (
     <div className="mx-auto mt-8 lg:container ">
       <form
-        className="lg:w-[100%] w-full mx-auto border bg-[#d9edf7] shadow-md p-8"
+        className="lg:w-[100%] w-full mx-auto border shadow-md p-8"
         onSubmit={handleSubmit}
       >
         <div className="w-full max-w-md mx-auto">
@@ -217,25 +217,7 @@ const CreatePerceptualScaleSettings = () => {
               />
             </div>
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="roundcolor"
-              className="block font-semibold text-gray-600"
-            >
-              Round Color
-            </label>
-            <div className="px-2 my-4 bg-white rounded-lg">
-              <input
-                type="color"
-                id="roundcolor"
-                name="roundcolor"
-                value={formData.roundcolor || '#000000'}
-                onChange={handleChange}
-                className="w-full my-2 border rounded-lg focus:outline-none "
-                // required
-              />
-            </div>
-          </div>
+        
           <div className="mb-4">
             <label
               htmlFor="fontstyle"
