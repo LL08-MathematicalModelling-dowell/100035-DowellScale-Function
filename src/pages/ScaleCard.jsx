@@ -20,6 +20,9 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        fontFamily:"Changa, sans-serif",
+        fontOpticalSizing: "auto",
+        fontStyle: "normal"
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -30,7 +33,8 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
             width: '250px',
             height: '300px',
             background: '#b2dbbf ',
-            border:"6px solid black",
+            boxShadow: "rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px",
+            // border:"6px solid black",
             fontSize: '30px',
             color: 'black',
             margin: '20px',
@@ -55,6 +59,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
             color: '#fff',
             margin: '20px',
             borderRadius: '4px',
+            boxShadow: "rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px",
             textAlign: 'center',
             padding: '10px',
           }}

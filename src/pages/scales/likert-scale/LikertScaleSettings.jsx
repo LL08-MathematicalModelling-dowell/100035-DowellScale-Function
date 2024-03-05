@@ -170,7 +170,7 @@ const LikertScaleSettings = () => {
           `https://100035.pythonanywhere.com/likert/likert-scale_create?scale_id=${slug}`
         );
         console.log(response.data.success, "hhhhhhhhhhbbbbbbbbbbbffttt");
-        setScale(response.data.settings.scale);
+        setScale(response.data.success);
       } catch (error) {
         console.error(error);
       } finally {
@@ -187,10 +187,10 @@ const LikertScaleSettings = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `https://100035.pythonanywhere.com/likert/likert-scale_response/${slug}`
+          `https://100035.pythonanywhere.com/likert/likert-scale_create?scale_id=${slug}`
         );
         setScaleResponse((response.data));
-        setResponse(response.data)
+        setResponse(response.data.success)
         alert("S")
         console.log(response.data, "hhhhhhhhhhhhhhhhhhhhhhhhhh")
       } catch (error) {
