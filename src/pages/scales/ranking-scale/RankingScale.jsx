@@ -142,18 +142,18 @@ const RankingScale = () => {
         return <Fallback />;
     }
   return (
-    <div className='flex flex-col items-center justify-center h-screen font-Montserrat'>
-        <div className='w-full px-10 py-4 m-auto border border-primary lg:w-8/12'>
-            <h2 className='py-3 text-center'>Ranking Scale Name:  
+    <div className='flex flex-col items-center justify-center  font-Montserrat' style={{width:"100%",height:"50em"}}>
+        <div className='w-full   lg:w-12/12' style={{width:"100%",height:"100%"}}>
+            {/* <h2 className='py-3 text-center'>Ranking Scale Name:  
             <span className='text-sm font-medium'>{sigleScaleData ?
                         sigleScaleData?.map((scale)=>(
                             <span>{scale?.settings?.scalename || scale?.settings?.scale_name}</span>
                         )) : (scaleData[0]?.settings?.scalename || scaleData[0]?.settings?.scale_name)
                 }</span>
-            </h2>
-            <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`}}>
-                <div className={`h-full w-full lg:w-3/12 border overflow-y-auto ${currentStage > 0 && 'hidden'}`}>
-                    <h2 className='flex items-center gap-2 p-2 font-medium'>
+            </h2> */}
+            <div className={`h-96 w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2`} style={{backgroundColor:`${sigleScaleData && sigleScaleData[0].settings.scalecolor}`,height:"100%"}}>
+                <div className={`h-full w-full lg:w-3/12 border overflow-y-auto ${currentStage > 0 && 'hidden'}`} style={{}}>
+                    <h2 className='flex items-center gap-2 p-2 font-medium' >
                         <span className=''>
                         <MdManageHistory className='text-primary'/>
                         </span> Scale History
@@ -168,7 +168,7 @@ const RankingScale = () => {
                 <div className='flex-1 w-full h-full p-2 border stage lg:w-5/12'>
                 {loading ? <h3>...loading data</h3> : (
                     <>
-                        <div className='flex items-center w-full gap-5'>
+                        <div className='flex items-center w-full gap-5' style={{marginTop:"15%"}}>
                             <button 
                                 onClick={handlePrev} disabled={currentStage===0}
                                 className='flex items-center justify-center w-3/12 gap-2 px-2 py-2 my-1 text-white capitalize bg-primary hover:bg-gray-700/50 py-'> 
@@ -221,6 +221,7 @@ const RankingScale = () => {
                                     </div>
                                 ))}
                                 </div>
+                                
                             </>
                         </div>
                     </>
@@ -235,11 +236,15 @@ const RankingScale = () => {
                             <Button width={'full'} onClick={()=>navigateTo(`/100035-DowellScale-Function/scales-update-settings/${scale._id}`)} key={index}>update scale</Button>
                         </>
                     ))}
-                </div>
-            </div>
-            <div className='flex items-center justify-end w-full my-4'>
+                    <div className='flex items-center justify-end w-full my-4'>
                 <Button primary width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/create-scale?slug=${slug}`)}>create new scale</Button>
             </div>
+                </div>
+                
+            </div>
+            {/* <div className='flex items-center justify-end w-full my-4'>
+                <Button primary width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/create-scale?slug=${slug}`)}>create new scale</Button>
+            </div> */}
         </div>
     </div>
   )

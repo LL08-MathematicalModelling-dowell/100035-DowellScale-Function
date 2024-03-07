@@ -53,7 +53,7 @@ const PercentSumScaleSettings = () => {
   
     console.log(scale, 'scale**')
 
-
+console.log(slug)
 const MasterLinkFunction = async () => {
     try {
       // Prepare request data for master link creation

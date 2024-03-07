@@ -38,13 +38,13 @@ const RankingScaleSettings = ()=>{
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
     useState(false);
-    console.log(sigleScaleData?.settings?.stages[2], 'sigleScaleData')
+    // console.log(sigleScaleData?.settings?.stages[2], 'sigleScaleData')
 
     // const stagess = sigleScaleData?.settings?.stages || {};
     const stagesObject = sigleScaleData?.settings?.stages || {};
     const dataStages = Object.values(stagesObject);
       
-    const dataItems = sigleScaleData && sigleScaleData?.settings?.item_list.map((list)=>{
+    const dataItems = sigleScaleData && sigleScaleData?.settings?.item_list?.map((list)=>{
             return list;
         })
  
@@ -232,9 +232,8 @@ const RankingScaleSettings = ()=>{
           const flattenedArray = [].concat(...PublicLinks);
     
           // Generate modified URLs
-          const modifiedUrl = window.location.href.slice(
-            0,
-            window.location.href.lastIndexOf('/')
+          const modifiedUrl = window.location.href.slice(0,
+window.location.href.lastIndexOf('/')
           );
           const lastPart = window.location.href.slice(
             window.location.href.lastIndexOf('/') + 1
@@ -292,7 +291,7 @@ const RankingScaleSettings = ()=>{
     
     const [db, setDb] = useState([
         {
-            stage_name: stages[currentStage],
+            stage_name: currentStage && stages[currentStage],
             stage_rankings: itemsAvailableSchema.map(item => ({
                 name: item.item,
                 rank: item.option
@@ -338,7 +337,7 @@ const RankingScaleSettings = ()=>{
         };
         setDb(updatedDb);
     
-        if (currentStage === stages.length - 1) {
+        if (currentStage === stages ? stages.length - 1 : 0) {
             const payload =  {
                 scale_id: sigleScaleData[0]?._id,
                 brand_name: "New Brand",
@@ -408,9 +407,9 @@ const RankingScaleSettings = ()=>{
                                 <BsArrowLeft className='text-white' />
                                 Go Back
                             </button>
-                            <h2 className='w-3/12 py-2 text-center border'>stage {currentStage + 1} of {stages.length}</h2>
+                            <h2 className='w-3/12 py-2 text-center border'>stage {currentStage + 1} of {stages?.length}</h2>
                             <h2 className='w-6/12 py-1 text-sm text-center capitalize border'>
-                                {stages[currentStage]}
+                                {stages && stages[currentStage]}
                             </h2>
                         </div>
                         <div className='flex flex-col w-full gap-3 md:flex-row'>
