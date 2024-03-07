@@ -87,9 +87,9 @@ const PerceptualScale = () => {
               ))}
             </div>
           </div>
-          <p className="my-2 text-4xl text-[#1A8753] lg:hidden">
+          {/* <p className="my-2 text-4xl text-[#1A8753] lg:hidden">
           Dowell Perceptual Mapping Scales Settings
-        </p>
+        </p> */}
 
           <div className="flex flex-col flex-wrap items-center justify-center mx-auto border lg:p-4 lg:w-3/4">
             <div

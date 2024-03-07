@@ -121,7 +121,8 @@ const CreateStapleScale = () => {
         right: formData.right,
         fontstyle: formData.fontstyle,
         scale_upper_limit:formData.scale_upper_limit,
-        spacing_unit:Number(formData.spacing_unit)
+        spacing_unit:Number(formData.spacing_unit),
+        no_of_scales: 1000
        
         // username: "Natan", // your username
         // orientation: "horizontal", // orientation of the scale-- "horizontal"/"vertical"
