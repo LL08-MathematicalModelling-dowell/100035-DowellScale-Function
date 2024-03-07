@@ -5,11 +5,6 @@
 @tailwind utilities;
 
 
-body{
-  font-family: "Changa", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-}
 .perceptual-mapping-graph {
     position: relative;
     width: 400px; /* Adjust the width and height as needed */

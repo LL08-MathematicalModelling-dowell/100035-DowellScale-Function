@@ -181,7 +181,7 @@ const router = createBrowserRouter([
         element: <SinglePCScaleSettings />,
       },
       {
-        path: `${basePath}/single-perceptual-scale-settings/:id`,
+        path: `${basePath}/single-perceptual-scale-settings/:slug`,
         element: <SinglePerceptualScaleSettings />,
       },
       {
@@ -201,7 +201,7 @@ const router = createBrowserRouter([
         element: <UpdatePCScaleSettings />,
       },
       {
-        path: `${basePath}/update-perceptual-scale-settings/:id`,
+        path: `${basePath}/update-perceptual-scale-settings/:slug`,
         element: <UpdatePMSSettings />,
       },
       {
