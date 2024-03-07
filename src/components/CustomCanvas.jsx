@@ -152,6 +152,16 @@ const CustomCanvas = ({ xAxisRange, yAxisRange }) => {
     }
   }, [ctx, xRange, yRange, draggedItem]);
 
+  const onHover = (e) => {
+    var rect = canvasRef.current.getBoundingClientRect()
+    var x = e.clientX - rect.left; 
+    var y = e.clientY - rect.top;  
+    console.log(x,y);
+    // const centerX = canvasRef.current.width / 2;
+    //   const centerY = canvasRef.current.height / 2;
+    // ctx.fillText('O(1, 1)', centerX, centerY);
+  }
+
   const isActive = canDrop && isOver;
   let backgroundColor = '#ffff';
   if (isActive) {
@@ -160,7 +170,7 @@ const CustomCanvas = ({ xAxisRange, yAxisRange }) => {
     backgroundColor = '';
   }
   return (
-    <div ref={drop} data-testid="dustbin" style={{ backgroundColor }}>
+    <div ref={drop} data-testid="dustbin" onMouseEnter={onHover} style={{ backgroundColor }}>
       <canvas
         ref={canvasRef}
         width={400}
