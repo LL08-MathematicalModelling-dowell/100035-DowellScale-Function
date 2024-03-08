@@ -5,6 +5,8 @@ const FetchUserContext = createContext();
 
 export const FetchUserContextProvider = ({ children }) => {
   const [userSessionId, setUserSessionId] = useState(null);
+  const [popuOption, setPopupOption] = useState(false);
+  const [sName, setSName] = useState("");
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -37,7 +39,12 @@ export const FetchUserContextProvider = ({ children }) => {
   }
 
   return (
-    <FetchUserContext.Provider value={{ fetchSessionId, userSessionId, setUserSessionId, user }}>
+    <FetchUserContext.Provider value={{ fetchSessionId, userSessionId, setUserSessionId,
+    user, 
+    popuOption, 
+    setPopupOption, 
+    sName, 
+    setSName }}>
       {children}
     </FetchUserContext.Provider>
   );

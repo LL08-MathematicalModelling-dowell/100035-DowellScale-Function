@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ReactCardFlip from 'react-card-flip';
+import { useFetchUserContext } from "../contexts/fetchUserContext";
 
 function ScaleCard({ scaleName, description, imageSource, slug }) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const {  
+    popuOption, 
+    setPopupOption,
+    sName, 
+    setSName } = useFetchUserContext()
 
   const handleMouseEnter = () => {
     setIsFlipped(true);
@@ -12,6 +18,11 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
   const handleMouseLeave = () => {
     setIsFlipped(false);
   };
+
+  const handleExploreBtn = () => {
+    setPopupOption(true)
+    setSName(slug)
+  }
 
   return (
     <div
@@ -80,14 +91,15 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
           </button>
         </div>
       </ReactCardFlip>
-      <Link
+      <button
         to={`/100035-DowellScale-Function/${slug}`}
         key={slug}
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
-        style={{ width: '250px',marginTop:"10px" }}
+        style={{ width: '250px', marginTop:"10px" }}
+        onClick={() => handleExploreBtn(slug)}
       >
         Explore
-      </Link>
+        </button>
     </div>
   );
 }

@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
 import SideBar from './SideBar';
-
+import { useFetchUserContext } from "../contexts/fetchUserContext";
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import ScaleCard from './ScaleCard';
 // import Cookies from 'universal-cookie';
 
 const Home = () => {
+
+  const {  
+    popuOption, 
+    setPopupOption,
+    sName, 
+    setSName } = useFetchUserContext()
+
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
   useEffect(() => {
@@ -166,8 +173,7 @@ const Home = () => {
 
 
   return (
-    <div className="flex">
-    
+    <div className="flex" style={{position: 'relative'}}>
        {/* <div className='sidebar' > */}
        {isSidebarVisible && <SideBar />}
         {/* </div> */}
@@ -180,7 +186,23 @@ const Home = () => {
           key={scale.slug}/>
         ))}
       </div>
-      
+
+      {popuOption && <div className='popup' style={{width: '300px', height: '250px', display: 'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', left: '50%', top: '50%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'#4054B2', borderRadius: '8px'}}>
+      <Link
+        className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
+        style={{ width: '250px', marginTop:"10px" }}
+        to={`/100035-DowellScale-Function/${sName}`}
+        onClick={() => setPopupOption(false)}
+      >
+        Creat a masterlink
+      </Link>
+      <Link
+        className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
+        style={{ width: '250px', marginTop:"30px" }}
+      >
+        Get the scale UI component
+      </Link>
+      </div>}
     </div>
   );
 };
