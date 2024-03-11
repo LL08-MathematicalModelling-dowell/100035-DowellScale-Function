@@ -45,6 +45,7 @@ const PercentSumScaleSettings = () => {
     const[scaleResponse,setScaleResponse] = useState()
     const [isButtonHidden, setIsButtonHidden] = useState(false);
     const [response,setResponse] = useState()
+    const navigate = useNavigate()
 
     // let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let currentUserInstance = new URLSearchParams(window.location.search).get(
@@ -458,6 +459,9 @@ let valuesSubArray=[]
                     <div className="flex gap-3 justify-end">
                         {!publicLink && (
             <>
+            <Button width={'3/4'} onClick={()=>navigate(`/100035-DowellScale-Function/generate-report/${slug}`)}>
+              Generate Report
+              </Button>
               <Button  onClick={handleToggleUpdateModal}>
               Update scale
               </Button>

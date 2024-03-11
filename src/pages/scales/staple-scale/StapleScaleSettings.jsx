@@ -12,6 +12,7 @@ import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 
 const StapleScaleSettings = () => {
     const { slug } = useParams();
+    const navigate = useNavigate()
     const [userInfo, setUserInfo] = useState();
     // const { loading, singleScaleData, fetchSingleScaleData } = useGetSingleScale();
     const[singleScaleData,setSingleScaleData] = useState()
@@ -397,6 +398,9 @@ console.log(instance, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
             
                     {!publicLink && <div className="w-full flex justify-end gap-3">
                         {/* {singleScaleData && singleScaleData.map((scale, index)=>( */}
+            <Button width={'3/4'} onClick={()=>navigate(`/100035-DowellScale-Function/generate-report/${slug}`)}>
+              Generate Report
+              </Button>
                             <Button width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/update-staple-scale/${singleScaleData._id}`)} >update scale</Button>
                         {/* ))} */}
                         <Button width={'3/4'} primary onClick={createMasterLink}>

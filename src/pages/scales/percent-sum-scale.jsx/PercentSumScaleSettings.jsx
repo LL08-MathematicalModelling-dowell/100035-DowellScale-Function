@@ -12,6 +12,7 @@ import NPSLiteMasterLink from "../nps-lite-scale/NPSLiteMasterLink";
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 import UpdatePercentSumScale from "./UpdatePercentScale";
 const PercentSumScaleSettings = () => {
+  const navigate = useNavigate()
   const [sliderValues,setSliderValues]= useState([])
   const [sliderValue,setSliderValue] = useState([])
   const [firstVal,setFirstVal] = useState()
@@ -448,6 +449,9 @@ let valuesSubArray=[]
                     <div className="flex gap-3 justify-end" >
                         {!publicLink && (
             <>
+            <Button width={'3/4'} onClick={()=>navigate(`/100035-DowellScale-Function/generate-report/${slug}`)}>
+              Generate Report
+              </Button>
               <Button  onClick={handleToggleUpdateModal}>
               Update scale
               </Button>
