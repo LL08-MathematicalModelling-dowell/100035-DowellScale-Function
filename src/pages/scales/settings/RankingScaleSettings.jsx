@@ -15,6 +15,7 @@ const RankingScaleSettings = ()=>{
     const { CreateRankingScalesResponse } = useCreateRankingScalesResponse();
     const [currentStage, setCurrentStage] = useState(0);
     const [itemsAvailableSchema, setItemsAvailableSchema] = useState([]);
+    const navigate = useNavigate()
 
 
     const dataStages = sigleScaleData && sigleScaleData?.map((scale)=>{
@@ -219,6 +220,9 @@ const RankingScaleSettings = ()=>{
                     )}
                     <div className='flex items-center gap-3 mt-10'>
                     
+            <Button width={'3/4'} onClick={()=>navigate(`/100035-DowellScale-Function/generate-report/${slug}`)}>
+              Generate Report
+              </Button>
                         <Button width={'full'} primary onClick={handleSubmit}>{(currentStage === stages.length - 1) ? 'submit scale' : 'save and proceed'}</Button>
                     
                     </div>

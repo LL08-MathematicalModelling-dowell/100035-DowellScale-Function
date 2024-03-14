@@ -60,6 +60,7 @@ import PercentScaleSettings from './pages/scales/percent-scale/PercentScaleSetti
 import PercentSumScale from './pages/scales/percent-sum-scale.jsx/PercentSumScale.jsx';
 import CreatePercentSumScale from './pages/scales/percent-sum-scale.jsx/CreatePercentSumScale.jsx';
 import PercentSumScaleSettings from './pages/scales/percent-sum-scale.jsx/PercentSumScaleSettings.jsx';
+import GenerateReport from './pages/GenerateReport.jsx';
 
 const basePath = '/100035-DowellScale-Function/';
 const router = createBrowserRouter([
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: basePath,
         element: <Home />,
+      },
+      {
+        path: `${basePath}/generate-report/:slug`,
+        element: <GenerateReport />,
       },
       {
         path: `${basePath}/pc-scale`,

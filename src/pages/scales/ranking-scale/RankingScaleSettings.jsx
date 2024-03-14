@@ -36,6 +36,7 @@ const RankingScaleSettings = ()=>{
   const qrcode_id = queryParams.get('qrcode_id');
   const [isButtonHidden, setIsButtonHidden] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const navigate = useNavigate()
   const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
     useState(false);
     // console.log(sigleScaleData?.settings?.stages[2], 'sigleScaleData')
@@ -467,6 +468,9 @@ window.location.href.lastIndexOf('/')
                      <div className="flex justify-end gap-3 mt-5">
           {!publicLink && (
             <>
+            <Button width={'3/4'} onClick={()=>navigate(`/100035-DowellScale-Function/generate-report/${slug}`)}>
+              Generate Report
+              </Button>
               <Button width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/update-ranking-scale/${sigleScaleData._id}`)}>
               Update scale
               </Button>

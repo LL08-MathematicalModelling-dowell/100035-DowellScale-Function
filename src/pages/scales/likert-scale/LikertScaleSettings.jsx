@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
 import UpdateLikertScale from './UpdateLikertScale';
@@ -40,6 +40,7 @@ const LikertScaleSettings = () => {
   const [isButtonHidden, setIsButtonHidden] = useState(false);
   const [buttonBgColor, setButtonBgColor] = useState(false);
   const [btnText, setBtnText] = useState("");
+  const navigate = useNavigate()
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -449,6 +450,9 @@ const handleButtonBgColor2 = (score) => {
         <div className="flex justify-end gap-3 mt-5">
           {!publicLink && (
             <>
+            <Button width={'3/4'} onClick={()=>navigate(`/100035-DowellScale-Function/generate-report/${slug}`)}>
+              Generate Report
+              </Button>
               <Button width={'3/4'} onClick={handleToggleUpdateModal}>
               Update scale
               </Button>
