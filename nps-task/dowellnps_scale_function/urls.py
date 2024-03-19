@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('nps.urls')),
     path('stapel/', include('stapel.urls')),
+    path('addons/', include('addons.urls')),
     path('percent/', include('percent.urls')),
     path('nps-lite/', include('npslite.urls')),
     path('likert/', include('likert.urls')),

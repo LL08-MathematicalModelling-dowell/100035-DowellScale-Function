@@ -437,6 +437,7 @@ def nps_response_view_submit(request, api_key=None):
     if request.method == "POST":
         try:
             response = request.data
+            print(response)
             try:
                 user = response['username']
             except KeyError:
