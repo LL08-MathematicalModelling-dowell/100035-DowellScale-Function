@@ -5,6 +5,8 @@ import pandas as pd
 from abc import ABC , abstractmethod
 from collections import Counter , defaultdict
 from collections.abc import Mapping
+from typing import Union, List, Optional
+
 
 from scipy import stats
 
@@ -458,15 +460,98 @@ class LikertScaleReport(ScaleReportBaseClass):
                 return label_selection
 
         raise ScaleSettingsFetchError("Can't fetch scale settings for likert scale. Try again")
+    
+    def check_groups(function):
+        
+        import functools
+        functools.wraps(function)
+        def decorators(df , groups: Union[None , List[str]] = None):
+            if groups:
+                lists = [df[columns]  for columns in groups]
+            else:
+                lists = [df[columns] for columns in df.columns]
 
-    def independent_sample_t_test(self , label_scale_selection , scores):
+            if len(lists) < 2:
+                return None
+            
+            return function(df , lists)
+        return decorators
+    
+
+
+    @check_groups
+    def independent_t_test(self , df ,  groups):
+        if len(groups) != 2:
+            return None
+        return stats.ttest_ind(*groups)
+
+    @check_groups
+    def paired_t_test(self , df ,  groups):
+        if len(groups) != 2:
+            return None
+        return stats.ttest_rel(*groups)
+
+    @check_groups
+    def wilcoxon_test(self , df ,  groups):
+        if len(groups) != 2:
+            return None
+        return stats.wilcoxon(*groups)
+    
+
+    def one_sample_t_test(self , label_scale_selection , scores):
+        """One sample t_test function that would return a p_value between the scores and neutral point. 
+
+        Currently, this implementation works for the label_selection that are odd number categories. 
+        
+        """
         if label_scale_selection % 2 != 0:
             t_statistic , p_value =  stats.ttest_1samp(scores , round(label_scale_selection / 2) - 1)
             return {"t_statistic" : t_statistic ,  "p_value" : p_value}
         return None
+    
+    def correllation_analysis(self , groups : Union[None , List[str]] = None):
+        """
+        Correllation matrix for the dataframe. 
+        It's typically generate  a correllation between the scores and any other variable such as 'age'.
+        """
+        try: 
+            if not groups:
+                groups = self._all_scores.columns
+
+            return self._all_scores[groups].corr()
+
+        except Exception as e:
+            return str(e)
+
+
+
+
+    def anova_analysis(self , df : pd.DataFrame ,  groups: Union[None , List[str]] = None):
+        """
+        Anova analysis between specific columns of the dataframe. Only will do analysis between two or more groups. 
+
+
+
+        arguments:
+            df: pandas dataframe that anova analysis will be run on
+            groups: kwarg that specifies the specific groups that test would be conducted between.
+                    Default is none which means all the groups in the stuff there.
+ 
+        
+        """
+        if groups:
+            lists = [df[columns]  for columns in groups]
+        else:
+            lists = [df[columns] for columns in df.columns]
+
+        if len(lists) < 2:
+            return None
+
+        f_statistics_ , p_value = stats.f_oneway(*lists)
+        return {f"Anova_test {' '.join(lists)}" : {"f_statistics" : f_statistics_ , "p_value" : p_value} }
 
     def group_by_(self, column):
-        return self._all_scores.pivot_table(index = "_id" , values = "scores" , columns=column)
+        return self._all_scores.pivot_table(index = self._all_scores.index , values = "scores" , columns=column)
 
     
     def report(self , scale_report_object : ScaleReportObject):
@@ -475,13 +560,16 @@ class LikertScaleReport(ScaleReportBaseClass):
 
         self._all_scores["scores"] = self._all_scores["category"].apply(LikertScaleReport.convert_likert_label , args=(label_selection , ))
 
+        print(self._all_scores)
         scores = self._all_scores["scores"].to_list()
         categories = self._all_scores["category"].to_list()
+
+        print(self.group_by_("brand_name"))
 
         self.reports["categorize_scale_report"] = LikertScaleReport.likert_scale_report(label_selection , categories)
 
         self.reports["statisitcs"] = StatisticsReport.statistics_report(scores)
-        self.reports["one_sample_test"] = self.independent_sample_t_test(label_selection , scores)
+        self.reports["one_sample_test"] = self.one_sample_t_test(label_selection , scores)
 
         #self.reports["corr_matrix"] = pd.DataFr
 

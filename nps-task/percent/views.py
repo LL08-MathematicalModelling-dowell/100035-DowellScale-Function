@@ -185,7 +185,7 @@ def percent_response_view_submit(request):
         id = params.get("scale_id")
         try:
             if id:
-                field_add = {"_id": id}
+                field_add = {"scale_data.scale_id": id}
                 response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports",
                                                  "scale_reports",
                                                  "1094", "ABCDE", "fetch", field_add, "nil")

@@ -6,6 +6,8 @@ import json
 import re
 
 from .api_key import processApikey
+from .utils import dowell_time_asian_culta
+
 from concurrent import futures
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -120,7 +122,7 @@ def custom_configuration_view(request):
                 "scale_id": scale_id,
                 "scale_label": scale_label,
                 "default_name": data['data']['settings']['name'],
-                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "date_created": dowell_time_asian_culta().get("current_time")
             }
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data",
                                              "1181", "ABCDE", "insert", field_add1, "nil")
@@ -152,7 +154,7 @@ def custom_configuration_view(request):
                 "template_id": settings['template_id'],
                 "scale_label": scale_label,
                 "date_created": settings['date_created'],
-                "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "date_updated": dowell_time_asian_culta().get("current_time")
             }
 
             response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "custom_data", "custom_data",
@@ -221,7 +223,7 @@ def settings_api_view_create(request):
                 "allow_resp": allow_resp,
                 "scale_category": "nps scale",
                 "show_total_score": 'true',
-                "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "date_created": dowell_time_asian_culta().get("current_time")
             }
         }
         response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -267,7 +269,7 @@ def settings_api_view_create(request):
                 "center": center,
                 "scale_category": "nps scale",
                 "show_total_score": 'true',
-                "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                "date_updated": dowell_time_asian_culta().get("current_time")
             }
         }
         x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -433,6 +435,7 @@ def is_emoji(character):
 @api_view(['POST', 'GET'])
 def nps_response_view_submit(request, api_key=None):
     if request.method == "POST":
+
         try:
             response = request.data
             try:
@@ -560,7 +563,7 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
         "scale_data": {"scale_id": scale_id, "scale_type": "nps scale"},
         "brand_data": {"brand_name": response["brand_name"], "product_name": response["product_name"]},
         "score": score_data,
-        "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "date_created": dowell_time_asian_culta().get("current_time")
     }
 
     # Conditionally add "process_id" if it exists
@@ -722,7 +725,7 @@ def new_nps_create(request):
                     "allow_resp": response.get('allow_resp', True),
                     "scale_category": "nps scale",
                     "show_total_score": response.get('show_total_score', True),
-                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    "date_created": dowell_time_asian_culta().get("current_time")
                 }
             }
 
@@ -844,7 +847,7 @@ def new_nps_create(request):
                     "scale_category": "nps scale",
                     "fontstyle": fontstyle,
                     "date_created": settings["date_created"],
-                    "date_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    "date_updated": dowell_time_asian_culta().get("current_time")
                 }
             }
 
@@ -1058,7 +1061,7 @@ def nps_plugins_create_settings(request, api_key):
                     "api_key": api_key,
                     "show_total_score": response.get('show_total_score', True),
                     "position": response.get('position', []),
-                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    "date_created": dowell_time_asian_culta().get("current_time"),
                 }
             }
 
@@ -1172,7 +1175,7 @@ def nps_plugins_create_settings(request, api_key):
                     "api_key": api_key,
                     "show_total_score": show_total_score,
                     "position": response.get('position', []),
-                    "date_created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    "date_created": dowell_time_asian_culta().get("current_time")
                 }
             }
 
@@ -1367,4 +1370,5 @@ def nps_plugins_create_response(request):
                  "instances_used": len(instance_ids), "instance_ids": instance_ids, "scores": scores}, status=status.HTTP_200_OK)
         else:
             return Response({"Error": "Invalid fields!"}, status=status.HTTP_400_BAD_REQUEST)
+
 
