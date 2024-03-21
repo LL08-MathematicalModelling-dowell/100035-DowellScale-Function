@@ -536,19 +536,18 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
                                      "find", field_add, "nil")
     data = json.loads(default_scale)
-
     if 0 < int(score) > 10:
         return Response({"Error": "Score limit exceeded"}, status=status.HTTP_400_BAD_REQUEST)
-
+    print(data)
     if data['data'] is None:
         return Response({"Error": "Scale does not exist"}, status=status.HTTP_404_NOT_FOUND)
     settings = data['data']['settings']
 
     if settings['allow_resp'] == False:
         return Response({"Error": "Scale response submission restricted!"}, status=status.HTTP_401_UNAUTHORIZED)
+
     number_of_scale = settings['no_of_scales']
     scale_id = data['data']['_id']
-
     category = find_category(score)
 
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
@@ -584,7 +583,6 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     event_id = get_event_id()
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
                   "score": score, "category": category}
-
     if int(instance_id) > int(number_of_scale):
         return Response({"Instance doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
     # Common dictionary elements
