@@ -568,6 +568,13 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
         total_no_of_items = settings['total_no_of_items']
         number_of_scale = settings['no_of_scales']
         score = api_key
+        print("Ambrose")
+        try:
+            instance_ids = [int(i['score']['instance_id'].split("/")[0])
+                            for i in existing_responses if i.get('item') == score]
+
+        except:
+            instance_ids = []
         instance_id = increment_last_element(instance_ids)
         if api_key > total_no_of_items:
             return Response({"error": "Scale does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
@@ -593,8 +600,10 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     # Conditionally add "process_id" if it exists
     if process_id:
         common_data["process_id"] = process_id
-    if api_key:
+    if isinstance(api_key, str):
         common_data["api_key"] = api_key
+    if isinstance(api_key, int):
+        common_data["item"] = api_key
     if document_data:
         common_data["document_data"] = document_data
     z = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports", "1094",

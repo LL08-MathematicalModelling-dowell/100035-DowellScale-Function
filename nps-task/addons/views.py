@@ -10,6 +10,7 @@ from nps.dowellconnection import dowellconnection
 from api.views import nps_response_view_submit
 from dowellnps_scale_function.settings import public_url
 
+
 class ScaleCreateAPIView(APIView):
     def db_operations(self, command, payload=None):
         if payload is not None:
@@ -17,11 +18,11 @@ class ScaleCreateAPIView(APIView):
                                              "ABCDE", command, payload, "nil")
             return response_data
 
-    def generate_urls(self,payload, id):
+    def generate_urls(self, payload, id):
         urls_dict = {}
-        for i in range(1,int(payload['total_no_of_items']) + 1):
+        for i in range(1, int(payload['total_no_of_items']) + 1):
             main_url = f"Item number {i} link:"
-            instances = [f"{public_url}/addons/create-response/?scale_id={id}&item={i}" ]
+            instances = [f"{public_url}/addons/create-response/?scale_id={id}&item={i}"]
             urls_dict[main_url] = instances
         return urls_dict
 
@@ -33,15 +34,16 @@ class ScaleCreateAPIView(APIView):
             total_no_of_items = serializer.validated_data['total_no_of_items']
             no_of_instances = serializer.validated_data['no_of_instances']
 
-            payload = {"settings":{"scale_name": scale_name, "total_no_of_items": total_no_of_items, "scale_category": scale_type,
-                         "no_of_scales": no_of_instances, "allow_resp":True}}
+            payload = {"settings": {"scale_name": scale_name, "total_no_of_items": total_no_of_items,
+                                    "scale_category": scale_type,
+                                    "no_of_scales": no_of_instances, "allow_resp": True}}
             # save data to db
             try:
                 response = self.db_operations(command="insert", payload=payload)
                 response = json.loads(response)
                 response_id = response['inserted_id']
 
-                urls = self.generate_urls(payload['settings'],response_id)
+                urls = self.generate_urls(payload['settings'], response_id)
                 response_data = {
                     "scale_name": scale_name,
                     "scale_category": "nps scale",
@@ -50,7 +52,6 @@ class ScaleCreateAPIView(APIView):
                     "response_id": response_id,
                     "urls": urls
                 }
-
 
                 return Response(response_data, status=status.HTTP_201_CREATED)
             except Exception as e:
@@ -97,6 +98,7 @@ class ScaleCreateAPIView(APIView):
 def error_response(request, message, status):
     return Response(message, status=status)
 
+
 def post_scale_response(request):
     scale_id = request.GET.get('scale_id')
     item = request.GET.get('item')
@@ -123,8 +125,6 @@ def post_scale_response(request):
             request_body = json.dumps(existing_data)
             request._body = request_body.encode(encoding='utf-8')
             return nps_response_view_submit(request, int(item))
-
-
     except Exception as e:
         print("response", e)
         return Response({"Unexpected error occurred!": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
