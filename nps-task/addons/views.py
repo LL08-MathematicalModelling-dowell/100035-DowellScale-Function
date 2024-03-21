@@ -20,10 +20,11 @@ class ScaleCreateAPIView(APIView):
     def generate_urls(self,payload, id):
         urls_dict = {}
         for i in range(1,int(payload['total_no_of_items']) + 1):
-            main_url = f"Item number {i} links:"
-            instances = [f"{public_url}/{payload['scale_name']}/{id}/{j + 1}" for j in range(payload['no_of_scales'])]
+            main_url = f"Item number {i} link:"
+            instances = [f"{public_url}/addons/create-response/?scale_id={id}&item={i}" ]
             urls_dict[main_url] = instances
         return urls_dict
+
     def post(self, request, format=None):
         serializer = ScaleSerializer(data=request.data)
         if serializer.is_valid():
@@ -98,6 +99,7 @@ def error_response(request, message, status):
 
 def post_scale_response(request):
     scale_id = request.GET.get('scale_id')
+    item = request.GET.get('item')
 
     try:
         if scale_id is not None and request.method == "GET":
@@ -106,8 +108,21 @@ def post_scale_response(request):
             return error_response(request, {"success": True, "data": json.loads(responses)['data']},
                                   status.HTTP_200_OK)
         if request.method == "POST":
-            print(request)
-            return nps_response_view_submit(request)
+            # If request body is not empty, merge existing JSON with payload
+            if request.body:
+                existing_data = json.loads(request.body)
+            else:
+                existing_data = {}
+            existing_data['scale_id'] = scale_id
+            existing_data['score'] = int(item)
+            existing_data['instance_id'] = ""
+            existing_data["username"] = f"{scale_id}_{item}",
+            existing_data["scale_type"] = "nps scale",
+            existing_data["brand_name"] = "brand_name",
+            existing_data["product_name"] = "product_name"
+            request_body = json.dumps(existing_data)
+            request._body = request_body.encode(encoding='utf-8')
+            return nps_response_view_submit(request, int(item))
 
 
     except Exception as e:

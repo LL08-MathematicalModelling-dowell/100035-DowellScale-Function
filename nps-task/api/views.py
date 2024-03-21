@@ -437,7 +437,10 @@ def nps_response_view_submit(request, api_key=None):
     if request.method == "POST":
 
         try:
-            response = request.data
+            if request.data:
+                response = request.data
+            else:
+                response = json.loads(request.body)
             try:
                 user = response['username']
             except KeyError:
@@ -514,6 +517,20 @@ def find_key_by_emoji(emoji_to_find, emoji_dict):
     return None
 
 
+def increment_last_element(arr):
+    # Sort the array in ascending order
+    arr.sort()
+
+    # Check if the array is empty
+    if not arr:
+        # If empty, return 1 as the first element
+        return 1
+    else:
+        # If not empty, add 1 to the last element
+        arr[-1] += 1
+        return arr[-1]
+
+
 def response_submit_loop(response, scale_id, instance_id, user, score, process_id=None, document_data=None, api_key=None):
     field_add = {"_id": scale_id, "settings.scale_category": "nps scale"}
     default_scale = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE",
@@ -534,14 +551,12 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
 
     category = find_category(score)
 
-
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "fetch",
                                     {"scale_id": scale_id, "username": user, "instance_id": instance_id}, "nil")
     user_dets = json.loads(user_details)
+    overall_category, _, _, instance_ids, _, existing_responses = total_score_fun(scale_id)
     if len(user_dets['data']) >= 1:
-        overall_category, _, _, _, _, existing_responses = total_score_fun(scale_id)
-
         b = [l['score']['score'] for l in existing_responses if
              l['score']['instance_id'].split("/")[0] == f"{instance_id}" and l['event_id'] == user_dets['data'][0][
                  'event_id']]
@@ -549,6 +564,15 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
 
         return Response({"error": "Scale Response Exists!", "current_score": b[0], "Category": category},
                         status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    if isinstance(api_key, int):
+        total_no_of_items = settings['total_no_of_items']
+        number_of_scale = settings['no_of_scales']
+        score = api_key
+        instance_id = increment_last_element(instance_ids)
+        if api_key > total_no_of_items:
+            return Response({"error": "Scale does not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+        elif instance_id > number_of_scale:
+            return Response({"error": "Maximum responses reached!"}, status=status.HTTP_400_BAD_REQUEST)
 
     event_id = get_event_id()
     score_data = {"instance_id": f"{instance_id}/{number_of_scale}",
