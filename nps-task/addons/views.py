@@ -25,18 +25,25 @@ class ScaleCreateAPIView(APIView):
             urls_dict[main_url] = instances
         return urls_dict
 
-    def scale_type(self, scale_type):
-        if scale_type == "nps scale":
-            no_of_items = 11
-        elif scale_type == "nps lite":
-            no_of_items = 3
-        elif scale_type == "likert scale":
-            no_of_items = 5
+    def adjust_scale_range(payload):
+        scale_type = payload['scale_type']
+        total_no_of_items = int(payload['total_no_of_items'])
+
+        if scale_type == 'nps':
+            return range(0, 11)
+        elif scale_type == 'nps lite':
+            return range(1, 4)
+        elif scale_type == 'stapel':
+            adjusted_total = min(max(total_no_of_items * 2, 1), 10)
+            return range(1, adjusted_total + 1)
+        elif scale_type == 'likert':
+            if 'pointers' in payload:
+                pointers = int(payload['pointers'])
+                return range(1, pointers + 1)
+            else:
+                raise ValueError("Number of pointers not specified for Likert scale")
         else:
-            no_of_items = 11
-        return no_of_items
-
-
+            raise ValueError("Unsupported scale type")
 
     def post(self, request, format=None):
         serializer = ScaleSerializer(data=request.data)
@@ -46,8 +53,16 @@ class ScaleCreateAPIView(APIView):
             # total_no_of_items = serializer.validated_data['total_no_of_items']
             no_of_instances = serializer.validated_data['no_of_instances']
             total_no_of_items = self.scale_type(scale_type)
+            if scale_type == 'likert':
+                try:
+                    request.data['pointers']
+                except Exception as e:
+                    print(e)
+                    return Response(f"missing field for likert {e       }", status=status.HTTP_400_BAD_REQUEST)
+
             payload = {"settings":{"scale_name": scale_name, "total_no_of_items": total_no_of_items, "scale_category": scale_type,
                          "no_of_scales": no_of_instances, "allow_resp":True}}
+
             # save data to db
             try:
                 response = self.db_operations(command="insert", payload=payload)
@@ -63,8 +78,6 @@ class ScaleCreateAPIView(APIView):
                     "response_id": response_id,
                     "urls": urls
                 }
-
-
                 return Response(response_data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 print(e)
