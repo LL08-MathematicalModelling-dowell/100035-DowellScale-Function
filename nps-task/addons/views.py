@@ -26,8 +26,8 @@ class ScaleCreateAPIView(APIView):
         username = payload['username']
         for i in range(0,int(payload['total_no_of_items'])):
             main_url = f"Button {i} link:"
-            # instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
-            instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
+            instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
+            # instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
             urls_dict[main_url] = instances
         return urls_dict
 
@@ -181,38 +181,3 @@ def post_scale_response(request):
         except Exception as e:
             print("response", e)
             return Response({"Unexpected error occurred!": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-# def post_scale_response(request):
-#     scale_id = request.GET.get('scale_id')
-#     item = request.GET.get('item')
-
-#     try:
-#         if scale_id is not None and request.method == "GET":
-#             responses = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
-#                                          "1094", "ABCDE", "fetch", {"scale_data.scale_id": scale_id.strip()}, "nil")
-#             print(responses)
-#             return error_response(request, {"success": True, "data": json.loads(responses)['data']},
-#                                   status.HTTP_200_OK)
-#         if request.method == "POST":
-#             # If request body is not empty, merge existing JSON with payload
-#             if request.body:
-#                 existing_data = json.loads(request.body)
-#             else:
-#                 existing_data = {}
-#             existing_data['scale_id'] = scale_id
-#             existing_data['score'] = int(item)
-#             existing_data['instance_id'] = ""
-#             existing_data["username"] = f"{scale_id}_{item}",
-#             existing_data["scale_type"] = "nps scale",
-#             existing_data["brand_name"] = "brand_name",
-#             existing_data["product_name"] = "product_name"
-#             request_body = json.dumps(existing_data)
-#             request._body = request_body.encode(encoding='utf-8')
-
-#             return nps_response_view_submit(request, int(item))
-
-
-#     except Exception as e:
-#         print("response", e)
-#         return Response({"Unexpected error occurred!": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
