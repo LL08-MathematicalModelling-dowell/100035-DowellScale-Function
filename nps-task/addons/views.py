@@ -26,7 +26,8 @@ class ScaleCreateAPIView(APIView):
         username = payload['username']
         for i in range(0,int(payload['total_no_of_items'])):
             main_url = f"Button {i} link:"
-            instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
+            # instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
+            instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
             urls_dict[main_url] = instances
         return urls_dict
 
@@ -147,7 +148,7 @@ def post_scale_response(request):
             no_of_items = data["total_no_of_items"]
 
             response_data = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports","1094",
-                                                        "ABCDE", "fetch", {"scale_id":scale_id,"item_no":item}, "nil"))
+                                                        "ABCDE", "fetch", {"scale_id":scale_id}, "nil"))
             if not response_data['data']:
                 current_instance_id = 1
             else:
@@ -157,9 +158,9 @@ def post_scale_response(request):
 
             if int(current_instance_id) <= no_of_instances:
                 event_id = get_event_id()
-                dowell_time = dowell_time("Asia/Calcutta")
+                created_time = dowell_time("Asia/Calcutta")
                 existing_data['event_id'] = event_id
-                existing_data['dowell_time'] = dowell_time
+                existing_data['dowell_time'] = created_time
                 existing_data['instance_id'] = current_instance_id
                 print(existing_data)
                 responses = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports","1094",
