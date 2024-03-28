@@ -11,8 +11,16 @@ import NPSMasterlink from './NPSMasterlink';
 import dowellLogo from '../../../assets/dowell-logo.png';
 import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
 import Draggable from 'react-draggable';
+import { useFetchUserContext } from "../../../contexts/fetchUserContext";
 
 const NPSScaleSettings = () => {
+  const {  
+    popuOption, 
+    setPopupOption,
+    sName, 
+    setSName,
+    scaleLinks,
+    setScaleLinks } = useFetchUserContext()
   const { slug } = useParams();
   const [userInfo, setUserInfo] = useState();
 
@@ -51,6 +59,7 @@ const NPSScaleSettings = () => {
     // Hide the button after one click
     setIsButtonHidden(true);
   };
+  console.log("HHHHHHHHHHHHHHHHHBooooooooo", scaleLinks)
 
   const handleToggleUpdateModal = () => {
     setShowUpdateModal(!showUpdateModal);
