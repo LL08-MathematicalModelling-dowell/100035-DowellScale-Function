@@ -127,7 +127,7 @@ const [instance, setInstance] = useState("")
       "username": userinfo.userinfo.username,
       "scale_name": formData.name,
       "no_of_instances": instance,
-      "scale_type": scaleType
+      "scale_type": 'nps'
     };
     console.log(payload);
 
@@ -439,10 +439,10 @@ const [instance, setInstance] = useState("")
               value={scaleType}
               onChange={(e) => setScaleType(e.target.value)}
             >
-              <option value={''}>-- Select scale type --</option>
-               {scaleTypeArray.map((format, i) => (
+              <option value='nps'>nps</option>
+               {/* {scaleTypeArray.map((format, i) => (
                 <option key={i}>{format}</option>
-              ))}
+              ))} */}
             </select>
         </div>
         <div className="w-full" style={{marginTop: '10px'}}>

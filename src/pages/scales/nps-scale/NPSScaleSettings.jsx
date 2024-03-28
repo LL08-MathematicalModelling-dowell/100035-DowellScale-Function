@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
 import UpdateNPSScale from './UpdateNPSScale';
@@ -46,6 +46,7 @@ const NPSScaleSettings = () => {
   const qrcode_id = queryParams.get('qrcode_id');
   const [isButtonHidden, setIsButtonHidden] = useState(false);
   const [instance, setInstance] = useState(false)
+  const navigate = useNavigate()
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   let currentUserInstance = new URLSearchParams(window.location.search).get(
@@ -370,209 +371,160 @@ const NPSScaleSettings = () => {
   //   return <Fallback />;
   // }
   return (
-//     <div className="flex flex-col items-center justify-center font-medium" >
-//       {publicLink && (
-//         <img
-//           src={dowellLogo}
-//           alt="Dowell Logo"
-//           className="cursor-pointer w-52"
-//         />
-//       )}
-//       <div className="w-full py-4 m-auto md:px-5 lg:w-7/12" style={{marginTop: scale?.orientation === "Vertical" ? "40px" : ""}}>
-//         <h1 className="py-5 text-[2rem] font-small text-center">{scale?.name}</h1>
-//         <div
-//           className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center`}
-//         >
-//           <div className="items-center justify-center flex-1 w-full h-full md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
-//             <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
-//             On a scale of 0-10, how likely are you to recommend the product to your friends?
-//             </h3>
-//             <div
-//               className={`grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-${scale?.scalecolor}`}
-//               style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : ""}}
-//             >
-//  {scale &&
-//                 (Array.isArray(scale?.fomat) ? scale.fomat : scores).map(
-//                   (score, index) => (
-//                     <button
-//                       key={index}
-//                       id = {index}
-//                       onClick={() => handleSelectScore(score, index)}
-//                       disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
-//                       className={`rounded-lg ${
-//                         index == selectedScore
-//                           ? `bg-primary`
-//                           : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
-//                       }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
-//                       style={
-//                         index == selectedScore || (scaleResponse.score === index && instance)
-//                           ? {
-//                              backgroundColor: 'green',
-//                               color: 'white',
-//                             } 
-//                           : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
-//                       }
+    <div className="flex flex-col items-center justify-center font-medium" >
+      {publicLink && (
+        <img
+          src={dowellLogo}
+          alt="Dowell Logo"
+          className="cursor-pointer w-52"
+        />
+      )}
+      <div className="w-full py-4 m-auto md:px-5 lg:w-7/12" style={{marginTop: scale?.orientation === "Vertical" ? "40px" : ""}}>
+        <h1 className="py-5 text-[2rem] font-small text-center">{scale?.name}</h1>
+        <div
+          className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center`}
+        >
+          <div className="items-center justify-center flex-1 w-full h-full md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
+            <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
+            On a scale of 0-10, how likely are you to recommend the product to your friends?
+            </h3>
+            <div
+              className={`grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-${scale?.scalecolor}`}
+              style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : ""}}
+            >
+              User
+ {scale &&
+                (Array.isArray(scale?.fomat) ? scale.fomat : scores).map(
+                  (score, index) => (
+                    <button
+                      key={index}
+                      id = {index}
+                      onClick={() => handleSelectScore(score, index)}
+                      disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
+                      className={`rounded-lg ${
+                        index == selectedScore
+                          ? `bg-primary`
+                          : `bg-[${scale.roundcolor}] text-[${scale?.fontcolor}]`
+                      }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                      style={
+                        index == selectedScore || (scaleResponse.score === index && instance)
+                          ? {
+                             backgroundColor: 'green',
+                              color: 'white',
+                            } 
+                          : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
+                      }
 
-//                       onMouseEnter={() => {scale?.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
-//                     >
-//                       {score}
-//                     </button>
-//                   )
-//                 )}
-//             </div>
-//             <div className="flex items-center justify-between my-3">
-//               <h4
-//                 style={{
-//                   fontSize: '0.9rem', // Adjust the font size as needed
-//                   color: '#000000',
-//                   background: 'transparent',
-//                   border:
-//                     selectedScore >= 0 && selectedScore <= 3
-//                       ? 'none'
-//                       : 'none',
-//                   padding: '5px 20px', // Adjust the padding as needed
-//                   borderRadius: '10px', // Adjust the border radius as needed
-//                   display: scale?.orientation === "Vertical" ? "none" : "block"
-//                 }}
-//               >
-//                 {scale?.left}
-//               </h4>
-//               <h4
-//                 style={{
-//                   fontSize: '0.9rem',
-//                   color: '#000000',
-//                   background: 'transparent',
-//                   border:
-//                     selectedScore >= 4 && selectedScore <= 6 ? 'none' : 'none',
-//                   padding: '5px 20px', // Adjust the padding as needed
-//                   borderRadius: '10px', // Adjust the border radius as needed
-//                   display: scale?.orientation === "Vertical" ? "none" : "block"
-//                 }}
-//               >
-//                 {scale?.center}
-//               </h4>
-//               <h4
-//                 style={{
-//                   fontSize: '0.9rem', // Adjust the font size as needed
-//                   color: '#000000',
-//                   background: 'transparent',
-//                   border:
-//                     selectedScore >= 7 && selectedScore <= 10
-//                       ? 'none'
-//                       : 'none',
-//                   padding: '5px 20px', // Adjust the padding as needed
-//                   borderRadius: '10px', // Adjust the border radius as needed
-//                   display: scale?.orientation === "Vertical" ? "none" : "block"
-//                 }}
-//               >
-//                 {scale?.right}
-//               </h4>
-//             </div>
+                      onMouseEnter={() => {scale?.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
+                    >
+                      {score}
+                    </button>
+                  )
+                )}
+            </div>
+            <div className="flex items-center justify-between my-3">
+              <h4
+                style={{
+                  fontSize: '0.9rem', // Adjust the font size as needed
+                  color: '#000000',
+                  background: 'transparent',
+                  border:
+                    selectedScore >= 0 && selectedScore <= 3
+                      ? 'none'
+                      : 'none',
+                  padding: '5px 20px', // Adjust the padding as needed
+                  borderRadius: '10px', // Adjust the border radius as needed
+                  display: scale?.orientation === "Vertical" ? "none" : "block"
+                }}
+              >
+                {scale?.left}
+              </h4>
+              <h4
+                style={{
+                  fontSize: '0.9rem',
+                  color: '#000000',
+                  background: 'transparent',
+                  border:
+                    selectedScore >= 4 && selectedScore <= 6 ? 'none' : 'none',
+                  padding: '5px 20px', // Adjust the padding as needed
+                  borderRadius: '10px', // Adjust the border radius as needed
+                  display: scale?.orientation === "Vertical" ? "none" : "block"
+                }}
+              >
+                {scale?.center}
+              </h4>
+              <h4
+                style={{
+                  fontSize: '0.9rem', // Adjust the font size as needed
+                  color: '#000000',
+                  background: 'transparent',
+                  border:
+                    selectedScore >= 7 && selectedScore <= 10
+                      ? 'none'
+                      : 'none',
+                  padding: '5px 20px', // Adjust the padding as needed
+                  borderRadius: '10px', // Adjust the border radius as needed
+                  display: scale?.orientation === "Vertical" ? "none" : "block"
+                }}
+              >
+                {scale?.right}
+              </h4>
+            </div>
 
-//             {/* <div className="flex items-center justify-between my-3">
-//               <h4>{scale?.left}</h4>
-//               <h4>{scale?.center}</h4>
-//               <h4>{scale?.right}</h4>
-//             </div> */}
-//           </div>
-//         </div>
-//         <div className="flex justify-end gap-3 mt-5">
-//           {!publicLink && (
-//             <>
-//               <Button width={'3/4'} onClick={handleToggleUpdateModal}>
-//               Update scale
-//               </Button>
-//               <Button width={'3/4'} primary onClick={createMasterLink}>
-//                 {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
-//               </Button>
-//             </>
-//           )}
-//         </div>
-//         {publicLink && (
-//           <>
-//             {!isButtonHidden && (
-//               <div className="flex items-center justify-center my-4">
-//                 {!instance && <Button width={'3/12'} primary onClick={submitResponse}>
-//                   {isLoading ? 'Submitting' : 'Submit'}
-//                 </Button>
-//                }
-//               </div>
-//             )}
-//           </>
-//         )}
-//       </div>
-//       {showMasterLinkSuccessModal && (
-//         <MasterlinkSuccessModal
-//           handleToggleMasterlinkSuccessModal={
-//             handleToggleMasterlinkSuccessModal
-//           }
-//         />
-//       )}
-//       {showUpdateModal && (
-//         <UpdateNPSScale handleToggleUpdateModal={handleToggleUpdateModal} />
-//       )}
-//       {showMasterlinkModal && (
-//         <NPSMasterlink
-//           handleToggleMasterlinkModal={handleToggleMasterlinkModal}
-//           link={masterLink}
-//           publicLinks={publicLinks}
-//           image={qrCodeURL}
-//         />
-//       )}
-//     </div>
-  <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
-    <div className={`grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-blue`} style={{ backgroundColor: 'blue', display:'flex', alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', borderRadius: '4px'}}>
-      {scores.map((score, index) =>(
-        <button
-                              key={index}
-                              id = {index}
-                              onClick={() => handleSelectScore(score, index)}
-                              disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
-                              className={`rounded-lg ${
-                                index == selectedScore
-                                  ? `bg-primary`
-                                  : `bg-[green] text-[black}]`
-                              }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
-                              style={
-                                index == selectedScore || (scaleResponse.score === index && instance)
-                                  ? {
-                                     backgroundColor: 'green',
-                                      color: 'white',
-                                    } 
-                                  : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
-                              }
-        
-                              onMouseEnter={() => {scale?.orientation === "Vertical" ? handleMouseEnter(index) : ""}}
-                            >
-                              {score}
-                            </button>
-      ))}
+            {/* <div className="flex items-center justify-between my-3">
+              <h4>{scale?.left}</h4>
+              <h4>{scale?.center}</h4>
+              <h4>{scale?.right}</h4>
+            </div> */}
+          </div>
+        </div>
+        <div className="flex justify-end gap-3 mt-5">
+          {!publicLink && (
+            <>
+            <Button width={'3/4'} onClick={()=>navigate(`/100035-DowellScale-Function/generate-report/${slug}`)}>
+              Generate Report
+              </Button>
+              <Button width={'3/4'} onClick={handleToggleUpdateModal}>
+              Update scale
+              </Button>
+              <Button width={'3/4'} primary onClick={createMasterLink}>
+                {isLoading ? 'Creating Masterlink' : 'Create Masterlink'}
+              </Button>
+            </>
+          )}
+        </div>
+        {publicLink && (
+          <>
+            {!isButtonHidden && (
+              <div className="flex items-center justify-center my-4">
+                {!instance && <Button width={'3/12'} primary onClick={submitResponse}>
+                  {isLoading ? 'Submitting' : 'Submit'}
+                </Button>
+               }
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      {showMasterLinkSuccessModal && (
+        <MasterlinkSuccessModal
+          handleToggleMasterlinkSuccessModal={
+            handleToggleMasterlinkSuccessModal
+          }
+        />
+      )}
+      {showUpdateModal && (
+        <UpdateNPSScale handleToggleUpdateModal={handleToggleUpdateModal} />
+      )}
+      {showMasterlinkModal && (
+        <NPSMasterlink
+          handleToggleMasterlinkModal={handleToggleMasterlinkModal}
+          link={masterLink}
+          publicLinks={publicLinks}
+          image={qrCodeURL}
+        />
+      )}
     </div>
-    <div>
-    <table>
-        <tr style={{border: "1px solid rgb(0, 0, 0)"}}>
-            <th>Serial number</th>
-            <th>Button links</th>
-            <th>Copy link buttons</th>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>{Object.entries(scaleLinks)[0][1][0]}</td>
-            <td>Button</td>
-        </tr>
-        <tr>
-            <td>Megha</td>
-            <td>19</td>
-            <td>Female</td>
-        </tr>
-        <tr>
-            <td>Subham</td>
-            <td>25</td>
-            <td>Male</td>
-        </tr>
-    </table>
-    </div>
-  </div>
   );
 };
 

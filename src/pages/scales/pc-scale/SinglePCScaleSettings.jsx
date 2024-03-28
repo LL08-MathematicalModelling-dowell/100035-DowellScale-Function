@@ -209,6 +209,10 @@ const SinglePCScaleSettings = () => {
         </div>
       </div>
       <div className="flex justify-center w-full lg:justify-end lg:w-[90%]">
+      
+      <Button width={'3/4'} onClick={()=>navigate(`/100035-DowellScale-Function/generate-report/${id}`)}>
+              Generate Report
+              </Button>
         <div className="flex flex-col items-end justify-between space-x-2 lg:flex-row">
           <Link
             to={`/100035-DowellScale-Function/update-paired-scale-settings/${id}`}
