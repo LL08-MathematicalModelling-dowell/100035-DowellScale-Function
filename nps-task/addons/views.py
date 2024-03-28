@@ -123,7 +123,7 @@ class ScaleCreateAPIView(APIView):
 def error_response(request, message, status):
     return Response(message, status=status)
 
-@api_view(['POST', 'GET', 'PUT'])
+@api_view(['GET'])
 def post_scale_response(request):
     scale_id = request.GET.get('scale_id')
     item = int(request.GET.get('item'))
@@ -181,3 +181,5 @@ def post_scale_response(request):
         except Exception as e:
             print("response", e)
             return Response({"Unexpected error occurred!": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response("Method not allowed")
