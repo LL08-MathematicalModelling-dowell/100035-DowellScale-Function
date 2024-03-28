@@ -18,7 +18,7 @@ const NPSScale = () => {
 
     const scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     
-
+    console.log("HHHHHHHHHHHHHHHHHH", scaleData && scaleData?.data?.data.slice())
     useEffect(()=>{
         fetchScaleData('nps-scale');
     },[]);
@@ -52,8 +52,8 @@ const NPSScale = () => {
                     {scaleData && scaleData?.data?.data
                     .slice()
                     .sort((a, b) => {
-                        const nameA = a?.settings?.name.toLowerCase();
-                        const nameB = b?.settings?.name.toLowerCase();
+                        const nameA = a?.settings?.name;
+                        const nameB = b?.settings?.name;
                         if (nameA < nameB) return -1;
                         if (nameA > nameB) return 1;
                         return 0;

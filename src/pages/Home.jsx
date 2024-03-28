@@ -11,7 +11,7 @@ const Home = () => {
   const {  
     popuOption, 
     setPopupOption,
-    sName, 
+    sName,
     setSName } = useFetchUserContext()
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -177,7 +177,7 @@ const Home = () => {
        {/* <div className='sidebar' > */}
        {isSidebarVisible && <SideBar />}
         {/* </div> */}
-      <div className="" style={{display:'flex', flexWrap: 'wrap', justifyContent: 'center'}}>
+      <div className="" style={{ filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'center'}}>
         {scaleTypes.map((scale) => (
           <ScaleCard scaleName={scale.name} 
           description={scale.description}
@@ -187,7 +187,13 @@ const Home = () => {
         ))}
       </div>
 
-      {popuOption && <div className='popup' style={{width: '300px', height: '250px', display: 'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', left: '50%', top: '50%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'#4054B2', borderRadius: '8px'}}>
+      {popuOption && <div className='popup' style={{width: '450px', height: '400px', display: 'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', left: '50%', top: '50%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'#4054B2', borderRadius: '8px'}}>
+      <button
+          onClick={() => setPopupOption(false)}
+          className="absolute px-2 text-white bg-red-500 rounded-full right-2 top-2"
+        >
+          x
+        </button>
       <Link
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
         style={{ width: '250px', marginTop:"10px" }}
@@ -199,8 +205,10 @@ const Home = () => {
       <Link
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
         style={{ width: '250px', marginTop:"30px" }}
+        to={`/100035-DowellScale-Function/${sName}`}
+        onClick={() => setPopupOption(false)}
       >
-        Get the scale UI component
+        Create Button Link
       </Link>
       </div>}
     </div>

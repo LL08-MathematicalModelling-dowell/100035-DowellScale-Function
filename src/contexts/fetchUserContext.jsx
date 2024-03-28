@@ -8,6 +8,7 @@ export const FetchUserContextProvider = ({ children }) => {
   const [popuOption, setPopupOption] = useState(false);
   const [sName, setSName] = useState("");
   const [user, setUser] = useState(null);
+  const [scaleLinks, setScaleLinks] = useState({})
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +45,9 @@ export const FetchUserContextProvider = ({ children }) => {
     popuOption, 
     setPopupOption, 
     sName, 
-    setSName }}>
+    setSName,
+    scaleLinks,
+    setScaleLinks }}>
       {children}
     </FetchUserContext.Provider>
   );
