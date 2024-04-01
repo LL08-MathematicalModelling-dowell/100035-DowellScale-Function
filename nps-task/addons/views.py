@@ -9,13 +9,14 @@ from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from api.views import nps_response_view_submit
 from dowellnps_scale_function.settings import public_url
-from .dowellclock import dowell_time
+# from .dowellclock import dowell_time
 
 class ScaleCreateAPIView(APIView):
     def db_operations(self, command, payload=None):
         if payload is not None:
-            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
-                                             "ABCDE", command, payload, "nil")
+            print(payload)
+            print(type(command))
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", command, payload, "nil")
             return response_data
 
     def generate_urls(self,payload, id):
@@ -24,47 +25,135 @@ class ScaleCreateAPIView(APIView):
         workspace_id = payload['workspace_id']
         print(workspace_id)
         username = payload['username']
-        for i in range(0,int(payload['total_no_of_items'])):
+        scale_range = payload['scale_range']
+        print("generate_urls",scale_range)
+        for i in scale_range:
             main_url = f"Button {i} link:"
             instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
             # instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
             urls_dict[main_url] = instances
         return urls_dict
 
-    def scale_type(self, scale_type):
+    def adjust_scale_range(self,payload):
+        print("Inside adjust_scale_range function")
+        scale_type = payload['scale_type']
+        total_no_of_items = int(payload['total_no_of_items'])
+        if "pointers" in payload:
+            pointers = payload['pointers']
+        if "axis_limit" in payload:
+            axis_limit = payload['axis_limit']
+        print(f"Scale type: {scale_type}, Total number of items: {total_no_of_items}")
+
+
+        if scale_type == 'nps':
+            scale_range = range(0, 11)
+            print(scale_range)
+            return scale_range
+            
+        elif scale_type == 'nps lite':
+            return range(1, 4)
+        elif scale_type == 'stapel':
+            # adjusted_total = min(max(total_no_of_items * 2, 1), 10)
+            return range(-(axis_limit),axis_limit)
+        elif scale_type == 'likert':
+            if 'pointers' in payload:
+                pointers = int(payload['pointers'])
+                return range(1, pointers + 1)
+            else:
+                raise ValueError("Number of pointers not specified for Likert scale")
+        else:
+            raise ValueError("Unsupported scale type")
+        
+    def scale_type(self, scale_type, payload):
         if scale_type == "nps":
             no_of_items = 11
         elif scale_type == "nps lite":
             no_of_items = 3
         elif scale_type == "likert":
-            no_of_items = 5
+            pointers = payload['pointers']
+            no_of_items = pointers
+        elif scale_type == "stapel":
+            axis_limit = payload["axis_limit"]
+            no_of_items == 2*axis_limit
         else:
             no_of_items = 11
         return no_of_items
 
+    # CREATE URLS API VIEW
     def post(self, request, format=None):
         serializer = ScaleSerializer(data=request.data)
+        print(request.data)
         if serializer.is_valid():
+            api_key = serializer.validated_data['api_key']
             workspace_id = serializer.validated_data['workspace_id']
             username = serializer.validated_data['username']
             scale_name = serializer.validated_data['scale_name']
             scale_type = serializer.validated_data['scale_type']
-            # total_no_of_items = serializer.validated_data['total_no_of_items']
+            
+            payload={"scale_type":scale_type}
+
+            if scale_type == "likert":
+                pointers = serializer.validated_data['pointers']
+                payload['pointers']=pointers
+            
+            if scale_type == "stapel":
+                axis_limit = serializer.validated_data['axis_limit']
+                payload['axis_limt']=axis_limit
+            payload["total_no_of_items"] = total_no_of_items
             no_of_instances = serializer.validated_data['no_of_instances']
-            total_no_of_items = self.scale_type(scale_type)
+            total_no_of_items = self.scale_type(scale_type, payload)
+            print(total_no_of_items)
+            print("fine upto here---1")
+            
+            print(payload['scale_type'])
+            scale_range = self.adjust_scale_range(payload)
+            print("exe",scale_range)
+            print("fine upto here---2")
             event_id = get_event_id()
-            payload = {"settings":{"scale_name": scale_name, "total_no_of_items": total_no_of_items, "scale_category": scale_type,
-                         "no_of_scales": no_of_instances, "allow_resp":True, "workspace_id":workspace_id,"username":username,"event_id":event_id}}
+            print("fine upto here---3")
+
+            if scale_type == 'likert':
+                try:
+                    request.data['pointers']
+                except Exception as e:
+                    print(e)
+                    return Response(f"missing field for likert {e}", status=status.HTTP_400_BAD_REQUEST)
+            print("fine upto here---4")
+            print(scale_range)   
+            payload = {"settings":{
+                                    "api_key":api_key,
+                                    "scale_name": scale_name, 
+                                    "total_no_of_items": total_no_of_items, 
+                                    "scale_category": scale_type,
+                                    "no_of_scales": no_of_instances,
+                                    "allow_resp":True, 
+                                    "workspace_id":workspace_id,
+                                    "username":username,
+                                    "event_id":event_id,
+                                    "scale_range":list(scale_range),
+                                    "pointers":pointers if scale_type == "likert" else ""
+                                    }
+                     }
+             
+
             # save data to db
             try:
+                print("fine upto here---5")
+                print(type(payload))
                 response = self.db_operations(command="insert", payload=payload)
+                print(response)
+                print("fine upto here---6")
                 response = json.loads(response)
+                print(response)
                 response_id = response['inserted_id']
+                print(response_id)
 
                 urls = self.generate_urls(payload['settings'],response_id)
+                print("fine upto here---7")
 
-                urls = self.generate_urls(payload['settings'],response_id)
+                # urls = self.generate_urls(payload['settings'],response_id)
                 response_data = {
+                    "api_key":api_key,
                     "workspace_id":workspace_id,
                     "username":username,
                     "scale_name": scale_name,
@@ -74,11 +163,10 @@ class ScaleCreateAPIView(APIView):
                     "scale_id": response_id,
                     "urls": urls
                 }
-
                 return Response(response_data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 print(e)
-                return Response("Unexpected Error Occurred!", status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response({"message":"Unexpected Error Occurred!","error":e}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -117,6 +205,7 @@ class ScaleCreateAPIView(APIView):
         except Exception as e:
             print(e)
             return Response("Unexpected Error Occurred!", status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    
 
 
 @api_view(['POST', 'GET', 'PUT'])
