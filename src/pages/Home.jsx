@@ -12,7 +12,9 @@ const Home = () => {
     popuOption, 
     setPopupOption,
     sName,
-    setSName } = useFetchUserContext()
+    setSName,
+    BtnLink,
+    setBtnLink } = useFetchUserContext()
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
@@ -30,12 +32,14 @@ const Home = () => {
     {
       name: 'NPS LITE SCALE',
       slug: 'nps-lite-scale',
+      btnLink: 'npsLiteBtnLink',
       description: 'Net promoter score (NPS) is a widely used market research metric that is based on a single survey question',
       image: 'https://www.mailerlite.com/img/containers/assets/SEO/cover-automation-nps-1571391762.png/03e0db977bad2866419531ed9874a4eb.png'
     },
     {
       name: 'NPS SCALE',
       slug: 'nps-scale',
+      btnLink: 'npsBtnLink',
       description: 'Net promoter score (NPS) is a widely used market research metric that is based on a single survey question',
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReCfr4WXocJI77qnwOLn2JDbXPqRhMefS9WQ&usqp=CAU'
     },
@@ -170,7 +174,7 @@ const Home = () => {
     sessionStorage.setItem('session_id', session_id);
     // setLoggedIn(true);
   }, []);
-
+console.log(BtnLink, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
     <div className="flex" style={{position: 'relative'}}>
@@ -182,7 +186,8 @@ const Home = () => {
           <ScaleCard scaleName={scale.name} 
           description={scale.description}
           imageSource={scale.image}
-          slug={scale.slug} 
+          slug={scale.slug}
+          btnLinks = {scale.btnLink}
           key={scale.slug}/>
         ))}
       </div>
@@ -200,12 +205,12 @@ const Home = () => {
         to={`/100035-DowellScale-Function/${sName}`}
         onClick={() => setPopupOption(false)}
       >
-        Creat a masterlink
+        Create a masterlink
       </Link>
       <Link
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
         style={{ width: '250px', marginTop:"30px" }}
-        to={`/100035-DowellScale-Function/${sName}`}
+        to={`/100035-DowellScale-Function/${BtnLink}`}
         onClick={() => setPopupOption(false)}
       >
         Create Button Link

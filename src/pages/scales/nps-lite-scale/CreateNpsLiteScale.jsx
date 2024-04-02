@@ -7,6 +7,9 @@ import CustomTextInput from '../../../components/forms/inputs/CustomTextInput';
 import Fallback from '../../../components/Fallback';
 import { fontStyles } from '../../../utils/fontStyles';
 import { NPSLiteEmojiPicker } from '../../../components/emoji-picker';
+import NPSLiteMasterLink from './NPSLiteMasterLink';
+import { useFetchUserContext } from "../../../contexts/fetchUserContext";
+import axios from 'axios';
 
 
 const CreateNpsLiteScale = () => {
@@ -15,6 +18,21 @@ const CreateNpsLiteScale = () => {
     const [displayedTime, setDisplayedTime] = useState(0);
     const [selectedEmojis, setSelectedEmojis] = useState([]);
     const [showEmojiPalette, setShowEmojiPalette] = useState(false);
+    const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
+    const [scaleType, setScaleType] = useState("")
+    const [instance, setInstance] = useState("")
+    const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
+    const [npsLiteLinks, setNpsLiteLinks] = useState({})
+
+    const {  
+      popuOption, 
+      setPopupOption,
+      sName, 
+      setSName,
+      scaleLinks,
+      setScaleLinks,
+      isModalOn, 
+      setIsNodalOn } = useFetchUserContext()
     
     const createScale  = useCreateScale();
     const navigateTo = useNavigate();
@@ -152,6 +170,48 @@ const CreateNpsLiteScale = () => {
         setIsLoading(false);
     }
 }
+
+const handleSave = async() =>{
+  const payload = {
+    "workspace_id": userinfo.userinfo.client_admin_id,
+    "username": userinfo.userinfo.username,
+    "scale_name": formData.name,
+    "no_of_instances": instance,
+    "scale_type": 'nps_lite'
+  };
+  console.log(payload);
+
+  try {
+    setIsLoading(true);
+    const response = await axios.post(
+      'https://100035.pythonanywhere.com/addons/create-scale/',
+      payload
+    );
+    const result = response.data;
+    setNpsLiteLinks(result.urls)
+    console.log(result);
+    if (result.error) {
+      setIsLoading(false);
+      return;
+    } else {
+      setIsNodalOn(true)
+      toast.success('Response succesfully submitted');
+      // navigateTo(
+      //   `/100035-DowellScale-Function/nps-scale-settings/${result.scale_id}`
+      // );
+      handleToggleMasterlinkModal()
+    }
+  } catch (error) {
+    console.log(error);
+    toast.error(error);
+  } finally {
+    setIsLoading(false);
+  }
+}
+
+const handleToggleMasterlinkModal = () => {
+  setShowMasterlinkModal(!showMasterlinkModal);
+};
 
   return (
   <div className='flex flex-col items-center justify-center w-full h-screen font-Montserrat'>
@@ -327,6 +387,60 @@ const CreateNpsLiteScale = () => {
       </div>
     </div>
   </div>
+  // <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
+  //     <div style={{filter: showMasterlinkModal ? 'blur(8px)' : '', pointerEvents: showMasterlinkModal ? 'none' : ''}}>
+  //       <div>
+  //         <label htmlFor="scaleType" className="mb-1 ml-1 text-sm font-normal">
+  //         Scale type
+  //           </label>
+  //          <select
+  //             label="Select a scale type"
+  //             name="scaleType"
+  //             className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+  //             value={scaleType}
+  //             onChange={(e) => setScaleType(e.target.value)}
+  //           >
+  //             <option value='nps'>nps lite scale</option>
+  //              {/* {scaleTypeArray.map((format, i) => (
+  //               <option key={i}>{format}</option>
+  //             ))} */}
+  //           </select>
+  //       </div>
+  //       <div className="w-full" style={{marginTop: '10px'}}>
+  //            <CustomTextInput
+  //             label="no. of instances"
+  //             name="instances"
+  //             value={instance}
+  //             type="text"
+  //             handleChange={(e) => setInstance(e.target.value)}
+  //             placeholder="enter no. instances"
+  //           />
+  //         </div>
+  //         <div className="w-full">
+  //           <CustomTextInput
+  //             label="name"
+  //             name="name"
+  //             value={formData.name}
+  //             type="text"
+  //             handleChange={handleChange}
+  //             placeholder="enter scale name"
+  //           />
+  //         </div>
+  //     </div>
+  //     <button
+  //       onClick={handleSave}
+  //       className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
+  //       Save
+  //       </button>
+  //       {showMasterlinkModal && (
+  //       <NPSLiteMasterLink
+  //         handleToggleMasterlinkModal={handleToggleMasterlinkModal}
+  //         // link={npsLinks}
+  //         publicLinks={Object.entries(npsLiteLinks)}
+  //         // image={qrCodeURL}
+  //       />
+  //     )}
+  //   </div>
   )
 }
 

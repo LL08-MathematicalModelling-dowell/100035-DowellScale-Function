@@ -392,7 +392,7 @@ const NPSScaleSettings = () => {
               className={`grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center  bg-${scale?.scalecolor}`}
               style={{ backgroundColor: scale?.scalecolor, display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "",alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "7rem" : ""}}
             >
-              User
+              {/* User */}
  {scale &&
                 (Array.isArray(scale?.fomat) ? scale.fomat : scores).map(
                   (score, index) => (
