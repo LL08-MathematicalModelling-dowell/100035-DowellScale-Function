@@ -18,6 +18,14 @@ import {
   NPSScaleSettings,
   UpdateNPSScale,
 } from './pages/scales/nps-scale';
+
+import {
+  BtnLinkNPSScale,
+  BtnLinkCreateNPSScale,
+  // NPSScaleSettings,
+  // UpdateNPSScale,
+} from './pages/scales/nps-scale/ButtonLinks';
+
 import {
   PairedScale,
   CreatePCScaleSettings,
@@ -44,6 +52,13 @@ import {
   NpsLiteSettings,
   UpdateNpsLite,
 } from './pages/scales/nps-lite-scale';
+
+import {
+  BtnLinksNpsLiteScale,
+  BtnLinksCreateNpsLiteScale,
+  // NpsLiteSettings,
+  // UpdateNpsLite,
+} from './pages/scales/nps-lite-scale/BtnLinks-npsliteLink';
 
 import {
   LikertScale,
@@ -118,6 +133,14 @@ const router = createBrowserRouter([
         element: <NPSScale />,
       },
       {
+        path: `${basePath}/npsLiteBtnLink`,
+        element: <BtnLinksNpsLiteScale />
+      },
+      {
+        path: `${basePath}/npsBtnLink`,
+        element: <BtnLinkNPSScale />,
+      },
+      {
         path: `${basePath}/percent-sum-scale`,
         element: <PercentSumScale />,
       },
@@ -158,6 +181,10 @@ const router = createBrowserRouter([
         element: <CreateNpsLiteScale />,
       },
       {
+        path: `${basePath}/create-nps-lite-scale-links`,
+        element: <BtnLinksCreateNpsLiteScale />,
+      },
+      {
         path: `${basePath}/update-nps-lite-scale/:slug`,
         element: <UpdateNpsLite />,
       },
@@ -172,6 +199,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/create-nps-scale`,
         element: <CreateNPSScale />,
+      },
+      {
+        path: `${basePath}/create-nps-scale-links`,
+        element: <BtnLinkCreateNPSScale />,
       },
       {
         path: `${basePath}/create-likert-scale`,

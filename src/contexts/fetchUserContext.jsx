@@ -9,6 +9,8 @@ export const FetchUserContextProvider = ({ children }) => {
   const [sName, setSName] = useState("");
   const [user, setUser] = useState(null);
   const [scaleLinks, setScaleLinks] = useState({})
+  const [isModalOn, setIsNodalOn] = useState(false)
+  const [BtnLink, setBtnLink] = useState("")
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +49,11 @@ export const FetchUserContextProvider = ({ children }) => {
     sName, 
     setSName,
     scaleLinks,
-    setScaleLinks }}>
+    setScaleLinks,
+    isModalOn, 
+    setIsNodalOn,
+    BtnLink,
+    setBtnLink }}>
       {children}
     </FetchUserContext.Provider>
   );

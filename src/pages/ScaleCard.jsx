@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import ReactCardFlip from 'react-card-flip';
 import { useFetchUserContext } from "../contexts/fetchUserContext";
 
-function ScaleCard({ scaleName, description, imageSource, slug }) {
+function ScaleCard({ scaleName, description, imageSource, slug, btnLinks }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const {  
     popuOption, 
     setPopupOption,
     sName, 
-    setSName } = useFetchUserContext()
+    setSName,
+    BtnLink,
+    setBtnLink } = useFetchUserContext()
 
   const handleMouseEnter = () => {
     setIsFlipped(true);
@@ -22,6 +24,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
   const handleExploreBtn = () => {
     setPopupOption(true)
     setSName(slug)
+    setBtnLink(btnLinks)
   }
 
   return (
@@ -99,7 +102,7 @@ function ScaleCard({ scaleName, description, imageSource, slug }) {
         onClick={() => handleExploreBtn(slug)}
       >
         Explore
-        </button>
+      </button>
     </div>
   );
 }

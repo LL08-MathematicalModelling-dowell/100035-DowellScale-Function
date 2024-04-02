@@ -2,10 +2,21 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import dowellLogo from '../assets/dowell-logo.png';
 import { useSearchParams } from 'react-router-dom';
+import { useFetchUserContext } from "../contexts/fetchUserContext";
 
 const Navbar = () => {
   const [searchParams] = useSearchParams();
   const [sessionId, setSessionId] = useState('');
+  // const {  
+  //   popuOption, 
+  //   setPopupOption,
+  //   sName, 
+  //   setSName,
+  //   scaleLinks,
+  //   setScaleLinks,
+  //   isModalOn, 
+  //   setIsNodalOn } = useFetchUserContext()
+    
   useEffect(() => {
     const session_id =
       searchParams.get('session_id') || sessionStorage.getItem('session_id');

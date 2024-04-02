@@ -18,7 +18,9 @@ const CreateNPSScale = () => {
     sName, 
     setSName,
     scaleLinks,
-    setScaleLinks } = useFetchUserContext()
+    setScaleLinks,
+    isModalOn, 
+    setIsNodalOn } = useFetchUserContext()
   const [timeOn, setTimeOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedEmojis, setSelectedEmojis] = useState([]);
@@ -145,6 +147,7 @@ const [instance, setInstance] = useState("")
         setIsLoading(false);
         return;
       } else {
+        setIsNodalOn(true)
         toast.success('Response succesfully submitted');
         // navigateTo(
         //   `/100035-DowellScale-Function/nps-scale-settings/${result.scale_id}`
@@ -217,244 +220,21 @@ const [instance, setInstance] = useState("")
   };
 
   return (
-    // <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
-    //   <h2 className="mb-3 text-sm font-medium text-center capitalize">
-    //         set up your NPS scale
-    //       </h2>
-    //   <div className="w-full p-5 border md:w-7/12">
-    //     <div className="flex justify-between">
-    //       {timeOn && (
-    //         <p>
-    //           You have about{' '}
-    //           <span className="font-bold text-primary">{displayedTime}</span>{' '}
-    //           seconds to submit your form
-    //         </p>
-    //       )}
-    //     </div>
-    //     <div className="grid grid-cols-2 gap-3 mb-10 md:grid-cols-3">
-    //       <div className="w-full">
-    //         <CustomTextInput
-    //           label="name"
-    //           name="name"
-    //           value={formData.name}
-    //           type="text"
-    //           handleChange={handleChange}
-    //           placeholder="enter scale name"
-    //         />
-    //       </div>
-    //       <div className="w-full">
-    //         <label
-    //           htmlFor="orientation"
-    //           className="mb-1 ml-1 text-sm font-normal"
-    //         >
-    //           orientation
-    //         </label>
-    //         <select
-    //           label="Select a orientation"
-    //           name="orientation"
-    //           className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-    //           value={formData.orientation}
-    //           onChange={handleChange}
-    //         >
-    //           <option value={''}>-- Select orientation --</option>
-    //           {orientation.map((orientation, i) => (
-    //             <option key={i}>{orientation}</option>
-    //           ))}
-    //         </select>
-    //       </div>
-    //       <div className="flex flex-col gap-2">
-    //         <label htmlFor="scalecolor">scale color</label>
-    //         <input
-    //           label="scale color"
-    //           name="scalecolor"
-    //           autoComplete="given-name"
-    //           type="color"
-    //           placeholder="scale color"
-    //           value={formData.scalecolor}
-    //           onChange={handleChange}
-    //           className="w-full"
-    //         />
-    //       </div>
-    //       <div className="flex flex-col gap-2">
-    //         <label htmlFor="roundcolor">round color</label>
-    //         <input
-    //           label="round color"
-    //           name="roundcolor"
-    //           autoComplete="given-name"
-    //           type="color"
-    //           placeholder="round color"
-    //           value={formData.roundcolor}
-    //           onChange={handleChange}
-    //           className="w-full"
-    //         />
-    //       </div>
-    //       <div className="flex flex-col gap-2">
-    //         <label htmlFor="fontcolor">font color</label>
-    //         <input
-    //           label="font color"
-    //           name="fontcolor"
-    //           autoComplete="given-name"
-    //           type="color"
-    //           placeholder="font color"
-    //           value={formData.fontcolor}
-    //           onChange={handleChange}
-    //           className="w-full"
-    //         />
-    //       </div>
-    //       <div className="flex flex-col gap-2">
-    //         <label htmlFor="fontcolor">font style</label>
-    //         <select
-    //           label="Select a font style"
-    //           name="fontStyle"
-    //           className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-    //           value={formData.fontStyle}
-    //           onChange={handleChange}
-    //           >
-    //             <option style={{ fontSize: "11px" }}>Select font style</option>
-    //                 {fontStyles.map((fontStyle, index) => (
-    //                   <option key={index} value={fontStyle}>
-    //                     {fontStyle}
-    //                     </option>
-    //                       ))}
-    //               </select>
-    //       </div>
-    //       <div className="w-full">
-    //         <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">
-    //           format
-    //         </label>
-    //         <select
-    //           label="Select a format"
-    //           name="fomat"
-    //           className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-    //           value={formData.fomat}
-    //           onChange={handleChange}
-    //         >
-    //           <option value={''}>-- Select format --</option>
-    //           {format.map((format, i) => (
-    //             <option key={i}>{format}</option>
-    //           ))}
-    //         </select>
-    //       </div>
-    //       <div className="w-full">
-    //         <CustomTextInput
-    //           label="left"
-    //           name="left"
-    //           value={formData.left}
-    //           type="text"
-    //           handleChange={handleChange}
-    //           placeholder="enter scale left"
-    //         />
-    //       </div>
-    //       <div className="w-full">
-    //         <CustomTextInput
-    //           label="center"
-    //           name="center"
-    //           value={formData.center}
-    //           type="text"
-    //           handleChange={handleChange}
-    //           placeholder="enter scale center"
-    //         />
-    //       </div>
-    //       <div className="w-full">
-    //         <CustomTextInput
-    //           label="right"
-    //           name="right"
-    //           value={formData.right}
-    //           type="text"
-    //           handleChange={handleChange}
-    //           placeholder="enter scale right"
-    //         />
-    //       </div>
-    //       <div className="w-full">
-    //         <CustomTextInput
-    //           label="No of scales"
-    //           name="no_of_scales"
-    //           value={formData.no_of_scales}
-    //           type="text"
-    //           handleChange={handleChange}
-    //           placeholder="Enter no of scales"
-    //         />
-    //       </div>
-    //       <div className="w-full">
-    //         <div className="flex items-center gap-3">
-    //           {timeOn && (
-    //             <button onClick={handleToggleTime}>
-    //               <BsToggleOn className="w-6 h-6 text-primary" />
-    //             </button>
-    //           )}
-    //           {!timeOn && (
-    //             <button onClick={handleToggleTime}>
-    //               <BsToggleOff className="w-6 h-6 text-primary" />
-    //             </button>
-    //           )}
-    //           <span>Toggle to set Time</span>
-    //         </div>
-    //         {timeOn && (
-    //           <CustomTextInput
-    //             name="time"
-    //             type="number"
-    //             placeholder="enter a valid time"
-    //             value={formData.time}
-    //             handleChange={handleChange}
-    //             onBlur={handleBlurTime}
-    //           />
-    //         )}
-    //       </div>
-    //     </div>
-    //     <div className="flex justify-end gap-3" style={{backgroundColor:'red'}}>
-    //       {isLoading ? (
-    //         <Fallback />
-    //       ) : (
-    //         <button
-    //           onClick={handleSubmitNPSScale}
-    //           className="w-full py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium"
-    //         >
-    //           Save
-    //         </button>
-    //       )}
-    //       {/* <button className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium">
-    //         Preview
-    //       </button> */}
-    //     </div>
-    //   </div>
-    //   {showEmojiPalette && (
-    //     <EmojiPicker
-    //       setSelectedEmojis={setSelectedEmojis}
-    //       selectedEmojis={selectedEmojis}
-    //       // handleEmojiSelect={handleEmojiSelect}
-    //       handleToggleEmojiPellete={handleToggleEmojiPellete}
-    //     />
-    //   )}
-    // </div>
     <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
-      <div style={{filter: showMasterlinkModal ? 'blur(8px)' : '', pointerEvents: showMasterlinkModal ? 'none' : ''}}>
-        <div>
-          <label htmlFor="scaleType" className="mb-1 ml-1 text-sm font-normal">
-          Scale type
-            </label>
-           <select
-              label="Select a scale type"
-              name="scaleType"
-              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-              value={scaleType}
-              onChange={(e) => setScaleType(e.target.value)}
-            >
-              <option value='nps'>nps</option>
-               {/* {scaleTypeArray.map((format, i) => (
-                <option key={i}>{format}</option>
-              ))} */}
-            </select>
+      <h2 className="mb-3 text-sm font-medium text-center capitalize">
+            set up your NPS scale
+          </h2>
+      <div className="w-full p-5 border md:w-7/12">
+        <div className="flex justify-between">
+          {timeOn && (
+            <p>
+              You have about{' '}
+              <span className="font-bold text-primary">{displayedTime}</span>{' '}
+              seconds to submit your form
+            </p>
+          )}
         </div>
-        <div className="w-full" style={{marginTop: '10px'}}>
-             <CustomTextInput
-              label="no. of instances"
-              name="instances"
-              value={instance}
-              type="text"
-              handleChange={(e) => setInstance(e.target.value)}
-              placeholder="enter no. instances"
-            />
-          </div>
+        <div className="grid grid-cols-2 gap-3 mb-10 md:grid-cols-3">
           <div className="w-full">
             <CustomTextInput
               label="name"
@@ -465,21 +245,244 @@ const [instance, setInstance] = useState("")
               placeholder="enter scale name"
             />
           </div>
+          <div className="w-full">
+            <label
+              htmlFor="orientation"
+              className="mb-1 ml-1 text-sm font-normal"
+            >
+              orientation
+            </label>
+            <select
+              label="Select a orientation"
+              name="orientation"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+              value={formData.orientation}
+              onChange={handleChange}
+            >
+              <option value={''}>-- Select orientation --</option>
+              {orientation.map((orientation, i) => (
+                <option key={i}>{orientation}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="scalecolor">scale color</label>
+            <input
+              label="scale color"
+              name="scalecolor"
+              autoComplete="given-name"
+              type="color"
+              placeholder="scale color"
+              value={formData.scalecolor}
+              onChange={handleChange}
+              className="w-full"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="roundcolor">round color</label>
+            <input
+              label="round color"
+              name="roundcolor"
+              autoComplete="given-name"
+              type="color"
+              placeholder="round color"
+              value={formData.roundcolor}
+              onChange={handleChange}
+              className="w-full"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="fontcolor">font color</label>
+            <input
+              label="font color"
+              name="fontcolor"
+              autoComplete="given-name"
+              type="color"
+              placeholder="font color"
+              value={formData.fontcolor}
+              onChange={handleChange}
+              className="w-full"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="fontcolor">font style</label>
+            <select
+              label="Select a font style"
+              name="fontStyle"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+              value={formData.fontStyle}
+              onChange={handleChange}
+              >
+                <option style={{ fontSize: "11px" }}>Select font style</option>
+                    {fontStyles.map((fontStyle, index) => (
+                      <option key={index} value={fontStyle}>
+                        {fontStyle}
+                        </option>
+                          ))}
+                  </select>
+          </div>
+          <div className="w-full">
+            <label htmlFor="format" className="mb-1 ml-1 text-sm font-normal">
+              format
+            </label>
+            <select
+              label="Select a format"
+              name="fomat"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+              value={formData.fomat}
+              onChange={handleChange}
+            >
+              <option value={''}>-- Select format --</option>
+              {format.map((format, i) => (
+                <option key={i}>{format}</option>
+              ))}
+            </select>
+          </div>
+          <div className="w-full">
+            <CustomTextInput
+              label="left"
+              name="left"
+              value={formData.left}
+              type="text"
+              handleChange={handleChange}
+              placeholder="enter scale left"
+            />
+          </div>
+          <div className="w-full">
+            <CustomTextInput
+              label="center"
+              name="center"
+              value={formData.center}
+              type="text"
+              handleChange={handleChange}
+              placeholder="enter scale center"
+            />
+          </div>
+          <div className="w-full">
+            <CustomTextInput
+              label="right"
+              name="right"
+              value={formData.right}
+              type="text"
+              handleChange={handleChange}
+              placeholder="enter scale right"
+            />
+          </div>
+          <div className="w-full">
+            <CustomTextInput
+              label="No of scales"
+              name="no_of_scales"
+              value={formData.no_of_scales}
+              type="text"
+              handleChange={handleChange}
+              placeholder="Enter no of scales"
+            />
+          </div>
+          <div className="w-full">
+            <div className="flex items-center gap-3">
+              {timeOn && (
+                <button onClick={handleToggleTime}>
+                  <BsToggleOn className="w-6 h-6 text-primary" />
+                </button>
+              )}
+              {!timeOn && (
+                <button onClick={handleToggleTime}>
+                  <BsToggleOff className="w-6 h-6 text-primary" />
+                </button>
+              )}
+              <span>Toggle to set Time</span>
+            </div>
+            {timeOn && (
+              <CustomTextInput
+                name="time"
+                type="number"
+                placeholder="enter a valid time"
+                value={formData.time}
+                handleChange={handleChange}
+                onBlur={handleBlurTime}
+              />
+            )}
+          </div>
+        </div>
+        <div className="flex justify-end gap-3" style={{backgroundColor:'red'}}>
+          {isLoading ? (
+            <Fallback />
+          ) : (
+            <button
+              onClick={handleSubmitNPSScale}
+              className="w-full py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium"
+            >
+              Save
+            </button>
+          )}
+          {/* <button className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium">
+            Preview
+          </button> */}
+        </div>
       </div>
-      <button
-        onClick={handleSave}
-        className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
-        Save
-        </button>
-        {showMasterlinkModal && (
-        <NPSMasterlink
-          handleToggleMasterlinkModal={handleToggleMasterlinkModal}
-          // link={npsLinks}
-          publicLinks={Object.entries(npsLinks)}
-          // image={qrCodeURL}
+      {showEmojiPalette && (
+        <EmojiPicker
+          setSelectedEmojis={setSelectedEmojis}
+          selectedEmojis={selectedEmojis}
+          // handleEmojiSelect={handleEmojiSelect}
+          handleToggleEmojiPellete={handleToggleEmojiPellete}
         />
       )}
     </div>
+    // <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
+    //   <div style={{filter: showMasterlinkModal ? 'blur(8px)' : '', pointerEvents: showMasterlinkModal ? 'none' : ''}}>
+    //     <div>
+    //       <label htmlFor="scaleType" className="mb-1 ml-1 text-sm font-normal">
+    //       Scale type
+    //         </label>
+    //        <select
+    //           label="Select a scale type"
+    //           name="scaleType"
+    //           className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+    //           value={scaleType}
+    //           onChange={(e) => setScaleType(e.target.value)}
+    //         >
+    //           <option value='nps'>nps</option>
+    //            {/* {scaleTypeArray.map((format, i) => (
+    //             <option key={i}>{format}</option>
+    //           ))} */}
+    //         </select>
+    //     </div>
+    //     <div className="w-full" style={{marginTop: '10px'}}>
+    //          <CustomTextInput
+    //           label="no. of instances"
+    //           name="instances"
+    //           value={instance}
+    //           type="text"
+    //           handleChange={(e) => setInstance(e.target.value)}
+    //           placeholder="enter no. instances"
+    //         />
+    //       </div>
+    //       <div className="w-full">
+    //         <CustomTextInput
+    //           label="name"
+    //           name="name"
+    //           value={formData.name}
+    //           type="text"
+    //           handleChange={handleChange}
+    //           placeholder="enter scale name"
+    //         />
+    //       </div>
+    //   </div>
+    //   <button
+    //     onClick={handleSave}
+    //     className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
+    //     Save
+    //     </button>
+    //     {showMasterlinkModal && (
+    //     <NPSMasterlink
+    //       handleToggleMasterlinkModal={handleToggleMasterlinkModal}
+    //       // link={npsLinks}
+    //       publicLinks={Object.entries(npsLinks)}
+    //       // image={qrCodeURL}
+    //     />
+    //   )}
+    // </div>
   );
 };
 

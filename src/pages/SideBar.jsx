@@ -93,7 +93,7 @@ const SideBar = () => {
      </div>
      <div style={{color: '#D3D3D3', fontSize:'15px', display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', marginTop:'40px'}}>
         <img src='https://www.scales.dowellstore.org/wp-content/uploads/2022/12/17.png' alt='User image' style={{height:'100px', borderRadius:'8px', marginBottom: '15px'}}/>
-        <h2>Welcome, {userInfo?.username}</h2>
+        <h2 style={{color: 'white', fontSize: '20px'}}>Welcome, {userInfo?.username}</h2>
      </div>
     </div>
   )
