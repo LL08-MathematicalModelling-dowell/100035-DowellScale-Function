@@ -9,7 +9,7 @@ from nps.dowellconnection import dowellconnection
 from nps.eventID import get_event_id
 from api.views import nps_response_view_submit
 from dowellnps_scale_function.settings import public_url
-# from .dowellclock import dowell_time
+from .dowellclock import dowell_time
 
 class ScaleCreateAPIView(APIView):
     def db_operations(self, command, payload=None):
@@ -51,10 +51,11 @@ class ScaleCreateAPIView(APIView):
             return scale_range
             
         elif scale_type == 'nps lite':
-            return range(1, 4)
+            return range(0, 3)
         elif scale_type == 'stapel':
-            # adjusted_total = min(max(total_no_of_items * 2, 1), 10)
-            return range(-(axis_limit),axis_limit)
+            if 'axis_limit' in payload:
+                pointers = int(payload['axis_limit'])
+                return range(-(axis_limit),axis_limit)
         elif scale_type == 'likert':
             if 'pointers' in payload:
                 pointers = int(payload['pointers'])
@@ -75,6 +76,7 @@ class ScaleCreateAPIView(APIView):
         elif scale_type == "stapel":
             axis_limit = payload["axis_limit"]
             no_of_items == 2*axis_limit
+            print(no_of_items)
         else:
             no_of_items = 11
         return no_of_items
@@ -91,35 +93,37 @@ class ScaleCreateAPIView(APIView):
             scale_type = serializer.validated_data['scale_type']
             
             payload={"scale_type":scale_type}
-
+           
             if scale_type == "likert":
-                pointers = serializer.validated_data['pointers']
-                payload['pointers']=pointers
-            
-            if scale_type == "stapel":
-                axis_limit = serializer.validated_data['axis_limit']
-                payload['axis_limt']=axis_limit
-            payload["total_no_of_items"] = total_no_of_items
-            no_of_instances = serializer.validated_data['no_of_instances']
-            total_no_of_items = self.scale_type(scale_type, payload)
-            print(total_no_of_items)
-            print("fine upto here---1")
-            
-            print(payload['scale_type'])
-            scale_range = self.adjust_scale_range(payload)
-            print("exe",scale_range)
-            print("fine upto here---2")
-            event_id = get_event_id()
-            print("fine upto here---3")
-
-            if scale_type == 'likert':
                 try:
                     request.data['pointers']
+                    pointers = serializer.validated_data['pointers']
+                    payload['pointers']=pointers
                 except Exception as e:
                     print(e)
                     return Response(f"missing field for likert {e}", status=status.HTTP_400_BAD_REQUEST)
-            print("fine upto here---4")
-            print(scale_range)   
+                
+            
+            if scale_type == "stapel":
+                try:
+                    request.data['axis_limit']
+                    axis_limit = serializer.validated_data['axis_limit']
+                    payload['axis_limit']=axis_limit
+                    print(payload)
+                except Exception as e:
+                    print(e)
+                    return Response(f"missing field for stapel {e}", status=status.HTTP_400_BAD_REQUEST)
+            
+            no_of_instances = serializer.validated_data['no_of_instances']
+
+            total_no_of_items = self.scale_type(scale_type, payload)
+            payload["total_no_of_items"] = total_no_of_items
+
+            
+            print(payload['scale_type'])
+            scale_range = self.adjust_scale_range(payload)
+            event_id = get_event_id()
+            
             payload = {"settings":{
                                     "api_key":api_key,
                                     "scale_name": scale_name, 
@@ -138,29 +142,25 @@ class ScaleCreateAPIView(APIView):
 
             # save data to db
             try:
-                print("fine upto here---5")
-                print(type(payload))
                 response = self.db_operations(command="insert", payload=payload)
-                print(response)
-                print("fine upto here---6")
                 response = json.loads(response)
-                print(response)
-                response_id = response['inserted_id']
-                print(response_id)
-
-                urls = self.generate_urls(payload['settings'],response_id)
-                print("fine upto here---7")
-
-                # urls = self.generate_urls(payload['settings'],response_id)
+                scale_id = response['inserted_id']
+              
+                # generate the button urls   
+                urls = self.generate_urls(payload['settings'],scale_id)
+                
+                # insert urls into the db
+                dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update", {"_id":scale_id}, {"urls":urls})
+                
                 response_data = {
                     "api_key":api_key,
                     "workspace_id":workspace_id,
                     "username":username,
                     "scale_name": scale_name,
                     "scale_category": "nps scale",
-                    "total_no_of_items": total_no_of_items,
+                    "total_no_of_buttons": total_no_of_items,
                     "no_of_instances": no_of_instances,
-                    "scale_id": response_id,
+                    "scale_id": scale_id,
                     "urls": urls
                 }
                 return Response(response_data, status=status.HTTP_201_CREATED)
@@ -170,8 +170,10 @@ class ScaleCreateAPIView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, format=None):
+    def get(self, request,format=None):
+       
         id = request.query_params.get('id')
+    
         try:
             # Query the database to retrieve data based on the provided ID
             response_data = self.db_operations(command="find", payload={"_id": id})
@@ -184,22 +186,18 @@ class ScaleCreateAPIView(APIView):
                 total_no_of_items = response.get('total_no_of_items')
                 no_of_instances = response.get('no_of_scales')
                 no_of_instances = response.get('no_of_scales')
+                urls = response.get('urls')
 
-                # Generate URLs based on the retrieved data
-                urls = self.generate_urls(response['settings'], id)
-                urls = self.generate_urls(response['settings'], id)
-
-                # Prepare the response data
-                response_data = {
+                api_response_data = {
+                    "scale_id": id,
                     "scale_name": scale_name,
                     "scale_type": scale_type,
-                    "total_no_of_items": total_no_of_items,
+                    "total_no_of_buttons": total_no_of_items,
                     "no_of_instances": no_of_instances,
-                    "response_id": id,
                     "urls": urls
                 }
 
-                return Response(response_data, status=status.HTTP_200_OK)
+                return Response({"success":True, "message":"settings fetched successfully","settings":api_response_data}, status=status.HTTP_200_OK)
             else:
                 return Response("Scale not found", status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
