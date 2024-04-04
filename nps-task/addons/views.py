@@ -10,6 +10,7 @@ from nps.eventID import get_event_id
 from api.views import nps_response_view_submit
 from dowellnps_scale_function.settings import public_url
 from .dowellclock import dowell_time
+import socket
 
 class ScaleCreateAPIView(APIView):
     def db_operations(self, command, payload=None):
@@ -29,8 +30,8 @@ class ScaleCreateAPIView(APIView):
         print("generate_urls",scale_range)
         for i in scale_range:
             main_url = f"Button {i} link:"
-            instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
-            # instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
+            # instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&value={i}" ]
+            instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&value={i}" ]
             urls_dict[main_url] = instances
         return urls_dict
 
@@ -52,10 +53,12 @@ class ScaleCreateAPIView(APIView):
             
         elif scale_type == 'nps lite':
             return range(0, 3)
+        
         elif scale_type == 'stapel':
             if 'axis_limit' in payload:
-                pointers = int(payload['axis_limit'])
-                return range(-(axis_limit),axis_limit)
+                axis_limit = int(payload['axis_limit'])
+                return range(-(axis_limit),(axis_limit+1))
+            
         elif scale_type == 'likert':
             if 'pointers' in payload:
                 pointers = int(payload['pointers'])
@@ -75,7 +78,7 @@ class ScaleCreateAPIView(APIView):
             no_of_items = pointers
         elif scale_type == "stapel":
             axis_limit = payload["axis_limit"]
-            no_of_items == 2*axis_limit
+            no_of_items = 2*axis_limit
             print(no_of_items)
         else:
             no_of_items = 11
@@ -135,7 +138,8 @@ class ScaleCreateAPIView(APIView):
                                     "username":username,
                                     "event_id":event_id,
                                     "scale_range":list(scale_range),
-                                    "pointers":pointers if scale_type == "likert" else ""
+                                    "pointers":pointers if scale_type == "likert" else "",
+                                    "axis_limit":axis_limit if scale_type == "stapel" else ""
                                     }
                      }
              
@@ -157,7 +161,7 @@ class ScaleCreateAPIView(APIView):
                     "workspace_id":workspace_id,
                     "username":username,
                     "scale_name": scale_name,
-                    "scale_category": "nps scale",
+                    "scale_category": scale_type,
                     "total_no_of_buttons": total_no_of_items,
                     "no_of_instances": no_of_instances,
                     "scale_id": scale_id,
@@ -172,20 +176,22 @@ class ScaleCreateAPIView(APIView):
 
     def get(self, request,format=None):
        
-        id = request.query_params.get('id')
+        id = request.query_params.get('scale_id')
     
         try:
             # Query the database to retrieve data based on the provided ID
             response_data = self.db_operations(command="find", payload={"_id": id})
             response = json.loads(response_data)['data']
+            settings = response["settings"]
+            print(response)
             if response:
                 # Extract the relevant information from the response
-                scale_name = response.get('scale_name')
-                scale_type = response.get('scale_category')
-                scale_type = response.get('scale_category')
-                total_no_of_items = response.get('total_no_of_items')
-                no_of_instances = response.get('no_of_scales')
-                no_of_instances = response.get('no_of_scales')
+                scale_name = settings.get('scale_name')
+                scale_type = settings.get('scale_category')
+                scale_type = settings.get('scale_category')
+                total_no_of_items = settings.get('total_no_of_items')
+                no_of_instances = settings.get('no_of_scales')
+                no_of_instances = settings.get('no_of_scales')
                 urls = response.get('urls')
 
                 api_response_data = {
@@ -213,26 +219,36 @@ def error_response(request, message, status):
 @api_view(['GET'])
 def post_scale_response(request):
     scale_id = request.GET.get('scale_id')
-    item = int(request.GET.get('item'))
+    item = int(request.GET.get('value'))
     workspace_id = request.GET.get('workspace_id')
     username = request.GET.get('username')
 
     if request.method == "GET":
         try:
+            hostname = socket.gethostname()
+            ip_address = socket.gethostbyname(hostname)
+            
+            print("Hostname:", hostname)
+            print("IP Address:", ip_address)
+
             existing_data = {}
+            existing_data['hostname']=hostname,
+            existing_data['ip_address']=ip_address,
             existing_data['workspace_id'] = workspace_id
             existing_data['username'] = username
             existing_data['scale_id'] = scale_id
             existing_data['score'] = item
             existing_data['item_no'] = item
-            existing_data["username"] = f"{scale_id}_{item}"
-            existing_data["scale_type"] = "nps scale"
+            
 
             settings_meta_data = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale","1093",
                                                      "ABCDE", "fetch", {"_id":scale_id}, "nil"))
             data = settings_meta_data['data'][0]['settings']
             no_of_instances = data["no_of_scales"]
             no_of_items = data["total_no_of_items"]
+            scale_type = data["scale_category"]
+            existing_data["no_of_items"] = no_of_items
+            existing_data["scale_type"] = scale_type
 
             response_data = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports","1094",
                                                         "ABCDE", "fetch", {"scale_id":scale_id}, "nil"))
