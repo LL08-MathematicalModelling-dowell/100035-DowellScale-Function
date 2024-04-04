@@ -125,6 +125,7 @@ const [instance, setInstance] = useState("")
 
   const handleSave = async() =>{
     const payload = {
+      "api_key":"3db9086b-527f-408b-9fea-ff552160bf40",
       "workspace_id": userinfo.userinfo.client_admin_id,
       "username": userinfo.userinfo.username,
       "scale_name": formData.name,
