@@ -178,10 +178,12 @@ const BtnLinkNPSMasterlink = ({
         {/* <div className="flex flex-col items-center justify-center w-full font-Montserrat">
         </div> */}
         {/* <h2 className="flex items-center justify-center">MASTERLINK</h2> */}
-        <div className='w-full' style={{display:'flex', justifyContent:'flex-end', marginTop: '25px'}}>
+        <div className='w-full' style={{display:'flex', justifyContent:'flex-end', marginTop: '25px', marginLeft: '10px'}}>
           <button 
           className='prev-btn' style={{display:'flex', alignItems:'center', padding: '10px', border:'1px solid lightgray', height: '30px', borderRadius: '2px', backgroundColor: showPreview ? 'whitesmoke' : ''}}onClick={handlePreview}><LuEye style={{marginRight:'6px'}} />Preview</button>
-          <button onClick={handleShowCode} className='code-btn' style={{display:'flex', alignItems:'center', padding: '10px', border:'1px solid lightgray', height: '30px', borderRadius: '2px', backgroundColor: showCode ? 'whitesmoke' : ''}}><MdOutlineKeyboardArrowLeft /><MdOutlineKeyboardArrowRight style={{marginRight:'6px'}} />Code</button></div>
+          <button onClick={handleShowCode} className='code-btn' style={{display:'flex', alignItems:'center', padding: '10px', border:'1px solid lightgray', height: '30px', borderRadius: '2px', backgroundColor: showCode ? 'whitesmoke' : ''}}><MdOutlineKeyboardArrowLeft /><MdOutlineKeyboardArrowRight style={{marginRight:'6px'}} />Code</button>
+          
+          </div>
         <div className="flex flex-col items-center justify-center w-full font-Montserrat">
           <div className="w-full p-5 ">
             {/* <div className="flex items-center justify-center p-2 border" style={{backgroundColor: 'red'}}> */}
