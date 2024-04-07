@@ -1,4 +1,3 @@
-
 from django.urls import path
 from .views import ScaleCreateAPIView, post_scale_response
 from django.views.decorators.csrf import csrf_exempt
