@@ -14,57 +14,98 @@ from dowellnps_scale_function.settings import public_url
 from api.utils import dowell_time
 from nps.eventID import get_event_id
 
-def datacude_db(data, api_key, query=None, update_data=None):
-    DB_URL = "https://datacube.uxlivinglab.online/db_api/crud/"
 
+def datacude_db(api_key, operation,payload=None, update_data=None, id=None):
     data = {
         "api_key": api_key,
-        "operation": "insert",
         "db_name": "livinglab_scales",
         "coll_name": "collection_3",
-        "data": data,
+        "operation": operation,
         "payment": False
     }
-
-    if query:
-        data["query"] = query
-    if update_data:
-        data["update_data"] = update_data
-
-    response = requests.post(DB_URL, json=data)
-    print("response", response.text)
+    DB_URL = "https://datacube.uxlivinglab.online/db_api/crud/"
     try:
+        if operation == "fetch":
+            DB_URL = "https://datacube.uxlivinglab.online/db_api/get_data/"
+            data["filters"] = {"_id": id}
+            data["limit"] = 1
+            data["offset"] = 0
+            response = requests.post(DB_URL, json=data)
+        elif operation == "insert":
+            data["data"] = payload
+            response = requests.post(DB_URL, json=data)
+        elif operation == "update":
+            data["query"] = {"_id": id}
+            data["update_data"] = update_data
+            response = requests.put(DB_URL, json=data)
+        elif operation == "delete":
+            data["query"] = {"_id": id}
+            response = requests.delete(DB_URL, json=data)
+        else:
+            raise ValueError("Unsupported operation!")
         response_data = json.loads(response.text)
         return response_data
     except Exception as e:
         print(e)
-        return None
+        return e
+
+
+def datacude_db_response(api_key, operation, scale_id=None, payload=None):
+    data = {
+        "api_key": api_key,
+        "db_name": "livinglab_scale_response",
+        "coll_name": "collection_1",
+        "operation": operation,
+        "payment": False
+    }
+    DB_URL = "https://datacube.uxlivinglab.online/db_api/crud/"
+    try:
+        if operation == "fetch":
+            DB_URL = "https://datacube.uxlivinglab.online/db_api/get_data/"
+            data["filters"] = {"scale_id": scale_id}
+            data["limit"] = 1
+            data["offset"] = 0
+            response = requests.post(DB_URL, json=data)
+        elif operation == "insert":
+            data["data"] = payload
+            response = requests.post(DB_URL, json=data)
+        elif operation == "delete":
+            data["query"] = {"_id": id}
+            response = requests.delete(DB_URL, json=data)
+        else:
+            raise ValueError("Unsupported operation!")
+        response_data = json.loads(response.text)
+        print("Tombotaller", response_data)
+        # response_data["data"] = data
+        return response_data
+    except Exception as e:
+        print(e)
+        return e
+
 
 class ScaleCreateAPIView(APIView):
     def db_operations(self, command, payload=None):
         if payload is not None:
             print(payload)
             print(type(command))
-            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", command, payload, "nil")
+            response_data = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093",
+                                             "ABCDE", command, payload, "nil")
             return response_data
 
     def generate_urls(self, payload, id):
         urls_dict = {}
-        print(payload)
         workspace_id = payload['workspace_id']
-        print(workspace_id)
         username = payload['username']
         scale_range = payload['scale_range']
-        print("generate_urls",scale_range)
         for i in scale_range:
             main_url = f"Button {i} link:"
-            instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
+            instances = [
+                f"{public_url}/addons/create-response/?workspace_id={workspace_id}&api_key={payload['api_key']}&username={username}&scale_id={id}&item={i}"]
             # instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
             urls_dict[main_url] = instances
         return urls_dict
 
-
-    def adjust_scale_range(self,payload):
+    def adjust_scale_range(self, payload):
         print("Inside adjust_scale_range function")
         scale_type = payload['scale_type']
         total_no_of_items = int(payload['total_no_of_items'])
@@ -73,7 +114,6 @@ class ScaleCreateAPIView(APIView):
         if "axis_limit" in payload:
             axis_limit = payload['axis_limit']
         print(f"Scale type: {scale_type}, Total number of items: {total_no_of_items}")
-
 
         if scale_type == 'nps':
             scale_range = range(0, 11)
@@ -85,7 +125,7 @@ class ScaleCreateAPIView(APIView):
         elif scale_type == 'stapel':
             if 'axis_limit' in payload:
                 pointers = int(payload['axis_limit'])
-                return chain(range(-axis_limit, 0), range(1, axis_limit+1))
+                return chain(range(-axis_limit, 0), range(1, axis_limit + 1))
         elif scale_type == 'likert':
             if 'pointers' in payload:
                 pointers = int(payload['pointers'])
@@ -105,7 +145,7 @@ class ScaleCreateAPIView(APIView):
             no_of_items = pointers
         elif scale_type == "stapel":
             axis_limit = payload["axis_limit"]
-            no_of_items = 2*axis_limit
+            no_of_items = 2 * axis_limit
             print(no_of_items)
         else:
             no_of_items = 11
@@ -121,13 +161,13 @@ class ScaleCreateAPIView(APIView):
             scale_name = serializer.validated_data['scale_name']
             scale_type = serializer.validated_data['scale_type']
 
-            payload={"scale_type":scale_type}
+            payload = {"scale_type": scale_type}
 
             if scale_type == "likert":
                 try:
                     request.data['pointers']
                     pointers = serializer.validated_data['pointers']
-                    payload['pointers']=pointers
+                    payload['pointers'] = pointers
                 except Exception as e:
                     print(e)
                     return Response(f"missing field for likert {e}", status=status.HTTP_400_BAD_REQUEST)
@@ -136,7 +176,7 @@ class ScaleCreateAPIView(APIView):
                 try:
                     request.data['axis_limit']
                     axis_limit = serializer.validated_data['axis_limit']
-                    payload['axis_limit']=axis_limit
+                    payload['axis_limit'] = axis_limit
                     print(payload)
                 except Exception as e:
                     print(e)
@@ -151,42 +191,35 @@ class ScaleCreateAPIView(APIView):
             print(scale_range)
             event_id = get_event_id()
 
-            payload = {"settings":{
-                                    "api_key":api_key,
-                                    "scale_name": scale_name,
-                                    "total_no_of_items": total_no_of_items,
-                                    "scale_category": scale_type,
-                                    "no_of_scales": no_of_instances,
-                                    "allow_resp":True,
-                                    "workspace_id":workspace_id,
-                                    "username":username,
-                                    "event_id":event_id,
-                                    "scale_range":list(scale_range),
-                                    "pointers":pointers if scale_type == "likert" else ""
-                                    }
-                     }
-
-
+            payload = {"settings": {
+                "api_key": api_key,
+                "scale_name": scale_name,
+                "total_no_of_items": total_no_of_items,
+                "scale_category": scale_type,
+                "no_of_scales": no_of_instances,
+                "allow_resp": True,
+                "workspace_id": workspace_id,
+                "username": username,
+                "event_id": event_id,
+                "scale_range": list(scale_range),
+                "pointers": pointers if scale_type == "likert" else ""
+            }
+            }
             # save data to db
             try:
-                response = self.db_operations(command="insert", payload=payload)
-                datacude_db(payload, api_key)
-
-                response = json.loads(response)
-                scale_id = response['inserted_id']
-
+                # response = self.db_operations(command="insert", payload=payload)
+                response = datacude_db(payload=payload, api_key=api_key, operation="insert",)
+                scale_id = response['data'].get("inserted_id")
                 # generate the button urls
-                urls = self.generate_urls(payload['settings'],scale_id)
-
+                urls = self.generate_urls(payload['settings'], scale_id)
                 # insert urls into the db
-                dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale", "1093", "ABCDE", "update", {"_id":scale_id}, {"urls":urls})
-
+                datacude_db(payload=payload, api_key=api_key, operation="update", id=scale_id, update_data={"urls": urls})
                 response_data = {
-                    "api_key":api_key,
-                    "workspace_id":workspace_id,
-                    "username":username,
+                    "api_key": api_key,
+                    "workspace_id": workspace_id,
+                    "username": username,
                     "scale_name": scale_name,
-                    "scale_category": "nps scale",
+                    "scale_category": scale_type,
                     "total_no_of_buttons": total_no_of_items,
                     "no_of_instances": no_of_instances,
                     "scale_id": scale_id,
@@ -195,20 +228,20 @@ class ScaleCreateAPIView(APIView):
                 return Response(response_data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 print(e)
-                return Response({"message":"Unexpected Error Occurred!","error":e}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-
+                return Response({"message": "Unexpected Error Occurred!", "error": e},
+                                status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request,format=None):
-
-        id = request.query_params.get('scale_id')
-
+    def get(self, request, format=None):
         try:
+            id = request.query_params.get('scale_id')
+            api_key = request.query_params.get('api_key')
+            if not id or not api_key:
+                return Response(f"Error: api_key or scale_id missing!", status=status.HTTP_400_BAD_REQUEST)
             # Query the database to retrieve data based on the provided ID
-            response_data = self.db_operations(command="find", payload={"_id": id})
-            response = json.loads(response_data)['data']
+            response_data = datacude_db(api_key=api_key, operation="fetch", id=id)
+            response = response_data['data'][0]
             settings = response["settings"]
-            print(response)
             if response:
                 # Extract the relevant information from the response
                 scale_name = settings.get('scale_name')
@@ -228,22 +261,25 @@ class ScaleCreateAPIView(APIView):
                     "urls": urls
                 }
 
-                return Response({"success":True, "message":"settings fetched successfully","settings":api_response_data}, status=status.HTTP_200_OK)
+                return Response(
+                    {"success": True, "message": "settings fetched successfully", "settings": api_response_data},
+                    status=status.HTTP_200_OK)
             else:
                 return Response("Scale not found", status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             print(e)
-            return Response("Unexpected Error Occurred!", status=status.HTTP_503_SERVICE_UNAVAILABLE)
-
+            return Response(f"Error: {e}", status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST', 'GET', 'PUT'])
 def error_response(request, message, status):
     return Response(message, status=status)
 
+
 @api_view(['GET'])
 def post_scale_response(request):
     scale_id = request.GET.get('scale_id')
+    api_key = request.GET.get('api_key')
     item = int(request.GET.get('item'))
     workspace_id = request.GET.get('workspace_id')
     username = request.GET.get('username')
@@ -258,21 +294,19 @@ def post_scale_response(request):
             existing_data['item_no'] = item
             existing_data["username"] = f"{scale_id}_{item}"
             existing_data["scale_type"] = "nps scale"
-
-            settings_meta_data = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale", "scale","1093",
-                                                     "ABCDE", "fetch", {"_id":scale_id}, "nil"))
+            settings_meta_data = datacude_db(api_key=api_key, operation="fetch", id=scale_id)
+            print("Tombotaller", settings_meta_data)
             data = settings_meta_data['data'][0]['settings']
             no_of_instances = data["no_of_scales"]
             no_of_items = data["total_no_of_items"]
-
-            response_data = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports","1094",
-                                                        "ABCDE", "fetch", {"scale_id":scale_id}, "nil"))
+            #Fetch data from response collection
+            response_data = datacude_db_response(api_key=api_key, scale_id=scale_id,operation="fetch")
             if not response_data['data']:
                 current_instance_id = 1
             else:
                 previous_instance_id = len(response_data['data'])
-                print("previous_instance_id:",previous_instance_id)
-                current_instance_id = previous_instance_id+1
+                print("previous_instance_id:", previous_instance_id)
+                current_instance_id = previous_instance_id + 1
 
             if int(current_instance_id) <= no_of_instances:
                 event_id = get_event_id()
@@ -281,24 +315,26 @@ def post_scale_response(request):
                 existing_data['dowell_time'] = created_time
                 existing_data['instance_id'] = current_instance_id
                 print(existing_data)
-                responses = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports","1094",
-                                                        "ABCDE", "insert", existing_data, "nil"))
-                response_id = responses['inserted_id']
+                responses = datacude_db_response(api_key=api_key, payload=existing_data, operation="insert")
+                response_id = responses['data']['inserted_id']
                 print(response_id)
-
+                # Insert data from response collection
+                response_data = datacude_db_response(api_key=api_key, scale_id=scale_id, operation="fetch")
+                print("Ambrse", response_data)
                 return Response({
-                                "success":responses['isSuccess'],
-                                "message":"Response recorded successfully",
-                                "response_id":responses['inserted_id'],
-                                "score":int(item),
-                                "instance_id":current_instance_id
-                                })
+                    "success": responses['success'],
+                    "message": "Response recorded successfully",
+                    "response_id": response_id,
+                    "score": int(item),
+                    "instance_id": current_instance_id
+                })
             else:
-                return Response({"success":False, "message":"All instances for this scale have been consumed. Create a new scale to continue"},status=status.HTTP_200_OK)
+                return Response({"success": False,
+                                 "message": "All instances for this scale have been consumed. Create a new scale to continue"},
+                                status=status.HTTP_200_OK)
 
         except Exception as e:
             print("response", e)
             return Response({"Unexpected error occurred!": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response("Method not allowed")
-
