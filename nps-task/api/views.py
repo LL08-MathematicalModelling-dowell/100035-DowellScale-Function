@@ -550,6 +550,12 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
     scale_id = data['data']['_id']
     category = find_category(score)
 
+    if isinstance(api_key, int):
+        total_no_of_items = settings['total_no_of_items']
+        api_key = api_key
+        if int(api_key) > total_no_of_items:
+            return Response({"Error": "Maximum submission for this scale reached!"}, status=status.HTTP_400_BAD_REQUEST)
+
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "fetch",
                                     {"scale_id": scale_id, "username": user, "instance_id": instance_id}, "nil")
@@ -1259,21 +1265,30 @@ def nps_plugins_create_settings(request, api_key):
             page_id = request.GET.get('page_id', None)
             block_id = request.GET.get('block_id', None)
 
-            field_add = {}
+            # field_add = {}
 
-            if api_key:
-                field_add["settings.api_key"] = api_key
+            # if api_key:
+            #     field_add["settings.api_key"] = api_key
 
-            if page_id is not None:
-                field_add["settings.position"] = {"$elemMatch": {"page": page_id}}
+            # if page_id is not None:
+            #     field_add["settings.position"] = {"$elemMatch": {"page": page_id}}
 
-            if block_id is not None:
-                if "settings.position" in field_add:
-                    field_add["settings.position"]["$elemMatch"]["block"] = block_id
-                else:
-                    field_add["settings.position"] = {
-                        "$elemMatch": {"block": block_id}
-                    }
+            # if block_id is not None:
+            #     if "settings.position" in field_add:
+            #         field_add["settings.position"]["$elemMatch"]["block"] = block_id
+            #     else:
+            #         field_add["settings.position"] = {
+            #             "$elemMatch": {"block": block_id}
+            #         }
+            if api_key and page_id and block_id:
+                field_add = {"settings.api_key":api_key, "settings.position.page":int(page_id), "settings.position.block":block_id}
+            elif api_key and page_id:
+                 field_add = {"settings.api_key":api_key, "settings.position.page":int(page_id)}
+            elif api_key and block_id:
+                 field_add = {"settings.api_key":api_key, "settings.position.block":block_id}
+            else:
+                field_add = {"settings.api_key":api_key}
+            print(field_add)
 
             settings_data = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "plugin_data", "plugin_data","1249001", "ABCDE", "fetch", field_add, "nil"))
 

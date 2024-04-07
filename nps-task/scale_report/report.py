@@ -313,11 +313,11 @@ class NpsScaleReport(ScaleReportBaseClass):
         self._all_scores = pd.DataFrame(self._scale_response_data["data"])
         
         
-        self._all_scores["product_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("product_name"))
-        self._all_scores["brand_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("brand_name"))
-        self._all_scores["category"] = self._all_scores["score"].apply(lambda df_ : df_.get("category"))
+        # self._all_scores["product_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("product_name"))
+        # self._all_scores["brand_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("brand_name"))
+        # self._all_scores["category"] = self._all_scores["score"].apply(lambda df_ : df_.get("category"))
         self._all_scores["scores"] = self._all_scores["score"].apply(lambda df_ : df_.get("score"))
-        self._all_scores["date_created"] = pd.to_datetime(self._all_scores['date_created'])
+        # self._all_scores["date_created"] = pd.to_datetime(self._all_scores['date_created'])
 
         return self._all_scores
 
