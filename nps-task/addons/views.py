@@ -30,8 +30,8 @@ class ScaleCreateAPIView(APIView):
         print("generate_urls",scale_range)
         for i in scale_range:
             main_url = f"Button {i} link:"
-            # instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&value={i}" ]
-            instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&value={i}" ]
+            instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&value={i}" ]
+            # instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&value={i}" ]
             urls_dict[main_url] = instances
         return urls_dict
 
@@ -229,7 +229,7 @@ def post_scale_response(request):
             ip_address = socket.gethostbyname(hostname)
             
             print("Hostname:", hostname)
-            print("IP Address:", ip_address)
+            print("IP Address:", type(ip_address))
 
             existing_data = {}
             existing_data['hostname']=hostname,
@@ -252,35 +252,39 @@ def post_scale_response(request):
 
             response_data = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports","1094",
                                                         "ABCDE", "fetch", {"scale_id":scale_id}, "nil"))
-            if not response_data['data']:
-                current_instance_id = 1
+            
+            if response_data["data"]:
+                current_ip_address = response_data["data"][0]["ip_address"][0]
+                print(current_ip_address)
+                if current_ip_address == ip_address:
+                    return Response({"success":False, "message":"You have already submitted a response for this scale."},status=status.HTTP_400_BAD_REQUEST)
             else:
                 previous_instance_id = len(response_data['data'])
                 print("previous_instance_id:",previous_instance_id)
                 current_instance_id = previous_instance_id+1
+                
+                if int(current_instance_id) <= no_of_instances:
+                    event_id = get_event_id()
+                    created_time = dowell_time("Asia/Calcutta")
+                    existing_data['event_id'] = event_id
+                    existing_data['dowell_time'] = created_time
+                    existing_data['instance_id'] = current_instance_id
+                    print(existing_data)
+                    responses = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports","1094",
+                                                            "ABCDE", "insert", existing_data, "nil"))
+                    response_id = responses['inserted_id']
+                    print(response_id)
 
-            if int(current_instance_id) <= no_of_instances:
-                event_id = get_event_id()
-                created_time = dowell_time("Asia/Calcutta")
-                existing_data['event_id'] = event_id
-                existing_data['dowell_time'] = created_time
-                existing_data['instance_id'] = current_instance_id
-                print(existing_data)
-                responses = json.loads(dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports","1094",
-                                                        "ABCDE", "insert", existing_data, "nil"))
-                response_id = responses['inserted_id']
-                print(response_id)
-
-                return Response({
-                                "success":responses['isSuccess'],
-                                "message":"Response recorded successfully",
-                                "response_id":responses['inserted_id'],
-                                "score":int(item),
-                                "instance_id":current_instance_id
-                                })
-            else:
-                return Response({"success":False, "message":"All instances for this scale have been consumed. Create a new scale to continue"},status=status.HTTP_200_OK)
-
+                    return Response({
+                                    "success":responses['isSuccess'],
+                                    "message":"Response recorded successfully",
+                                    "response_id":responses['inserted_id'],
+                                    "score":item,
+                                    "instance_id":current_instance_id
+                                    })
+                else:
+                    return Response({"success":False, "message":"All instances for this scale have been consumed. Create a new scale to continue"},status=status.HTTP_200_OK)
+            
         except Exception as e:
             print("response", e)
             return Response({"Unexpected error occurred!": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
