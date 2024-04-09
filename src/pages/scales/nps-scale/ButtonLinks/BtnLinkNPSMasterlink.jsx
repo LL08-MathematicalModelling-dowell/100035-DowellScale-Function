@@ -7,7 +7,7 @@ import { LuEye } from "react-icons/lu";
 import { MdOutlineKeyboardArrowLeft } from "react-icons/md";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import BtnLinks from '../../../../components/data/BtnLinks';
 import { MdDone } from "react-icons/md";
 
@@ -182,7 +182,6 @@ const BtnLinkNPSMasterlink = ({
           <button 
           className='prev-btn' style={{display:'flex', alignItems:'center', padding: '10px', border:'1px solid lightgray', height: '30px', borderRadius: '2px', backgroundColor: showPreview ? 'whitesmoke' : ''}}onClick={handlePreview}><LuEye style={{marginRight:'6px'}} />Preview</button>
           <button onClick={handleShowCode} className='code-btn' style={{display:'flex', alignItems:'center', padding: '10px', border:'1px solid lightgray', height: '30px', borderRadius: '2px', backgroundColor: showCode ? 'whitesmoke' : ''}}><MdOutlineKeyboardArrowLeft /><MdOutlineKeyboardArrowRight style={{marginRight:'6px'}} />Code</button>
-          
           </div>
         <div className="flex flex-col items-center justify-center w-full font-Montserrat">
           <div className="w-full p-5 ">
@@ -203,21 +202,31 @@ const BtnLinkNPSMasterlink = ({
                 className="inline text-[#1A8753] cursor-pointer "
               /> */}
             {/* </div> */}
-            {showCode &&<div>
-              {showSuccess === false ? <AiOutlineCopy
-                  onClick={() => handleCopyCodeSnippet(data)}
-                  size={20}
+            {showCode &&<div className='bg-gray-500'>
+              <div className='w-full' style={{display:'flex', alignItems: 'center', justifyContent: 'flex-end',}}>
+              {showSuccess === false ? <div className="inline text-[white] cursor-pointer" 
+              onClick={() => handleCopyCodeSnippet(data)}
+              style={{marginRight:'10px', marginTop:'6px'}}>
+              <AiOutlineCopy
+                  size={25}
                   color="bg-[#1A8753]"
-                  className="inline text-[#1A8753] cursor-pointer"
-                  style={{display:'absolute', right:'10px'}}
-              />:
+                  className="inline text-[white] cursor-pointer"
+                  style={{marginTop:'6px'}}
+              /> copy code</div>:
               <MdDone 
-              size={20}
+              size={25}
               color="bg-[#1A8753]"
-              className="inline text-[#1A8753] cursor-pointer"
-              style={{display:'absolute', right:'10px'}}
+              className="inline text-[white] cursor-pointer"
+              style={{marginRight:'10px', marginTop:'6px'}}
               />}
-              <SyntaxHighlighter language="javascript" style={dark}>
+              </div>
+              <SyntaxHighlighter 
+              language="javascript" 
+              style={darcula} 
+              customStyle={{
+                   height: "400px",
+                   marginBottom: '40px'
+                 }}>
                 {data}
               </SyntaxHighlighter>
             </div>}
