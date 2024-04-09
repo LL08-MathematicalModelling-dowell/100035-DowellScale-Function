@@ -135,17 +135,16 @@ console.log('====================================');
       const result = response.data;
       setScaleLinks(result.urls)
       setNpsLinks(result.urls)
-      console.log(result);
+      console.log(result, "HHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
       if (result.error) {
         setIsLoading(false);
         return;
       } else {
         setIsNodalOn(true)
         toast.success('nps scale button links created successfully');
-        // navigateTo(
-        //   `/100035-DowellScale-Function/nps-scale-settings/${result.scale_id}`
-        // );
-        handleToggleMasterlinkModal()
+        navigateTo(
+          `/100035-DowellScale-Function/btnLinksnps-scale-settings/${result.scale_id}`
+        );
       }
     } catch (error) {
       console.log(error);

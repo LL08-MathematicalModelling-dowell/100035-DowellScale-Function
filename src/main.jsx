@@ -22,6 +22,7 @@ import {
 import {
   BtnLinkNPSScale,
   BtnLinkCreateNPSScale,
+  BtnLinksNPSScaleSettings,
   // NPSScaleSettings,
   // UpdateNPSScale,
 } from './pages/scales/nps-scale/ButtonLinks';
@@ -223,6 +224,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/nps-scale-settings/:slug`,
         element: <NPSScaleSettings />,
+      },
+      {
+        path: `${basePath}/btnLinksnps-scale-settings/:slug`,
+        element: <BtnLinksNPSScaleSettings />,
       },
       {
         path: `${basePath}/likert-scale-settings/:slug`,
