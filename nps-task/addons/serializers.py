@@ -7,10 +7,10 @@ class ScaleSerializer(serializers.Serializer):
     scale_type = serializers.CharField(max_length=250)
     # total_no_of_items = serializers.IntegerField()
     no_of_instances = serializers.IntegerField()
-    api_key = serializers.CharField(max_length=250)
+    api_key = serializers.CharField(max_length=250, required=False,allow_null=True)
     pointers = serializers.IntegerField(required=False, allow_null=True)
     axis_limit = serializers.IntegerField(required=False, allow_null=True)
-
+   
 class ScaleResponseSerializer(serializers.Serializer):
     scale_id = serializers.CharField()
     scale_type = serializers.CharField()
