@@ -196,23 +196,28 @@ class ScaleReportObject:
 
 
     def _run_validator(self):
+        try:
+            if not self.scale_response_data["data"]:
+                raise NoScaleResponseFound("This scale has no response is found")
 
-        if not self.scale_response_data["data"]:
-            raise NoScaleResponseFound("This scale has no response is found")
+            scale_data = self.scale_response_data["data"][0].get("scale_data", None)
+            if scale_data:
+                self._scale_id = scale_data.get("scale_id")
+            else:
+                self._scale_id = self.scale_response_data["data"][0].get("scale_id")
+            self._check_for_scale_type()
+            self._scale_type_validation()
+        except:
+            if not self.scale_response_data["data"]:
+                raise NoScaleResponseFound("This scale has no response is found")
 
-        scale_data = self.scale_response_data["data"][0].get("scale_data", None)
-
-
-        if scale_data:
-           
-            self._scale_id = scale_data.get("scale_id")
-        else:
-            self._scale_id = self.scale_response_data["data"][0].get("scale_id")
-
-        self._check_for_scale_type()
-
-        self._scale_type_validation()
-
+            scale_data = self.scale_response_data["data"][0]
+            if scale_data:
+                self._scale_id = scale_data.get("scale_id")
+            else:
+                self._scale_id = self.scale_response_data["data"][0].get("scale_id")
+            self._check_for_scale_type()
+            self._scale_type_validation()
 
     def _scale_type_validation(self):
         if self._scale_type not in self.allowed_scale_types:
@@ -255,7 +260,7 @@ class ScaleReportObject:
 
                 if not scale_type:
                     continue
-                
+
                 else:
                     break
 
@@ -267,11 +272,7 @@ class ScaleReportObject:
             raise NoScaleType("No scale Type found. ")
         
         self._scale_type = scale_type
-
         self._get_report_type_class()
-
-        
-    
 
 
 class StatisticsReport:
@@ -310,16 +311,17 @@ class NpsScaleReport(ScaleReportBaseClass):
     scale_report_type = "nps scale"
 
     def _get_all_scores(self):
-        self._all_scores = pd.DataFrame(self._scale_response_data["data"])
-        
-        
-        # self._all_scores["product_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("product_name"))
-        # self._all_scores["brand_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("brand_name"))
-        # self._all_scores["category"] = self._all_scores["score"].apply(lambda df_ : df_.get("category"))
-        self._all_scores["scores"] = self._all_scores["score"].apply(lambda df_ : df_.get("score"))
-        # self._all_scores["date_created"] = pd.to_datetime(self._all_scores['date_created'])
+        try:
+            self._all_scores = pd.DataFrame(self._scale_response_data["data"])
+            self._all_scores["scores"] = self._all_scores["score"].apply(lambda df_ : df_.get("score"))
+            # self._all_scores["date_created"] = pd.to_datetime(self._all_scores['date_created'])
 
-        return self._all_scores
+            return self._all_scores
+        except:
+            self._all_scores["scores"] = self._all_scores["score"]
+            print("TallerTaller")
+            return self._all_scores
+
 
 
     def create_group(self , field):

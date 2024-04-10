@@ -9,7 +9,6 @@ from .db_operations import datacube_db, datacube_db_response, api_key
 from api.utils import dowell_time
 from nps.eventID import get_event_id
 
-
 class ScaleCreateAPIView(APIView):
     def generate_urls(self, payload, id):
         urls_dict = {}
