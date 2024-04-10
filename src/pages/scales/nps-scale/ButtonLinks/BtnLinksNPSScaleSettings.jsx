@@ -35,7 +35,7 @@ const BtnLinksNPSScaleSettings = () => {
   import axios from 'axios';
   
   const Scale = () => {
-    const buttonLinks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const buttonLinks = []; //paste the links here
   
     const [loadingIndex, setLoadingIndex] = useState(null);
     const [responseReceived, setResponseReceived] = useState(false);
@@ -106,7 +106,7 @@ const BtnLinksNPSScaleSettings = () => {
       </div>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
       <script>
-      const linkArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      const linkArray = [] //paste the links here
   
       const handleButtonClick = async (link) => {
       document.getElementById('spinner').style.display = 'block'
