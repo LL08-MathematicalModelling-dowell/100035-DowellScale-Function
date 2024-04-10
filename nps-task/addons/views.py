@@ -231,7 +231,8 @@ def post_scale_response(request):
 
                 existing_data.update({
                     "event_id":event_id,
-                    "dowell_time":created_time
+                    "dowell_time":created_time,
+                    "instance_id": current_instance_id
                 })
                 
                 print(existing_data)
