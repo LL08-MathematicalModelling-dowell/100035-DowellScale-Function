@@ -23,8 +23,6 @@ import {
   BtnLinkNPSScale,
   BtnLinkCreateNPSScale,
   BtnLinksNPSScaleSettings,
-  // NPSScaleSettings,
-  // UpdateNPSScale,
 } from './pages/scales/nps-scale/ButtonLinks';
 
 import {
