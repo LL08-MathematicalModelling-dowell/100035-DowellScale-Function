@@ -28,7 +28,6 @@ const BtnLinkCreateNPSScale = () => {
   const [displayedTime, setDisplayedTime] = useState(0);
   const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
   const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
-  const [npsLinks, setNpsLinks] = useState({})
 
 
 
@@ -87,7 +86,6 @@ console.log('====================================');
       );
       const result = response.data;
       setScaleLinks(result.urls)
-      setNpsLinks(result.urls)
       console.log(result, "HHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
       if (result.error) {
         setIsLoading(false);
