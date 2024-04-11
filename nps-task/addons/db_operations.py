@@ -63,8 +63,6 @@ def datacube_db_response(api_key, operation, scale_id=None, payload=None):
         else:
             raise ValueError("Unsupported operation!")
         response_data = json.loads(response.text)
-        print("Tombotaller", response_data)
-        # response_data["data"] = data
         return response_data
     except Exception as e:
         print(e)

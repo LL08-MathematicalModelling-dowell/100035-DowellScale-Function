@@ -13,6 +13,7 @@ from scipy import stats
 from EvaluationModule.calculate_function import stattricks_api , generate_random_number , dowellconnection , calculate_stapel_scale_category , calculate_nps_category
 from EvaluationModule.views import categorize_scale_generate_scale_specific_report
 from EvaluationModule.normality import Normality_api
+from addons.db_operations import datacube_db_response, datacube_db
 
 from paired_comparison.utils import generate_pairs
 
@@ -318,6 +319,7 @@ class NpsScaleReport(ScaleReportBaseClass):
 
             return self._all_scores
         except:
+            self._all_scores = pd.DataFrame(self._scale_response_data["data"])
             self._all_scores["scores"] = self._all_scores["score"]
             print("TallerTaller")
             return self._all_scores
@@ -406,23 +408,21 @@ class LikertScaleReport(ScaleReportBaseClass):
 
     scale_report_type = "likert scale"
     df_score_column_name = "category"
-
-
     def _get_all_scores(self):
-        self._all_scores = pd.DataFrame(self._scale_response_data["data"])
-
-       
-        self._all_scores["brand_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("brand_name"))
-        self._all_scores["category"] = self._all_scores["score"].apply(lambda df_ : df_.get("score"))
-        self._all_scores["date_created"] = pd.to_datetime(self._all_scores['date_created'])
-        
-        return self._all_scores
-
+        try:
+            self._all_scores = pd.DataFrame(self._scale_response_data["data"])
+            self._all_scores["brand_name"] = self._all_scores["brand_data"].apply(lambda df_ : df_.get("brand_name"))
+            self._all_scores["category"] = self._all_scores["score"].apply(lambda df_ : df_.get("score"))
+            self._all_scores["date_created"] = pd.to_datetime(self._all_scores['date_created'])
+            return self._all_scores
+        except:
+            self._all_scores = pd.DataFrame(self._scale_response_data["data"])
+            self._all_scores["category"] = self._all_scores["score"]
+            return self._all_scores
 
     @staticmethod
     def convert_all_likert_label(label_selection , labels_list):
         return [LikertScaleReport.convert_likert_label(label_selection , label) + 1 for label in labels_list]
-
 
     @staticmethod
     def convert_likert_label(label , label_selection):
@@ -447,24 +447,28 @@ class LikertScaleReport(ScaleReportBaseClass):
     
     @staticmethod
     def _get_label_selection(scale_id):
+        try:
+            likert_scale = dowellconnection(
+                    "dowellscale", "bangalore", "dowellscale", "scale", "scale",
+                                            "1093", "ABCDE", "fetch", {"_id" : scale_id}, "nil"
+                )
 
-        likert_scale = dowellconnection(
-                "dowellscale", "bangalore", "dowellscale", "scale", "scale",
-                                        "1093", "ABCDE", "fetch", {"_id" : scale_id}, "nil"
-            )
-        
-        if not isinstance(likert_scale , list):
+            if not isinstance(likert_scale , list):
 
-                likert_scale = json.loads(likert_scale)
+                    likert_scale = json.loads(likert_scale)
 
-                label_selection= likert_scale["data"][0]["settings"].get("label_selection") or likert_scale["data"][0]["settings"].get("label_scale_selection")
+                    label_selection= likert_scale["data"][0]["settings"].get("label_selection") or likert_scale["data"][0]["settings"].get("label_scale_selection")
 
+                    return label_selection
+
+        except:
+            likert_scale = datacube_db(api_key="3db9086b-527f-408b-9fea-ff552160bf40", operation="fetch", id=scale_id)
+            if not isinstance(likert_scale, list):
+                label_selection = likert_scale["data"][0]['settings'].get("pointers")
                 return label_selection
-
-        raise ScaleSettingsFetchError("Can't fetch scale settings for likert scale. Try again")
+            raise ScaleSettingsFetchError("Can't fetch scale settings for likert scale. Try again")
     
     def check_groups(function):
-        
         import functools
         functools.wraps(function)
         def decorators(df , groups: Union[None , List[str]] = None):
@@ -557,11 +561,11 @@ class LikertScaleReport(ScaleReportBaseClass):
 
     
     def report(self , scale_report_object : ScaleReportObject):
-
         label_selection = LikertScaleReport._get_label_selection(scale_report_object.scale_id)
-
-        self._all_scores["scores"] = self._all_scores["category"].apply(LikertScaleReport.convert_likert_label , args=(label_selection , ))
-
+        try:
+            self._all_scores["scores"] = self._all_scores["category"].apply(LikertScaleReport.convert_likert_label , args=(label_selection , ))
+        except Exception as e:
+            print("Tombotltasasas",e)
         print(self._all_scores)
         scores = self._all_scores["scores"].to_list()
         categories = self._all_scores["category"].to_list()

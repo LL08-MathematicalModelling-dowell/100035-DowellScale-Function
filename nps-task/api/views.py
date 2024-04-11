@@ -573,7 +573,6 @@ def response_submit_loop(response, scale_id, instance_id, user, score, process_i
         total_no_of_items = settings['total_no_of_items']
         number_of_scale = settings['no_of_scales']
         score = api_key
-        print("Ambrose")
         try:
             instance_ids = [int(i['score']['instance_id'].split("/")[0])
                             for i in existing_responses if i.get('item') == score]
