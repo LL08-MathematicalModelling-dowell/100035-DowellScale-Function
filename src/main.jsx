@@ -55,7 +55,7 @@ import {
 import {
   BtnLinksNpsLiteScale,
   BtnLinksCreateNpsLiteScale,
-  // NpsLiteSettings,
+  BtnLinkNpslitescaleSetting,
   // UpdateNpsLite,
 } from './pages/scales/nps-lite-scale/BtnLinks-npsliteLink';
 
@@ -226,6 +226,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/btnLinksnps-scale-settings/:slug`,
         element: <BtnLinksNPSScaleSettings />,
+      },
+      {
+        path: `${basePath}/btnLinksnpslite-scale-settings/:slug`,
+        element: <BtnLinkNpslitescaleSetting />,
       },
       {
         path: `${basePath}/likert-scale-settings/:slug`,

@@ -43,7 +43,7 @@ const CreateNpsLiteScale = () => {
       apiKey: '',
     });
 
-    const btnLinkRequiredField = ['apiKey', 'instance', 'name']
+    const btnLinkRequiredField = ['instance', 'name']
 
   const handleToggleEmojiPellete = ()=>{
     setShowEmojiPalette(!showEmojiPalette)
@@ -86,7 +86,7 @@ const CreateNpsLiteScale = () => {
 
 const handleSave = async() =>{
   const payload = {
-    "api_key": formData.apiKey,
+    // "api_key": formData.apiKey,
     "workspace_id": userinfo.userinfo.client_admin_id,
     "username": userinfo.userinfo.username,
     "scale_name": formData.name,
@@ -110,7 +110,6 @@ const handleSave = async() =>{
     );
     const result = response.data;
     setScaleLinks(result.urls)
-    setNpsLinks(result.urls)
     console.log(result, "HHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
     if (result.error) {
       setIsLoading(false);
@@ -119,7 +118,7 @@ const handleSave = async() =>{
       setIsNodalOn(true)
       toast.success('nps lite scale button links created successfully');
       navigateTo(
-        `/100035-DowellScale-Function/btnLinksnps-scale-settings/${result.scale_id}`
+        `/100035-DowellScale-Function/btnLinksnpslite-scale-settings/${result.scale_id}`
       );
     }
   } catch (error) {
@@ -138,7 +137,7 @@ const handleToggleMasterlinkModal = () => {
   <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
       <div style={{filter: showMasterlinkModal ? 'blur(8px)' : '', pointerEvents: showMasterlinkModal ? 'none' : ''}}>
         <div>
-        <div className="w-full" style={{marginTop: '10px'}}>
+        {/* <div className="w-full" style={{marginTop: '10px'}}>
              <CustomTextInput
               label="API key"
               name="apiKey"
@@ -147,7 +146,7 @@ const handleToggleMasterlinkModal = () => {
               handleChange={handleChange}
               placeholder="Enter API key"
             />
-          </div>
+          </div> */}
           <label htmlFor="scaleType" className="mb-1 ml-1 text-sm font-normal">
           Scale type
             </label>
@@ -187,14 +186,6 @@ const handleToggleMasterlinkModal = () => {
         className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
         Save
         </button>
-        {showMasterlinkModal && (
-        <NPSLiteMasterLink
-          handleToggleMasterlinkModal={handleToggleMasterlinkModal}
-          // link={npsLinks}
-          publicLinks={Object.entries(npsLiteLinks)}
-          // image={qrCodeURL}
-        />
-      )}
     </div>
   )
 }

@@ -14,14 +14,8 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { MdDone } from "react-icons/md";
 import BtnLinks from '../../../../components/data/BtnLinks';
-// import UpdateNPSScale from './UpdateNPSScale';
-// import NPSMasterlink from './NPSMasterlink';
-import dowellLogo from '../../../../assets/dowell-logo.png';
-// import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
-import Draggable from 'react-draggable';
-import { useFetchUserContext } from "../../../../contexts/fetchUserContext";
 
-const BtnLinksNPSScaleSettings = () => {
+const BtnLinkNpslitescaleSetting = () => {
   
   const { slug } = useParams();
   const [selectedScore, setSelectedScore] = useState(-1);
@@ -35,7 +29,8 @@ const BtnLinksNPSScaleSettings = () => {
   import axios from 'axios';
   
   const Scale = () => {
-    const buttonLinks = []; //paste the links here
+    const buttonLinks = []; //Paste the links here
+    const buttonNames = ["Left", "center", "Right"]
   
     const [loadingIndex, setLoadingIndex] = useState(null);
     const [responseReceived, setResponseReceived] = useState(false);
@@ -44,6 +39,7 @@ const BtnLinksNPSScaleSettings = () => {
       setLoadingIndex(index);
       try {
         const response = await axios.get(link);
+        console.log(response);
         if(response.data.success === true) {
           setResponseReceived(true);
         }else {
@@ -65,18 +61,18 @@ const BtnLinksNPSScaleSettings = () => {
         {responseReceived ? (
           <div className="response-message" style={{}}>Thank you for your response!</div>
         ) : (
-          <div className="w-full grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center border m-10">
+          <div className="grid gap-3 md:px-2 py-6 grid-cols-3 md:px-1 items-center justify-center place-items-center border m-auto">
             {buttonLinks.map((link, index) => (
               <button
                 key={index}
-                className="rounded-lg bg-primary text-[black] h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]"
+                className="rounded-lg bg-primary text-[black] h-[2rem] w-[2rem] md:h-[3rem] md:w-[10rem]"
                 onClick={() => handleButtonClick(link, index)}
                 disabled={loadingIndex === index}
               >
                 {loadingIndex === index ? (
                   <div className="rounded-full border-4 border-t-white animate-spin h-[1rem] w-[1rem] border-3px m-auto"></div>
                 ) : (
-                  index
+                  buttonNames[index]
                 )}
               </button>
             ))}
@@ -109,23 +105,25 @@ const BtnLinksNPSScaleSettings = () => {
       </div>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
       <script>
-      const linkArray = [] //paste the links here
+      const linkArray = [] //paste your links here
+  
+      const buttonNames = ["Left", "Right", "center"]
   
       const handleButtonClick = async (link) => {
       document.getElementById('spinner').style.display = 'block'
       document.getElementById('scale').style.display = 'none'
         try {
           const response = await axios.get(link);
-          console.log(response);
+          console.log(response.data);
           if(response.data.success === false) {
-            alert("All instances for this scale have been consumed. Create a new scale to continue")
-            document.getElementById('spinner').style.display = 'none'
-            document.getElementById('scale').style.display = 'block'
-           }else {
-            document.getElementById('spinner').style.display = 'none'
-            document.getElementById('qstion').style.display = 'none'
-            document.getElementById('resp').style.display = 'block'
-           }
+          alert("All instances for this scale have been consumed. Create a new scale to continue")
+          document.getElementById('spinner').style.display = 'none'
+          document.getElementById('scale').style.display = 'block'
+         }else {
+          document.getElementById('spinner').style.display = 'none'
+          document.getElementById('qstion').style.display = 'none'
+          document.getElementById('resp').style.display = 'block'
+         }
          } catch (error) {
           console.error('Error:', error);
           document.getElementById('spinner').style.display = 'none'
@@ -136,7 +134,7 @@ const BtnLinksNPSScaleSettings = () => {
         };
           for(let i = 0; i <= linkArray.length -1; i++) {
               const btn = document.createElement('button')
-              btn.textContent = i
+              btn.textContent = buttonNames[i]
               btn.style.width = '20%'
               btn.style.height = '50px'
               btn.style.marginRight = '10px'
@@ -161,7 +159,7 @@ const BtnLinksNPSScaleSettings = () => {
   </body>
   </html>`
 
-  let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  let scores = ["Left", "Center", "Right"];
 
   const handleSelectScore = (score, index) => {
     if(typeof(score) === "string") {
@@ -354,7 +352,7 @@ const BtnLinksNPSScaleSettings = () => {
             </div>}
             <div className="flex flex-col items-center justify-center w-full font-Montserrat">
             
-            {showPreview &&<div className='button-container grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center border m-10'>
+            {showPreview &&<div className='button-container grid gap-3 md:px-2 py-6 grid-cols-3 md:px-1 items-center justify-center place-items-center border m-10'>
             {scores.map((score, index) =>(
            <button
             key={index}
@@ -364,7 +362,7 @@ const BtnLinksNPSScaleSettings = () => {
                         index == selectedScore
                         ? `bg-primary`
                                   : `bg-[green] text-[black}]`
-                              }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                              }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[10rem]`}
                             >
                               {score}
                       </button>
@@ -403,4 +401,4 @@ const BtnLinksNPSScaleSettings = () => {
   );
 };
 
-export default BtnLinksNPSScaleSettings;
+export default BtnLinkNpslitescaleSetting;
