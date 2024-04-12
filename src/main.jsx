@@ -45,6 +45,13 @@ import {
   StapleScaleSettings,
   UpdateStapleScale,
 } from './pages/scales/staple-scale';
+
+import {
+  BtnLinksStapel,
+  BtnLinksCreateStapelScale,
+  BtnLinksStapelScaleSetting
+} from './pages/scales/staple-scale/BtnLinks-StapelLink';
+
 import {
   NPSLiteScale,
   CreateNpsLiteScale,
@@ -164,6 +171,14 @@ const router = createBrowserRouter([
         element: <StapleScale />,
       },
       {
+        path: `${basePath}/stapelBtnLink`,
+        element: <BtnLinksStapel />,
+      },
+      {
+        path: `${basePath}/create-staple-scale-btnLink`,
+        element: <BtnLinksCreateStapelScale />,
+      },
+      {
         path: `${basePath}/create-staple-scale`,
         element: <CreateStapleScale />,
       },
@@ -230,6 +245,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/btnLinksnpslite-scale-settings/:slug`,
         element: <BtnLinkNpslitescaleSetting />,
+      },
+      {
+        path: `${basePath}/btnLinksstapel-scale-settings/:slug`,
+        element: <BtnLinksStapelScaleSetting />,
       },
       {
         path: `${basePath}/likert-scale-settings/:slug`,

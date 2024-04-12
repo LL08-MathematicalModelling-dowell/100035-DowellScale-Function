@@ -39,6 +39,14 @@ const BtnLinksNPSScaleSettings = () => {
   
     const [loadingIndex, setLoadingIndex] = useState(null);
     const [responseReceived, setResponseReceived] = useState(false);
+    const [ipAddress, setIPAddress] = useState('')
+
+    useEffect(() => {
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => setIPAddress(data.ip))
+      .catch(error => console.log(error))
+    }, []);
   
     const handleButtonClick = async (link, index) => {
       setLoadingIndex(index);
@@ -114,6 +122,9 @@ const BtnLinksNPSScaleSettings = () => {
       const handleButtonClick = async (link) => {
       document.getElementById('spinner').style.display = 'block'
       document.getElementById('scale').style.display = 'none'
+      fetch('https://api.ipify.org/?format=json')
+      .then(response => response.json())
+      .then(data => console.log(data.ip))
         try {
           const response = await axios.get(link);
           console.log(response);

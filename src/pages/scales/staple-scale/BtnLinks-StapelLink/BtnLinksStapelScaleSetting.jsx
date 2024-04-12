@@ -15,35 +15,34 @@ import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { MdDone } from "react-icons/md";
 import BtnLinks from '../../../../components/data/BtnLinks';
 
-const BtnLinkNpslitescaleSetting = () => {
+const BtnLinksStapelScaleSetting = () => {
   
   const { slug } = useParams();
-  const [selectedScore, setSelectedScore] = useState(-1);
+  const [selectedScore, setSelectedScore] = useState();
   const [showPreview, setShowPreview] = useState(true)
   const [showCode, setShowCode] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [scaleLinks, setScaleLinks] = useState({})
   const [isLoading, setIsLoading] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState('React')
-  const ReactData = `import { useState } from 'react';
+  const ReactData = `import { useState, useEffect } from 'react';
   import axios from 'axios';
   
   const Scale = () => {
     const buttonLinks = []; //Paste the links here
-    const buttonNames = ["Left", "center", "Right"]
   
     const [loadingIndex, setLoadingIndex] = useState(null);
     const [responseReceived, setResponseReceived] = useState(false);
-
+    
     const [ipAddress, setIPAddress] = useState('')
 
-    useEffect(() => {
+  useEffect(() => {
     fetch('https://api.ipify.org?format=json')
       .then(response => response.json())
       .then(data => setIPAddress(data.ip))
       .catch(error => console.log(error))
-    }, []);
-  
+  }, []);
+  console.log(ipAddress)
     const handleButtonClick = async (link, index) => {
       setLoadingIndex(index);
       try {
@@ -70,18 +69,18 @@ const BtnLinkNpslitescaleSetting = () => {
         {responseReceived ? (
           <div className="response-message" style={{}}>Thank you for your response!</div>
         ) : (
-          <div className="grid gap-3 md:px-2 py-6 grid-cols-3 md:px-1 items-center justify-center place-items-center border m-auto">
+          <div className="button-container flex flex-row gap-3 md:px-2 py-6 md:px-1 items-center justify-center place-items-center border m-10">
             {buttonLinks.map((link, index) => (
               <button
                 key={index}
-                className="rounded-lg bg-primary text-[black] h-[2rem] w-[2rem] md:h-[3rem] md:w-[10rem]"
+                className="rounded-lg bg-primary text-[black] h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]"
                 onClick={() => handleButtonClick(link, index)}
                 disabled={loadingIndex === index}
               >
                 {loadingIndex === index ? (
                   <div className="rounded-full border-4 border-t-white animate-spin h-[1rem] w-[1rem] border-3px m-auto"></div>
                 ) : (
-                  buttonNames[index]
+                  !Number.isNaN(Number(link.slice(-2))) ? link.slice(-2) : link.charAt(link.length -1)
                 )}
               </button>
             ))}
@@ -114,9 +113,7 @@ const BtnLinkNpslitescaleSetting = () => {
       </div>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
       <script>
-      const linkArray = [] //paste your links here
-  
-      const buttonNames = ["Left", "Right", "center"]
+      const linkArray = [] //Paste the links here
   
       const handleButtonClick = async (link) => {
       document.getElementById('spinner').style.display = 'block'
@@ -130,7 +127,7 @@ const BtnLinkNpslitescaleSetting = () => {
           if(response.data.success === false) {
           alert("All instances for this scale have been consumed. Create a new scale to continue")
           document.getElementById('spinner').style.display = 'none'
-          document.getElementById('scale').style.display = 'block'
+          document.getElementById('scale').style.display = 'flex'
          }else {
           document.getElementById('spinner').style.display = 'none'
           document.getElementById('qstion').style.display = 'none'
@@ -144,9 +141,11 @@ const BtnLinkNpslitescaleSetting = () => {
           console.log("Hello")
          }
         };
+
+
           for(let i = 0; i <= linkArray.length -1; i++) {
               const btn = document.createElement('button')
-              btn.textContent = buttonNames[i]
+              btn.textContent = (!Number.isNaN(Number(linkArray[i].slice(-2))) ? linkArray[i].slice(-2) : linkArray[i].charAt(linkArray[i].length -1))
               btn.style.width = '20%'
               btn.style.height = '50px'
               btn.style.marginRight = '10px'
@@ -171,7 +170,7 @@ const BtnLinkNpslitescaleSetting = () => {
   </body>
   </html>`
 
-  let scores = ["Left", "Center", "Right"];
+  let scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
 
   const handleSelectScore = (score, index) => {
     if(typeof(score) === "string") {
@@ -364,17 +363,17 @@ const BtnLinkNpslitescaleSetting = () => {
             </div>}
             <div className="flex flex-col items-center justify-center w-full font-Montserrat">
             
-            {showPreview &&<div className='button-container grid gap-3 md:px-2 py-6 grid-cols-3 md:px-1 items-center justify-center place-items-center border m-10'>
+            {showPreview &&<div className='button-container grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center border m-10'>
             {scores.map((score, index) =>(
            <button
             key={index}
             id = {index}
             onClick={() => handleSelectScore(score, index)}
             className={`rounded-lg ${
-                        index == selectedScore
+              scores[index] == selectedScore
                         ? `bg-primary`
                                   : `bg-[green] text-[black}]`
-                              }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[10rem]`}
+                              }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
                             >
                               {score}
                       </button>
@@ -413,4 +412,4 @@ const BtnLinkNpslitescaleSetting = () => {
   );
 };
 
-export default BtnLinkNpslitescaleSetting;
+export default BtnLinksStapelScaleSetting;
