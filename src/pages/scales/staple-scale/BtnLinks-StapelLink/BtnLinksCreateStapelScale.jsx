@@ -7,7 +7,7 @@ import CustomTextInput from '../../../../components/forms/inputs/CustomTextInput
 import Fallback from '../../../../components/Fallback';
 import { fontStyles } from '../../../../utils/fontStyles';
 import { NPSLiteEmojiPicker } from '../../../../components/emoji-picker';
-import NPSLiteMasterLink from './BtnLinksNPSLiteMasterLink';
+import BtnLinks from '../../../../components/data/BtnLinks';
 import { useFetchUserContext } from "../../../../contexts/fetchUserContext";
 import axios from 'axios';
 
@@ -83,6 +83,7 @@ const BtnLinksCreateStapelScale = () => {
   };
 
 const handleSave = async() =>{
+  BtnLinks.length = 0
   const payload = {
     // "api_key": formData.apiKey,
     "workspace_id": userinfo.userinfo.client_admin_id,

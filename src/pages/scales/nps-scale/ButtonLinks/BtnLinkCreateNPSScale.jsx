@@ -7,7 +7,7 @@ import CustomTextInput from '../../../../components/forms/inputs/CustomTextInput
 import Fallback from '../../../../components/Fallback';
 import { EmojiPicker } from '../../../../components/emoji-picker';
 import { useFetchUserContext } from "../../../../contexts/fetchUserContext";
-import NPSMasterlink from './BtnLinkNPSMasterlink';
+import BtnLinks from '../../../../components/data/BtnLinks';
 import axios from 'axios';
 
 const BtnLinkCreateNPSScale = () => {
@@ -61,6 +61,7 @@ console.log('====================================');
   };
 
   const handleSave = async() =>{
+    BtnLinks.length = 0 
     const payload = {
       // "api_key": formData.apiKey,
       "workspace_id": userinfo.userinfo.client_admin_id,

@@ -46,7 +46,7 @@ const BtnLinksStapelScaleSetting = () => {
     const handleButtonClick = async (link, index) => {
       setLoadingIndex(index);
       try {
-        const response = await axios.get(link);
+        const response = await axios.get(link+"&ipaddress=" + ipAddress);
         console.log(response);
         if(response.data.success === true) {
           setResponseReceived(true);
@@ -115,14 +115,15 @@ const BtnLinksStapelScaleSetting = () => {
       <script>
       const linkArray = [] //Paste the links here
   
-      const handleButtonClick = async (link) => {
+      const handleButtonClick =  (link) => {
       document.getElementById('spinner').style.display = 'block'
       document.getElementById('scale').style.display = 'none'
       fetch('https://api.ipify.org/?format=json')
       .then(response => response.json())
-      .then(data => console.log(data.ip))
+      .then(async (data) =>{
+        console.log(data.ip)
         try {
-          const response = await axios.get(link);
+          const response = await axios.get(link +"&ipaddress=" + data.ip);
           console.log(response.data);
           if(response.data.success === false) {
           alert("All instances for this scale have been consumed. Create a new scale to continue")
@@ -140,6 +141,7 @@ const BtnLinksStapelScaleSetting = () => {
          } finally {
           console.log("Hello")
          }
+        })
         };
 
 

@@ -14,12 +14,6 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { MdDone } from "react-icons/md";
 import BtnLinks from '../../../../components/data/BtnLinks';
-// import UpdateNPSScale from './UpdateNPSScale';
-// import NPSMasterlink from './NPSMasterlink';
-import dowellLogo from '../../../../assets/dowell-logo.png';
-// import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
-import Draggable from 'react-draggable';
-import { useFetchUserContext } from "../../../../contexts/fetchUserContext";
 
 const BtnLinksNPSScaleSettings = () => {
   
@@ -31,7 +25,7 @@ const BtnLinksNPSScaleSettings = () => {
   const [scaleLinks, setScaleLinks] = useState({})
   const [isLoading, setIsLoading] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState('React')
-  const ReactData = `import { useState } from 'react';
+  const ReactData = `import { useState, useEffect } from 'react';
   import axios from 'axios';
   
   const Scale = () => {
@@ -40,7 +34,7 @@ const BtnLinksNPSScaleSettings = () => {
     const [loadingIndex, setLoadingIndex] = useState(null);
     const [responseReceived, setResponseReceived] = useState(false);
     const [ipAddress, setIPAddress] = useState('')
-
+    console.log(buttonLinks.length)
     useEffect(() => {
     fetch('https://api.ipify.org?format=json')
       .then(response => response.json())
@@ -51,7 +45,7 @@ const BtnLinksNPSScaleSettings = () => {
     const handleButtonClick = async (link, index) => {
       setLoadingIndex(index);
       try {
-        const response = await axios.get(link);
+        const response = await axios.get(link+'&ipaddress='+ipAddress);
         if(response.data.success === true) {
           setResponseReceived(true);
         }else {
@@ -71,7 +65,7 @@ const BtnLinksNPSScaleSettings = () => {
           friend or a colleague?
         </h2>}
         {responseReceived ? (
-          <div className="response-message" style={{}}>Thank you for your response!</div>
+          <div className="response-message">Thank you for your response!</div>
         ) : (
           <div className="w-full grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center border m-10">
             {buttonLinks.map((link, index) => (
@@ -122,16 +116,17 @@ const BtnLinksNPSScaleSettings = () => {
       const handleButtonClick = async (link) => {
       document.getElementById('spinner').style.display = 'block'
       document.getElementById('scale').style.display = 'none'
+      let ipAddress = ''
       fetch('https://api.ipify.org/?format=json')
       .then(response => response.json())
-      .then(data => console.log(data.ip))
+      .then(async (data) => {ipAddress = data.ip
         try {
-          const response = await axios.get(link);
+          const response = await axios.get(link + '&ipaddress='+data.ip);
           console.log(response);
           if(response.data.success === false) {
             alert("All instances for this scale have been consumed. Create a new scale to continue")
             document.getElementById('spinner').style.display = 'none'
-            document.getElementById('scale').style.display = 'block'
+            document.getElementById('scale').style.display = 'flex'
            }else {
             document.getElementById('spinner').style.display = 'none'
             document.getElementById('qstion').style.display = 'none'
@@ -143,7 +138,7 @@ const BtnLinksNPSScaleSettings = () => {
           document.getElementById('scale').style.display = 'block'
          } finally {
           console.log("Hello")
-         }
+         }})
         };
           for(let i = 0; i <= linkArray.length -1; i++) {
               const btn = document.createElement('button')
@@ -208,7 +203,7 @@ const BtnLinksNPSScaleSettings = () => {
     fetchData();
   }, [slug]);
   
-  console.log("This is the scale response", Object.entries(scaleLinks))
+  console.log("This is the scale response", BtnLinks)
 
   const handlePreview = () => {
     setShowPreview(true)
@@ -363,7 +358,7 @@ const BtnLinksNPSScaleSettings = () => {
                 {htmlData}
               </SyntaxHighlighter> : ""}
             </div>}
-            <div className="flex flex-col items-center justify-center w-full font-Montserrat">
+            <div className="flex flex-col items-center justify-center w-full font-Montserrat"> 
             
             {showPreview &&<div className='button-container grid gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center border m-10'>
             {scores.map((score, index) =>(

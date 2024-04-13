@@ -8,21 +8,17 @@ import Fallback from '../../../../components/Fallback';
 import { fontStyles } from '../../../../utils/fontStyles';
 import { NPSLiteEmojiPicker } from '../../../../components/emoji-picker';
 import { useFetchUserContext } from "../../../../contexts/fetchUserContext";
-import BtnLinks from '../../../../components/data/BtnLinks';
 import axios from 'axios';
 
 
-const CreateNpsLiteScale = () => {
+const BtnLinksCreateLikertScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [displayedTime, setDisplayedTime] = useState(0);
     const [selectedEmojis, setSelectedEmojis] = useState([]);
     const [showEmojiPalette, setShowEmojiPalette] = useState(false);
     const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
-    const [scaleType, setScaleType] = useState("")
-    const [instance, setInstance] = useState("")
     const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
-    const [npsLiteLinks, setNpsLiteLinks] = useState({})
 
     const {  
       popuOption, 
@@ -41,9 +37,10 @@ const CreateNpsLiteScale = () => {
       scaleType: '',
       instance: '',
       apiKey: '',
+      pointer: ''
     });
 
-    const btnLinkRequiredField = ['instance', 'name']
+    const btnLinkRequiredField = ['instance', 'name', 'pointer']
 
   const handleToggleEmojiPellete = ()=>{
     setShowEmojiPalette(!showEmojiPalette)
@@ -85,14 +82,14 @@ const CreateNpsLiteScale = () => {
   };
 
 const handleSave = async() =>{
-  BtnLinks.length = 0
   const payload = {
     // "api_key": formData.apiKey,
     "workspace_id": userinfo.userinfo.client_admin_id,
     "username": userinfo.userinfo.username,
     "scale_name": formData.name,
     "no_of_instances": formData.instance,
-    "scale_type": 'nps lite'
+    "scale_type": 'likert',
+    "pointers": formData.pointer
   };
   console.log(payload);
 
@@ -117,9 +114,9 @@ const handleSave = async() =>{
       return;
     } else {
       setIsNodalOn(true)
-      toast.success('nps lite scale button links created successfully');
+      toast.success('Likert scale button links created successfully');
       navigateTo(
-        `/100035-DowellScale-Function/btnLinksnpslite-scale-settings/${result.scale_id}`
+        `/100035-DowellScale-Function/btnLinksLikert-scale-settings/${result.scale_id}`
       );
     }
   } catch (error) {
@@ -129,10 +126,6 @@ const handleSave = async() =>{
     setIsLoading(false);
   }
 }
-
-const handleToggleMasterlinkModal = () => {
-  setShowMasterlinkModal(!showMasterlinkModal);
-};
 
   return (
   <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
@@ -158,7 +151,7 @@ const handleToggleMasterlinkModal = () => {
               value={formData.scaleType}
               onChange={handleChange}
             >
-              <option value='nps_lite'>nps lite scale</option>
+              <option value='likert_scale'>Likert scale</option>
             </select>
         </div>
         <div className="w-full" style={{marginTop: '10px'}}>
@@ -166,9 +159,19 @@ const handleToggleMasterlinkModal = () => {
               label="no. of instances"
               name="instance"
               value={formData.instance}
-              type="text"
+              type="number"
               handleChange={handleChange}
               placeholder="enter no. instances"
+            />
+          </div>
+          <div className="w-full" style={{marginTop: '10px'}}>
+             <CustomTextInput
+              label="pointer"
+              name="pointer"
+              value={formData.pointer}
+              type="number"
+              handleChange={handleChange}
+              placeholder="enter pointer"
             />
           </div>
           <div className="w-full">
@@ -191,4 +194,4 @@ const handleToggleMasterlinkModal = () => {
   )
 }
 
-export default CreateNpsLiteScale
+export default BtnLinksCreateLikertScale
