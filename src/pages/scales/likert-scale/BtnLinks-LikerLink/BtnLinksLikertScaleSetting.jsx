@@ -15,39 +15,48 @@ import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { MdDone } from "react-icons/md";
 import BtnLinks from '../../../../components/data/BtnLinks';
 
-const BtnLinkNpslitescaleSetting = () => {
+const BtnLinksLikertScaleSetting = () => {
   
   const { slug } = useParams();
-  const [selectedScore, setSelectedScore] = useState(-1);
+  const [selectedScore, setSelectedScore] = useState();
   const [showPreview, setShowPreview] = useState(true)
   const [showCode, setShowCode] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [scaleLinks, setScaleLinks] = useState({})
   const [isLoading, setIsLoading] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState('React')
+  const [buttonBgColor, setButtonBgColor] = useState(false);
+  const [btnText, setBtnText] = useState("");
   const ReactData = `import { useState, useEffect } from 'react';
   import axios from 'axios';
   
   const Scale = () => {
-    const buttonLinks = []; //Paste the links here
-    const buttonNames = ["Left", "center", "Right"]
+    const buttonLinks = []; //Paste the links here.
+    const btnNames = ['Strongly Disagree', 'Disagree',  'Moderately disagree','Middly disagree','Neutral','Middly Agree','Moderately agree','Agree', 'Strongly Agree', 'true', 'false']
   
     const [loadingIndex, setLoadingIndex] = useState(null);
-    const [responseReceived, setResponseReceived] = useState(false);
-
+    const [responseReceived, setResponseReceived] = useState(false); 
     const [ipAddress, setIPAddress] = useState('')
+    const [btnText, setBtnText] = useState("");
+    const [buttonBgColor, setButtonBgColor] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
     fetch('https://api.ipify.org?format=json')
       .then(response => response.json())
       .then(data => setIPAddress(data.ip))
       .catch(error => console.log(error))
-    }, []);
-  
+  }, []);
+  console.log(ipAddress)
+
+  const handleButtonBgColor = (score) => {
+    setButtonBgColor(true)
+    setBtnText(score)
+}
+
     const handleButtonClick = async (link, index) => {
       setLoadingIndex(index);
       try {
-        const response = await axios.get(link+"&ipaddress="+ipAddress);
+        const response = await axios.get(link);
         console.log(response);
         if(response.data.success === true) {
           setResponseReceived(true);
@@ -70,18 +79,20 @@ const BtnLinkNpslitescaleSetting = () => {
         {responseReceived ? (
           <div className="response-message" style={{}}>Thank you for your response!</div>
         ) : (
-          <div className="grid gap-3 md:px-2 py-6 grid-cols-3 md:px-1 items-center justify-center place-items-center border m-auto">
+          <div className="button-container flex flex-row gap-3 md:px-2 py-6 md:px-1 items-center justify-center place-items-center border m-10 bg-gray-300">
             {buttonLinks.map((link, index) => (
               <button
                 key={index}
-                className="rounded-lg bg-primary text-[black] h-[2rem] w-[2rem] md:h-[3rem] md:w-[10rem]"
+                className='rounded-lg bg-white h-[3rem] w-[5rem] md:h-[3rem] md:w-[5rem]'
                 onClick={() => handleButtonClick(link, index)}
                 disabled={loadingIndex === index}
+                onMouseEnter={() => handleButtonBgColor(btnNames[index])}
+                        style={{backgroundColor: buttonBgColor === true && btnNames[index] === btnText ? 'green':'white', color: buttonBgColor === true && btnNames[index] === btnText ? 'white':'black'}}
               >
                 {loadingIndex === index ? (
                   <div className="rounded-full border-4 border-t-white animate-spin h-[1rem] w-[1rem] border-3px m-auto"></div>
                 ) : (
-                  buttonNames[index]
+                  btnNames[index]
                 )}
               </button>
             ))}
@@ -114,19 +125,16 @@ const BtnLinkNpslitescaleSetting = () => {
       </div>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
       <script>
-      const linkArray = [] //paste your links here
+      const linkArray = [] //Paste the links here
   
-      const buttonNames = ["Left", "Right", "center"]
-  
-      const handleButtonClick = (link) => {
+      const handleButtonClick = async (link) => {
       document.getElementById('spinner').style.display = 'block'
       document.getElementById('scale').style.display = 'none'
       fetch('https://api.ipify.org/?format=json')
       .then(response => response.json())
-      .then(async (data) =>{ 
-      console.log(data.ip)
+      .then(data => console.log(data.ip))
         try {
-          const response = await axios.get(link + "&ipaddress="+data.ip);
+          const response = await axios.get(link);
           console.log(response.data);
           if(response.data.success === false) {
           alert("All instances for this scale have been consumed. Create a new scale to continue")
@@ -143,11 +151,13 @@ const BtnLinkNpslitescaleSetting = () => {
           document.getElementById('scale').style.display = 'block'
          } finally {
           console.log("Hello")
-         }})
+         }
         };
+
+
           for(let i = 0; i <= linkArray.length -1; i++) {
               const btn = document.createElement('button')
-              btn.textContent = buttonNames[i]
+              btn.textContent = (!Number.isNaN(Number(linkArray[i].slice(-2))) ? linkArray[i].slice(-2) : linkArray[i].charAt(linkArray[i].length -1))
               btn.style.width = '20%'
               btn.style.height = '50px'
               btn.style.marginRight = '10px'
@@ -172,7 +182,7 @@ const BtnLinkNpslitescaleSetting = () => {
   </body>
   </html>`
 
-  let scores = ["Left", "Center", "Right"];
+  const scores = ['Strongly Disagree', 'Disagree',  'Moderately disagree','Middly disagree','Neutral','Middly Agree','Moderately agree','Agree', 'Strongly Agree'];
 
   const handleSelectScore = (score, index) => {
     if(typeof(score) === "string") {
@@ -208,7 +218,7 @@ const BtnLinkNpslitescaleSetting = () => {
     fetchData();
   }, [slug]);
   
-  console.log("This is the scale response", Object.entries(scaleLinks))
+  console.log("This is the scale response", BtnLinks)
 
   const handlePreview = () => {
     setShowPreview(true)
@@ -304,6 +314,11 @@ const BtnLinkNpslitescaleSetting = () => {
             link.click();
         }
 
+        const handleButtonBgColor = (score) => {
+          setButtonBgColor(true)
+          setBtnText(score)
+      }
+
   if (isLoading) {
     return <Fallback />;
   }
@@ -365,17 +380,20 @@ const BtnLinkNpslitescaleSetting = () => {
             </div>}
             <div className="flex flex-col items-center justify-center w-full font-Montserrat">
             
-            {showPreview &&<div className='button-container grid gap-3 md:px-2 py-6 grid-cols-3 md:px-1 items-center justify-center place-items-center border m-10'>
+            {showPreview &&<div className= 'grid gap-3 md:gap-3 md:px-2 py-6 grid-cols-11 md:px-1  justify-center bg-gray-300 border'
+                style={{display:'flex', alignItems:'center', fontSize: 'small', overflow: 'auto', marginBottom: '10px'}}>
             {scores.map((score, index) =>(
            <button
             key={index}
             id = {index}
             onClick={() => handleSelectScore(score, index)}
             className={`rounded-lg ${
-                        index == selectedScore
-                        ? `bg-primary`
-                                  : `bg-[green] text-[black}]`
-                              }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[10rem]`}
+              index == selectedScore
+              ? 'bg-white' : 'bg-primary text-white'
+              }  h-[3rem] w-[5rem] md:h-[3rem] md:w-[5rem]`}
+
+              onMouseEnter={() => handleButtonBgColor(score)}
+                        style={{backgroundColor: buttonBgColor === true && scores[index] === btnText ? 'green':'white', color: buttonBgColor === true && scores[index] === btnText ? 'white':'black'}}
                             >
                               {score}
                       </button>
@@ -414,4 +432,4 @@ const BtnLinkNpslitescaleSetting = () => {
   );
 };
 
-export default BtnLinkNpslitescaleSetting;
+export default BtnLinksLikertScaleSetting;
