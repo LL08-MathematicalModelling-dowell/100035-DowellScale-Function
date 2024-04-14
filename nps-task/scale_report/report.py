@@ -321,9 +321,7 @@ class NpsScaleReport(ScaleReportBaseClass):
         except:
             self._all_scores = pd.DataFrame(self._scale_response_data["data"])
             self._all_scores["scores"] = self._all_scores["score"]
-            print("TallerTaller")
             return self._all_scores
-
 
 
     def create_group(self , field):
@@ -358,14 +356,14 @@ class NpsScaleReport(ScaleReportBaseClass):
 
 
     def report(self , scale_report_object : ScaleReportObject):
-
-        self.reports = {}
-        self.reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , self._all_scores["scores"].to_list())
-
-        self.reports["percentiles"] = get_percentile(np.array(self._all_scores["scores"]))
-        self.reports.update(StatisticsReport.statistics_report(self._all_scores["scores"].to_list()))
-        self.reports["one_sample_t_test"] = stats.ttest_1samp(self._all_scores["scores"].to_list() , 5)
-
+        try:
+            self.reports = {}
+            self.reports["categorize_scale_report"] = categorize_scale_generate_scale_specific_report("nps scale" , self._all_scores["scores"].to_list())
+            self.reports["percentiles"] = get_percentile(np.array(self._all_scores["scores"]))
+            self.reports.update(StatisticsReport.statistics_report(self._all_scores["scores"].to_list()))
+            self.reports["one_sample_t_test"] = stats.ttest_1samp(self._all_scores["scores"].to_list() , 5)
+        except Exception as e:
+            print(e)
         """
         if "poisson_case_results" in self.reports:
             self.reports["covariance value"] =  (self.reports["poisson_case_results"]["standardDeviation"]["list1"] / self.reports["poisson_case_results"]["mean"]["list1"]) * 100
@@ -563,9 +561,9 @@ class LikertScaleReport(ScaleReportBaseClass):
     def report(self , scale_report_object : ScaleReportObject):
         label_selection = LikertScaleReport._get_label_selection(scale_report_object.scale_id)
         try:
-            self._all_scores["scores"] = self._all_scores["category"].apply(LikertScaleReport.convert_likert_label , args=(label_selection , ))
+            self._all_scores["scores"] = self._all_scores["category"].apply(LikertScaleReport.convert_likert_label , args=(label_selection, ))
         except Exception as e:
-            print("Tombotltasasas",e)
+            print("Tombotltasasas", e)
         print(self._all_scores)
         scores = self._all_scores["scores"].to_list()
         categories = self._all_scores["category"].to_list()

@@ -5,7 +5,7 @@ api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f"
 
 def datacube_db(api_key, operation,payload=None, update_data=None, id=None):
     data = {
-        "api_key": api_key,
+        "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
         "db_name": "livinglab_scales",
         "coll_name": "collection_3",
         "operation": operation,
@@ -40,7 +40,7 @@ def datacube_db(api_key, operation,payload=None, update_data=None, id=None):
 
 def datacube_db_response(api_key, operation, scale_id=None, payload=None):
     data = {
-        "api_key": api_key,
+        "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
         "db_name": "livinglab_scale_response",
         "coll_name": "collection_1",
         "operation": operation,

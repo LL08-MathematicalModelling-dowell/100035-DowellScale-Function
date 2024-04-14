@@ -9,6 +9,7 @@ from .db_operations import datacube_db, datacube_db_response, api_key
 from api.utils import dowell_time
 from nps.eventID import get_event_id
 
+
 class ScaleCreateAPIView(APIView):
     def generate_urls(self, payload, id):
         urls_dict = {}
@@ -17,7 +18,8 @@ class ScaleCreateAPIView(APIView):
         scale_range = payload['scale_range']
         for i in scale_range:
             main_url = f"Button {i} link:"
-            instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
+            instances = [
+                f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
             # instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
             urls_dict[main_url] = instances
         return urls_dict
@@ -115,12 +117,12 @@ class ScaleCreateAPIView(APIView):
                 "event_id": event_id,
                 "scale_range": list(scale_range),
                 "pointers": pointers if scale_type == "likert scale" else "",
-                "axis_limit":axis_limit if scale_type == "stapel scale" else ""
+                "axis_limit": axis_limit if scale_type == "stapel scale" else ""
             }
             }
             # save data to db
             try:
-                response = datacube_db(payload=payload, api_key=api_key, operation="insert",)
+                response = datacube_db(payload=payload, api_key=api_key, operation="insert", )
 
                 scale_id = response['data'].get("inserted_id")
 
@@ -128,7 +130,8 @@ class ScaleCreateAPIView(APIView):
                 urls = self.generate_urls(payload['settings'], scale_id)
 
                 # insert urls into the db
-                datacube_db(payload=payload, api_key=api_key, operation="update", id=scale_id, update_data={"urls": urls})
+                datacube_db(payload=payload, api_key=api_key, operation="update", id=scale_id,
+                            update_data={"urls": urls})
 
                 response_data = {
                     "workspace_id": workspace_id,
@@ -198,25 +201,31 @@ def post_scale_response(request):
     item = int(request.GET.get('item'))
     workspace_id = request.GET.get('workspace_id')
     username = request.GET.get('username')
+    ip_address = request.GET.get('ip_address')
 
     if request.method == "GET":
         try:
             existing_data = {
-                "workspace_id":workspace_id,
-                "username":username,
-                "scale_id":scale_id,
+                "workspace_id": workspace_id,
+                "username": username,
+                "scale_id": scale_id,
                 "score": item
             }
 
-            #fetch the relevant settings meta data
+            # fetch the relevant settings meta data
             settings_meta_data = datacube_db(api_key=api_key, operation="fetch", id=scale_id)
             data = settings_meta_data['data'][0]['settings']
             no_of_instances = data["no_of_scales"]
             scale_type = data["scale_category"]
 
-            #response submission logic
-            response_data = datacube_db_response(api_key=api_key, scale_id=scale_id,operation="fetch")
+            # response submission logic
+            response_data = datacube_db_response(api_key=api_key, scale_id=scale_id, operation="fetch")
             current_instance_id = len(response_data['data']) + 1 if response_data['data'] else 1
+            for data_entry in response_data['data']:
+                # Check if the 'ip_address' field exists and matches the provided IP address
+                if 'ip_address' in data_entry and data_entry['ip_address'] == ip_address:
+                    return Response({"success": False, "message": "Cannot provide multiple scores from same user."},
+                                    status=status.HTTP_400_BAD_REQUEST)
 
             if current_instance_id <= no_of_instances:
                 event_id = get_event_id()
@@ -224,11 +233,12 @@ def post_scale_response(request):
 
                 existing_data.update({
                     "instance_id": current_instance_id,
-                    "scale_type":scale_type,
-                    "event_id":event_id,
-                    "dowell_time":created_time
+                    "scale_type": scale_type,
+                    "event_id": event_id,
+                    "ip_address": ip_address,
+                    "dowell_time": created_time
                 })
-                responses =datacube_db_response(api_key=api_key, payload=existing_data, operation="insert")
+                responses = datacube_db_response(api_key=api_key, payload=existing_data, operation="insert")
                 response_id = responses['data']['inserted_id']
 
                 return Response({
@@ -242,9 +252,9 @@ def post_scale_response(request):
                 })
             else:
                 return Response({
-                                    "success": False,
-                                    "message": "All instances for this scale have been consumed. Create a new scale to continue"
-                                },status=status.HTTP_200_OK)
+                    "success": False,
+                    "message": "All instances for this scale have been consumed. Create a new scale to continue"
+                }, status=status.HTTP_200_OK)
 
         except Exception as e:
             print("response", e)
