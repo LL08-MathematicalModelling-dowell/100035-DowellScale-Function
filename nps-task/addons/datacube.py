@@ -1,6 +1,8 @@
 import json
 import requests
 
+api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f"
+
 def datacube_data_insertion(api_key, database_name, collection_name, data):
     """
     Insert data into a collection in the DataCube database.

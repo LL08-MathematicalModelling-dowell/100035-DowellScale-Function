@@ -219,6 +219,7 @@ def post_scale_response(request):
             #fetch the relevant settings meta data 
             settings_meta_data = datacube_db(api_key=api_key, operation="fetch", id=scale_id)
             data = settings_meta_data['data'][0]['settings']
+            print(data)
             no_of_instances = data["no_of_scales"]
 
             #response submission logic
