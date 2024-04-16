@@ -46,43 +46,31 @@ class CreateNPSLiteScale(APIView):
 class VisitorsCountAPI(APIView):
     def insert_response(self, scale_id):
         date_created = dowell_time("Asia/Calcutta")
-        # response_data = json.loads(datacube_data_retrieval(api_key=api_key, database_name="livinglab_scale_response", collection_name="collection_1", data={"scale_id":scale_id}, limit=10000, offset=0, payment=False))
         
-        # instance_id = len(response_data['data']) + 1 if response_data['data'] else 1
-        response = {
+        response_data = json.loads(datacube_data_retrieval(api_key=api_key, database_name="livinglab_scale_response", collection_name="collection_1", data={"scale_id":scale_id}, limit=10000, offset=0, payment=False))
+        instance_id = len(response_data['data']) + 1 if response_data['data'] else 1
+        print(instance_id)
+        
+        response_data = {
             "scale_id":scale_id,
-            # "instance_id":instance_id,
+            "instance_id":instance_id,
             "score":1,
             "category":"Promoter",
             "label":"Yes",
             "date_created":date_created["current_time"]
         }
-        responses = json.loads(datacube_data_insertion(api_key=api_key,database_name="livinglab_scale_response",collection_name="collection_1",data=response))
+        
+        responses = json.loads(datacube_data_insertion(api_key=api_key,database_name="livinglab_scale_response",collection_name="collection_1",data=response_data))
         print(responses)
-        return (responses)
+        return (response_data)
     
     def get(self, request):
         try:
             scale_id = request.GET.get("scale_id")
-            print(request.headers)
-            self.insert_response(scale_id)
-            data = {"scale_id":scale_id}
-        
-            responses = json.loads(datacube_data_retrieval(api_key=api_key, database_name="livinglab_scale_response", collection_name="collection_1", data=data, limit=10000, offset=0, payment=False))
-            if not responses["data"]:
-                return Response({
-                                    "success":False,
-                                    "message": "Requested Data was not Found. Contact the admin"
-                                },status=status.HTTP_404_NOT_FOUND)
+            inserted_response_data = self.insert_response(scale_id)
             
             current_time = dowell_time("Asia/Calcutta")
-            visitor_count = len(responses['data'])
-            # user_ip = request.META.get('REMOTE_ADDR', None)
-            # if user_ip:
-            #     ip_address = user_ip
-            # else:
-            #     ip_address = "Could not retrieve IP address"
-            # print(user_ip)
+            visitor_count = inserted_response_data['instance_id']
 
             return Response({
                                 "success":True, 

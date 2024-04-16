@@ -13,15 +13,21 @@ from nps.eventID import get_event_id
 class ScaleCreateAPIView(APIView):
     
     def generate_urls(self, payload, id):
-        urls_dict = {}
+        urls_dict = []
         workspace_id = payload['workspace_id']
         username = payload['username']
         scale_range = payload['scale_range']
-        for i in scale_range:
-            main_url = f"Button {i} link:"
-            instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
-            # instances = [f"http://127.0.0.1:8000/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
-            urls_dict[main_url] = instances
+        channel_list = payload['channel_list']
+
+        for i in range(len(channel_list)) :
+            for j in scale_range :
+                channel = channel_list[i]
+                print(f"current",i,j, "and channel", channel)
+                # main_url = f"Button {j} link:"
+                # instances = [f"{public_url}/addons/create-response/?channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
+                instances = [f"http://127.0.0.1:8000/addons/create-response/?channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={j}" ]
+                # print(instances)
+                urls_dict.append(instances)
         return urls_dict
 
     def adjust_scale_range(self, payload):
@@ -73,12 +79,14 @@ class ScaleCreateAPIView(APIView):
     # CREATE URLS API VIEW
     def post(self, request, format=None):
         serializer = ScaleSerializer(data=request.data)
-
+    
         if serializer.is_valid():
             workspace_id = serializer.validated_data['workspace_id']
             username = serializer.validated_data['username']
             scale_name = serializer.validated_data['scale_name']
             scale_type = serializer.validated_data['scale_type']
+            no_of_channels = serializer.validated_data['no_of_channels']
+            channel_list = request.data['channel_list']
 
             payload = {"scale_type": scale_type}
 
@@ -116,6 +124,8 @@ class ScaleCreateAPIView(APIView):
                 "total_no_of_items": total_no_of_items,
                 "scale_category": scale_type,
                 "no_of_scales": no_of_instances,
+                "no_of_channels":no_of_channels,
+                "channel_list":channel_list,
                 "allow_resp": True,
                 "workspace_id": workspace_id,
                 "username": username,
@@ -206,6 +216,7 @@ def post_scale_response(request):
     item = int(request.GET.get('item'))
     workspace_id = request.GET.get('workspace_id')
     username = request.GET.get('username')
+    channel_name = request.GET.get('channel')
 
     if request.method == "GET":
         try:
@@ -213,7 +224,8 @@ def post_scale_response(request):
                 "workspace_id":workspace_id,
                 "username":username,
                 "scale_id":scale_id,
-                "score": item
+                "score": item,
+                "channel":channel_name
             }
 
             #fetch the relevant settings meta data 
@@ -248,7 +260,8 @@ def post_scale_response(request):
                     "score": item,
                     "instance_id": current_instance_id,
                     "available_instances": no_of_instances - current_instance_id,
-                    "time_stamp": created_time["current_time"]
+                    "time_stamp": created_time["current_time"],
+                    "channel_name":channel_name
                 })
             else:
                 return Response({"success": False,
