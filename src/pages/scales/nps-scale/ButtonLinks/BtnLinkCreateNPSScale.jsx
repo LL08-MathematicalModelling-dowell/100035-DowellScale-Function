@@ -68,7 +68,7 @@ console.log('====================================');
       "username": userinfo.userinfo.username,
       "scale_name": formData.name,
       "no_of_instances": formData.instance,
-      "scale_type": 'nps'
+      "scale_type": 'nps scale'
     };
     console.log(payload);
 

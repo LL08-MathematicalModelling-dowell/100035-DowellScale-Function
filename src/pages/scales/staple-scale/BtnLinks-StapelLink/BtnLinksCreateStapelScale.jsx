@@ -90,7 +90,7 @@ const handleSave = async() =>{
     "username": userinfo.userinfo.username,
     "scale_name": formData.name,
     "no_of_instances": formData.instance,
-    "scale_type": 'stapel',
+    "scale_type": 'stapel scale',
     "axis_limit": formData.upperLimit
   };
   console.log(payload);

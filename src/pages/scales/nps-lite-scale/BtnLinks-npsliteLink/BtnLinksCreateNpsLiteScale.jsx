@@ -92,7 +92,7 @@ const handleSave = async() =>{
     "username": userinfo.userinfo.username,
     "scale_name": formData.name,
     "no_of_instances": formData.instance,
-    "scale_type": 'nps lite'
+    "scale_type": 'npslite scale'
   };
   console.log(payload);
 
