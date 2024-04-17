@@ -79,7 +79,7 @@ class VisitorsCountAPI(APIView):
                                 "success":True, 
                                 "visitor_count":visitor_count, 
                                 "current_time":current_time["current_time"],
-                                "ip_address":request.headers
+                                "user_info":request.headers
                             },status=status.HTTP_200_OK)
        
         except Exception as e:
