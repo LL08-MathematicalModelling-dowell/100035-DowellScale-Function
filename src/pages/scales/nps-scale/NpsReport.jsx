@@ -22,11 +22,11 @@ function NpsReport() {
         const response = await axios.get(
           `https://100035.pythonanywhere.com/report/addons_report/?scale_id=${slug}&api_key=1b834e07-c68b-4bf6-96dd-ab7cdc62f07f`
         );
-        console.log(response.data.report.poisson_case_results.series.list1)
+        console.log(response.data.report)
         setReportData(response.data.report)
         let arrayData = response.data.report.poisson_case_results.series.list1
         for(let i = 0; i<response.data.report.no_of_scales; i++) {
-          let scaleObj = {name: arrayData[i], uv: i+1, pv: 2400, amt: 2400}
+          let scaleObj = {name: i+1, uv: arrayData[i], pv: 2400, amt: 2400}
           if(BtnLinks.includes(`'${scaleObj.uv}'`) == false){
             BtnLinks.push(scaleObj)
           }
@@ -73,7 +73,7 @@ function NpsReport() {
       </div>
       <div className='flex flex-col items-center'>
       <div className='flex items-center'>
-      <p>No of scales</p>
+      <p>score</p>
       <LineChart width={600} height={300} data={BtnLinks}>
         <Line type="monotone" dataKey="uv" stroke="#8884d8" />
         <CartesianGrid stroke="#ccc" />
@@ -81,7 +81,7 @@ function NpsReport() {
         <YAxis />
       </LineChart>
       </div>
-      <p>score</p>
+      <p>Users</p>
       </div>
     </div>
   )
