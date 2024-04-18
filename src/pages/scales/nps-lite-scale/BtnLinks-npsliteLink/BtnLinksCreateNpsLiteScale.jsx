@@ -41,6 +41,7 @@ const CreateNpsLiteScale = () => {
       scaleType: '',
       instance: '',
       apiKey: '',
+      useOf: '',
     });
 
     const btnLinkRequiredField = ['instance', 'name']
@@ -60,30 +61,6 @@ const CreateNpsLiteScale = () => {
   }
 
 
-  const handleBlurTime = () => {
-    if (formData.time) {
-      const countDownTimer = setInterval(() => {
-        setFormData((prev) => {
-          if (prev.time > 0) {
-            setDisplayedTime(prev.time);
-            return {
-              ...prev,
-              time: prev.time - 1,
-            };
-          } else {
-            clearInterval(countDownTimer);
-            return prev;
-          }
-        });
-      }, 1000); 
-
-      setFormData((prev) => ({
-        ...prev,
-        countDownTimerId: countDownTimer,
-      }));
-    }
-  };
-
 const handleSave = async() =>{
   BtnLinks.length = 0
   const payload = {
@@ -92,7 +69,8 @@ const handleSave = async() =>{
     "username": userinfo.userinfo.username,
     "scale_name": formData.name,
     "no_of_instances": formData.instance,
-    "scale_type": 'npslite scale'
+    "scale_type": 'nps_lite',
+    "user_type": formData.useOf === 'yes' ? false : true
   };
   console.log(payload);
 
@@ -130,14 +108,12 @@ const handleSave = async() =>{
   }
 }
 
-const handleToggleMasterlinkModal = () => {
-  setShowMasterlinkModal(!showMasterlinkModal);
-};
 
   return (
   <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
+    <div className="flex flex-col w-1/2">
       <div style={{filter: showMasterlinkModal ? 'blur(8px)' : '', pointerEvents: showMasterlinkModal ? 'none' : ''}}>
-        <div>
+        <div className='w-full mb-3'>
         {/* <div className="w-full" style={{marginTop: '10px'}}>
              <CustomTextInput
               label="API key"
@@ -148,13 +124,13 @@ const handleToggleMasterlinkModal = () => {
               placeholder="Enter API key"
             />
           </div> */}
-          <label htmlFor="scaleType" className="mb-1 ml-1 text-sm font-normal">
+          <label htmlFor="scaleType" className="mb-1 ml-1 text-sm font-normal w-1/4">
           Scale type
-            </label>
+          </label>
            <select
               label="Select a scale type"
               name="scaleType"
-              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4 w-1/2"
               value={formData.scaleType}
               onChange={handleChange}
             >
@@ -181,12 +157,28 @@ const handleToggleMasterlinkModal = () => {
               placeholder="enter scale name"
             />
           </div>
+          <div className='w-full mb-3 mt-4'>
+          <label htmlFor="useOf" className="mb-1 ml-1 text-sm font-normal">
+          Do you want to use the scale as an API?
+          </label>
+           <select
+              label="yes"
+              name="useOf"
+              className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4 w-1/2"
+              value={formData.useOf}
+              onChange={handleChange}
+            >
+              <option value='yes'>Yes</option>
+              <option value='no'>No</option>
+            </select>
+        </div>
       </div>
       <button
         onClick={handleSave}
         className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
         Save
         </button>
+        </div>
     </div>
   )
 }
