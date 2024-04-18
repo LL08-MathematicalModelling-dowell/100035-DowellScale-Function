@@ -1,4 +1,5 @@
 from itertools import chain
+from django.shortcuts import redirect
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,21 +14,17 @@ from nps.eventID import get_event_id
 class ScaleCreateAPIView(APIView):
     
     def generate_urls(self, payload, id):
-        urls_dict = []
+        urls_dict = {}
         workspace_id = payload['workspace_id']
         username = payload['username']
         scale_range = payload['scale_range']
-        channel_list = payload['channel_list']
-
-        for i in range(len(channel_list)) :
-            for j in scale_range :
-                channel = channel_list[i]
-                print(f"current",i,j, "and channel", channel)
-                # main_url = f"Button {j} link:"
-                # instances = [f"{public_url}/addons/create-response/?channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
-                instances = [f"http://127.0.0.1:8000/addons/create-response/?channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={j}" ]
-                # print(instances)
-                urls_dict.append(instances)
+        user_type = payload['user_type']
+        
+        for i in scale_range:
+            main_url = f"Button {i} link:"
+            instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
+            # instances = [f"http://127.0.0.1:8000/addons/create-response/?user={user_type}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
+            urls_dict[main_url] = instances
         return urls_dict
 
     def adjust_scale_range(self, payload):
@@ -85,9 +82,8 @@ class ScaleCreateAPIView(APIView):
             username = serializer.validated_data['username']
             scale_name = serializer.validated_data['scale_name']
             scale_type = serializer.validated_data['scale_type']
-            no_of_channels = serializer.validated_data['no_of_channels']
-            channel_list = request.data['channel_list']
-
+            user_type = serializer.validated_data['user_type']
+        
             payload = {"scale_type": scale_type}
 
             if scale_type == "likert":
@@ -124,8 +120,7 @@ class ScaleCreateAPIView(APIView):
                 "total_no_of_items": total_no_of_items,
                 "scale_category": scale_type,
                 "no_of_scales": no_of_instances,
-                "no_of_channels":no_of_channels,
-                "channel_list":channel_list,
+                "user_type":user_type,
                 "allow_resp": True,
                 "workspace_id": workspace_id,
                 "username": username,
@@ -152,6 +147,7 @@ class ScaleCreateAPIView(APIView):
                     "username": username,
                     "scale_name": scale_name,
                     "scale_category": scale_type,
+                    "user_type":user_type,
                     "total_no_of_buttons": total_no_of_items,
                     "no_of_instances": no_of_instances,
                     "scale_id": scale_id,
@@ -216,7 +212,9 @@ def post_scale_response(request):
     item = int(request.GET.get('item'))
     workspace_id = request.GET.get('workspace_id')
     username = request.GET.get('username')
-    channel_name = request.GET.get('channel')
+    user_type = request.GET.get('user')
+    print(type(user_type))
+    scale_type = request.GET.get('scale_type')
 
     if request.method == "GET":
         try:
@@ -225,7 +223,7 @@ def post_scale_response(request):
                 "username":username,
                 "scale_id":scale_id,
                 "score": item,
-                "channel":channel_name
+                "user_type":user_type
             }
 
             #fetch the relevant settings meta data 
@@ -252,17 +250,20 @@ def post_scale_response(request):
                 responses =datacube_db_response(api_key=api_key, payload=existing_data, operation="insert")
                 response_id = responses['data']['inserted_id']
                 
-            
-                return Response({
-                    "success": responses['success'],
-                    "message": "Response recorded successfully",
-                    "response_id": response_id,
-                    "score": item,
-                    "instance_id": current_instance_id,
-                    "available_instances": no_of_instances - current_instance_id,
-                    "time_stamp": created_time["current_time"],
-                    "channel_name":channel_name
-                })
+                if user_type == "True":
+                    product_url = "http://localhost:3000/"
+                    generated_url = f"{product_url}/?workspace_id={workspace_id}&scale_type={scale_type}&score={item}"
+                    return redirect(generated_url)
+                else:
+                    return Response({
+                        "success": responses['success'],
+                        "message": "Response recorded successfully",
+                        "response_id": response_id,
+                        "score": item,
+                        "instance_id": current_instance_id,
+                        "available_instances": no_of_instances - current_instance_id,
+                        "time_stamp": created_time["current_time"]
+                    })
             else:
                 return Response({"success": False,
                                  "message": "All instances for this scale have been consumed. Create a new scale to continue"},
@@ -270,6 +271,17 @@ def post_scale_response(request):
 
         except Exception as e:
             print("response", e)
-            return Response({"Unexpected error occurred!": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"Resource not found! Contact the admin"}, status=status.HTTP_404_NOT_FOUND)
     else:
         return Response("Method not allowed")
+    
+
+
+# https://100035.pythonanywhere.com/addons/create-response/?
+# workspace_id=653637a4950d738c6249aa9a
+# &username=CustomerSupport
+# &scale_id=661faeb62fe858b30556371e
+# &user=True
+# &scale_type=nps
+# &item=0
+

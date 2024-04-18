@@ -44,7 +44,7 @@ class CreateCounterScale(APIView):
                              "settings":payload["settings"]
                              },status=status.HTTP_201_CREATED)
         except Exception as e:
-            print("Exception: {e}")
+            print(f"Exception: {e}")
             return Response({
                              "success":False, 
                              "message":"Could not process you request. Contact the admin."

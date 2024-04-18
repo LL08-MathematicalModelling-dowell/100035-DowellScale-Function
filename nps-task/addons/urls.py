@@ -9,6 +9,6 @@ urlpatterns = [
     # path('create-scale/<id>/', ScaleCreateAPIView.as_view(), name='create-scale'),
     path('create-response/', csrf_exempt(post_scale_response), name='create-response'),
     path('create-response/<id>', csrf_exempt(post_scale_response), name='create-response'),
-    path('createnpslite/', CreateCounterScale.as_view(), name = 'createnpslite'),
+    path('create-counter-scale/', CreateCounterScale.as_view(), name = 'createnpslite'),
     path('visitors-count/', VisitorsCountAPI.as_view(), name='visitors-count' )
 ]
