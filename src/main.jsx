@@ -17,6 +17,7 @@ import {
   CreateNPSScale,
   NPSScaleSettings,
   UpdateNPSScale,
+  NpsReport
 } from './pages/scales/nps-scale';
 
 import {
@@ -253,6 +254,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/nps-scale-settings/:slug`,
         element: <NPSScaleSettings />,
+      },
+      {
+        path: `${basePath}/scale-report/:slug`,
+        element: <NpsReport />,
       },
       {
         path: `${basePath}/btnLinksnps-scale-settings/:slug`,
