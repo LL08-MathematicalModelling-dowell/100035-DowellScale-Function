@@ -41,7 +41,7 @@ const CreateNpsLiteScale = () => {
       scaleType: '',
       instance: '',
       apiKey: '',
-      useOf: '',
+      useOf: 'yes',
     });
 
     const btnLinkRequiredField = ['instance', 'name']
