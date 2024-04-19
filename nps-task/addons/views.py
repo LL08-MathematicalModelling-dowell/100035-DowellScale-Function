@@ -14,18 +14,37 @@ from nps.eventID import get_event_id
 class ScaleCreateAPIView(APIView):
     
     def generate_urls(self, payload, id):
-        urls_dict = {}
+        urls_dict = []
+        # channel_urls={}
         workspace_id = payload['workspace_id']
         username = payload['username']
         scale_range = payload['scale_range']
         user_type = payload['user_type']
+        scale_type = payload['scale_category']
+        channel_list = payload['channel_list']
+    
+        # for i in range(len(channel_list)) :
+        #     for j in scale_range :
+        #         channel = channel_list[i]
+        #         print(f"current",i,j, "and channel", channel)
+        #         main_url = f"Button {j} link:"
+        #         # instances = [f"{public_url}/addons/create-response/?user={user_type}&channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
+        #         instances = [f"http://127.0.0.1:8000/addons/create-response/?user={user_type}&scale_type={scale_type}&channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={j}" ]
+        #         channel_urls[main_url]=instances
+        #         urls_dict[channel]=channel_urls
         
-        for i in scale_range:
-            main_url = f"Button {i} link:"
-            instances = [f"{public_url}/addons/create-response/?workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
-            # instances = [f"http://127.0.0.1:8000/addons/create-response/?user={user_type}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}" ]
-            urls_dict[main_url] = instances
+        # return urls_dict
+        for i in range(len(channel_list)) :
+            for j in scale_range :
+                channel = channel_list[i]
+                print(f"current",i,j, "and channel", channel)
+                # main_url = f"Button {j} link:"
+                # instances = [f"{public_url}/addons/create-response/?channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
+                instances = [f"http://127.0.0.1:8000/addons/create-response/?user={user_type}&scale_type={scale_type}&channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={j}" ]
+                # print(instances)
+                urls_dict.append(instances)
         return urls_dict
+
 
     def adjust_scale_range(self, payload):
         print("Inside adjust_scale_range function")
@@ -42,7 +61,7 @@ class ScaleCreateAPIView(APIView):
             print(scale_range)
             return scale_range
 
-        elif scale_type == 'nps lite':
+        elif scale_type == 'nps_lite':
             return range(0, 3)
         elif scale_type == 'stapel':
             if 'axis_limit' in payload:
@@ -83,6 +102,8 @@ class ScaleCreateAPIView(APIView):
             scale_name = serializer.validated_data['scale_name']
             scale_type = serializer.validated_data['scale_type']
             user_type = serializer.validated_data['user_type']
+            channel_list = serializer.validated_data['channel_list']
+            no_of_channels = len(channel_list)
         
             payload = {"scale_type": scale_type}
 
@@ -121,6 +142,7 @@ class ScaleCreateAPIView(APIView):
                 "scale_category": scale_type,
                 "no_of_scales": no_of_instances,
                 "user_type":user_type,
+                "channel_list":channel_list,
                 "allow_resp": True,
                 "workspace_id": workspace_id,
                 "username": username,
@@ -149,7 +171,8 @@ class ScaleCreateAPIView(APIView):
                     "scale_category": scale_type,
                     "user_type":user_type,
                     "total_no_of_buttons": total_no_of_items,
-                    "no_of_instances": no_of_instances,
+                    "no_of_instances":no_of_channels,
+                    "no_of_responses": no_of_instances,
                     "scale_id": scale_id,
                     "urls": urls
                 }
@@ -213,8 +236,9 @@ def post_scale_response(request):
     workspace_id = request.GET.get('workspace_id')
     username = request.GET.get('username')
     user_type = request.GET.get('user')
-    print(type(user_type))
+    channel_name = request.GET.get('channel')
     scale_type = request.GET.get('scale_type')
+    
 
     if request.method == "GET":
         try:
@@ -223,7 +247,8 @@ def post_scale_response(request):
                 "username":username,
                 "scale_id":scale_id,
                 "score": item,
-                "user_type":user_type
+                "user_type":user_type,
+                "channel_name":channel_name
             }
 
             #fetch the relevant settings meta data 
@@ -231,9 +256,13 @@ def post_scale_response(request):
             data = settings_meta_data['data'][0]['settings']
             print(data)
             no_of_instances = data["no_of_scales"]
+            channel_list = data["channel_list"]
+            channel_instance_id = channel_list.index(channel_name)+1
 
             #response submission logic
-            response_data = datacube_db_response(api_key=api_key, scale_id=scale_id,operation="fetch")
+            response_data = datacube_db_response(api_key=api_key, scale_id=scale_id,channel_name=channel_name,operation="fetch")
+            print(response_data)
+           
             current_instance_id = len(response_data['data']) + 1 if response_data['data'] else 1
 
             if current_instance_id <= no_of_instances:
@@ -243,7 +272,8 @@ def post_scale_response(request):
                 existing_data.update({
                     "event_id":event_id,
                     "dowell_time":created_time,
-                    "instance_id": current_instance_id
+                    "instance_id": current_instance_id,
+                    "channel_instance_id":channel_instance_id
                 })
                 
                 print(existing_data)
@@ -251,8 +281,8 @@ def post_scale_response(request):
                 response_id = responses['data']['inserted_id']
                 
                 if user_type == "True":
-                    product_url = "http://localhost:3000/"
-                    generated_url = f"{product_url}/?workspace_id={workspace_id}&scale_type={scale_type}&score={item}"
+                    product_url = "https://www.uxlive.me/dowellscale/npslitescale"
+                    generated_url = f"{product_url}/?workspace_id={workspace_id}&scale_type={scale_type}&score={item}&channel={channel_name}&instance={channel_instance_id}"
                     return redirect(generated_url)
                 else:
                     return Response({
@@ -260,13 +290,15 @@ def post_scale_response(request):
                         "message": "Response recorded successfully",
                         "response_id": response_id,
                         "score": item,
-                        "instance_id": current_instance_id,
-                        "available_instances": no_of_instances - current_instance_id,
+                        "channel":channel_name,
+                        "instance_id":channel_instance_id,
+                        "current_response_no": current_instance_id,
+                        "no_of_available_responses": no_of_instances - current_instance_id,
                         "time_stamp": created_time["current_time"]
                     })
             else:
                 return Response({"success": False,
-                                 "message": "All instances for this scale have been consumed. Create a new scale to continue"},
+                                "message": "All instances for this scale have been consumed. Create a new scale to continue"},
                                 status=status.HTTP_200_OK)
 
         except Exception as e:

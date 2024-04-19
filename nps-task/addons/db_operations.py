@@ -38,7 +38,7 @@ def datacube_db(api_key, operation,payload=None, update_data=None, id=None):
         return e
 
 
-def datacube_db_response(api_key, operation, scale_id=None, payload=None):
+def datacube_db_response(api_key, operation, scale_id=None, channel_name=None, payload=None):
     data = {
         "api_key": api_key,
         "db_name": "livinglab_scale_response",
@@ -50,7 +50,7 @@ def datacube_db_response(api_key, operation, scale_id=None, payload=None):
     try:
         if operation == "fetch":
             DB_URL = "https://datacube.uxlivinglab.online/db_api/get_data/"
-            data["filters"] = {"scale_id": scale_id}
+            data["filters"] = {"scale_id": scale_id, "channel_name":channel_name}
             data["limit"] = 10000
             data["offset"] = 0
             response = requests.post(DB_URL, json=data)

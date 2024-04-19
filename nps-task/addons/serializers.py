@@ -4,7 +4,7 @@ class ScaleSerializer(serializers.Serializer):
     workspace_id = serializers.CharField(max_length=250)
     username = serializers.CharField(max_length=250)
     # no_of_channels = serializers.IntegerField()
-    # channel_list = serializers.ListField(child=serializers.CharField())
+    channel_list = serializers.ListField(child=serializers.CharField())
     scale_name = serializers.CharField(max_length=250)
     scale_type = serializers.CharField(max_length=250)
     user_type = serializers.BooleanField()
