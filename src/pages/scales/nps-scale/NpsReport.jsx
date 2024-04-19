@@ -46,28 +46,28 @@ function NpsReport() {
     return <Fallback />;
   }
   return (
-    <div className='rounded-lg flex flex-col border w-2/3 m-auto mt-20 items-center justify-center'>
+    <div className='rounded-lg flex flex-col border w-2/3 m-auto mt-20 items-center justify-center bg-[#FAFAFA]'>
       <div className='flex justify-center pt-6 w-5/6 pb-6'>
-      <div className='rounded-lg flex flex-col items-center border w-1/4 mr-5'>
-        <p>TOTAL NO OF RESPONSES</p>
-        <p>{reportData && reportData.no_of_scales}</p>
-        </div>
-      <div className='rounded-lg flex flex-col items-center border w-1/4'>
-        <p>OVERAL NPS SCORE</p>
-        <p>{reportData && reportData.npslite_total_score}</p>
+      <div className='rounded-lg flex flex-col shadow-md w-1/4 h-20 mr-5 pt-5 pb-5 pl-3 bg-white'>
+        <p className='text-gray-400 text-[14px] gap-y-0'>Total no. of responses</p>
+        <p className='font-bold text-[25px]'>{reportData && reportData.no_of_scales}</p>
       </div>
-      <div className='rounded-lg flex items-center justify-between border w-2/5 pl-5 pr-5 ml-5'>
-        <div className='flex flex-col items-center'>
-          <p>PROMOTER</p>
-          <p>{reportData && reportData.frequency_table.Promoter}</p>
+      <div className='rounded-lg flex flex-col shadow-md w-1/4 h-20 pt-5 pb-5 pl-3 bg-white'>
+        <p className='text-gray-400 text-[14px] gap-y-0'>Overal nps lite response</p>
+        <p className='font-bold text-[25px]'>{reportData && reportData.npslite_total_score}</p>
+      </div>
+      <div className='rounded-lg flex items-center justify-between shadow-md w-1/2 h-20 ml-5 pt-5 pl-3 pr-3 bg-white'>
+        <div className='flex flex-col'>
+          <p className='text-gray-400 text-[14px] gap-y-0'>Promoter</p>
+          <p className='font-bold text-[25px]'>{reportData && reportData.frequency_table.Promoter}</p>
         </div>
-        <div className='flex flex-col items-center'>
-          <p>DETRACTOR</p>
-          <p>{reportData && reportData.frequency_table.Detractor}</p>
+        <div className='flex flex-col'>
+          <p className='text-gray-400 text-[14px] gap-y-0'>Detractor</p>
+          <p className='font-bold text-[25px]'>{reportData && reportData.frequency_table.Detractor}</p>
         </div>
-        <div className='flex flex-col items-center'>
-          <p>NEUTRAL</p>
-          <p>{reportData && reportData.frequency_table.Passive}</p>
+        <div className='flex flex-col'>
+          <p className='text-gray-400 text-[14px] gap-y-0'>Neutral</p>
+          <p className='font-bold text-[25px]'>{reportData && reportData.frequency_table.Passive}</p>
         </div>
       </div>
       </div>
