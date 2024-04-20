@@ -15,14 +15,9 @@ import axios from 'axios';
 const CreateNpsLiteScale = () => {
     const [timeOn, setTimeOn] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [displayedTime, setDisplayedTime] = useState(0);
-    const [selectedEmojis, setSelectedEmojis] = useState([]);
     const [showEmojiPalette, setShowEmojiPalette] = useState(false);
     const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
-    const [scaleType, setScaleType] = useState("")
-    const [instance, setInstance] = useState("")
     const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
-    const [npsLiteLinks, setNpsLiteLinks] = useState({})
 
     const {  
       popuOption, 
@@ -34,17 +29,19 @@ const CreateNpsLiteScale = () => {
       isModalOn, 
       setIsNodalOn } = useFetchUserContext()
     
-    const createScale  = useCreateScale();
     const navigateTo = useNavigate();
     
     const [formData, setFormData] = useState({
       scaleType: '',
       instance: '',
       apiKey: '',
+      scale_name: '',
       useOf: 'yes',
+      no_channels: '',
+      channel_name: ''
     });
 
-    const btnLinkRequiredField = ['instance', 'name']
+    const btnLinkRequiredField = ['instance', 'scale_name', 'channel_name']
 
   const handleToggleEmojiPellete = ()=>{
     setShowEmojiPalette(!showEmojiPalette)
@@ -63,14 +60,22 @@ const CreateNpsLiteScale = () => {
 
 const handleSave = async() =>{
   BtnLinks.length = 0
+  let elements = document.querySelectorAll(".channel_name");
+  let channelArray = []
+  for (let i = 0;  i < elements.length; i++) {
+    channelArray.push(elements[i].value)
+    console.log(channelArray, "HHHHHHHH")
+  }
+
   const payload = {
-    // "api_key": formData.apiKey,
+    //"api_key": formData.apiKey,
     "workspace_id": userinfo.userinfo.client_admin_id,
     "username": userinfo.userinfo.username,
-    "scale_name": formData.name,
+    "scale_name": formData.scale_name,
     "no_of_instances": formData.instance,
     "scale_type": 'nps_lite',
-    "user_type": formData.useOf === 'yes' ? false : true
+    "user_type": formData.useOf === 'yes' ? false : true,
+    "channel_list": channelArray
   };
   console.log(payload);
 
@@ -149,9 +154,9 @@ const handleSave = async() =>{
           </div>
           <div className="w-full">
             <CustomTextInput
-              label="name"
-              name="name"
-              value={formData.name}
+              label="scale name"
+              name="scale_name"
+              value={formData.scale_name}
               type="text"
               handleChange={handleChange}
               placeholder="enter scale name"
@@ -172,10 +177,34 @@ const handleSave = async() =>{
               <option value='no'>No</option>
             </select>
         </div>
+        <div className="w-full" style={{marginTop: '10px'}}>
+             <CustomTextInput
+              label="no. of channels"
+              name="no_channels"
+              value={formData.no_channels}
+              type="text"
+              handleChange={handleChange}
+              placeholder="enter no. of channels"
+            />
+          </div>
+          <div className="w-full mt-5 mb-5">
+             {
+              Array.apply(null, {length: formData.no_channels}).map((val, index) =>(
+                <input
+                 key = {index}
+                 name="channel_name"
+                 className="channel_name border rounded-lg w-full mb-4 h-10 outline-none"
+                 type="text"
+                 onChange={handleChange}
+                 placeholder="Enter channel name"
+                />
+              ))
+            }
+          </div>
       </div>
       <button
         onClick={handleSave}
-        className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
+        className="rounded-lg py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
         Save
         </button>
         </div>
