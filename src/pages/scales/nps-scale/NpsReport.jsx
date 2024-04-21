@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Fallback from '../../../components/Fallback';
 import BtnLinks from '../../../components/data/BtnLinks';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 function NpsReport() {
@@ -11,6 +12,8 @@ function NpsReport() {
   const { slug } = useParams()
   const [isLoading, setIsLoading] = useState(false);
   const [reportData, setReportData] = useState()
+  const [publicLinks, SetpublicLinks] = useState(null);
+  const [userInfo, setUserInfo] = useState();
 
   const data = []
 
@@ -27,7 +30,7 @@ function NpsReport() {
         let arrayData = response.data.report.poisson_case_results.series.list1
         for(let i = 0; i<response.data.report.no_of_scales; i++) {
           let scaleObj = {name: i+1, uv: arrayData[i], pv: 2400, amt: 2400}
-          if(BtnLinks.includes(`'${scaleObj.uv}'`) == false){
+          if(BtnLinks.includes(`'${scaleObj.name}'`) === false){
             BtnLinks.push(scaleObj)
           }
         }
@@ -39,6 +42,77 @@ function NpsReport() {
     };
     fetchData();
   }, [slug]);
+
+  const createMasterLink = async (e) =>{
+    e.preventDefault();
+    setIsLoading(true);
+    const session_id = sessionStorage.getItem('session_id');
+    console.log(session_id);
+    try {
+      // Fetch user information
+      const pub_links = await axios.post(
+        'https://100093.pythonanywhere.com/api/userinfo/',
+        {
+          // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
+          session_id: sessionStorage.getItem('session_id'),
+        }
+      );
+
+      const result = pub_links.data;
+      console.log(result, "hhhhhhhhhhhhhhhhhhhhhhhhhb")
+      setUserInfo(result.userinfo);
+      
+      const PublicLinks = [];
+      const all_public_links = [];
+
+      // Extract public links from user portfolio
+      result.selected_product.userportfolio.forEach((portfolio) => {
+        if (
+          portfolio.member_type === 'public' 
+          // &&
+          // portfolio.product === 'Living Lab Scales'
+        ) {
+          PublicLinks.push(portfolio.username);
+        }
+      });
+      console.log("BBBBBBBBBBBBBBBBBBBB", PublicLinks)
+
+      const flattenedArray = [].concat(...PublicLinks);
+
+      // Generate modified URLs
+      const modifiedUrl = window.location.href.slice(
+        0,
+        window.location.href.lastIndexOf('/')
+      );
+      const lastPart = window.location.href.slice(
+        window.location.href.lastIndexOf('/') + 1
+      );
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb", reportData.no_of_scales)
+      if(flattenedArray.length < reportData.no_of_scales) {
+       return toast.error('Insufficient public members');
+      }
+      for (
+        let i = 0;
+        i < reportData.no_of_scales && i < flattenedArray.length;
+        i++
+      ) {
+        // Append the current element to the current window.location.href
+        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${
+          flattenedArray[i]
+        }&code=${qrCodeURL}&instance_id=${i + 1}`;
+        // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
+        all_public_links.push(newUrl);
+      }
+
+      SetpublicLinks(all_public_links);
+      console.log(all_public_links, "HHHHHHHHHHHHHHHHHHHH")
+    } catch (error) {
+      setIsLoading(false);
+      toast.error('Insufficient public members');
+      // console.log("Error", "Insufficient public members");
+    }
+  }
 
   console.log(BtnLinks)
 
@@ -83,6 +157,11 @@ function NpsReport() {
       </div>
       <p>Users</p>
       </div>
+      <button
+        onClick={createMasterLink}
+        className="rounded-lg py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
+        Create master link
+        </button>
     </div>
   )
 }
