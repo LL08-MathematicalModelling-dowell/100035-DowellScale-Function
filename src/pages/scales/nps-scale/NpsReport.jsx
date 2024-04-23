@@ -3,6 +3,8 @@ import { LineChart, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Fallback from '../../../components/Fallback';
+import NPSMasterlink from './NPSMasterlink';
+import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
 import BtnLinks from '../../../components/data/BtnLinks';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -13,6 +15,11 @@ function NpsReport() {
   const [isLoading, setIsLoading] = useState(false);
   const [reportData, setReportData] = useState()
   const [publicLinks, SetpublicLinks] = useState(null);
+  const [qrCodeURL, setQrCodeURL] = useState('');
+  const [showMasterlinkModal, setShowMasterlinkModal] = useState(false);
+  const [masterLink, setMasterLink] = useState('');
+  const [showMasterLinkSuccessModal, setShowMasterLinkSuccessModal] =
+    useState(false);
   const [userInfo, setUserInfo] = useState();
 
   const data = []
@@ -43,7 +50,61 @@ function NpsReport() {
     fetchData();
   }, [slug]);
 
+
+  // SetpublicLinks triggers a re-render, so use useEffect to call MasterLinkFunction after state update
+  // useEffect(() => {
+  //   // handleToggleMasterlinkModal();
+  //   MasterLinkFunction();
+  // }, [publicLinks]);
+
+  const MasterLinkFunction = async () => {
+    try {
+      // Prepare request data for master link creation
+      const requestData = {
+        qrcode_type: 'Link',
+        quantity: 1,
+        company_id: 'Living Lab Scales',
+        document_name: 'Living Lab Scales',
+        links: publicLinks.map((link) => ({ link })),
+      };
+
+      console.log(requestData);
+
+      // Post request to create master link
+      const data = await axios.post(
+        'https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/',
+        requestData
+      );
+
+      const result = data.data;
+      console.log("result", result)
+      setQrCodeURL(result.qrcodes[0].qrcode_image_url);
+
+      if (result.error) {
+        setIsLoading(false);
+        return;
+      } else {
+        // Set master link and handle modal toggle
+        setMasterLink(result.qrcodes[0].masterlink);
+        console.log('result.qrcodes[0].qrcode_id');
+        setQrCodeURL(result.qrcodes[0].qrcode_image_url);
+        console.log(result.qrcodes[0].qrcode_id);
+        console.log('result.qrcodes[0].links[0].response.link_id');
+        console.log(result.qrcodes[0].links[0].response.link_id);
+        handleToggleMasterlinkModal();
+        setIsLoading(false);
+        toast.success(result.response);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(error.response);
+
+      // console.log("Error", error.response);
+    }
+  };
+
   const createMasterLink = async (e) =>{
+    MasterLinkFunction()
     e.preventDefault();
     setIsLoading(true);
     const session_id = sessionStorage.getItem('session_id');
@@ -82,7 +143,7 @@ function NpsReport() {
       // Generate modified URLs
       const modifiedUrl = window.location.href.slice(
         0,
-        window.location.href.lastIndexOf('/')
+        (window.location.href).lastIndexOf('/')
       );
       const lastPart = window.location.href.slice(
         window.location.href.lastIndexOf('/') + 1
@@ -97,9 +158,9 @@ function NpsReport() {
         i < reportData.no_of_scales && i < flattenedArray.length;
         i++
       ) {
+        console.log(qrCodeURL, "HHHHHHHHHHHHHHHHHHHH")
         // Append the current element to the current window.location.href
-        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${
-          flattenedArray[i]
+        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]
         }&code=${qrCodeURL}&instance_id=${i + 1}`;
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
@@ -107,12 +168,21 @@ function NpsReport() {
 
       SetpublicLinks(all_public_links);
       console.log(all_public_links, "HHHHHHHHHHHHHHHHHHHH")
+      setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       toast.error('Insufficient public members');
       // console.log("Error", "Insufficient public members");
     }
   }
+
+  const handleToggleMasterlinkModal = () => {
+    setShowMasterlinkModal(!showMasterlinkModal);
+  };
+
+  const handleToggleMasterlinkSuccessModal = () => {
+    setShowMasterLinkSuccessModal(!showMasterLinkSuccessModal);
+  };
 
   console.log(BtnLinks)
 
@@ -162,6 +232,21 @@ function NpsReport() {
         className="rounded-lg py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
         Create master link
         </button>
+        {showMasterLinkSuccessModal && (
+        <MasterlinkSuccessModal
+          handleToggleMasterlinkSuccessModal={
+            handleToggleMasterlinkSuccessModal
+          }
+        />
+      )}
+        {showMasterlinkModal && (
+        <NPSMasterlink
+          handleToggleMasterlinkModal={handleToggleMasterlinkModal}
+          link={masterLink}
+          publicLinks={publicLinks}
+          image={qrCodeURL}
+        />
+      )}
     </div>
   )
 }

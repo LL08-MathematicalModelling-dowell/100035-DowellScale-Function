@@ -10,6 +10,7 @@ import { NPSLiteEmojiPicker } from '../../../../components/emoji-picker';
 import { useFetchUserContext } from "../../../../contexts/fetchUserContext";
 import BtnLinks from '../../../../components/data/BtnLinks';
 import axios from 'axios';
+import ChannelNames from '../../../../components/data/ChannelNames';
 
 
 const CreateNpsLiteScale = () => {
@@ -60,6 +61,7 @@ const CreateNpsLiteScale = () => {
 
 const handleSave = async() =>{
   BtnLinks.length = 0
+  ChannelNames.length = 0
   let elements = document.querySelectorAll(".channel_name");
   let channelArray = []
   for (let i = 0;  i < elements.length; i++) {
