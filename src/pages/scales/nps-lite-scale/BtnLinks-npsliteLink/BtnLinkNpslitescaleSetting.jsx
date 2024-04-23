@@ -14,6 +14,7 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { MdDone } from "react-icons/md";
 import BtnLinks from '../../../../components/data/BtnLinks';
+import ChannelNames from '../../../../components/data/ChannelNames';
 
 const BtnLinkNpslitescaleSetting = () => {
   
@@ -192,11 +193,21 @@ const BtnLinkNpslitescaleSetting = () => {
           `https://100035.pythonanywhere.com/addons/create-scale/?scale_id=${slug}`
         );
         const links = Object.entries(response.data.settings.urls)
-        console.log(links);
+        console.log(response.data.settings);
         setScaleLinks(response.data.settings.urls)
         links.map((link, index)=>{
           if(BtnLinks.includes(`'${links[index][1][0]}'`) == false){
             BtnLinks.push(`'${links[index][1][0]}'`)
+          }
+
+          let i = (`${links[index][1][0]}`).indexOf('&')
+          i = (`${links[index][1][0]}`).indexOf('&', i + 1)
+          i = (`${links[index][1][0]}`).indexOf('&', i + 1)
+          console.log(i);
+          console.log((`${links[index][1][0]}`).substring(((`${links[index][1][0]}`).includes('False') === true ? 96 + 1 : 96), i))
+
+          if(ChannelNames.includes((`${links[index][1][0]}`).substring(((`${links[index][1][0]}`).includes('False') === true ? 96 + 1 : 96), i)) == false){
+            ChannelNames.push((`${links[index][1][0]}`).substring(((`${links[index][1][0]}`).includes('False') === true ? 96 + 1 : 96), i))
           }
         })
       } catch (error) {
@@ -208,7 +219,7 @@ const BtnLinkNpslitescaleSetting = () => {
     fetchData();
   }, [slug]);
   
-  console.log("This is the scale response", Object.entries(scaleLinks))
+  console.log("This is the scale response", ChannelNames)
 
   const handlePreview = () => {
     setShowPreview(true)
@@ -265,10 +276,14 @@ const BtnLinkNpslitescaleSetting = () => {
     toast.success('link copied to clipboard!');
   };
 
-  const selectAllLinks = (val) =>{
+  const selectAllLinks = (val, element) =>{
     // Create a textarea element, set its value, and append it to the document
+    let newArray = []
+    val.map((el, index)=>(
+      el.includes(element) === true ? newArray.push(el.replace(/['"]+/g, '')) : ""
+    ))
     const textArea = document.createElement('textarea');
-    textArea.value = `[${val}]`;
+    textArea.value = `[${newArray}]`;
     document.body.appendChild(textArea);
 
     // Select the text in the textarea
@@ -282,6 +297,7 @@ const BtnLinkNpslitescaleSetting = () => {
 
     // Optionally, you can provide user feedback (e.g., show a tooltip)
     toast.success('links copied to clipboard!');
+    console.log(newArray, "BBBBBBBBBBBBBBBB")
   }
 
   const handleCsvGeneration = () =>{
@@ -382,31 +398,36 @@ const BtnLinkNpslitescaleSetting = () => {
       ))}
       </div>}
   
-          <table id='linkTable' className="border" style={{width: '100%'}}>
-           <tr className="w-full border" style={{border: "1px solid rgb(0, 0, 0)"}}>
-            <th style={{border: "1px solid rgb(0, 0, 0)"}}>Serial number</th>
-            <th style={{border: "1px solid rgb(0, 0, 0)"}}>Button links</th>
-            <th style={{border: "1px solid rgb(0, 0, 0)"}}>Copy link buttons</th>
-           </tr>
-
-            {Object.getOwnPropertyNames(scaleLinks).length !== 0 && (Object.entries(scaleLinks)).map((public_link, index) => (
-                <tr
-                  key={index} className="w-full border" style={{border: "1px solid rgb(0, 0, 0)"}}>
-                  <td style={{border: "1px solid rgb(0, 0, 0)"}}>{index}</td>
-                  <td style={{display:'block', width: '150px', whiteSpace: 'nowrap', overflow:'hidden', textOverflow:'ellipsis', }} className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{(Object.entries(scaleLinks))[index][1][0]}</td>
-                  <td style={{border: "1px solid rgb(0, 0, 0)"}}><AiOutlineCopy
-                  onClick={() => handleCopyClick((Object.entries(scaleLinks))[index][1][0])}
-                  size={50}
-                  color="bg-[#1A8753]"
-                  className="inline text-[#1A8753] cursor-pointer "
-                /></td>
-                </tr>
-            ))}
-            </table>
-            </div>
-            <div style={{width: '100%', display:'flex', alignItems: 'center', justifyContent:'center', marginTop:'10px'}}>
-              <Button onClick={() => selectAllLinks(BtnLinks)} style={{ display:'flex', alignItems:'center', justifyContent:'center', padding: '10px', border:'1px solid lightgray', height: '50px', width: '150px', borderRadius: '2px', cursor: 'pointer', marginRight: '10px'}}>Copy all links</Button>
+          {ChannelNames.map((element, ind) =>(
+            <div key={ind} className="mt-10 w-full">
+            <h1>{element}</h1>
+            <table  id='linkTable' className="border" style={{width: '100%'}}>
+            <tr className="w-full border" style={{border: "1px solid rgb(0, 0, 0)"}}>
+             <th style={{border: "1px solid rgb(0, 0, 0)"}}>Serial number</th>
+             <th style={{border: "1px solid rgb(0, 0, 0)"}}>Button links</th>
+             <th style={{border: "1px solid rgb(0, 0, 0)"}}>Copy link buttons</th>
+            </tr>
+ 
+             {BtnLinks.map((public_link, index) => (
+                public_link.includes(element) === true && <tr
+                   key={index} className="w-full border" style={{border: "1px solid rgb(0, 0, 0)"}}>
+                   <td style={{border: "1px solid rgb(0, 0, 0)"}}>{index}</td>
+                   <td style={{display:'block', width: '150px', whiteSpace: 'nowrap', overflow:'hidden', textOverflow:'ellipsis', }} className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{public_link}</td>
+                   <td style={{border: "1px solid rgb(0, 0, 0)"}}><AiOutlineCopy
+                   onClick={() => handleCopyClick((Object.entries(scaleLinks))[index][1][0])}
+                   size={50}
+                   color="bg-[#1A8753]"
+                   className="inline text-[#1A8753] cursor-pointer "
+                 /></td>
+                 </tr>
+             ))}
+             </table>
+             <div style={{width: '100%', display:'flex', alignItems: 'center', justifyContent:'center', marginTop:'10px'}}>
+              <Button onClick={() => selectAllLinks(BtnLinks, element)} style={{ display:'flex', alignItems:'center', justifyContent:'center', padding: '10px', border:'1px solid lightgray', height: '50px', width: '150px', borderRadius: '2px', cursor: 'pointer', marginRight: '10px'}}>Copy all links</Button>
               <Button onClick={handleCsvGeneration} style={{ display:'flex', alignItems:'center', justifyContent:'center', padding: '10px', border:'1px solid lightgray', height: '50px', width: '150px', borderRadius: '2px', cursor: 'pointer'}}>Generate a CSV file</Button>
+            </div>
+             </div>
+          ))}
             </div>
           </div>
         </div>
