@@ -9,6 +9,7 @@ from dowellnps_scale_function.settings import public_url
 from .db_operations import datacube_db, datacube_db_response, api_key
 from api.utils import dowell_time
 from nps.eventID import get_event_id
+import json
 
 
 class ScaleCreateAPIView(APIView):
@@ -22,6 +23,8 @@ class ScaleCreateAPIView(APIView):
         user_type = payload['user_type']
         scale_type = payload['scale_category']
         channel_list = payload['channel_list']
+        no_of_instances = payload['no_of_instances']
+        
     
         # for i in range(len(channel_list)) :
         #     for j in scale_range :
@@ -35,14 +38,15 @@ class ScaleCreateAPIView(APIView):
         
         # return urls_dict
         for i in range(len(channel_list)) :
-            for j in scale_range :
-                channel = channel_list[i]
-                print(f"current",i,j, "and channel", channel)
-                # main_url = f"Button {j} link:"
-                # instances = [f"{public_url}/addons/create-response/?channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
-                instances = [f"http://127.0.0.1:8000/addons/create-response/?user={user_type}&scale_type={scale_type}&channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={j}" ]
-                # print(instances)
-                urls_dict.append(instances)
+            for k in range(1,no_of_instances[i]+1):
+                for j in scale_range :
+                    # channel = channel_list[i]
+                    # print(f"current",i,j, "and channel", channel)
+                    # main_url = f"Button {j} link:"
+                    # instances = [f"{public_url}/addons/create-response/?channel={channel}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={i}"]
+                    instances = [f"http://127.0.0.1:8000/addons/create-response/?user={user_type}&scale_type={scale_type}&channel={i+1}&instance={k}&workspace_id={workspace_id}&username={username}&scale_id={id}&item={j}" ]
+                    urls_dict.append(instances)
+                    
         return urls_dict
 
 
@@ -103,9 +107,11 @@ class ScaleCreateAPIView(APIView):
             scale_type = serializer.validated_data['scale_type']
             user_type = serializer.validated_data['user_type']
             channel_list = serializer.validated_data['channel_list']
-            no_of_channels = len(channel_list)
+            no_of_responses = serializer.validated_data['no_of_responses']
+            no_of_instances = serializer.validated_data['no_of_instances']
         
-            payload = {"scale_type": scale_type}
+            payload = {"scale_type": scale_type,
+                       "no_of_instances":no_of_instances}
 
             if scale_type == "likert":
                 try:
@@ -126,7 +132,6 @@ class ScaleCreateAPIView(APIView):
                     print(e)
                     return Response(f"missing field for stapel {e}", status=status.HTTP_400_BAD_REQUEST)
 
-            no_of_instances = serializer.validated_data['no_of_instances']
 
             total_no_of_items = self.scale_type(scale_type, payload)
             payload["total_no_of_items"] = total_no_of_items
@@ -140,7 +145,8 @@ class ScaleCreateAPIView(APIView):
                 "scale_name": scale_name,
                 "total_no_of_items": total_no_of_items,
                 "scale_category": scale_type,
-                "no_of_scales": no_of_instances,
+                "no_of_instances": no_of_instances,
+                "no_of_responses":no_of_responses,
                 "user_type":user_type,
                 "channel_list":channel_list,
                 "allow_resp": True,
@@ -171,9 +177,10 @@ class ScaleCreateAPIView(APIView):
                     "scale_category": scale_type,
                     "user_type":user_type,
                     "total_no_of_buttons": total_no_of_items,
-                    "no_of_instances":no_of_channels,
-                    "no_of_responses": no_of_instances,
+                    "no_of_responses":no_of_responses,
+                    "no_of_instances": no_of_instances,
                     "scale_id": scale_id,
+                    "total_no_of_links":len(urls),
                     "urls": urls
                 }
                 return Response(response_data, status=status.HTTP_201_CREATED)
@@ -236,36 +243,46 @@ def post_scale_response(request):
     workspace_id = request.GET.get('workspace_id')
     username = request.GET.get('username')
     user_type = request.GET.get('user')
-    channel_name = request.GET.get('channel')
+    channel_no = int(request.GET.get('channel'))
     scale_type = request.GET.get('scale_type')
+    # real_ip = request.headers["X-Real-IP"]
+    # print(">>>>>>>>>>>>",real_ip)
     
 
     if request.method == "GET":
         try:
+            
             existing_data = {
                 "workspace_id":workspace_id,
                 "username":username,
                 "scale_id":scale_id,
                 "score": item,
                 "user_type":user_type,
-                "channel_name":channel_name
+                # "ip_address":real_ip
             }
 
             #fetch the relevant settings meta data 
             settings_meta_data = datacube_db(api_key=api_key, operation="fetch", id=scale_id)
             data = settings_meta_data['data'][0]['settings']
             print(data)
-            no_of_instances = data["no_of_scales"]
+            print(channel_no)
+            no_of_instances = data["no_of_instances"]
+            instance_id = no_of_instances[channel_no-1]
+            no_of_responses = data["no_of_responses"]
             channel_list = data["channel_list"]
-            channel_instance_id = channel_list.index(channel_name)+1
+            channel_instance_id = channel_no
+            channel_name = channel_list[channel_no-1]
+            print(channel_name)
+            existing_data["channel_name"]=channel_name
+            
 
             #response submission logic
-            response_data = datacube_db_response(api_key=api_key, scale_id=scale_id,channel_name=channel_name,operation="fetch")
+            response_data = datacube_db_response(api_key=api_key, scale_id=scale_id,channel_name=channel_name,instance_id=instance_id, operation="fetch")
             print(response_data)
            
             current_instance_id = len(response_data['data']) + 1 if response_data['data'] else 1
 
-            if current_instance_id <= no_of_instances:
+            if current_instance_id <= no_of_responses:
                 event_id = get_event_id()
                 created_time = dowell_time("Asia/Calcutta")
 
@@ -291,9 +308,10 @@ def post_scale_response(request):
                         "response_id": response_id,
                         "score": item,
                         "channel":channel_name,
+                        "channel_id":channel_no,
                         "instance_id":channel_instance_id,
                         "current_response_no": current_instance_id,
-                        "no_of_available_responses": no_of_instances - current_instance_id,
+                        "no_of_available_responses": no_of_responses - current_instance_id,
                         "time_stamp": created_time["current_time"]
                     })
             else:
