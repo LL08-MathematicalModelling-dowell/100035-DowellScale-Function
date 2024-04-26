@@ -321,7 +321,7 @@ def post_scale_response(request):
         except Exception as e:
             print("response", e)
             return Response({"Resource not found! Contact the admin"}, status=status.HTTP_404_NOT_FOUND)
-            return Response({"Resource not found! Contact the admin"}, status=status.HTTP_404_NOT_FOUND)
+        
     else:
         return Response("Method not allowed")
     

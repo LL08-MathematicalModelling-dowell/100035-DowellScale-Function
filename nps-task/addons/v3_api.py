@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from .v3_serializers import ScaleSerializer, InstanceDetailsSerializer, ChannelInstanceSerializer
 from dowellnps_scale_function.settings import public_url
-from .db_operations import datacube_db, datacube_db_response, api_key
 from .datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
 from api.utils import dowell_time
 from nps.eventID import get_event_id
