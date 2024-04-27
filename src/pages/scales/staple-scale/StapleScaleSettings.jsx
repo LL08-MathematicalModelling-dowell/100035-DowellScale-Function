@@ -6,7 +6,7 @@ import useGetSingleScale from "../../../hooks/useGetSingleScale";
 import { useSaveStapleScaleResponse } from "../../../hooks/useSaveStapleScaleResponse";
 import Fallback from "../../../components/Fallback";
 import { Button } from "../../../components/button";
-import NPSMasterlink from "../nps-scale/NPSMasterlink";
+import StapelMasterLink from "./StapelMasterLink";
 import dowellLogo from '../../../assets/dowell-logo.png';
 import MasterlinkSuccessModal from "../../../modals/MasterlinkSuccessModal";
 
@@ -78,6 +78,8 @@ console.log(score)
       );
 
       const result = data.data;
+      console.log("result", result)
+      setQrCodeURL(result.qrcodes[0].qrcode_image_url);
 
       if (result.error) {
         setIsLoading(false);
@@ -106,6 +108,7 @@ console.log(score)
     e.preventDefault();
     setIsLoading(true);
     const session_id = sessionStorage.getItem('session_id');
+    let product = 'Living Lab Scales'
     console.log(session_id);
     try {
       // Fetch user information
@@ -118,8 +121,9 @@ console.log(score)
       );
 
       const result = pub_links.data;
-      
+      console.log(result, "hhhhhhhhhhhhhhhhhhhhhhhhhb")
       setUserInfo(result.userinfo);
+      
       const PublicLinks = [];
       const all_public_links = [];
 
@@ -127,12 +131,11 @@ console.log(score)
       result.selected_product.userportfolio.forEach((portfolio) => {
         if (
           portfolio.member_type === 'public' &&
-          portfolio.product === 'Living Lab Scales'
+          product === 'Living Lab Scales'
         ) {
           PublicLinks.push(portfolio.username);
         }
       });
-
 
       const flattenedArray = [].concat(...PublicLinks);
 
@@ -144,11 +147,11 @@ console.log(score)
       const lastPart = window.location.href.slice(
         window.location.href.lastIndexOf('/') + 1
       );
-
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb", flattenedArray.length)
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb", singleScaleData?.settings.no_of_scales)
       if(flattenedArray.length < singleScaleData?.settings.no_of_scales) {
        return toast.error('Insufficient public members');
       }
-
       for (
         let i = 0;
         i < singleScaleData?.settings.no_of_scales && i < flattenedArray.length;
@@ -163,12 +166,14 @@ console.log(score)
       }
 
       SetpublicLinks(all_public_links);
+      console.log(all_public_links)
     } catch (error) {
       setIsLoading(false);
       toast.error('Insufficient public members');
       // console.log("Error", "Insufficient public members");
     }
   };
+
   const getTextColorForCategory = (category) => {
     switch (category) {
       case 'Bad':
@@ -328,9 +333,9 @@ console.log(score)
 
 
 console.log(instance, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
-  if (isLoading) {
-    return <Fallback />;
-  }
+  // if (isLoading) {
+  //   return <Fallback />;
+  // }
   return (
     <div className='h-screen flex flex-col items-center justify-center font-medium font-Montserrat'>
       {publicLink && (
@@ -431,7 +436,7 @@ console.log(instance, "TTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
         <UpdateNPSLite handleToggleUpdateModal={handleToggleUpdateModal} />
       )}
       {showMasterlinkModal && (
-        <NPSMasterlink
+        <StapelMasterLink
           handleToggleMasterlinkModal={handleToggleMasterlinkModal}
           link={masterLink}
           publicLinks={publicLinks}

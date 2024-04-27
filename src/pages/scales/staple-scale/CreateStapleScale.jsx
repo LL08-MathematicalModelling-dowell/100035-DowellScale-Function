@@ -34,6 +34,7 @@ const CreateStapleScale = () => {
         scalecolor: "#8f1e1e",
         roundcolor: "#938585",
         fontcolor: "#000000",
+        no_of_scales: "",
         fomat: "",
         time: "",
         name: "",
@@ -122,7 +123,7 @@ const CreateStapleScale = () => {
         fontstyle: formData.fontstyle,
         scale_upper_limit:formData.scale_upper_limit,
         spacing_unit:Number(formData.spacing_unit),
-        no_of_scales: 1000
+        no_of_scales: formData.no_of_scales
        
         // username: "Natan", // your username
         // orientation: "horizontal", // orientation of the scale-- "horizontal"/"vertical"
@@ -326,6 +327,16 @@ const CreateStapleScale = () => {
                           </option>
                       ))}
               </select>
+          </div>
+          <div className='w-full'>
+            <CustomTextInput 
+                label='No of scales'
+                name='no_of_scales'
+                value={formData.no_of_scales}
+                type='number'
+                handleChange={handleChange}
+                placeholder='enter no of scales'
+            />
           </div>
           <div className="w-full">
               <div className="flex items-center gap-3">
