@@ -276,6 +276,7 @@ const NpsLiteSettings = () => {
     e.preventDefault();
     setIsLoading(true);
     const session_id = sessionStorage.getItem('session_id');
+    let product = 'Living Lab Scales'
     console.log(session_id);
     try {
       // Fetch user information
@@ -298,7 +299,7 @@ const NpsLiteSettings = () => {
       result.selected_product.userportfolio.forEach((portfolio) => {
         if (
           portfolio.member_type === 'public' &&
-          portfolio.product === 'Living Lab Scales'
+          product === 'Living Lab Scales'
         ) {
           PublicLinks.push(portfolio.username);
         }

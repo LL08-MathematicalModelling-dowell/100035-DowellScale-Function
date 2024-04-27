@@ -3,7 +3,7 @@ import  { useRef } from 'react';
 import { AiOutlineCopy } from 'react-icons/ai';
 import { toast } from 'react-toastify';
 
-const NPSLiteMasterLink = ({
+const StapelMasterLink = ({
   handleToggleMasterlinkModal,
   link,
   publicLinks,
@@ -98,4 +98,4 @@ const NPSLiteMasterLink = ({
   );
 };
 
-export default NPSLiteMasterLink;
+export default StapelMasterLink;
