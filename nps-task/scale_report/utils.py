@@ -6,6 +6,7 @@ from collections import Counter
 from scipy.stats import chi2_contingency , ttest_ind
 
 from EvaluationModule.calculate_function import dowellconnection
+from addons.db_operations import datacube_db_response
 
 from .exceptions import NoScaleResponseFound
 
@@ -72,6 +73,15 @@ def fetch_scale_response(field_add : dict):
         
         return  result
 
+    except:
+            raise NoScaleResponseFound("Error while fetching scale responses.")
+
+def fetch_scale_response_addons(scale_id : str, api_key: str):
+    result = datacube_db_response(api_key=api_key, scale_id=scale_id,operation="fetch")
+    try:
+        if not isinstance(result , dict):
+            raise NoScaleResponseFound("Error while fetching data from scale_reports")
+        return result
     except:
             raise NoScaleResponseFound("Error while fetching scale responses.")
 
