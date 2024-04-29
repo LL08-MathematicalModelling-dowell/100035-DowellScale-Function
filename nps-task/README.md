@@ -1,402 +1,83 @@
-# 100035-DowellScale-Function
+
+## This is the official documentation for the DoWell Scale APIs
+- ## NPS scale
+   - Description:
+        Net Promoter Score (NPS) is a measure used to gauge customer loyalty, satisfaction, and enthusiasm with a company that’s calculated by asking customers one question: “On a scale from 0 to 10, how likely are you to recommend this product/company to a friend or colleague?”The NPS scale is usually an 11 point rating scale ranging from 0 to 10. 0 is considered as the worst and 10 being the best. However, the scale is not limited to this and can vary from company to company.
+   - Example:
+       ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/39786d26-fd9e-4962-afe4-8e5f2b7a6e21)
+   - API documentation:
+        https://documenter.getpostman.com/view/27726703/2s9Y5bQ1hk
+
+- ## NPSLite scale
+   - Description: This is a basic NPS scale with only 3 inputs, a negative option, a neutral option and a positive option.
+   - Example:
+         ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/aa9d25f1-3c5b-4dab-a682-fed99c34c22c)
+
+   - API Documentation:
+        https://documenter.getpostman.com/view/27723419/2s946eBtwJ
+
+- ## LIKERT scale
+   - Description: 
+        A Likert scale is a rating scale used to measure opinions, attitudes, or behaviors. It consists of a statement or a question, followed by a series of odd numbered answer statements. Respondents choose the option that best corresponds with how they feel about the statement or question. Because respondents are presented with a range of possible answers, Likert scales are great for capturing the level of agreement or their feelings regarding the topic in a more nuanced way.
+        Likert scales are most useful when you are measuring unobservable individual characteristics, or characteristics that have no concrete, objective measurement. These can be elements like attitudes, feelings, or opinions that cause variations in behavior.
+   - Example:
+         ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/570264d8-199b-440c-9cc9-77f3af0a2b9d)
+   - API documentation:
+        https://documenter.getpostman.com/view/21255221/2s946h8Xeb
+
+- ## PERCENT-SUM scale
+   - Description: 
+        A percent sum scale, also known as a **constant sum scale**, is a type of question used in market research surveys where respondents are required to divide a specific number of points or percents as part of a total sum. The allocation of points is divided to detail the variance and weight of each category. Is there anything else you would like to know about this topic?
+   - Example:
+        ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/8ef9d1de-9e55-4a75-8d09-9ba3bf8fdcb2)
+   - Documentation:
+        https://documenter.getpostman.com/view/21255221/2s946bBaJe
+
+- ## STAPEL scale
+   - Description: 
+        A Stapel Scale is a unipolar (one adjective) rating scale designed to measure the respondent’s attitude towards an object or event. The scale is comprised of even number categories ranging from negative to positive without any neutral point (zero). The Stapel Scale is usually displayed with a single adjective in the middle of the number list and measures the extent of agreement or disagreement with an object. A higher positive range depicts acceptance, while a negative range is the exact opposite2
+   - Example:
+         ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/71315247/1268da72-204d-4197-b08b-4d4309c974fe)
+
+   - Documentation:
+        https://documenter.getpostman.com/view/21255221/2s93z9d3tX
 
 
-# Create Instance
+- ## RANKING Scale
+   - Description: 
+        A ranking scale is a survey question tool that measures people's preferences by asking them to rank their views on a list of related items. The ranking scale is used for managing ranking scales and collecting user responses. It provides endpoints for creating new ranking scales and submitting rankings for a specific scale. The API allows users to define ranking scales with multiple stages and sub-stages, and users can submit their rankings for each stage. The API facilitates the storage and retrieval of ranking data, enabling analysis and insights based on user-generated rankings.
+   - Example:
+         ![image]()
 
-It creates Dynamic Instance by taking Scale Id as parameter like:
+   - Documentation:
+        https://documenter.getpostman.com/view/27723419/2s9Y5bRh35
+    
+- ## PERCENT scale
+   - Description: 
+        The Percent Scale API allows users to create, configure, and manage percentage scales, as well as submit responses to those scales. It provides endpoints for creating and updating scale settings, as well as handling scale response submissions. The API enables users to create and configure percentage scales with multiple attributes and options.
+        A Percent scale API allows users to create and configure percentage scales and submit responses to those scales. It provides endpoints for managing scale settings and handling scale response submissions.
+        
+   - Example:
+          ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/56716832/8d749eff-1188-4ed7-86f8-1d7f543084f5)
+)
+   - Documentation:
+        https://documenter.getpostman.com/view/27723419/2s946k6qhA
 
-Request: POST
+- ## PAIRED_COMPARISON scale
+   - Description: 
+        A Paired-comparison scale involves presenting respondents with pairs of options and having them choose the option they prefer or perceive as better. users can create and manage paired-comparison scales for various purposes. This includes designing statements or questions to compare, specifying the options to be presented in each pair, and defining the attributes to be measured or evaluated.
+        The paired_comparison API endpoint enables users to conduct a comprehensive analysis and gain insights from respondents' preferences or perceptions within the given pairs
 
-```bash
-https://100035.pythonanywhere.com/api/nps_create_instance
-```
-With Body (payload):
+   - Example:
+         ![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/56716832/b0d3d819-d11c-4c5b-9214-3d11da644f1a)
+)
+   - Documentation:
+        https://documenter.getpostman.com/view/21255221/2s9YCBu9pJ
 
-```bash
-{
-"scale_id": "63e8b4c87f4aa8f650162b7a"
-}
-```
-
-It will Generate output response:
-```bash
-{
-    "success": "{\"isSuccess\": true}",
-    "response": {
-        "orientation": "horizontal",
-        "scalecolor": "green",
-        "numberrating": 10,
-        "no_of_scales": 1,
-        "roundcolor": "yellow",
-        "fontcolor": "blue",
-        "fomat": "numbers",
-        "time": 0,
-        "template_name": "testing5350",
-        "name": "scale_label",
-        "text": "good+neutral+best",
-        "left": "good",
-        "right": "best",
-        "center": "neutral",
-        "scale-category": "nps scale",
-        "show_total_score": "true",
-        "date_updated": "2023-06-03 12:21:46",
-        "allow_resp": true,
-        "instances": [
-            {
-                "document1": "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/1"
-            }
-        ]
-    }
-}
-```
-
-## Create Response
-Provide a response to a particular scale instance using the corresponding scale details.
-
-Request: POST 
-like:
-
-```bash
-https://100035.pythonanywhere.com/api/nps_responses_create
-```
-with body (details that you have to Provide):
-```bash
-{
-
-"template_name": "nps",
-"scale_id": "63e8b4c87f4aa8f650162b7a",
-"instance_id":1 ,
-"brand_name":"xyz000",
-"product_name":"xyz000",
-"score":7,
-"username": "umarjaved"
-}
-```
-
-you will get response with instance detail and link to which you can give Score response:
-```bash
-{
-    "success": "{\"isSuccess\": true, \"inserted_id\": \"647e3a97264adfc99d2736be\"}",
-    "score": {
-        "instance_id": "1/4",
-        "score": 7,
-        "category": "Neutral"
-    },
-    "payload": {
-        "event_id": "05:06:2023,19:42:15",
-        "scale_data": {
-            "scale_id": "63e8b4c87f4aa8f650162b7a",
-            "scale_type": "nps scale"
-        },
-        "brand_data": {
-            "brand_name": "xyz000",
-            "product_name": "xyz000"
-        },
-        "score": [
-            {
-                "instance_id": "1/4",
-                "score": 7,
-                "category": "Neutral"
-            }
-        ]
-    },
-    "url": "https://100035.pythonanywhere.com/nps-scale1/testing5350?brand_name=WorkflowAI&product_name=editor/1",
-    "Category": "Neutral"
-}
-```
-## New NPS create
-
-Create a scale with a specific setting
-
-Request: POST
-
-```bash
-https://100035.pythonanywhere.com/api/nps_create/
-```
-with body:
-
-```bash
-{
-"scale_id": "63e8b4c87f4aa8f650162b7a" ,    #Scale ID is mandatory when sending PUT request.
-"user": "boolean",              #response is either a yes or no to distinguish between a front end programmer / end user providing the settings. No for frontend (cannot change settings provided), Yes for end user
-"username": "your name",        #your username
-"orientation": "horizontal",    #orientation of the scale- horizontal/ vertical
-"scalecolor": "#8f1e1e",        #bg color of the scale
-"roundcolor": "#938585",        #color of the buttons in the scale
-"fontcolor": "#000000",        #color of the text inside the buttons
-"fomat": "numbers",            #format in which you wish the response to be recorded- numbers, stars, emojis
-"no_of_scales": 6,            #Specify number of scales to be created with the same settings (1-100)
-"time": "60",                 #time limit in seconds that you wish to assign for providing each response- any natural no.
-"name": "testAPI",            #name you wish to assign to the scale
-"left": "good",               #label for the lowest rating (zero)- text
-"right": "best",              #label for the highest rating (10)- text
-"center": "neutral",          #label for  neutral ratings- text
-"label_images": {0: imagefile, 1: imagefile, 2: imagefile ...}  #if user selects image as the format pass the images along with the scale default labels in a dictionary.
-"fontstyle": "Arial, Helvetica, sans-serif"  #font style of the scale labels
-"emoji_format": {0: 😀, 1: 😃, 2: 😄 ...}  #if user selects emoji as the format pass the emojis along with the scale default labels in a dictionary.
-}    
-```
-
-## Get scale Settings
-This Request gets the Details of All APIs present with their Setting Details.
-
-Note:
-
-No Arguments needed
-
-Request: GET
-
-```bash
-https://100035.pythonanywhere.com/api/nps_settings
-```
-
-it show all scales with their settings like:
-
-```bash
-{
-    "isSuccess": true,
-    "data": [
-        {
-            "_id": "63a35edb3bb180f16ea32374",
-            "event_id": "FB1010000000167165102859533603",
-            "settings": {
-                "orientation": "horizontal",
-                "numberrating": 10,
-                "scalecolor": "#aa0808",
-                "roundcolor": "#2a5b74",
-                "fontcolor": "#000000",
-                "fomat": "numbers",
-                "time": "120",
-                "template_name": "TestSetting4834",
-                "name": "TestSetting",
-                "text": "Left+Center+Right",
-                "left": "Left",
-                "right": "Right",
-                "center": "Center",
-                "scale-category": "nps scale",
-                "no_of_scales": "4"
-            }
-        },
-        {
-            "_id": "63a35f973bb180f16ea3238e",
-            "event_id": "FB1010000000167165121658835342",
-            "settings": {
-                "orientation": "horizontal",
-                "numberrating": 10,
-                "scalecolor": "#ed0c0c",
-                "roundcolor": "#4f2654",
-                "fontcolor": "#000000",
-                "fomat": "numbers",
-                "time": "120",
-                "template_name": "TestSetting1098",
-                "name": "TestSetting",
-                "text": "Left+Center+Right",
-                "left": "Left",
-                "right": "Right",
-                "center": "Center",
-                "scale-category": "nps scale",
-                "no_of_scales": "4"
-            }
-        },
-        {
-            "_id": "63a360523bb180f16ea323b2",
-            "event_id": "FB1010000000167165140457988274",
-            "settings": {
-                "orientation": "horizontal",
-                "numberrating": 10,
-                "scalecolor": "#ed0c0c",
-                "roundcolor": "#4f2654",
-                "fontcolor": "#000000",
-                "fomat": "numbers",
-                "time": "120",
-                "template_name": "TestSetting2699",
-                "name": "TestSetting",
-                "text": "Left+Center+Right",
-                "left": "Left",
-                "right": "Right",
-                "center": "Center",
-                "scale-category": "nps scale",
-                "no_of_scales": "4"
-            }
-        }
-    ]
-}
-```
-
-## Calculate Total Score
-
-It will show all user response Scores with the reference to document.
-
-Request: GET
-
-```bash
-https://100035.pythonanywhere.com/api/total_responses/<str:doc_no>/<str:product_name>
-```
-
-like 
-```bash
-https://100035.pythonanywhere.com/api/total_responses/1/xyz000
-```
-
-which will provide the response:
-
-```bash
-{
-    "All_scores": [
-        2,
-        2,
-        2,
-        2,
-        4,
-        6,
-        9,
-        0
-    ],
-    "Total_score for document 1": 27
-}
-```
-## NPS settings
-Get setting details of Scale.
-
-Request: GET
-```bash 
-https://100035.pythonanywhere.com/api/nps_settings/<str:template_name>
-```
-like:
-
-```bash 
-https://100035.pythonanywhere.com/api/nps_settings/TestDic8931
-```
-Response will be like this:
-
-```bash
-{
-    "payload": {
-        "isSuccess": true,
-        "data": [
-            {
-                "_id": "63e4c9676d29b0d8177814a4",
-                "event_id": "FB1010000000167593814551606998",
-                "settings": {
-                    "orientation": "horizontal",
-                    "numberrating": 10,
-                    "scalecolor": "#8f1e1e",
-                    "no_of_scales": 1,
-                    "roundcolor": "#938585",
-                    "fontcolor": "#000000",
-                    "fomat": "numbers",
-                    "time": "60",
-                    "template_name": "TestDic8931",
-                    "name": "TestDic",
-                    "text": "good+neutral+best",
-                    "left": "good",
-                    "right": "best",
-                    "center": "neutral",
-                    "scale-category": "nps scale",
-                    "custom_input_id": "879646",
-                    "custom_input_groupings": "{'Group1': {'key1': 'value1', 'key2': 'value2'}",
-                    "custom_input_3": "",
-                    "custom_input_4": "",
-                    "custom_input_5": "",
-                    "custom_input_6": "",
-                    "custom_input_7": "",
-                    "custom_input_8": "",
-                    "show_total_score": "true"
-                }
-            }
-        ]
-    },
-    "urls": [
-        "https://100035.pythonanywhere.com/nps-scale1/TestDic8931?brand_name=WorkflowAI&product_name=editor/1"
-    ]
-}
-```
-## Single Scale Response
-
-This API gets Single the Single Scale Response through Scale_id and gets the Data within that Scale.
-
-Requst: GET
-
-```bash
-https://100035.pythonanywhere.com/api/nps_responses/<str:Scale_id>
-```
-like:
-```bash
-https://100035.pythonanywhere.com/api/nps_responses/63e8b4c87f4aa8f650162b7a
-```
-
-which will provide the Response like:
-
-```bash
-{
-    "payload": {
-        "isSuccess": true,
-        "data": []
-    }
-}
-```
-## NPS responses
-
-This Request gets the Details of All APIs present with their Response Details.
-
-Note:
-
-No Arguments needed
-
-Request: GET
-
-```bash
-https://100035.pythonanywhere.com/api/nps_responses
-```
-
-Which will get the response:
-
-```bash
-{
-    "isSuccess": true,
-    "data": [
-        {
-            "_id": "63a477d49b0e8a8545b262a2",
-            "event_id": "FB1010000000167172295758202024",
-            "scale_data": {
-                "scale_id": "63a403752be81449d3a32382",
-                "scale_type": "nps scale",
-                "instance_id": "3/4"
-            },
-            "brand_data": {
-                "brand_name": "your_brand",
-                "product_name": "your_product"
-            },
-            "score": {
-                "score": "2"
-            }
-        },
-        {
-            "_id": "63a47a3b9b0e8a8545b26336",
-            "event_id": "FB1010000000016717235725374497",
-            "scale_data": {
-                "scale_id": "63a403752be81449d3a32382",
-                "scale_type": "nps scale"
-            },
-            "brand_data": {
-                "brand_name": "your_brand",
-                "product_name": "your_product"
-            },
-            "score": [
-                {
-                    "instance_id": "4/4",
-                    "score": "10"
-                }
-            ]
-        }
-    ]
-}
-```
-
-
-
-
-
-
-
-
+- ## QSORT scale
+   - Description: 
+        The Q-Sort Scale is a psychological assessment tool used to measure and rank subjective opinions or personality traits of individuals. It typically involves sorting a set of items or statements into predefined categories, allowing researchers to gain insights into an individual's perceptions, values, or preferences. Given below is the API collection for creating and managing Q-Sort scales, streamlining the process of administering and analyzing Q-Sort assessments.
+   - Example:
+         ![image]()
+   - Documentation:
+        https://documenter.getpostman.com/view/link_for_qsort_scale_api_documentation

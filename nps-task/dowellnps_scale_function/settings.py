@@ -16,6 +16,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+FRONTEND_DIR = BASE_DIR / "dist"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -29,7 +30,7 @@ DEBUG = False
 if DEBUG != True:
     public_url = "https://100035.pythonanywhere.com"
 else:
-    public_url = "http://127.0.0.1:8000/"
+    public_url = "https://100035.pythonanywhere.com"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -56,8 +57,12 @@ INSTALLED_APPS = [
     'percent_sum',
     'Qsort',
     'paired_comparison',
+    'perceptual_mapping',
     'client.apps.ClientConfig',
     'api.apps.ApiConfig',
+    'thurstone',
+    "scale_report",
+    "addons"
 ]
 
 
@@ -83,7 +88,7 @@ ROOT_URLCONF = 'dowellnps_scale_function.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR],
+        'DIRS': [TEMPLATE_DIR, FRONTEND_DIR / "build"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -158,3 +163,31 @@ STATIC_URL = '/static/'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGGING_DIR = os.path.join(BASE_DIR, 'logs')  # Adjust the path as needed
+if not os.path.exists(LOGGING_DIR):
+    os.makedirs(LOGGING_DIR)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGGING_DIR, 'api_downtime.log'),
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+
+    'loggers': {
+        'external_api': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        }
+    },
+}
