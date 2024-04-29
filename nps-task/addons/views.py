@@ -58,15 +58,18 @@ class ScaleCreateAPIView(APIView):
             axis_limit = payload['axis_limit']
 
         if scale_type == 'nps scale':
+        if scale_type == 'nps scale':
             scale_range = range(0, 11)
             return scale_range
 
         elif scale_type == 'nps_lite':
             return range(0, 3)
         elif scale_type == 'stapel scale':
+        elif scale_type == 'stapel scale':
             if 'axis_limit' in payload:
                 pointers = int(payload['axis_limit'])
                 return chain(range(-axis_limit, 0), range(1, axis_limit + 1))
+        elif scale_type == 'likert scale':
         elif scale_type == 'likert scale':
             if 'pointers' in payload:
                 pointers = int(payload['pointers'])
@@ -77,6 +80,7 @@ class ScaleCreateAPIView(APIView):
             raise ValueError("Unsupported scale type")
 
     def scale_type(self, scale_type, payload):
+        if scale_type == "nps scale":
         if scale_type == "nps scale":
             no_of_items = 11
         elif scale_type == "npslite scale":
@@ -109,6 +113,7 @@ class ScaleCreateAPIView(APIView):
                        "no_of_instances":no_of_instances}
 
             if scale_type == "likert scale":
+            if scale_type == "likert scale":
                 try:
                     request.data['pointers']
                     pointers = serializer.validated_data['pointers']
@@ -117,6 +122,7 @@ class ScaleCreateAPIView(APIView):
                     print(e)
                     return Response(f"missing field for likert {e}", status=status.HTTP_400_BAD_REQUEST)
 
+            if scale_type == "stapel scale":
             if scale_type == "stapel scale":
                 try:
                     request.data['axis_limit']
@@ -130,7 +136,9 @@ class ScaleCreateAPIView(APIView):
             total_no_of_items = self.scale_type(scale_type, payload)
             payload["total_no_of_items"] = total_no_of_items
 
+
             scale_range = self.adjust_scale_range(payload)
+
 
             event_id = get_event_id()
 
@@ -150,10 +158,14 @@ class ScaleCreateAPIView(APIView):
                 "scale_range": list(scale_range),
                 "pointers": pointers if scale_type == "likert scale" else "",
                 "axis_limit": axis_limit if scale_type == "stapel scale" else ""
+                "pointers": pointers if scale_type == "likert scale" else "",
+                "axis_limit": axis_limit if scale_type == "stapel scale" else ""
             }
             }
             # save data to db
             try:
+                response = datacube_db(payload=payload, api_key=api_key, operation="insert", )
+
                 response = datacube_db(payload=payload, api_key=api_key, operation="insert", )
 
                 scale_id = response['data'].get("inserted_id")
@@ -162,6 +174,8 @@ class ScaleCreateAPIView(APIView):
                 urls = self.generate_urls(payload['settings'], scale_id)
 
                 # insert urls into the db
+                datacube_db(payload=payload, api_key=api_key, operation="update", id=scale_id,
+                            update_data={"urls": urls})
                 datacube_db(payload=payload, api_key=api_key, operation="update", id=scale_id,
                             update_data={"urls": urls})
 
@@ -192,10 +206,12 @@ class ScaleCreateAPIView(APIView):
             # if not id or not api_key:
             #     return Response(f"Error: api_key or scale_id missing!", status=status.HTTP_400_BAD_REQUEST)
 
+
             # Query the database to retrieve data based on the provided ID
             response_data = datacube_db(api_key=api_key, operation="fetch", id=id)
             response = response_data['data'][0]
             settings = response["settings"]
+
 
             if response:
                 # Extract the relevant information from the response
@@ -256,6 +272,7 @@ def post_scale_response(request):
             }
 
             # fetch the relevant settings meta data
+            # fetch the relevant settings meta data
             settings_meta_data = datacube_db(api_key=api_key, operation="fetch", id=scale_id)
             data = settings_meta_data['data'][0]['settings']
             print(data)
@@ -275,6 +292,11 @@ def post_scale_response(request):
             print(response_data)
            
             current_instance_id = len(response_data['data']) + 1 if response_data['data'] else 1
+            for data_entry in response_data['data']:
+                # Check if the 'ip_address' field exists and matches the provided IP address
+                if 'ip_address' in data_entry and data_entry['ip_address'] == ip_address:
+                    return Response({"success": False, "message": "Cannot provide multiple scores from same user."},
+                                    status=status.HTTP_400_BAD_REQUEST)
             for data_entry in response_data['data']:
                 # Check if the 'ip_address' field exists and matches the provided IP address
                 if 'ip_address' in data_entry and data_entry['ip_address'] == ip_address:
