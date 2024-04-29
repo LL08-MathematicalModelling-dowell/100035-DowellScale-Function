@@ -57,20 +57,19 @@ class ScaleCreateAPIView(APIView):
         if "axis_limit" in payload:
             axis_limit = payload['axis_limit']
 
-        if scale_type == 'nps scale':
-        if scale_type == 'nps scale':
+        if scale_type == 'nps':
             scale_range = range(0, 11)
             return scale_range
 
         elif scale_type == 'nps_lite':
             return range(0, 3)
-        elif scale_type == 'stapel scale':
-        elif scale_type == 'stapel scale':
+    
+        elif scale_type == 'stapel':
             if 'axis_limit' in payload:
                 pointers = int(payload['axis_limit'])
                 return chain(range(-axis_limit, 0), range(1, axis_limit + 1))
-        elif scale_type == 'likert scale':
-        elif scale_type == 'likert scale':
+        elif scale_type == 'likert':
+       
             if 'pointers' in payload:
                 pointers = int(payload['pointers'])
                 return range(1, pointers + 1)
@@ -80,15 +79,15 @@ class ScaleCreateAPIView(APIView):
             raise ValueError("Unsupported scale type")
 
     def scale_type(self, scale_type, payload):
-        if scale_type == "nps scale":
-        if scale_type == "nps scale":
+        
+        if scale_type == "nps":
             no_of_items = 11
-        elif scale_type == "npslite scale":
+        elif scale_type == "nps_lite":
             no_of_items = 3
-        elif scale_type == "likert scale":
+        elif scale_type == "likert":
             pointers = payload['pointers']
             no_of_items = pointers
-        elif scale_type == "stapel scale":
+        elif scale_type == "stapel":
             axis_limit = payload["axis_limit"]
             no_of_items = 2 * axis_limit
         else:
@@ -112,8 +111,8 @@ class ScaleCreateAPIView(APIView):
             payload = {"scale_type": scale_type,
                        "no_of_instances":no_of_instances}
 
-            if scale_type == "likert scale":
-            if scale_type == "likert scale":
+            if scale_type == "likert":
+          
                 try:
                     request.data['pointers']
                     pointers = serializer.validated_data['pointers']
@@ -122,8 +121,7 @@ class ScaleCreateAPIView(APIView):
                     print(e)
                     return Response(f"missing field for likert {e}", status=status.HTTP_400_BAD_REQUEST)
 
-            if scale_type == "stapel scale":
-            if scale_type == "stapel scale":
+            if scale_type == "stapel":
                 try:
                     request.data['axis_limit']
                     axis_limit = serializer.validated_data['axis_limit']
@@ -143,24 +141,24 @@ class ScaleCreateAPIView(APIView):
             event_id = get_event_id()
 
             payload = {"settings": {
-                "api_key": api_key,
-                "scale_name": scale_name,
-                "total_no_of_items": total_no_of_items,
-                "scale_category": scale_type,
-                "no_of_instances": no_of_instances,
-                "no_of_responses":no_of_responses,
-                "user_type":user_type,
-                "channel_list":channel_list,
-                "allow_resp": True,
-                "workspace_id": workspace_id,
-                "username": username,
-                "event_id": event_id,
-                "scale_range": list(scale_range),
-                "pointers": pointers if scale_type == "likert scale" else "",
-                "axis_limit": axis_limit if scale_type == "stapel scale" else ""
-                "pointers": pointers if scale_type == "likert scale" else "",
-                "axis_limit": axis_limit if scale_type == "stapel scale" else ""
-            }
+                    "api_key": api_key,
+                    "scale_name": scale_name,
+                    "total_no_of_items": total_no_of_items,
+                    "scale_category": scale_type,
+                    "no_of_instances": no_of_instances,
+                    "no_of_responses":no_of_responses,
+                    "user_type":user_type,
+                    "channel_list":channel_list,
+                    "allow_resp": True,
+                    "workspace_id": workspace_id,
+                    "username": username,
+                    "event_id": event_id,
+                    "scale_range": list(scale_range),
+                    "pointers": pointers if scale_type == "likert scale" else "",
+                    "axis_limit": axis_limit if scale_type == "stapel scale" else "",
+                    "pointers": pointers if scale_type == "likert scale" else "",
+                    "axis_limit": axis_limit if scale_type == "stapel scale" else ""
+                }
             }
             # save data to db
             try:
@@ -292,16 +290,12 @@ def post_scale_response(request):
             print(response_data)
            
             current_instance_id = len(response_data['data']) + 1 if response_data['data'] else 1
-            for data_entry in response_data['data']:
+            # for data_entry in response_data['data']:
                 # Check if the 'ip_address' field exists and matches the provided IP address
-                if 'ip_address' in data_entry and data_entry['ip_address'] == ip_address:
-                    return Response({"success": False, "message": "Cannot provide multiple scores from same user."},
-                                    status=status.HTTP_400_BAD_REQUEST)
-            for data_entry in response_data['data']:
-                # Check if the 'ip_address' field exists and matches the provided IP address
-                if 'ip_address' in data_entry and data_entry['ip_address'] == ip_address:
-                    return Response({"success": False, "message": "Cannot provide multiple scores from same user."},
-                                    status=status.HTTP_400_BAD_REQUEST)
+                # if 'ip_address' in data_entry and data_entry['ip_address'] == ip_address:
+                #     return Response({"success": False, "message": "Cannot provide multiple scores from same user."},
+                #                     status=status.HTTP_400_BAD_REQUEST)
+            
 
             if current_instance_id <= no_of_responses:
                 event_id = get_event_id()
