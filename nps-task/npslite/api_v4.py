@@ -129,21 +129,37 @@ class CreateNPSLiteResponse(APIView):
                 instance_name = response_serializer.validated_data['instance']
                 user_info = dict(request.headers)
 
-                scale_settings = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"_id":scale_id}, 10000, 0, False))
 
+                scale_settings = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"_id":scale_id}, 10000, 0, False))
+                print(scale_settings)
                 if not scale_settings['data']:
                     return Response({"success":"false",
                                      "message":"Scale does not exist"
                                      },status=status.HTTP_404_NOT_FOUND)
                 else:
                     existing_responses = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", {"scale_id":scale_id}, 10000, 0, False))
-                    matching_channel_instances = []
-                    for data in  existing_responses['data']:
-                        if data['response_info']['channel']==channel_name and data['response_info']['instance']==instance_name:
-                            matching_channel_instances.append(data)
-                            existing_response_count = len(matching_channel_instances)
-                        else: 
-                            existing_response_count = 0
+                    if existing_responses['data']:
+                        matching_channel_instances = []
+                        for data in  existing_responses['data']:
+                            if data['response_info']['channel']==channel_name and data['response_info']['instance']==instance_name:
+                                # print(">>>>>>IP",data["user_info"]['X-Real-Ip'])
+                                matching_channel_instances.append(data)
+                                print(matching_channel_instances)
+                                for instance in matching_channel_instances:
+                                    if data["user_info"]['X-Real-Ip'] == user_info['X-Real-Ip']:
+                                        return Response({
+                                                         "success":"false",
+                                                         "message":"You have already submitted a rating for this scale."
+                                                         },status=status.HTTP_403_FORBIDDEN)
+                                    else:
+                                        existing_response_count = len(matching_channel_instances)
+                            else:
+                                return Response({
+                                                "success":"false",
+                                                "message":"Requested channel or instance does not exist for this scale"
+                                                },status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        existing_response_count = 0
                     current_response_count = existing_response_count+1
 
                     if score == 0:
@@ -175,6 +191,7 @@ class CreateNPSLiteResponse(APIView):
                                         "response_no":current_response_count
                                     },
                         "user_info":user_info
+
                     }
 
                     inserted_response = json.loads(datacube_data_insertion(api_key, "livinglab_scale_response", "collection_1", scale_response_data))
