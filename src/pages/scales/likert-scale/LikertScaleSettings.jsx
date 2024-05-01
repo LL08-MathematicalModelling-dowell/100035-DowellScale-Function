@@ -62,7 +62,7 @@ const LikertScaleSettings = () => {
   };
 
   const handleSelectScore = (score, index) => {
-    setSelectedScore(score);
+    setSelectedScore(index);
     setSelectedIndex(index)
     setDisableOnMouseEnter(true)
     if(disableOnMouseEnter === true) {
@@ -75,14 +75,16 @@ const LikertScaleSettings = () => {
   //   await fetchSingleScaleData(scaleId);
   // };
 
-  const submitResponse = async () => {
-    const info = await axios.post(
-      'https://100093.pythonanywhere.com/api/userinfo/',
-      {
-        // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
-        session_id: sessionStorage.getItem('session_id'),
-      }
-    );
+  const submitResponse = async (e) => {
+
+    e.preventDefault()
+    // const info = await axios.post(
+    //   'https://100093.pythonanywhere.com/api/userinfo/',
+    //   {
+    //     // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
+    //     session_id: sessionStorage.getItem('session_id'),
+    //   }
+    // );
 
     // const result = info.data;
     // console.log(result.userinfo);
@@ -99,7 +101,7 @@ const LikertScaleSettings = () => {
       product_name: 'Living Lab Scales',
       username: new URLSearchParams(window.location.search).get('public_link'),
     };
-    console.log(payload);
+    console.log(payload, "HHHHH");
     // finalizeMasterlink();
 
     try {
@@ -138,7 +140,7 @@ const LikertScaleSettings = () => {
       handleToggleMasterlinkSuccessModal();
     } catch (error) {
       setIsLoading(false);
-      toast.error(error?.response?.data?.message);
+      toast.error(error);
       console.error(error.response.data.message);
     } finally {
       setIsLoading(false);
@@ -188,12 +190,11 @@ const LikertScaleSettings = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `https://100035.pythonanywhere.com/likert/likert-scale_create?scale_id=${slug}`
+          `https://100035.pythonanywhere.com/likert/likert-scale_response/662d3490c08f5d3309f29ebc`
         );
         setScaleResponse((response.data));
         setResponse(response.data.success)
-        alert("S")
-        console.log(response.data, "hhhhhhhhhhhhhhhhhhhhhhhhhh")
+        console.log(response.data.success, "hhhhhhhhhhhhhhhhhhhhhhhhhh")
       } catch (error) {
         console.error(error);
       } finally {
@@ -255,6 +256,7 @@ const LikertScaleSettings = () => {
     e.preventDefault();
     setIsLoading(true);
     const session_id = sessionStorage.getItem('session_id');
+    let product = 'Living Lab Scales'
     console.log(session_id);
     try {
       // Fetch user information
@@ -276,7 +278,7 @@ const LikertScaleSettings = () => {
       result.selected_product.userportfolio.forEach((portfolio) => {
         if (
           portfolio.member_type === 'public' &&
-          portfolio.product === 'Living Lab Scales'
+          product === 'Living Lab Scales'
         ) {
           PublicLinks.push(portfolio.username);
         }
@@ -340,9 +342,9 @@ const handleButtonBgColor2 = (score) => {
   setBtnText(score)
 }
 
-  // if (isLoading) {
-  //   return <Fallback />;
-  // }
+  if (isLoading) {
+    return <Fallback />;
+  }
   return (
     <div className="flex flex-col items-center justify-center h-screen font-medium" >
       {publicLink && (

@@ -270,7 +270,8 @@ console.log('====================================');
       fontstyle: formData.fontStyle,
       scale_color: formData.scalecolor,
       fomat: formData.labelType,
-      user: "yes"
+      user: "yes",
+      allow_resp: true
     };
 
     console.log(payload);
