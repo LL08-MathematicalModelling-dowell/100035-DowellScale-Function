@@ -9,6 +9,7 @@ import { fontStyles } from '../../../utils/fontStyles';
 import { NPSLiteEmojiPicker } from '../../../components/emoji-picker';
 import NPSLiteMasterLink from './NPSLiteMasterLink';
 import { useFetchUserContext } from "../../../contexts/fetchUserContext";
+import ChannelNames from '../../../components/data/ChannelNames';
 import axios from 'axios';
 
 
@@ -36,7 +37,9 @@ const CreateNpsLiteScale = () => {
     
     const createScale  = useCreateScale();
     const navigateTo = useNavigate();
-    
+  
+    const [countInstance, setCountInstance] = useState(0)
+    const [channelCount, setChannelCount] = useState(0)
     const [formData, setFormData] = useState({
           orientation: "",
           user: "yes",  //should be boolean
@@ -56,7 +59,8 @@ const CreateNpsLiteScale = () => {
           center: "",
           // scale-category: "nps scale",
           scaleCategory: "nps scale",
-          show_total_score: "true" //should be boolean
+          show_total_score: "true", //should be boolean
+          no_of_channels: ''
   })
 
   const requiredFields = [
@@ -116,31 +120,56 @@ const CreateNpsLiteScale = () => {
 
   const handleSubmitNPSScale = async()=>{
 
-    
+    ChannelNames.length = 0
+    let elements = document.querySelectorAll(".channel_name");
+    let channelArray = []
+    for (let i = 0;  i < elements.length; i++) {
+    channelArray.push(elements[i].value)
+    console.log(channelArray, "HHHHHHHH")
+    }
 
     const payload = {
-        orientation: formData.orientation,
-        scale_id: "64e8744218f0a24fb16b0ee2",
-        user: "yes",  //should be boolean
-        username: "Ndoneambrose",
-        scalecolor: formData.scalecolor,
-        numberrating: 10,
-        no_of_scales: formData.no_of_scales,
-        fontcolor: formData.fontcolor,
-        fomat:formData.fomat,
-        fontstyle:formData.fontstyle,
-        time: formData.time,
-        custom_emoji_format: Object.assign({}, selectedEmojis),
-        template_name: "testing5350",
-        name: formData.name,
-        text: "good+neutral+best",
-        left: formData.left,
-        right: formData.right,
-        center: formData.center,
-        // scale-category: "nps scale",
-        scaleCategory: "nps scale",
-        show_total_score: "true" //should be boolean
-    }
+        "workspace_id": userinfo.userinfo.client_admin_id,
+        "username": userinfo.userinfo.username,
+        "scale_name": formData.name,
+        "customizations": {
+                            "orientation": formData.orientation,
+                            "scalecolor": formData.scalecolor,
+                            "fontcolor": formData.fontcolor,
+                            "fontstyle": formData.fontstyle,
+                          },
+                          "channel_instance_list": [
+                            {
+                                "channel_name": "discord",
+                                "channel_display_name": "sg_Website",
+                                "instances_details": [
+                                    {
+                                        "instance_name": "discord_1",
+                                        "instance_display_name": "HomePage"
+                                    }
+                    
+                                ]
+                            },
+                            {
+                                "channel_name": "instagram",
+                                "channel_display_name": "UK_Website",
+                                "instances_details": [
+                                    {
+                                        "instance_name": "instagram_1",
+                                        "instance_display_name": "FeedbackForm"
+                                    },
+                                    {
+                                        "instance_name": "instagram_2",
+                                        "instance_display_name": "LogOutPage"
+                                    }
+                    
+                                ]
+                            }
+                        ],
+                        "scale_type": "nps",
+                        "user_type": true,
+                       "no_of_responses":3,
+          }
 
     for(const field of requiredFields){
         if(!formData[field]){
@@ -157,10 +186,10 @@ const CreateNpsLiteScale = () => {
         setIsLoading(true);
         const response = await createScale('nps-lite-scale', payload);
         console.log(response, '8* respon')
-        if(response.status===200){
-            toast.success('scale created');
+        if(response.status===201){
+            toast.success(response.data.message);
             setTimeout(()=>{
-                navigateTo(`/100035-DowellScale-Function/nps-lite-scale-settings/${response?.data?.data?.scale_id}`)
+                navigateTo(`/100035-DowellScale-Function/nps-lite-scale-settings/${response?.data?.scale_id}`)
             },2000)
           }
     } catch (error) {
@@ -169,6 +198,12 @@ const CreateNpsLiteScale = () => {
     }finally{
         setIsLoading(false);
     }
+}
+
+const setNumInstance = (val) =>{
+  let numInstance = document.getElementById(val)
+  
+  return numInstance ? numInstance.value : 4
 }
 
 const handleSave = async() =>{
@@ -209,12 +244,17 @@ const handleSave = async() =>{
   }
 }
 
+const addChannel = () =>{
+  setChannelCount(e =>e+1)
+  // setCountInstance(0)
+}
+
 const handleToggleMasterlinkModal = () => {
   setShowMasterlinkModal(!showMasterlinkModal);
 };
 
   return (
-  <div className='flex flex-col items-center justify-center w-full h-screen font-Montserrat'>
+  <div className='flex flex-col items-center justify-center w-full font-Montserrat mt-10'>
     <div className='w-full p-5 border md:w-7/12'>
       <div className='flex justify-between'>
         <h2 className="mb-3 text-sm font-medium text-center capitalize">set up your NPS Lite scale</h2>
@@ -222,7 +262,8 @@ const handleToggleMasterlinkModal = () => {
         <p>You have about <span className='font-bold text-primary'>{displayedTime}</span> seconds to submit your form</p>
         )}
       </div>
-      <div className='grid grid-cols-2 gap-3 mb-10 md:grid-cols-3'>
+      <div className='flex flex-col justify-center'>
+        <div className='grid grid-cols-2 gap-3 mb-10 md:grid-cols-3'>
         <div className='w-full'>
           <CustomTextInput 
             label='name'
@@ -293,7 +334,8 @@ const handleToggleMasterlinkModal = () => {
           ))}
         </select>
       </div>
-      <div className="w-full">
+      </div>
+      {/* <div className="w-full">
                 <label
                   htmlFor="format"
                   className="mb-1 ml-1 text-sm font-normal"
@@ -312,8 +354,55 @@ const handleToggleMasterlinkModal = () => {
                     <option key={i}>{format}</option>
                   ))}
                 </select>
-              </div>
-      <div className='w-full'>
+              </div> */}
+              
+          <div className="w-full mt-5 mb-5">
+             {
+              Array.apply(null, {length: channelCount}).map((val, index) =>(
+                <div key={index}>
+                <CustomTextInput
+                label='Channel name'
+                name="channel_name"
+                className="channel_name border rounded-lg w-full mb-4 h-10 outline-none"
+                 type="text"
+                 onChange={handleChange}
+                 placeholder="Enter channel name"
+                />
+                <div className='mt-5'>
+                <label htmlFor="orientation" className="mb-1 ml-1 text-sm font-normal">No. of instances</label>
+                <input
+                label='no of instances'
+                 name="no_of_instances"
+                 id={`no_of_instances${index}`}
+                 className={`no_of_instances border rounded-lg w-full mb-4 h-10 outline-none`}
+                 type="text"
+                 onChange={(e) => setCountInstance(e.target.value)}
+                 placeholder="Enter no of instances"
+                />
+                <div className="w-full mt-5 mb-5">
+             {
+              Array.apply(null, {length: 2 }).map((val, index) =>(
+                <div key = {index} className='bt-30'>
+                  <label htmlFor="orientation" className="mb-1 ml-1 text-sm font-normal">name of instances</label>
+                <input
+                label='name of instances'
+                 name="instance_name"
+                 className="instance_name border rounded-lg w-full mb-4 h-10 outline-none"
+                 type="text"
+                 onChange={handleChange}
+                 placeholder="Enter istance name"
+                />
+                </div>
+              ))
+            }
+          </div>
+                </div>
+                </div>
+              ))
+            }
+            {/* <button onClick={addChannel} className='w-full py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>+add a channel</button> */}
+          </div>
+      {/* <div className='w-full'>
         <CustomTextInput 
           label='left'
           name='left'
@@ -379,7 +468,7 @@ const handleToggleMasterlinkModal = () => {
             // handleEmojiSelect={handleEmojiSelect}
             handleToggleEmojiPellete={handleToggleEmojiPellete}
             />
-          )}
+          )} */}
       </div>
       <div className='flex justify-end gap-3'>
         {isLoading ? <Fallback/> : <button onClick={handleSubmitNPSScale} className='w-full py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>Save</button>}
@@ -387,60 +476,6 @@ const handleToggleMasterlinkModal = () => {
       </div>
     </div>
   </div>
-  // <div className="flex flex-col items-center justify-center w-full h-screen font-Montserrat">
-  //     <div style={{filter: showMasterlinkModal ? 'blur(8px)' : '', pointerEvents: showMasterlinkModal ? 'none' : ''}}>
-  //       <div>
-  //         <label htmlFor="scaleType" className="mb-1 ml-1 text-sm font-normal">
-  //         Scale type
-  //           </label>
-  //          <select
-  //             label="Select a scale type"
-  //             name="scaleType"
-  //             className="appearance-none block w-full mt-1 text-[#989093] text-sm font-light py-2 px-2 outline-0 rounded-[8px] border border-[#DDDADB] pl-4"
-  //             value={scaleType}
-  //             onChange={(e) => setScaleType(e.target.value)}
-  //           >
-  //             <option value='nps'>nps lite scale</option>
-  //              {/* {scaleTypeArray.map((format, i) => (
-  //               <option key={i}>{format}</option>
-  //             ))} */}
-  //           </select>
-  //       </div>
-  //       <div className="w-full" style={{marginTop: '10px'}}>
-  //            <CustomTextInput
-  //             label="no. of instances"
-  //             name="instances"
-  //             value={instance}
-  //             type="text"
-  //             handleChange={(e) => setInstance(e.target.value)}
-  //             placeholder="enter no. instances"
-  //           />
-  //         </div>
-  //         <div className="w-full">
-  //           <CustomTextInput
-  //             label="name"
-  //             name="name"
-  //             value={formData.name}
-  //             type="text"
-  //             handleChange={handleChange}
-  //             placeholder="enter scale name"
-  //           />
-  //         </div>
-  //     </div>
-  //     <button
-  //       onClick={handleSave}
-  //       className="py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium" style={{marginTop: "10px"}}>
-  //       Save
-  //       </button>
-  //       {showMasterlinkModal && (
-  //       <NPSLiteMasterLink
-  //         handleToggleMasterlinkModal={handleToggleMasterlinkModal}
-  //         // link={npsLinks}
-  //         publicLinks={Object.entries(npsLiteLinks)}
-  //         // image={qrCodeURL}
-  //       />
-  //     )}
-  //   </div>
   )
 }
 

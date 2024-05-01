@@ -31,7 +31,7 @@ const NPSLiteMasterLink = ({
     toast.success(val === link ? 'Masterlink copied to clipboard!': 'Public link copied to clipboard!');
   };
   return (
-    <div className="fixed top-0 left-0 flex flex-col justify-center w-full h-screen bg-primary/40">
+    <div className="fixed top-0 left-0 flex flex-col justify-center w-full bg-primary/40">
       <div className="relative w-9/12 px-5 py-20 m-auto bg-white border">
         <button
           onClick={handleToggleMasterlinkModal}

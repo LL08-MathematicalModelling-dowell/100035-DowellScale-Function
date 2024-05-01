@@ -40,6 +40,7 @@ const NpsLiteSettings = () => {
   const [scaleArr, setScaleArr] = useState([])
   const [instance, setInstance] = useState(false)
   const navigate = useNavigate()
+  const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
 
   let scores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   let currentUserInstance = new URLSearchParams(window.location.search).get(
@@ -63,22 +64,19 @@ const NpsLiteSettings = () => {
     setShowMasterLinkSuccessModal(!showMasterLinkSuccessModal);
   };
 
-  const handleSelectScore = (score, index) => {
-    if(scale?.fomat === 'emoji') {
-      setSelectedScore(index);
-    setSelectedIndex(index)
-    } else {
+  const handleSelectScore = (index) => {
       setSelectedScore(index + 1);
-      setSelectedIndex(index)
-    }
+      setSelectedIndex(index + 1)
+
+    submitResponse()
   };
 
   // const handleFetchSingleScale = async (scaleId) => {
   //   await fetchSingleScaleData(scaleId);
   // };
 
-  const submitResponse = async (e) => {
-    e.preventDefault()
+  const submitResponse = async (index) => {
+    // e.preventDefault()
     // const info = await axios.post(
     //   'https://100093.pythonanywhere.com/api/userinfo/',
     //   {
@@ -93,22 +91,21 @@ const NpsLiteSettings = () => {
 
     const payload = {
       scale_id: slug,
-      score: selectedScore,
-      process_id: link_id,
-      instance_id: new URLSearchParams(window.location.search).get(
-        'instance_id'
-      ),
-      brand_name: 'Living Lab Scales',
-      product_name: 'Living Lab Scales',
-      username: new URLSearchParams(window.location.search).get('public_link'),
-    };
+      score: index,
+      workspace_id: new URLSearchParams(window.location.search).get('workspace_id'),
+      username: new URLSearchParams(window.location.search).get('username'),
+      user_type: new URLSearchParams(window.location.search).get('user'),
+      scale_type: new URLSearchParams(window.location.search).get('scale_type'),
+      channel: new URLSearchParams(window.location.search).get('channel'),
+      instance: new URLSearchParams(window.location.search).get('instance'),
+       };
     console.log(payload);
     // finalizeMasterlink();
 
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'https://100035.pythonanywhere.com/nps-lite/api/nps-lite-response',
+        'https://100035.pythonanywhere.com/nps-lite/api/v4/nps-lite-create-response/',
         payload
       );
       const result = response.data;
@@ -119,8 +116,10 @@ const NpsLiteSettings = () => {
         return;
       } else {
         handleButtonHideClick();
-        toast.success('Response has been saved');
+        toast.success(result.message);
         finalizeMasterlink();
+        console.log(result.redirect_url)
+        window.location.replace(result.redirect_url);
       }
     } catch (error) {
       console.log(error);
@@ -172,14 +171,14 @@ const NpsLiteSettings = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `https://100035.pythonanywhere.com/nps-lite/api/nps-lite-settings/?scale_id=${slug}`
+          `https://100035.pythonanywhere.com/nps-lite/api/v4/nps-lite-create-scale/?scale_id=${slug}`
         );
-        console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhttttttt",response.data[0].settings);
-        setScale(response.data[0].settings);
+        console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhttttttt",response.data.settings);
+        setScale(response.data.settings);
         let arr = []
-        arr.push(response.data[0].settings.left)
-        arr.push(response.data[0].settings.center)
-        arr.push(response.data[0].settings.right)
+        arr.push('🙁No')
+        arr.push('🙂Maybe')
+        arr.push('😃Yes')
         setScaleArr(arr)
       } catch (error) {
         console.error(error);
@@ -316,21 +315,33 @@ const NpsLiteSettings = () => {
         window.location.href.lastIndexOf('/') + 1
       );
       console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
-      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale.no_of_scales)
-      if(flattenedArray.length < scale.no_of_scales) {
+      console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale.scale_configs.no_of_responses)
+      if(flattenedArray.length < scale.scale_configs.no_of_responses) {
        return toast.error('Insufficient public members');
       }
       for (
         let i = 0;
-        i < scale.no_of_scales && i < flattenedArray.length;
+        i < scale.scale_configs.no_of_responses && i < flattenedArray.length;
         i++
       ) {
+        for (
+          let j = 0;
+          j < (scale.scale_configs.channel_instance_list).length && i < flattenedArray.length;
+          j++
+        ) {
+
+          for (
+            let k = 0;
+            k < (scale.scale_configs.channel_instance_list[j]).instances_details.length && i < flattenedArray.length;
+            k++
+          ) {
         // Append the current element to the current window.location.href
-        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${
-          flattenedArray[i]
-        }&code=${qrCodeURL}&instance_id=${i + 1}`;
+        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]
+        }&code=${qrCodeURL}&instance_id=${i + 1}&user=${scale.scale_configs.user_type}&scale_type=${scale.scale_configs.scale_type}&channel=${(scale.scale_configs.channel_instance_list)[j].channel_name}&instance=${scale.scale_configs.channel_instance_list[j].instances_details[k].instance_name}&workspace_id=${userinfo.userinfo.client_admin_id}&username=${userinfo.userinfo.username}&scale_id=${slug}`;
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
+      }
+      }
       }
 
       SetpublicLinks(all_public_links);
@@ -366,9 +377,10 @@ const NpsLiteSettings = () => {
     }
   };
 
-  // if (isLoading) {
-  //   return <Fallback />;
-  // }
+  if (isLoading) {
+    return <Fallback />;
+  }
+
   return (
     <div className="flex flex-col items-center justify-center font-medium">
       {publicLink && (
@@ -381,69 +393,35 @@ const NpsLiteSettings = () => {
       <div className="w-full py-4 m-auto md:px-5 lg:w-7/12">
         <h1 className="py-5 text-[2rem] font-small text-center">{scale?.name}</h1>
         <div
-          className={`w-full  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
+          className={`w-5/6  m-auto flex flex-col lg:flex-row items-center shadow-lg p-2 justify-center rounded-lg`}
         >
-          <div className="items-center justify-center flex-1 w-full h-full border rounded-lg md:pt-10 md:p-2 stage lg:w-5/12" style={{fontFamily: `${scale?.fontstyle}`, display: scale?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.orientation === "Vertical" ? "column" : ""}}>
-            {scaleResponse.length === 0 && <h3 className="text-sm font-small" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
-            How likely are you to recommend the product to your friends?
+          <div className="items-center justify-center flex-1 w-full h-full rounded-lg md:pt-10 md:p-2 stage lg:w-5/12 md:font-bold" style={{fontFamily: `${scale?.scale_customizations?.fontstyle}`, display: scale?.scale_customizations?.orientation === "Vertical" ? "flex" : "", flexDirection: scale?.scale_customizations?.orientation === "Vertical" ? "column" : ""}}>
+            {scaleResponse.length === 0 && <h3 className="text-xl" style={{fontSize:'medium', marginBottom: '10px', display: 'flex', justifyContent: 'center'}}>
+            Do you wish to recommend this application to your friends?
             </h3>}
             <div
-              className={`grid  gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center`}
-              style={{display:'flex', flexDirection: scale?.orientation === "Vertical" ? "column" : "", alignItems:'center', justifyContent: 'center', fontSize: 'small', overflow: 'auto', width:scale?.orientation === "Vertical" ? "50%" : "", borderRadius:"8px"}}
+              className={`text-sm/[17px] grid  gap-3 md:px-2 py-6 grid-cols-11 md:px-1 items-center justify-center place-items-center`}
+              style={{display:'flex', flexDirection: scale?.scale_customizations?.orientation === "Vertical" ? "column" : "", alignItems:'center', justifyContent: 'center', overflow: 'auto', width:scale?.scale_customizations?.orientation === "Vertical" ? "50%" : "", borderRadius:"8px"}}
             >
-              {scale && 
-              // scale?.label_selection ?
-                // (scale?.label_selection).toReversed().map(
-                //   (score, index) => (
-                //     <button
-                //       key={index}
-                //       id = {index}
-                //       onClick={() => handleSelectScore(score, index)}
-                //       disabled = {scaleResponse.length === 0 ? false : (instance ? true : false)}
-                //       className={`rounded-lg ${index  === selectedScore
-                //         ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
-
-                        // style={
-                        //   index == selectedScore || (scaleResponse.score === index && instance)
-                        //     ? {
-                        //        backgroundColor: 'green',
-                        //         color: 'white',
-                        //       } 
-                        //     : { backgroundColor: scale?.roundcolor,color: scale?.fontcolor }
-                        // }
-
-                      // style={
-                      //   index == selectedIndex || (scaleResponse.score -1) === index && instance
-                      //     ? {
-                      //        backgroundColor: 'green',
-                      //         color: 'white', width: '30%'
-                      //       }
-                      //     : {  backgroundColor: scale?.scalecolor, color: scale?.fontcolor, width: '30%' }
-
-                //       }
-                //     >
-                //       {score === "" ? (scale?.custom_emoji_format)[index] : score}
-                //     </button>
-                //   )
-                // ) : 
+              {scale &&  
                 scaleArr.map((score, index) =>(
                   <button
                       key={index}
                       id = {index}
-                      onClick={() => handleSelectScore(score, index)}
+                      onClick={() => submitResponse(index)}
                       disabled = {scaleResponse.length === 0 ? false : true}
                       className={`rounded-lg ${index  === selectedScore
-                        ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem]`}
+                        ? 'bg-white' : 'bg-primary text-white'} text-primary h-[3.8rem] w-[3.8rem] font-size:1rem`}
                       style={
                         index == selectedIndex || (scaleResponse.score -1) === index && instance
                         ? {
                            backgroundColor: 'green',
                             color: 'white', width: '30%'
                           }
-                        : {  backgroundColor: scale?.scalecolor, color: scale?.fontcolor, width: '30%' }
+                        : {  backgroundColor: scale?.scale_customizations?.scalecolor, color: scale?.scale_customizations?.fontcolor, width: '30%' }
                       }
                     >
-                      {score === "" ? (scale?.custom_emoji_format)[index] : score}
+                      {score}
                     </button>
                 ))}
             </div>
@@ -472,14 +450,14 @@ const NpsLiteSettings = () => {
         </div>
         {publicLink && (
           <>
-            {!isButtonHidden && (
+            {/* {!isButtonHidden && (
               <div className="flex items-center justify-center my-4">
                 {!instance && <Button width={'3/12'} primary onClick={submitResponse}>
                   {isLoading ? 'Submitting' : 'Submit'}
                 </Button>
                }
               </div>
-            )}
+            )} */}
           </>
         )}
       </div>
