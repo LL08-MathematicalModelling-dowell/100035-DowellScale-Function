@@ -10,6 +10,7 @@ import { NPSLiteEmojiPicker } from '../../../components/emoji-picker';
 import NPSLiteMasterLink from './NPSLiteMasterLink';
 import { useFetchUserContext } from "../../../contexts/fetchUserContext";
 import ChannelNames from '../../../components/data/ChannelNames';
+import InstanceInfo from '../../../components/data/InstanceInfo';
 import axios from 'axios';
 
 
@@ -33,13 +34,27 @@ const CreateNpsLiteScale = () => {
       scaleLinks,
       setScaleLinks,
       isModalOn, 
-      setIsNodalOn } = useFetchUserContext()
+      setIsNodalOn,
+      channelCount,
+      setChannelCount } = useFetchUserContext()
     
     const createScale  = useCreateScale();
     const navigateTo = useNavigate();
-  
+    const initialState = {
+                           channel_name: "",
+                           channel_display_name: "",
+                           instances_details: [],
+                         }
+    const instanceObject = {
+                           instance_name: "",
+                           instance_display_name: ""
+    }
     const [countInstance, setCountInstance] = useState(0)
-    const [channelCount, setChannelCount] = useState(0)
+    const [count, setCount] = useState(0)
+    const [channelListPayload, setChannelListPayload] = useState([])
+    const [channelist, setChannelList] = useState(initialState)
+    const [count2, setCount2] = useState(0)
+    const [instanceDetails, setInstanceDetails] = useState(instanceObject)
     const [formData, setFormData] = useState({
           orientation: "",
           user: "yes",  //should be boolean
@@ -140,26 +155,26 @@ const CreateNpsLiteScale = () => {
                           },
                           "channel_instance_list": [
                             {
-                                "channel_name": "discord",
+                                "channel_name": "channel_1",
                                 "channel_display_name": "sg_Website",
                                 "instances_details": [
                                     {
-                                        "instance_name": "discord_1",
+                                        "instance_name": "instance_1",
                                         "instance_display_name": "HomePage"
                                     }
                     
                                 ]
                             },
                             {
-                                "channel_name": "instagram",
+                                "channel_name": "channel_2",
                                 "channel_display_name": "UK_Website",
                                 "instances_details": [
                                     {
-                                        "instance_name": "instagram_1",
+                                        "instance_name": "instance_1",
                                         "instance_display_name": "FeedbackForm"
                                     },
                                     {
-                                        "instance_name": "instagram_2",
+                                        "instance_name": "instance_1",
                                         "instance_display_name": "LogOutPage"
                                     }
                     
@@ -244,9 +259,66 @@ const handleSave = async() =>{
   }
 }
 
+const handleChannelDisplayName = (e) =>{
+  setChannelList({...channelist, channel_display_name: e.target.value})
+}
+
+useEffect(()=>{
+  const handleChannelName = () =>{
+    if(channelCount !== 0) {
+      setChannelList({...channelist, channel_name: "channel_"+count, instances_details: InstanceInfo})
+    }
+
+    console.log(count, "TTTTTTTTTT")
+  }
+  handleChannelName()
+}, [count])
+
+
+useEffect(()=>{
+  const handleChannelName = () =>{
+    if(channelCount !== 0) {
+      setInstanceDetails(values =>({...values, instance_name: "instance_"+count2}))
+    }
+    console.log(count, "TTTTTTTTTT")
+  }
+  handleChannelName()
+}, [count2])
+
 const addChannel = () =>{
+
+  if(instanceDetails.instance_display_name !== ""){
+    InstanceInfo.push(instanceDetails)
+  }
+
+  if(channelist.channel_display_name !== ""){
+    ChannelNames.push(channelist)
+  }
+  
+  setChannelList({...initialState})
+  
+  setChannelCount(0)
   setChannelCount(e =>e+1)
-  // setCountInstance(0)
+  setCount(count => count + 1)
+  setCountInstance(0)
+}
+
+function handleInstanceInput(e) {
+  // const name = e.target.name;
+  // const value = e.target.value;
+  // setInputs(values => ({...values, [name]:value}))
+  setInstanceDetails(values =>({...values, instance_display_name: e.target.value}))
+}
+
+console.log(ChannelNames, "HHHHHHHHHHHHHHH")
+const addInstance = () =>{
+
+  if(instanceDetails.instance_display_name !== ""){
+    InstanceInfo.push(instanceDetails)
+  }
+
+  setCount2(e => e + 1)
+  setCountInstance(i => i + 1)
 }
 
 const handleToggleMasterlinkModal = () => {
@@ -361,15 +433,16 @@ const handleToggleMasterlinkModal = () => {
               Array.apply(null, {length: channelCount}).map((val, index) =>(
                 <div key={index}>
                 <CustomTextInput
-                label='Channel name'
-                name="channel_name"
-                className="channel_name border rounded-lg w-full mb-4 h-10 outline-none"
-                 type="text"
-                 onChange={handleChange}
-                 placeholder="Enter channel name"
+                label='channel display name'
+                name="channel_display_name"
+                className="border rounded-lg w-full mb-4 h-10 outline-none"
+                type="text"
+                value={channelist.channel_display_name}
+                handleChange={handleChannelDisplayName}
+                placeholder="Enter channel name"
                 />
                 <div className='mt-5'>
-                <label htmlFor="orientation" className="mb-1 ml-1 text-sm font-normal">No. of instances</label>
+                {/* <label htmlFor="orientation" className="mb-1 ml-1 text-sm font-normal">No. of instances</label>
                 <input
                 label='no of instances'
                  name="no_of_instances"
@@ -378,23 +451,25 @@ const handleToggleMasterlinkModal = () => {
                  type="text"
                  onChange={(e) => setCountInstance(e.target.value)}
                  placeholder="Enter no of instances"
-                />
+                /> */}
                 <div className="w-full mt-5 mb-5">
              {
-              Array.apply(null, {length: 2 }).map((val, index) =>(
+              Array.apply(null, {length: countInstance }).map((val, index) =>(
                 <div key = {index} className='bt-30'>
                   <label htmlFor="orientation" className="mb-1 ml-1 text-sm font-normal">name of instances</label>
                 <input
                 label='name of instances'
-                 name="instance_name"
+                 name='instance_display_name'
                  className="instance_name border rounded-lg w-full mb-4 h-10 outline-none"
                  type="text"
-                 onChange={handleChange}
+                 value={channelist.instance_display_name}
+                 onChange={handleInstanceInput}
                  placeholder="Enter istance name"
                 />
                 </div>
               ))
             }
+            {/* <button onClick={addInstance} className='w-1/2 py-2 px-3 bg-primary text-white min-w-[10rem] hover:bg-gray-600 hover:text-white font-medium'>+add an instance</button> */}
           </div>
                 </div>
                 </div>
