@@ -183,7 +183,7 @@ const CreateNpsLiteScale = () => {
                         ],
                         "scale_type": "nps",
                         "user_type": true,
-                       "no_of_responses":3,
+                       "no_of_responses":1000,
           }
 
     for(const field of requiredFields){
