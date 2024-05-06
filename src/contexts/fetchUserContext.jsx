@@ -11,6 +11,7 @@ export const FetchUserContextProvider = ({ children }) => {
   const [scaleLinks, setScaleLinks] = useState({})
   const [isModalOn, setIsNodalOn] = useState(false)
   const [BtnLink, setBtnLink] = useState("")
+  const [channelCount, setChannelCount] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,7 +54,9 @@ export const FetchUserContextProvider = ({ children }) => {
     isModalOn, 
     setIsNodalOn,
     BtnLink,
-    setBtnLink }}>
+    setBtnLink,
+    channelCount,
+    setChannelCount }}>
       {children}
     </FetchUserContext.Provider>
   );
