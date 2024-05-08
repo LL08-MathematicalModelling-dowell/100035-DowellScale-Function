@@ -279,32 +279,32 @@ const NpsLiteSettings = () => {
     console.log(session_id);
     try {
       // Fetch user information
-      const pub_links = await axios.post(
-        'https://100093.pythonanywhere.com/api/userinfo/',
-        {
-          // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
-          session_id: sessionStorage.getItem('session_id'),
-        }
-      );
+      // const pub_links = await axios.post(
+      //   'https://100093.pythonanywhere.com/api/userinfo/',
+      //   {
+      //     // session_id: "p1frwekqkwq05ia3fajjujwgvjjz1ovy",
+      //     session_id: sessionStorage.getItem('session_id'),
+      //   }
+      // );
 
-      const result = pub_links.data;
-      console.log(result, "hhhhhhhhhhhhhhhhhhhhhhhhhb")
-      setUserInfo(result.userinfo);
+      // const result = pub_links.data;
+      // console.log(result, "hhhhhhhhhhhhhhhhhhhhhhhhhb")
+      // setUserInfo(result.userinfo);
       
-      const PublicLinks = [];
+      // const PublicLinks = [];
       const all_public_links = [];
 
       // Extract public links from user portfolio
-      result.selected_product.userportfolio.forEach((portfolio) => {
-        if (
-          portfolio.member_type === 'public' &&
-          product === 'Living Lab Scales'
-        ) {
-          PublicLinks.push(portfolio.username);
-        }
-      });
+      // result.selected_product.userportfolio.forEach((portfolio) => {
+      //   if (
+      //     portfolio.member_type === 'public' &&
+      //     product === 'Living Lab Scales'
+      //   ) {
+      //     PublicLinks.push(portfolio.username);
+      //   }
+      // });
 
-      const flattenedArray = [].concat(...PublicLinks);
+      // const flattenedArray = [].concat(...PublicLinks);
 
       // Generate modified URLs
       const modifiedUrl = window.location.href.slice(
@@ -314,34 +314,34 @@ const NpsLiteSettings = () => {
       const lastPart = window.location.href.slice(
         window.location.href.lastIndexOf('/') + 1
       );
-      console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
+      console.log(userinfo.userinfo.client_admin_id, "YYYYYYYYYYY")
+      // console.log("nnnnnnnnnnnnbbbbbbbbbbb",flattenedArray.length)
       console.log("nnnnnnnnnnnnbbbbbbbbbbb",scale.scale_configs.no_of_responses)
-      if(flattenedArray.length < scale.scale_configs.no_of_responses) {
-       return toast.error('Insufficient public members');
-      }
-
+      
+      // if(flattenedArray.length < scale.scale_configs.no_of_responses) {
+      //  return toast.error('Insufficient public members');
+      // }
+      
       let scaleCount = 0
       for (
         let i = 0;
-        i < scale.scale_configs.no_of_responses && i < flattenedArray.length;
+        i < scale.scale_configs.no_of_responses;
         i++
       ) {
         for (
           let j = 0;
-          j < (scale.scale_configs.channel_instance_list).length && i < flattenedArray.length;
+          j < (scale.scale_configs.channel_instance_list).length;
           j++
         ) {
 
           for (
             let k = 0;
-            k < (scale.scale_configs.channel_instance_list[j]).instances_details.length && i < flattenedArray.length;
+            k < (scale.scale_configs.channel_instance_list[j]).instances_details.length;
             k++
           ) {
-
             scaleCount++
         // Append the current element to the current window.location.href
-        const newUrl = `${modifiedUrl}/${lastPart}/?public_link=${flattenedArray[i]
-        }&code=${qrCodeURL}&instance_id=${scaleCount}&user=${scale.scale_configs.user_type}&scale_type=${scale.scale_configs.scale_type}&channel=${(scale.scale_configs.channel_instance_list)[j].channel_name}&instance=${scale.scale_configs.channel_instance_list[j].instances_details[k].instance_name}&workspace_id=${userinfo.userinfo.client_admin_id}&username=${userinfo.userinfo.username}&scale_id=${slug}`;
+        const newUrl = `${modifiedUrl}/${lastPart}/?instance_id=${scaleCount}&user=${scale.scale_configs.user_type}&scale_type=${scale.scale_configs.scale_type}&channel=${(scale.scale_configs.channel_instance_list)[j].channel_name}&instance=${scale.scale_configs.channel_instance_list[j].instances_details[k].instance_name}&workspace_id=${userinfo.userinfo.client_admin_id}&username=${userinfo.userinfo.username}&scale_id=${slug}`;
         // const newUrl = `${modifiedUrl}/${flattenedArray[i]}/?public_link=${lastPart}`;
         all_public_links.push(newUrl);
       }
