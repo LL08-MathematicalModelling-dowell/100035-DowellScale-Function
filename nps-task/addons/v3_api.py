@@ -18,8 +18,8 @@ class ScaleCreateAPI(APIView):
         urls = []
         scale_range = payload["scale_range"]
         for idx in scale_range:
-            url = f"{public_url}/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
-            # url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
+            # url = f"{public_url}/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
+            url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
             urls.append(url)
         return urls
 
@@ -226,6 +226,9 @@ class ScaleCreateAPI(APIView):
         except Exception as e:
             print(e)
             return Response(f"Unexpected error occured while fetching your data", status=status.HTTP_400_BAD_REQUEST)
+        
+    def update(self, request):
+        return("resource updated")
 
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -249,12 +252,38 @@ def create_scale_response(request):
     
     if request.method == "GET":
         try:
-            
+            if scale_type == "nps_lite":
+                if item == 0:
+                        category = "detractor"
+                elif item == 1:
+                    category = "passive"
+                elif item == 2:
+                    category = "promoter"
+                else:
+                    return Response({"success":"false",
+                                    "message":"Invalid value for score"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+    
+            elif scale_type == "nps":
+                if 0 <= item <=6:
+                    category = "detractor"
+                elif 7 <= item <=8:
+                    category = "passive"
+                elif 9 <= item <=10:
+                    category = "promoter"
+                else:
+                    return Response({"success":"false",
+                                    "message":"Invalid value for score"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                category = "N/A"
+        
             existing_data = {
                 "workspace_id":workspace_id,
                 "username":username,
                 "scale_id":scale_id,
                 "score": item,
+                "category":category,
                 "user_type":user_type,
                 "user_info":header
             }
@@ -300,6 +329,7 @@ def create_scale_response(request):
                         "message": "Response recorded successfully",
                         "response_id": response_id,
                         "score": item,
+                        "category":category,
                         "channel":channel_name,
                         "current_response_no": current_response_count,
                         "no_of_available_responses": no_of_responses - current_response_count,
@@ -315,3 +345,19 @@ def create_scale_response(request):
             return Response({"Resource not found! Contact the admin"}, status=status.HTTP_404_NOT_FOUND)
     else:
         return Response("Method not allowed")
+    
+@api_view(['GET'])
+def get_scale_response(request):
+   
+    scale_id = request.GET.get('scale_id')
+
+    if request.method == "GET":
+        try:
+            fields = {"scale_id":scale_id}
+            response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
+            data = response_data['data']
+            return Response({"success":"true",
+                             "message":"fetched the data",
+                             "data":data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(e)
