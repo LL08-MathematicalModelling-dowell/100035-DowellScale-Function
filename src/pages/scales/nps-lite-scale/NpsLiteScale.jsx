@@ -8,6 +8,7 @@ import useGetScale from '../../../hooks/useGetScale';
 import useGetSingleScale from '../../../hooks/useGetSingleScale';
 import Fallback from '../../../components/Fallback';
 import { Button } from '../../../components/button';
+import ChannelNames from '../../../components/data/ChannelNames';
 
 
 const NpsLiteScale = () => {
@@ -26,6 +27,11 @@ const NpsLiteScale = () => {
     useEffect(()=>{
         fetchScaleData('nps-lite-scale');
     },[]);
+
+    const handleCreateScale = () =>{
+      ChannelNames.length = 0
+      navigateTo(`/100035-DowellScale-Function/create-nps-lite-scale`)
+    }
 
     const handleSelectScore = (score)=>{
         setSelectedScore(score)
@@ -72,7 +78,7 @@ const NpsLiteScale = () => {
                     
             
                     <div className='flex items-center justify-end w-full my-4'>
-                        <Button primary width={'3/4'} onClick={()=>navigateTo(`/100035-DowellScale-Function/create-nps-lite-scale`)}>create new scale</Button>
+                        <Button primary width={'3/4'} onClick={handleCreateScale}>create new scale</Button>
                     </div>
                 </div>
             </div>

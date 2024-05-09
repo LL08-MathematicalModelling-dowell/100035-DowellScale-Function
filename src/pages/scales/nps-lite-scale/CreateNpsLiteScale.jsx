@@ -78,17 +78,16 @@ const CreateNpsLiteScale = () => {
           // scale-category: "nps scale",
           scaleCategory: "nps scale",
           show_total_score: "true", //should be boolean
-          no_of_channels: ''
+          no_of_channels: '',
+          no_of_responses: ''
   })
 
   let copyArray = []
 
   const requiredFields = [
     'name',
-    'left',
-    'right',
-    'center',
-    'orientation'
+    'orientation',
+    'no_of_responses'
 ]
 
   const handleToggleEmojiPellete = ()=>{
@@ -141,7 +140,11 @@ const CreateNpsLiteScale = () => {
   const handleSubmitNPSScale = async()=>{
     let tag = document.getElementsByClassName('instance1')
     console.log(tag[0], "GGGGGGGGGGGG")
-    // ChannelNames.length = 0
+    if(ChannelNames.length === 0){
+      toast.error(`Please add Channel name field`);
+        return;
+    }
+    
     let elements = document.querySelectorAll(".channel_name");
     let channelArray = []
     for (let i = 0;  i < elements.length; i++) {
@@ -162,20 +165,17 @@ const CreateNpsLiteScale = () => {
                           "channel_instance_list":ChannelNames,
                         "scale_type": "nps",
                         "user_type": true,
-                       "no_of_responses":4,
+                       "no_of_responses":formData.no_of_responses,
           }
 
-    for(const field of requiredFields){
-        if(!formData[field]){
-          if(formData.format === "emoji" && field === 'left','center', 'right') {
-
-          }else {
-            toast.error(`Please complete the "${field}" field.`);
-            return;
+          for (const field of requiredFields) {
+            if (!formData[field]) {
+              toast.error(`Please complete the "${field}" field.`);
+              return;
+            }
           }
-            
-        }
-    }
+
+
     try {
         setIsLoading(true);
         const response = await createScale('nps-lite-scale', payload);
@@ -380,6 +380,16 @@ const handleToggleMasterlinkModal = () => {
           ))}
         </select>
       </div>
+      <div className='w-full'>
+          <CustomTextInput 
+            label='No. of responses'
+            name='no_of_responses'
+            value={formData.no_of_responses}
+            type='Number'
+            handleChange={handleChange}
+            placeholder='enter number of responses'
+          />
+        </div>
       </div>
       {/* <div className="w-full">
                 <label
