@@ -33,7 +33,7 @@ const NpsLiteSettings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const publicLink = queryParams.get('public_link');
+  const publicLink = queryParams.get('scale_type');
   const link_id = queryParams.get('link_id');
   const qrcode_id = queryParams.get('qrcode_id');
   const [isButtonHidden, setIsButtonHidden] = useState(false);
