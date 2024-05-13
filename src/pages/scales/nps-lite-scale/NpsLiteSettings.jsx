@@ -10,6 +10,7 @@ import UpdateNpsLite from './UpdateNpsLite';
 import NPSLiteMasterLink from './NPSLiteMasterLink';
 import dowellLogo from '../../../assets/dowell-logo.png';
 import MasterlinkSuccessModal from '../../../modals/MasterlinkSuccessModal';
+import ChannelNames from '../../../components/data/ChannelNames';
 
 const NpsLiteSettings = () => {
   const { slug } = useParams();
@@ -55,11 +56,14 @@ const NpsLiteSettings = () => {
   };
 
   const handleToggleUpdateModal = () => {
+    ChannelNames.length = 0
     setShowUpdateModal(!showUpdateModal);
   };
+
   const handleToggleMasterlinkModal = () => {
     setShowMasterlinkModal(!showMasterlinkModal);
   };
+  
   const handleToggleMasterlinkSuccessModal = () => {
     setShowMasterLinkSuccessModal(!showMasterLinkSuccessModal);
   };

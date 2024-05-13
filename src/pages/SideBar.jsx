@@ -8,6 +8,8 @@ import { FaEllipsisV } from "react-icons/fa";
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import Modal from '../components/Modal/Modal';
+import { MdNewLabel } from "react-icons/md";
+import { LiaCloudscale } from "react-icons/lia";
 
 const SideBar = () => {
 
@@ -71,7 +73,7 @@ const SideBar = () => {
   }, []);
 
   return (
-    <div className='lg:w-3/12 overflow-y-auto' style={{backgroundColor:'#54595F', width:'600px', marginRight: '50px'}}>
+    <div className='lg:w-3/12 overflow-y-auto' style={{backgroundColor:'#54595F', width:'600px'}}>
      <div style={{color: '#D3D3D3', fontSize:'15px', fontWeight:'400', display: 'flex', alignItems:'center', justifyContent: 'center', marginTop: '20px'}}>
      <img src= {dowellLogo} alt='image' style={{height:'60px', borderRadius:'8px', marginRight: '15px'}}/>
      <h3 style={{marginRight: '15px'}}>DoWell Scales</h3>
@@ -94,6 +96,16 @@ const SideBar = () => {
      <div style={{color: '#D3D3D3', fontSize:'15px', display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', marginTop:'40px'}}>
         <img src='https://www.scales.dowellstore.org/wp-content/uploads/2022/12/17.png' alt='User image' style={{height:'100px', borderRadius:'8px', marginBottom: '15px'}}/>
         <h2 style={{color: 'white', fontSize: '20px'}}>Welcome, {userInfo?.username}</h2>
+     </div>
+     <div style={{fontSize:'15px', display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', marginTop:'15px'}}>
+      <div className='flex mt-10 bg-[#013220] text-white w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px'}}>
+        <MdNewLabel style={{marginRight:'6px'}} />
+        <button className=''>New scale</button>
+      </div>
+      <div className='flex mt-5 bg-white text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px'}}>
+       <LiaCloudscale style={{marginRight:'6px'}} />
+       <button>My scales</button>
+      </div>
      </div>
     </div>
   )
