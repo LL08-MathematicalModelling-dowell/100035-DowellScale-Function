@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import SideBar from './SideBar';
 import { useFetchUserContext } from "../contexts/fetchUserContext";
 import { useSearchParams, Link } from 'react-router-dom';
-import { useNavigate } from 'react-router';
 import axios from 'axios';
 import ScaleCard from './ScaleCard';
 // import Cookies from 'universal-cookie';
@@ -15,9 +14,7 @@ const Home = () => {
     sName,
     setSName,
     BtnLink,
-    setBtnLink,
-    scaleIndex,
-    setScaleIndex, } = useFetchUserContext()
+    setBtnLink } = useFetchUserContext()
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
@@ -36,7 +33,7 @@ const Home = () => {
       name: 'NPS LITE SCALE',
       slug: 'nps-lite-scale',
       btnLink: 'npsLiteBtnLink',
-      description: 'Net promoter score (NPS) is a widely used market research metric that is based on a single survey question. We can also provide more information like use cases of this scale...',
+      description: 'Net promoter score (NPS) is a widely used market research metric that is based on a single survey question',
       image: 'https://www.mailerlite.com/img/containers/assets/SEO/cover-automation-nps-1571391762.png/03e0db977bad2866419531ed9874a4eb.png'
     },
     {
@@ -91,7 +88,7 @@ const Home = () => {
       image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/percentage-scale-150x150.png'
     }
   ];
-  const navigateTo = useNavigate();
+  // const navigateTo = useNavigate();
 
 
   // const getUserInfo = async (session_id) => {
@@ -141,11 +138,6 @@ const Home = () => {
   //   }
   // }, [localSession, searchParams]);
 
-  const handleStartCreating = () =>{
-    setPopupOption(false)
-    navigateTo(`/100035-DowellScale-Function/${scaleTypes[scaleIndex].slug}`)
-  }
-
   const [searchParams] = useSearchParams();
   
   const [userInfo, setUserInfo] = useState()
@@ -191,62 +183,41 @@ console.log(BtnLink, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
        {/* <div className='sidebar' > */}
        {isSidebarVisible && <SideBar />}
         {/* </div> */}
-      <div>
-        <h1></h1>
-      </div>
-      <div className="" style={{ filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'flex-Start', backgroundColor:'white'}}>
-        {scaleTypes.map((scale, index) => (
+      <div className="" style={{ filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'center'}}>
+        {scaleTypes.map((scale) => (
           <ScaleCard scaleName={scale.name} 
           description={scale.description}
           imageSource={scale.image}
           slug={scale.slug}
-          index={index}
           btnLinks = {scale.btnLink}
           key={scale.slug}/>
         ))}
       </div>
 
-      {popuOption && 
-      <div className='popup' style={{width: '550px', height: '240px', display: 'flex', left: '53%', top: '25%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'white', borderRadius: '8px'}}>
+      {popuOption && <div className='popup' style={{width: '450px', height: '400px', display: 'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', left: '50%', top: '50%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'#4054B2', borderRadius: '8px'}}>
       <button
           onClick={() => setPopupOption(false)}
-          className="absolute px-2 text-black bg-white rounded-full right-2 top-2"
+          className="absolute px-2 text-white bg-red-500 rounded-full right-2 top-2"
         >
-          X
+          x
         </button>
-        <div className='border' style={{ marginRight: '40px', width: '100px',height:"100px", marginTop: '30px', marginLeft: '40px' }}>
-            <img src={scaleTypes[scaleIndex].image} style={{ width: '100px',height:"100px",objectFit:"cover",background:"black", marginRight: '10px' }} alt={scaleTypes[scaleIndex].name} />
-          </div>
-
-          <div style={{marginTop: '20px'}}>
-            <h3 style={{ fontFamily:"Changa, sans-serif", fontWeight:'500' }}>{scaleTypes[scaleIndex].name}</h3>
-            <p className="text-black-600" style={{ width: '340px', fontSize: 'medium' }}>{scaleTypes[scaleIndex].description}</p>
-            <button
-              className="text-center text-white capitalize bg-primary"
-              style={{ width: '200px', marginTop:"10px", height: '40px' }}
-              onClick={handleStartCreating}
-             >
-             Start creating
-          </button>
-          </div>
-      {/* <Link
+      <Link
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
         style={{ width: '250px', marginTop:"10px" }}
         to={`/100035-DowellScale-Function/${sName}`}
         onClick={() => setPopupOption(false)}
       >
         Create a masterlink
-      </Link> */}
-      {/* <Link
+      </Link>
+      <Link
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
         style={{ width: '250px', marginTop:"30px" }}
         to={`/100035-DowellScale-Function/${BtnLink}`}
         onClick={() => setPopupOption(false)}
       >
         Create Button Link
-      </Link> */}
-      </div>
-      }
+      </Link>
+      </div>}
     </div>
   );
 };

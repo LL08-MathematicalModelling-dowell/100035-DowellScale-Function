@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 function App() {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const publicLink = queryParams.get('public_link');
+  const publicLink = queryParams.get('scale_type');
   const location = useLocation();
   const isHome = location.pathname === '/100035-DowellScale-Function/';
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
