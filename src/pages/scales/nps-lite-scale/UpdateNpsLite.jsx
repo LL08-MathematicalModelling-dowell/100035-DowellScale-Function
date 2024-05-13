@@ -298,58 +298,6 @@ const UpdateNpsLite = ({ handleToggleUpdateModal }) => {
               </div>
               <div className="w-full">
                 <CustomTextInput
-                  label="left"
-                  name="left"
-                  value={updateFormData.left === "" && updateFormData.fomat === 'emoji' ? selectedEmojis.length !== 0 ? selectedEmojis[0] : custom_emoji_format[0] :  updateFormData.left}
-                  type="text"
-                  handleChange={handleChange}
-                  placeholder="enter scale left"
-                />
-              </div>
-              <div className="w-full">
-                <CustomTextInput
-                  label="center"
-                  name="center"
-                  value={updateFormData.center === "" && updateFormData.fomat === 'emoji' ? selectedEmojis.length !== 0 ? selectedEmojis[1] : custom_emoji_format[1] :  updateFormData.center}
-                  type="text"
-                  handleChange={handleChange}
-                  placeholder="enter scale center"
-                />
-              </div>
-              <div className="w-full">
-                <CustomTextInput
-                  label="right"
-                  name="right"
-                  value={updateFormData.right === "" && updateFormData.fomat === 'emoji' ? selectedEmojis.length !== 0 ? selectedEmojis[2] : custom_emoji_format[2] :  updateFormData.right}
-                  type="text"
-                  handleChange={handleChange}
-                  placeholder="enter scale right"
-                />
-              </div>
-              <div className="w-full">
-                <div className="flex items-center gap-3">
-                  {timeOn && (
-                    <button onClick={handleToggleTime}>
-                      <BsToggleOn className="w-6 h-6 text-primary" />
-                    </button>
-                  )}
-                  {!timeOn && (
-                    <button onClick={handleToggleTime}>
-                      <BsToggleOff className="w-6 h-6 text-primary" />
-                    </button>
-                  )}
-                  <span>Toggle to set Time</span>
-                </div>
-                {timeOn && (
-                  <CustomTextInput
-                    name="time"
-                    type="number"
-                    placeholder="enter a valid time"
-                  />
-                )}
-              </div>
-              <div className="w-full">
-                <CustomTextInput
                   label="No of scales"
                   name="no_of_scales"
                   value={updateFormData.no_of_scales}
