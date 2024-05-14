@@ -13,7 +13,7 @@ import {
   RankingScaleSettings,
 } from './pages/scales/ranking-scale';
 import {
-  NPSScale,
+  V2NPSScale,
   CreateNPSScale,
   NPSScaleSettings,
   UpdateNPSScale,
@@ -145,7 +145,7 @@ const router = createBrowserRouter([
       },
       {
         path: `${basePath}/nps-scale`,
-        element: <NPSScale />,
+        element: <V2NPSScale />,
       },
       {
         path: `${basePath}/npsLiteBtnLink`,

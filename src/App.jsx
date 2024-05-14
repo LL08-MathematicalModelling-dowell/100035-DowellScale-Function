@@ -29,7 +29,7 @@ function App() {
   return (
     <div>
       <ToastContainer />
-      {isHome ? !isSidebarVisible && !publicLink && <Navbar /> : !publicLink   &&  <Navbar />}
+      {/* {isHome ? !isSidebarVisible && !publicLink && <Navbar /> : !publicLink   &&  <Navbar />} */}
       <FetchUserContextProvider>
         <Outlet />
       </FetchUserContextProvider>
