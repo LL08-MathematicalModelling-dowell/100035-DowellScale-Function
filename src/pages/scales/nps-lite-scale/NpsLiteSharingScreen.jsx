@@ -3,11 +3,14 @@ import copyData from "../../../utils/npxLiteCopyToClipboard";
 
 import {useState} from "react"
 import WebsiteScreen from "./WebisteScreen";
+import EmailScreen from "./EmailScreen";
+import emailCopy from "../../../utils/emailNpxLite";
+import ProductScreen from "./ProductScreen";
 
 export default function NpsLiteSharingScreen({setFinished,buttonLinks}){
     const[showData,setShowData]=useState("")
-    const codeToCopy=copyData(buttonLinks)
-
+    const websiteCodeToCopy=copyData(buttonLinks)
+    const emailCodeToCopy=emailCopy(buttonLinks)
     return(
         <>
         <div className="flex flex-col justify-center items-center bg-[#E8E8E8] rounded-lg  h-max w-[80%] p-5  relative" 
@@ -22,10 +25,15 @@ export default function NpsLiteSharingScreen({setFinished,buttonLinks}){
                         onClick={()=>{setShowData("product")}}>Product</button>
                     </div>
                     {showData=="website" && (
-                       <WebsiteScreen codeToCopy={codeToCopy} buttonLinks={buttonLinks}/>
+                       <WebsiteScreen codeToCopy={websiteCodeToCopy} buttonLinks={buttonLinks}/>
+                    )}
+                    {showData=="email" && (
+                       <EmailScreen codeToCopy={emailCodeToCopy} buttonLinks={buttonLinks}/>
                     )}
                   
-                    
+                  {showData=="product" && (
+                       <ProductScreen codeToCopy={websiteCodeToCopy} buttonLinks={buttonLinks}/>
+                    )}
                             
              
                     <button className=" bg-[#129561] p-2 px-8 rounded mt-10 text-white font-bold"
