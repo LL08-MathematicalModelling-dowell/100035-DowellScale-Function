@@ -97,7 +97,7 @@
 import { FaLessThan } from "react-icons/fa";
 import { Fragment, useState } from "react";
 import { useNavigate } from 'react-router';
-import scaleconfirmedimage from "../../../../public/scaleconfirmed.png?"
+import scaleconfirmedimage from "../../../../src/assets/scaleconfirmed.png"
 // import CustomizeNpxLite from "./CustomizeNpxLite";
 import ConfigureNpxLite from "./ConfigureNpxLite";
 // import PreviewNpxLite from "./PreviewNpxLite";
@@ -159,6 +159,7 @@ const[formData,setFormData]=useState({
     centerColor: "#E5E7E8",
 })
 const[isCopied,setIsCopied]=useState(false)
+const[showCopyIcon,setShowCopyIcon]=useState(-1)
 const navigateTo = useNavigate();
     function handleBack(){
         setGoBack(true)
@@ -351,30 +352,38 @@ function handleNext(){
 
 const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
     return(
-       <div className="fixed top-1/3 left-1/2 w-max h-max p-5 bg-white rounded-lg ">
+       <div className="fixed top-1/3 left-1/2 w-max h-max p-5 bg-white rounded-lg " style={{ fontFamily: 'Roboto, sans-serif' }}>
          <p className="font-bold">{header}</p>
-         <p className="mt-3 font-medium">{text1}</p>
-         <p className="font-medium">{text2}</p>
-         <div className="flex gap-4 justify-center items-center mt-3">
-         <button className="p-2 px-4 bg-green-600 rounded-lg" onClick={onCancel}>No</button>
-         <button className="p-2 px-4 bg-red-600 rounded-lg" onClick={()=>onConfirm()}>Yes</button>
+         <p className="mt-3 ">{text1}</p>
+         <p className="">{text2}</p>
+         <div className="flex gap-8 justify-center items-center mt-3">
+         <button className="p-2 px-8 bg-[#129561] rounded" onClick={onCancel}>No</button>
+         <button className="p-2 px-8 bg-[#ff4a4a] rounded" onClick={()=>onConfirm()}>Yes</button>
          </div>
        </div>
     )
 }
 
-
+const codeToCopy=copyData(buttonLinks)
  
-      const copyToClipboard = () => {
-        navigator.clipboard.writeText(copyData)
-            .then(() => setIsCopied(true))
+      const copyToClipboard = (data) => {
+       
+        navigator.clipboard.writeText(data)
+            .then(() => {
+                if(data[0]!="h" && data.length!=3){
+                setIsCopied(true)
+                setTimeout(()=>{
+                     setIsCopied(false)                  
+                },1000)
+            }
+            })
             .catch((error) => console.error('Error copying to clipboard: ', error));
     };
     return(
           <div className="flex relative">
             
           <SideBar/>
-          <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[80%]">
+          <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
             <span className="  p-5 flex justify-start items-center gap-3 w-full">
          <FaLessThan onClick={handleBack} className=" cursor-pointer"/>
             <span  className=" font-bold  text-black">NPS LITE SCALE</span>
@@ -388,17 +397,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                         .div-changes {
                             padding: 40px 10px;
                             margin-left: 20px;
-                        }
-
-                        .button-changes {
-                            padding: 5px 10px;
-                            font-size:0.8rem;
-                        }
-                        .tracker-changes {
-                            padding: 0px 8px;
-                            font-size:0.8rem;
-                        }
-                        
+                        }  
                         .content-changes {
                             width: 100px;
                             font-size: 0.8rem;
@@ -414,10 +413,9 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                                 width: 150px;
                                 font-size:1rem
                             }
-                            .tracker-changes {
-                                padding: 8px 16px;
-                            }
+                            
                         }
+
                         .text-changes {
                             font-size: 0.8rem;
                         }
@@ -426,55 +424,63 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                                 font-size: 1rem;
                             }
                         }
-                        @media (min-width: 514px) {
-                        .button-changes {
-                            padding: 10px 10px;
-                            font-size:1rem;
+                        .button-changes{
+                            padding:0.5rem;
+                           font-size:12px;
                         }
-                    }
-                        @media (min-width: 818px) {
-                            .button-changes {
-                                padding: 10px 40px;
-                                font-size:1rem;
+                        @media(min-width:850px){
+                            .button-changes{
+                                padding:0.5rem;
+                                padding-left: 1rem;
+                                padding-right: 1rem;
+                                font-size:18px;
                             }
-                    }
-                        @media (min-width: 969px) {
-                            .button-changes {
-                                padding: 10px 60px;
-                                font-size:1rem;
-                            }
-                    }
-                        @media (min-width: 1121px) {
-                        .button-changes {
-                            padding: 10px 80px;
-                            font-size:1rem;
                         }
-                    }
+                        @media(min-width:1152px){
+                            .button-changes{
+                                padding:0.5rem;
+                                padding-left: 3rem;
+                                padding-right: 3rem;
+                                font-size:18px;
+                            }
+                        }
+                   
+                      
+                        @media(min-width:1300px){
+                            .button-changes{
+                                padding:0.5rem;
+                                padding-left: 5rem;
+                                padding-right: 5rem;
+                                font-size:18px;
+                            }
+                        }
                         
+                     
                         `
                     }
                 </style>
        
                
 
-                <div className="mt-5  bg-gray-300 rounded-lg  h-max  w-[80%] div-changes">
+                <div className="mt-5  bg-[#E8E8E8] rounded-lg  h-max  w-[80%] div-changes"  >
                     <div className="flex flex-col justify-start items-start">
-                    <p className="font-bold">NPS LITE SCALE eg.</p>
-                    <p className="font-sans font-medium text-sm">This is how a nps lite scale would look.</p>
+                    <p className="font-medium" >NPS LITE SCALE eg.</p>
+                   <p className=" text-[14px]" >This is how a nps lite scale would look.</p>
+
                     </div>
-                    <p className="flex justify-center items-center font-sans font-medium p-3  mt-5 text-changes">How was your experience using our product? Please rate your experience below.</p>
+                    <p className="flex justify-center items-center font-sans  p-3  mt-5 text-changes">How was your experience using our product? Please rate your experience below.</p>
                   
              
                     <div className="flex justify-center items-center gap-12 mt-5">
-                        <button className="bg-red-500  rounded-lg button-changes">Bad 😞</button>
-                        <button  className="bg-yellow-400  rounded-lg button-changes">Average 😐</button>
-                        <button  className="bg-green-500  rounded-lg button-changes" >Excellent 😄</button>
+                        <button className="bg-[#ff4a4a]  rounded button-changes">Bad 😞</button>
+                        <button  className="bg-[#f3dd1f]   rounded button-changes">Average 😐</button>
+                        <button  className="bg-[#129561]  rounded button-changes">Excellent 😄</button>
                     </div>
                 </div>
              
          
              
-            <div className="mt-14 pt-10 bg-gray-300 rounded-lg  h-max w-[80%] div-changes">
+            <div className="mt-14 pt-10 bg-[#E8E8E8] rounded-lg  h-max w-[80%] div-changes">
                 {!confirmed ?(
                     <>
                      <div className="flex justify-center items-center">
@@ -512,39 +518,43 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                 )} */}
                     </>
                 ):
-                <>
-                 <p className="w-full  font-bold flex justify-center items-center">Your NPS LITE SCALE has been confirmed!</p>
+                <div>
+                 <p className="w-full  font-medium">Your NPS LITE SCALE has been confirmed!</p>
                  <div className="flex flex-col justify-center items-center gap-3 mt-10">
                     <img src={scaleconfirmedimage}  alt='image'></img>
                     <p className="font-medium">You can start sharing your scale on different platforms</p>
-                    <button className=" font-medium p-2 px-12 bg-green-600 rounded mt-12 text-white"
+                    <button className=" font-medium p-2 px-12 bg-[#129561] rounded mt-12 text-white"
                     onClick={()=>{handleSharing(formData,setButtonLinks,setButtonLinksGenerated)}}>Start Sharing</button>
                  </div>
-                </>
+                </div>
                 }
                
             </div>
             </>
             ):(
                 <>
-                <div className="flex flex-col justify-center items-center bg-gray-300 rounded-lg  h-max w-[80%] p-5 font-bold relative" >
-                    <p>Share your NPS LITE SCALE across different platforms and add to your customer touch points</p>
-                    <div className="flex justify-center items-center gap-5 mt-10">
-                        <button className={`${showData=="website"? "bg-green-600" :"bg-blue-500" }  p-2 px-8 rounded text-white font-bold`}
+                <div className="flex flex-col justify-center items-center bg-[#E8E8E8] rounded-lg  h-max w-[80%] p-5  relative" 
+                style={{ fontFamily: 'Roboto, sans-serif' }}>
+                    <p className="font-medium">Share your NPS LITE SCALE across different platforms and add to your customer touch points</p>
+                    <div className="flex justify-center items-center gap-5 mt-10 text-white font-medium">
+                        <button className={`${showData=="website"? "bg-[#129561]" :"bg-[#00a3ff]" }  p-1 px-8 rounded `}
                         onClick={()=>{setShowData("website")}}>Website</button>
-                        <button  className={`${showData=="email"? "bg-green-600" :"bg-blue-500" }  p-2 px-8 rounded text-white font-bold`}
+                        <button  className={`${showData=="email"? "bg-[#129561]" :"bg-[#00a3ff]" }  p-1 px-8 rounded `}
                         onClick={()=>{setShowData("email")}}>Email</button>
-                        <button  className={`${showData=="product"? "bg-green-600" :"bg-blue-500" }  p-2 px-8 rounded text-white font-bold`}
+                        <button  className={`${showData=="product"? "bg-[#129561]" :"bg-[#00a3ff]" }  p-1 px-8 rounded `}
                         onClick={()=>{setShowData("product")}}>Product</button>
                     </div>
-                    {showData.length!=0 && (
+                    {showData=="website" && (
                        <>
-                         <div className="absolute top-[63%] right-[22%]  p-2">
+                         <div className="absolute top-[71%] right-[16%]  p-2">
                     <BsThreeDotsVertical className="cursor-pointer" onClick={()=>setShowOptions((prev)=>!prev)}/>
                 </div>
                 {showOptions && (
-                    <div className="text-xs flex flex-col absolute top-[68%] right-[10%] bg-white p-2 gap-2 divide divide-x divide-gray-200 font-normal justify-center items-start">
-                    <button className="flex justify-center text-[12px] items-center gap-2"><MdContentCopy/> Copy all links</button>
+                    <div className="text-xs flex flex-col absolute top-[75%] right-[4%] bg-white p-2 gap-2 divide divide-x divide-gray-200 font-normal justify-center items-start">
+                    <button className="flex justify-center text-[12px] items-center gap-2"
+                    onClick={()=>{copyToClipboard(buttonLinks)
+                        setShowOptions(false)
+                    }}><MdContentCopy/> Copy all links</button>
                     <div className=" h-[1px] w-full  bg-gray-600 "></div> {/* Line */}
                     <button className="flex justify-center items-center gap-2 text-[12px]"><PiFileCsvDuotone/> Generate a .csv file</button>
                     </div>
@@ -553,43 +563,58 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                     )}
                   
                     {showData=="website" && (
-                             <div className="flex flex-col justify-center items-center font-normal ">
-                                <p className=" p-2 mt-3">Copy the source code of your scale and integrate it on your website</p>
+                             <div className="flex flex-col justify-center items-start font-normal mt-5">
+                                <p className=" p-2 mb-5">Copy the source code of your scale and integrate it on your website</p>
                                 <div className="h-[300px] w-[700px] bg-white overflow-auto p-2 text-[12px]">
-                                    <pre>
-                                   {copyData}
+                                    <pre  style={{ fontFamily: 'Roboto, sans-serif' }} className="text-[14px]">
+                                   {codeToCopy}
                                    </pre>
-                                  <button className="flex justify-center text-[12px] bg-gray-200 p-2 items-center gap-2 absolute top-[21%] right-[7%]"
-                                  onClick={()=>{copyToClipboard()}}> <MdContentCopy /> Copy code</button>
-                              {isCopied && <p className="absolute top-[26%] right-[10%]">Copied!</p>}
+                                  <button className="flex justify-center text-[12px] text-white bg-[#606060] p-1 items-center gap-2 absolute top-[24%] right-[16%]"
+                                  onClick={()=>{copyToClipboard(codeToCopy)
+                                  
+                                  }}> <MdContentCopy /> Copy code</button>
+                              {isCopied && <p className="absolute top-[27%] text-[#00a3ff] right-[18%]">Copied!</p>}
                                 </div>
-                                 <p className=" p-2 ">Use the button links to add them to your scale</p>
-                        <table className="w-full md:w-1/2 divide-y divide-gray-200 overflow-hidden mt-5 " >
+                                 <p className=" p-2 mt-5">Use the button links to add them to your scale</p>
+                        <table className="w-full divide-y divide-gray-200 overflow-hidden mt-5 " >
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-2 py-3 text-left text-[12px] font-bold text-black uppercase ">Scale Values</th>
-                                <th className="px-6 py-3 text-left text-[12px] font-bold text-black uppercase ">Button Links</th>
+                                <th className="px-2 py-3 text-left text-[10px] font-medium text-black uppercase ">Scale Values</th>
+                                <th className="px-6 py-3 text-left text-[10px] font-medium text-black uppercase ">Button Links</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white divide-y divide-[#cfdfd8]">
                             {buttonLinks.map((link, index) => (
-                                <tr key={index} className="hover:bg-gray-100">
-                                    <td className="px-6 py-4 text-[12px]">{ratings[index]}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="overflow-hidden  max-w-[300px]">
-                                            <div className="text-blue-500 text-[10px] truncate">{link}</div>
+                                <tr key={index} className="hover:bg-[#d5d5d5] hover:cursor-pointer" onMouseEnter={()=>setShowCopyIcon(index)}
+                                onMouseLeave={()=>setShowCopyIcon(-1)}
+                                onClick={()=>{copyToClipboard(buttonLinks[index])
+                                    setShowCopyIcon(-1)
+                                }}
+                               >
+                                    <td className="px-6 py-2 text-[12px]">{ratings[index]}</td>
+                                    <td className="px-6 py-2">
+                                        <div className="overflow-hidden  max-w-[500px]">
+                                            <div className=" text-[10px] truncate text-[#00a3ff]">{link}</div>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-
+                    {showCopyIcon==0 && (
+                        <button className="absolute top-[76%] right-[15%]"><MdContentCopy /></button>
+                    )}
+                      {showCopyIcon==1 && (
+                        <button className="absolute top-[80%] right-[15%]"><MdContentCopy /></button>
+                    )}
+                      {showCopyIcon==2 && (
+                        <button className="absolute top-[84%] right-[15%]"><MdContentCopy /></button>
+                    )}
 
                              </div>
                     )}
              
-                    <button className=" bg-green-700 p-2 px-8 rounded mt-10 text-white font-bold"
+                    <button className=" bg-[#129561] p-2 px-8 rounded mt-10 text-white font-bold"
                     onClick={()=>setFinished(true)}>Finish Up</button>
                 </div>
                 </>
