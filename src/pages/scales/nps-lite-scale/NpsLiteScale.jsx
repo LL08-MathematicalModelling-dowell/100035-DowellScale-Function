@@ -97,21 +97,20 @@
 import { FaLessThan } from "react-icons/fa";
 import { Fragment, useState } from "react";
 import { useNavigate } from 'react-router';
-import scaleconfirmedimage from "../../../../src/assets/scaleconfirmed.png"
+
 // import CustomizeNpxLite from "./CustomizeNpxLite";
 import ConfigureNpxLite from "./ConfigureNpxLite";
 // import PreviewNpxLite from "./PreviewNpxLite";
-import copyData from "../../../utils/npxLiteCopyToClipboard";
-import handleSharing from "../../../utils/handleSharing";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { MdContentCopy } from "react-icons/md";
 
-import { PiFileCsvDuotone } from "react-icons/pi";
+
+
 import SideBar from "../../SideBar";
+import ConfirmationScale from "./NpsLiteConfirmation";
+import NpsLiteSharingScreen from "./NpsLiteSharingScreen";
 
 
 export default function NpsLiteScale(){
-    const ratings=["Bad","Average", "Excellent"]
+   
 const[goBack,setGoBack]=useState(false)
 const[step,setStep]=useState(1)
 const[numErr,setNumErr]=useState(false)
@@ -125,8 +124,7 @@ const[confirmed,setConfirmed]=useState(false)
 const[buttonLinks,setButtonLinks]=useState([])
 const[buttonLinksGenerated,setButtonLinksGenerated]=useState(false)
 const[finished,setFinished]=useState(false)
-const[showData,setShowData]=useState("")
-const[showOptions,setShowOptions]=useState(false)
+
 const[formData,setFormData]=useState({
     scaleName:"",
     numResponses:"",
@@ -158,8 +156,7 @@ const[formData,setFormData]=useState({
     rightColor: "#E5E7E8",
     centerColor: "#E5E7E8",
 })
-const[isCopied,setIsCopied]=useState(false)
-const[showCopyIcon,setShowCopyIcon]=useState(-1)
+
 const navigateTo = useNavigate();
     function handleBack(){
         setGoBack(true)
@@ -188,6 +185,8 @@ const navigateTo = useNavigate();
        
     }
 console.log(confirmed)
+
+
 function handleFormData(value, name, index = 0, idx = 0) {
     switch (name) {
         case "scaleName":
@@ -364,21 +363,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
     )
 }
 
-const codeToCopy=copyData(buttonLinks)
- 
-      const copyToClipboard = (data) => {
-       
-        navigator.clipboard.writeText(data)
-            .then(() => {
-                if(data[0]!="h" && data.length!=3){
-                setIsCopied(true)
-                setTimeout(()=>{
-                     setIsCopied(false)                  
-                },1000)
-            }
-            })
-            .catch((error) => console.error('Error copying to clipboard: ', error));
-    };
+
     return(
           <div className="flex relative">
             
@@ -518,106 +503,14 @@ const codeToCopy=copyData(buttonLinks)
                 )} */}
                     </>
                 ):
-                <div>
-                 <p className="w-full  font-medium">Your NPS LITE SCALE has been confirmed!</p>
-                 <div className="flex flex-col justify-center items-center gap-3 mt-10">
-                    <img src={scaleconfirmedimage}  alt='image'></img>
-                    <p className="font-medium">You can start sharing your scale on different platforms</p>
-                    <button className=" font-medium p-2 px-12 bg-[#129561] rounded mt-12 text-white"
-                    onClick={()=>{handleSharing(formData,setButtonLinks,setButtonLinksGenerated)}}>Start Sharing</button>
-                 </div>
-                </div>
+                <ConfirmationScale formData={formData} setButtonLinks={setButtonLinks} setButtonLinksGenerated={setButtonLinksGenerated}/>
                 }
                
             </div>
             </>
             ):(
-                <>
-                <div className="flex flex-col justify-center items-center bg-[#E8E8E8] rounded-lg  h-max w-[80%] p-5  relative" 
-                style={{ fontFamily: 'Roboto, sans-serif' }}>
-                    <p className="font-medium">Share your NPS LITE SCALE across different platforms and add to your customer touch points</p>
-                    <div className="flex justify-center items-center gap-5 mt-10 text-white font-medium">
-                        <button className={`${showData=="website"? "bg-[#129561]" :"bg-[#00a3ff]" }  p-1 px-8 rounded `}
-                        onClick={()=>{setShowData("website")}}>Website</button>
-                        <button  className={`${showData=="email"? "bg-[#129561]" :"bg-[#00a3ff]" }  p-1 px-8 rounded `}
-                        onClick={()=>{setShowData("email")}}>Email</button>
-                        <button  className={`${showData=="product"? "bg-[#129561]" :"bg-[#00a3ff]" }  p-1 px-8 rounded `}
-                        onClick={()=>{setShowData("product")}}>Product</button>
-                    </div>
-                    {showData=="website" && (
-                       <>
-                         <div className="absolute top-[71%] right-[16%]  p-2">
-                    <BsThreeDotsVertical className="cursor-pointer" onClick={()=>setShowOptions((prev)=>!prev)}/>
-                </div>
-                {showOptions && (
-                    <div className="text-xs flex flex-col absolute top-[75%] right-[4%] bg-white p-2 gap-2 divide divide-x divide-gray-200 font-normal justify-center items-start">
-                    <button className="flex justify-center text-[12px] items-center gap-2"
-                    onClick={()=>{copyToClipboard(buttonLinks)
-                        setShowOptions(false)
-                    }}><MdContentCopy/> Copy all links</button>
-                    <div className=" h-[1px] w-full  bg-gray-600 "></div> {/* Line */}
-                    <button className="flex justify-center items-center gap-2 text-[12px]"><PiFileCsvDuotone/> Generate a .csv file</button>
-                    </div>
-                )}
-                       </>
-                    )}
-                  
-                    {showData=="website" && (
-                             <div className="flex flex-col justify-center items-start font-normal mt-5">
-                                <p className=" p-2 mb-5">Copy the source code of your scale and integrate it on your website</p>
-                                <div className="h-[300px] w-[700px] bg-white overflow-auto p-2 text-[12px]">
-                                    <pre  style={{ fontFamily: 'Roboto, sans-serif' }} className="text-[14px]">
-                                   {codeToCopy}
-                                   </pre>
-                                  <button className="flex justify-center text-[12px] text-white bg-[#606060] p-1 items-center gap-2 absolute top-[24%] right-[16%]"
-                                  onClick={()=>{copyToClipboard(codeToCopy)
-                                  
-                                  }}> <MdContentCopy /> Copy code</button>
-                              {isCopied && <p className="absolute top-[27%] text-[#00a3ff] right-[18%]">Copied!</p>}
-                                </div>
-                                 <p className=" p-2 mt-5">Use the button links to add them to your scale</p>
-                        <table className="w-full divide-y divide-gray-200 overflow-hidden mt-5 " >
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-2 py-3 text-left text-[10px] font-medium text-black uppercase ">Scale Values</th>
-                                <th className="px-6 py-3 text-left text-[10px] font-medium text-black uppercase ">Button Links</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-[#cfdfd8]">
-                            {buttonLinks.map((link, index) => (
-                                <tr key={index} className="hover:bg-[#d5d5d5] hover:cursor-pointer" onMouseEnter={()=>setShowCopyIcon(index)}
-                                onMouseLeave={()=>setShowCopyIcon(-1)}
-                                onClick={()=>{copyToClipboard(buttonLinks[index])
-                                    setShowCopyIcon(-1)
-                                }}
-                               >
-                                    <td className="px-6 py-2 text-[12px]">{ratings[index]}</td>
-                                    <td className="px-6 py-2">
-                                        <div className="overflow-hidden  max-w-[500px]">
-                                            <div className=" text-[10px] truncate text-[#00a3ff]">{link}</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    {showCopyIcon==0 && (
-                        <button className="absolute top-[76%] right-[15%]"><MdContentCopy /></button>
-                    )}
-                      {showCopyIcon==1 && (
-                        <button className="absolute top-[80%] right-[15%]"><MdContentCopy /></button>
-                    )}
-                      {showCopyIcon==2 && (
-                        <button className="absolute top-[84%] right-[15%]"><MdContentCopy /></button>
-                    )}
+                <NpsLiteSharingScreen setFinished={setFinished} buttonLinks={buttonLinks}/>
 
-                             </div>
-                    )}
-             
-                    <button className=" bg-[#129561] p-2 px-8 rounded mt-10 text-white font-bold"
-                    onClick={()=>setFinished(true)}>Finish Up</button>
-                </div>
-                </>
             ) }
              
         </div>
