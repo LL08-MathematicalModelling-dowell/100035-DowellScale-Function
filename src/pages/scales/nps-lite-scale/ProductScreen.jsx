@@ -57,6 +57,7 @@ export default function ProductScreen({codeToCopy,buttonLinks}){
                     <th className="px-2 py-3 text-left text-[10px] font-medium text-black uppercase ">Scale Values</th>
                     <th className="px-6 py-3 text-left text-[10px] font-medium text-black uppercase ">Button Links</th>
                 </tr>
+                
             </thead>
             <tbody className="bg-white divide-y divide-[#cfdfd8]">
                 {buttonLinks.map((link, index) => (
