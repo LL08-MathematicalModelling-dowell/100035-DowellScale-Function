@@ -114,12 +114,7 @@ export default function NpsLiteScale(){
    
 const[goBack,setGoBack]=useState(false)
 const[step,setStep]=useState(1)
-const[numErr,setNumErr]=useState(false)
-const[nameErr,setNameErr]=useState(false)
-const[channelErr,setChannelErr]=useState(-1)
-const[instanceErr,setInstanceErr]=useState({index:-1,idx:-1})
-const[requiredChannel,setRequiredChannel]=useState(-1)
-const[requiredInstance,setRequiredInstance]=useState({index:-1,idx:-1})
+
 const[confirmScale,setConfirmScale]=useState(false)
 const[confirmed,setConfirmed]=useState(false)
 const[buttonLinks,setButtonLinks]=useState([])
@@ -196,166 +191,7 @@ const navigateTo = useNavigate();
 console.log(confirmed)
 
 
-function handleFormData(value, name, index = 0, idx = 0) {
-    switch (name) {
-        case "scaleName":
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
-            if (value.length < 3) setNameErr(true);
-            else setNameErr(false);
-            break;
 
-        case "numResponses":
-            let num = Number(value);
-            setFormData(prev => ({
-                ...prev,
-                [name]: num
-            }));
-            if (num < 30 || num > 10000) {
-                setNumErr(true);
-            } else {
-                setNumErr(false);
-            }
-            break;
-
-        case "channelName":
-            setRequiredChannel(-1)
-            const nameExists = formData.channels.some((channel, idx) => idx !== index && channel.channelName === value);
-            if (nameExists) {
-                setChannelErr(index)
-            }else{
-                setChannelErr(-1);
-            }
-            setFormData(prev => ({
-                ...prev,
-                channels: prev.channels.map((channel, idx) => idx === index ? { ...channel, channelName: value } : channel)
-            }));
-          
-            break;
-
-        case "InstanceName":
-            setRequiredInstance({index:-1,idx:-1})
-            const instanceExists = formData.channels[index].instances.includes(value)
-              
-            
-            if (instanceExists) {
-                setInstanceErr({index,idx});
-            } else {
-                setInstanceErr({index:-1,idx:-1});
-            }
-  
-            setFormData(prev => ({
-                ...prev,
-                channels: prev.channels.map((channel, i) => i === index ? {
-                    ...channel,
-                    instances: channel.instances.map((inst, iidx) => iidx === idx ? value : inst)
-                } : channel)
-            }));
-        
-            break;
-
-        default:
-            return formData;
-    }
-}
-
-function increaseInstance(index){
-    setFormData((prev)=>({
-        ...prev,
-        channels:prev.channels.map((channel,idx)=>idx==index?{
-            ...channel,
-            instances:[...channel.instances,""]
-        }:channel)
-    }))
-}
-
-function decreaseInstance(index){
-  
-    setFormData(prev => ({
-        ...prev,
-        channels: prev.channels.map((channel, idx) => {
-            if (idx === index && channel.instances.length>1) {
-                return {
-                    ...channel,
-                    instances: channel.instances.slice(0, -1)
-                };
-            }
-            return channel;
-        })
-    }));
-    if(instanceErr.index==index){
-        setInstanceErr({index:-1,idx:-1})
-    }
-
-    
-}
-
-function addChannel(){
-    let newChannel={
-        channelName:"",
-        instances:[""]
-    }
-    setFormData(prev => ({
-        ...prev,
-        channels:[...prev.channels,newChannel]
-        
-    }));
-    
-}
-
-function deleteChannel(index){
-    setFormData(prev => ({
-        ...prev,
-        channels: prev.channels.filter((channel, idx) => idx !== index)
-        
-    })); 
-    if(channelErr==index){
-        setChannelErr(-1)
-    }
-}
-
-function handleNext(){
-            let error=false
-        if(formData.scaleName.length<3){
-            setNameErr(true)
-            error=true
-        }
-
-        if(formData.numResponses<25 || formData.numResponses>10000){
-            setNumErr(true)
-            error=true
-            
-        }
-
-        formData.channels.map((channel, index) => {
-        
-            if (channel.channelName.length === 0) {
-                setRequiredChannel(index);
-                error=true
-            }
-        });
-
-
-        formData.channels.map((channel, index) => {
-            channel.instances.map((instance, idx) => {
-                if (instance.length === 0) {
-                    setRequiredInstance({index, idx});
-                    error=true
-                }
-            });
-        });
-
-
-
-        if(error)
-            return
-        else
-        setConfirmScale(true)
-// setStep((prev)=>prev+1)
-
-}
 
 
 const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
@@ -495,12 +331,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                 </div>
                 {step==1 && (
                      <ConfigureNpxLite
-                     formData={formData} 
-                     handleFormData={handleFormData} nameErr={nameErr} numErr={numErr} channelErr={channelErr}
-                     requiredChannel={requiredChannel} requiredInstance={requiredInstance} instanceErr={instanceErr}
-                    decreaseInstance={decreaseInstance} increaseInstance={increaseInstance} addChannel={addChannel}
-                    deleteChannel={deleteChannel} handleNext={handleNext}
-                     />
+                     formData={formData} setFormData={setFormData} setConfirmScale={setConfirmScale}/>
                  )}
                 {/* {step==2 && (
                     <CustomizeNpxLite formData={formData} setFormData={setFormData} setStep={setStep}/>
