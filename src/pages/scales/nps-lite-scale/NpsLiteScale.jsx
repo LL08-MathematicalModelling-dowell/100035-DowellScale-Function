@@ -95,7 +95,7 @@
 
 
 import { FaLessThan } from "react-icons/fa";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { useNavigate } from 'react-router';
 
 // import CustomizeNpxLite from "./CustomizeNpxLite";
@@ -107,6 +107,7 @@ import ConfigureNpxLite from "./ConfigureNpxLite";
 import SideBar from "../../SideBar";
 import ConfirmationScale from "./NpsLiteConfirmation";
 import NpsLiteSharingScreen from "./NpsLiteSharingScreen";
+import { useSearchParams } from 'react-router-dom';
 
 
 export default function NpsLiteScale(){
@@ -124,6 +125,8 @@ const[confirmed,setConfirmed]=useState(false)
 const[buttonLinks,setButtonLinks]=useState([])
 const[buttonLinksGenerated,setButtonLinksGenerated]=useState(false)
 const[finished,setFinished]=useState(false)
+const [sessionId, setSessionId] = useState('');
+const [searchParams] = useSearchParams();
 
 const[formData,setFormData]=useState({
     scaleName:"",
@@ -157,6 +160,12 @@ const[formData,setFormData]=useState({
     centerColor: "#E5E7E8",
 })
 
+useEffect(() => {
+    const session_id =
+      searchParams.get('session_id') || sessionStorage.getItem('session_id');
+    setSessionId(session_id);
+  }, [searchParams]);
+
 const navigateTo = useNavigate();
     function handleBack(){
         setGoBack(true)
@@ -179,7 +188,7 @@ const navigateTo = useNavigate();
            setButtonLinksGenerated(false)
         }else{
             setGoBack(false)
-            navigateTo(`/100035-DowellScale-Function/`)
+            navigateTo(`/100035-DowellScale-Function/?session_id=${sessionId}`)
             
         }
        
@@ -365,9 +374,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
 
 
     return(
-          <div className="flex relative">
-            
-          <SideBar/>
+          <div className="flex relative" style={{left: '23%'}}>
           <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
             <span className="  p-5 flex justify-start items-center gap-3 w-full">
          <FaLessThan onClick={handleBack} className=" cursor-pointer"/>
@@ -457,7 +464,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                   
              
                     <div className="flex justify-center items-center gap-12 mt-5">
-                        <button className="bg-[#ff4a4a]  rounded button-changes">Bad 😞</button>
+                        <button className="flex bg-[#ff4a4a]  rounded button-changes">Bad 😞</button>
                         <button  className="bg-[#f3dd1f]   rounded button-changes">Average 😐</button>
                         <button  className="bg-[#129561]  rounded button-changes">Excellent 😄</button>
                     </div>

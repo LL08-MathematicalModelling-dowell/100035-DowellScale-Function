@@ -73,7 +73,7 @@ const SideBar = () => {
   }, []);
 
   return (
-    <div className='lg:w-3/12  overflow-y-auto h-screen' style={{backgroundColor:'#54595F'}}>
+    <div className='lg:w-3/12  overflow-y-auto h-screen' style={{backgroundColor:'#54595F', width:'250px', marginRight: '50px', position: 'fixed'}}>
      <div style={{color: '#D3D3D3', fontSize:'15px', fontWeight:'400', display: 'flex', alignItems:'center', justifyContent: 'center', marginTop: '20px'}}>
      <img src= {dowellLogo} alt='image' style={{height:'60px', borderRadius:'8px', marginRight: '15px'}}/>
      <h3 style={{marginRight: '15px'}}>DoWell Scales</h3>

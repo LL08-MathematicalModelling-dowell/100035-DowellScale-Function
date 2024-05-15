@@ -7,6 +7,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import SideBar from './pages/SideBar';
 
 function App() {
   const { search } = useLocation();
@@ -15,6 +16,7 @@ function App() {
   const location = useLocation();
   const isHome = location.pathname === '/100035-DowellScale-Function/';
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+
   useEffect(() => {
     function handleResize() {
       setIsSidebarVisible(window.innerWidth > 600);
@@ -27,9 +29,9 @@ function App() {
    
   
   return (
-    <div>
+    <div className='flex'>
       <ToastContainer />
-      {/* {isHome ? !isSidebarVisible && !publicLink && <Navbar /> : !publicLink   &&  <Navbar />} */}
+      {!publicLink   &&  <SideBar />}
       <FetchUserContextProvider>
         <Outlet />
       </FetchUserContextProvider>

@@ -187,14 +187,14 @@ const Home = () => {
 console.log(BtnLink, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="flex" style={{position: 'relative'}}>
+    <div className="w-4/5" style={{position: 'relative', left: '20%', backgroundColor: 'red'}}>
        {/* <div className='sidebar' > */}
-       {isSidebarVisible && <SideBar />}
+       {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}
       <div>
         <h1></h1>
       </div>
-      <div className="" style={{ filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'flex-Start', backgroundColor:'white'}}>
+      <div className="" style={{ filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'center', backgroundColor:'white'}}>
         {scaleTypes.map((scale, index) => (
           <ScaleCard scaleName={scale.name} 
           description={scale.description}
