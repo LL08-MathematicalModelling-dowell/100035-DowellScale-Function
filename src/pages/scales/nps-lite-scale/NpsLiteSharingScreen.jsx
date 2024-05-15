@@ -15,13 +15,13 @@ export default function NpsLiteSharingScreen({setFinished,buttonLinks}){
         <>
         <div className="flex flex-col justify-center items-center bg-[#E8E8E8] rounded-lg  h-max w-[80%] p-5  relative" 
                 style={{ fontFamily: 'Roboto, sans-serif' }}>
-                    <p className="font-medium">Share your NPS LITE SCALE across different platforms and add to your customer touch points</p>
+                    <p className="font-normal md:font-medium">Share your NPS LITE SCALE across different platforms and add to your customer touch points</p>
                     <div className="flex justify-center items-center gap-5 mt-10 text-white font-medium">
-                        <button className={`${showData=="website"? "bg-[#129561]" :"bg-[#00a3ff]" }  p-1 px-8 rounded `}
+                        <button className={`${showData=="website"? "bg-[#129561]" :"bg-[#00a3ff]" } px-2 p-1 md:px-8 rounded `}
                         onClick={()=>{setShowData("website")}}>Website</button>
-                        <button  className={`${showData=="email"? "bg-[#129561]" :"bg-[#00a3ff]" }  p-1 px-8 rounded `}
+                        <button  className={`${showData=="email"? "bg-[#129561]" :"bg-[#00a3ff]" }  px-2 p-1 md:px-8 rounded `}
                         onClick={()=>{setShowData("email")}}>Email</button>
-                        <button  className={`${showData=="product"? "bg-[#129561]" :"bg-[#00a3ff]" }  p-1 px-8 rounded `}
+                        <button  className={`${showData=="product"? "bg-[#129561]" :"bg-[#00a3ff]" }  px-2 p-1 md:px-8 rounded `}
                         onClick={()=>{setShowData("product")}}>Product</button>
                     </div>
                     {showData=="website" && (

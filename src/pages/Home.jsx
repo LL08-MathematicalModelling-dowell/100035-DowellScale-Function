@@ -187,7 +187,7 @@ const Home = () => {
 console.log(BtnLink, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="w-4/5" style={{position: 'relative', left: '20%', backgroundColor: 'red'}}>
+    <div className="w-4/5" style={{position: 'relative', left: '19%', backgroundColor: 'red'}}>
        {/* <div className='sidebar' > */}
        {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}

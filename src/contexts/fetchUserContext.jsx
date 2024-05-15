@@ -13,6 +13,7 @@ export const FetchUserContextProvider = ({ children }) => {
   const [BtnLink, setBtnLink] = useState("")
   const [scaleIndex, setScaleIndex] = useState(0)
   const [channelCount, setChannelCount] = useState(0)
+  const [rSize, setRSize] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +60,9 @@ export const FetchUserContextProvider = ({ children }) => {
     channelCount,
     setChannelCount,
     scaleIndex,
-    setScaleIndex, }}>
+    setScaleIndex,
+    rSize,
+    setRSize, }}>
       {children}
     </FetchUserContext.Provider>
   );
