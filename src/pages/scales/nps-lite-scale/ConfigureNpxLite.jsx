@@ -220,24 +220,28 @@ function handleNext(){
         {formData.channels.map((channel,index1)=>(
             <>
            
-            <div key={index1} className="flex  gap-5 mt-5 channel-changes justify-center items-center ml-8">
+            <div key={index1} className="flex flex-col lg:flex-row lg:justify-center lg:items-center gap-5 mt-5 channel-changes  ml-8">
             <p className="hidden lg:block mt-9 font-medium text-[18px]">{index1+1}.</p>
              <div className="flex flex-col justify-start items-start gap-1">
              
                 <div className="flex flex-col  gap-1">
             <label className="p-2 font-medium" htmlFor="channelName">Specify Channel:</label>
+            <div className="flex justify-center items-center gap-2 ">
            
          
             <input type="text" value={channel.channelName}  name="channelName" placeholder="Enter channel name" 
              className="p-2 rounded-md px-4 w-max"
             onChange={e => handleFormData(e.target.value,e.target.name,index1)} />
-         
+             {index1>0 &&(
+                    <RiDeleteBin2Fill className=" text-2xl cursor-pointer" onClick={()=>deleteChannel(index1)}/>
+               )}
+         </div>
            {channelErr==index1 && <p className="text-[12px] text-red-500">**channel name already exists</p>}
            {requiredChannel==index1 && <p className="text-[12px] text-red-500">**required</p>}
            </div>
         </div>
-        <div className="flex gap-3 justify-center items-center">
-        <div className="flex flex-col  gap-1">
+        <div className="flex gap-1 md:gap-3 justify-center items-center w-max">
+        <div className={`${index1==0 ? "ml-0 lg:ml-6" : "ml-0"} flex flex-col  gap-1`}>
             <label className="p-2 font-medium" htmlFor="InstanceName">Specify Instances:</label>
             {channel.instances.map((instance, index) => (
                 <div  key={index} className="flex flex-col  gap-2">
@@ -256,13 +260,11 @@ function handleNext(){
             ))}
            
         </div>
-        <div className="flex justify-center items-center gap-2 mt-10 h-max w-max">
+        <div className="flex justify-center items-center gap-1 md:gap-2 mt-10 h-max w-max">
         <button onClick={()=>decreaseInstance(index1)}>-</button>
-        <p className="p-2 bg-white">{channel.instances.length} </p>
+        <p className="md:p-2 p-[1px] rounded-xl md:rounded-none bg-white">{channel.instances.length} </p>
         <button onClick={()=>increaseInstance(index1)}>+</button>
-        {index1>0 &&(
-         <RiDeleteBin2Fill className="text-2xl cursor-pointer" onClick={()=>deleteChannel(index1)}/>
-      )}
+      
         </div>
         </div>
       
