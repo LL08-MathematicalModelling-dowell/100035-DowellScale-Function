@@ -374,7 +374,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
 
 
     return(
-          <div className="flex relative w-[77%]" style={{left: '23%'}}>
+          <div className="flex relative w-[80%]" style={{left: '17%'}}>
           <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-full" style={{ fontFamily: 'Roboto, sans-serif' }}>
             <span className="  p-5 flex justify-start items-center gap-3 w-full">
          <FaLessThan onClick={handleBack} className=" cursor-pointer"/>
