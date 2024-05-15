@@ -25,7 +25,7 @@ export default function WebsiteScreen({codeToCopy,buttonLinks}){
 
     return(
         <>
-        <div className="absolute top-[71%] right-[16%]  p-2 flex flex-wrap">
+        <div className="absolute sm:top-[73%] md:top-[72%]  lg:top-[70%] lg:right-[12%] top-[70%] right-[12%]  p-2 flex flex-wrap">
         <BsThreeDotsVertical className="cursor-pointer" onClick={()=>setShowOptions((prev)=>!prev)}/>
     </div>
     {showOptions && (
@@ -44,11 +44,12 @@ export default function WebsiteScreen({codeToCopy,buttonLinks}){
                         <pre  style={{ fontFamily: 'Roboto, sans-serif' }} className="text-[14px]">
                        {codeToCopy}
                        </pre>
-                      <button className="flex justify-center text-[12px] text-white bg-[#606060] p-1 items-center gap-2 absolute right-[18%] top-[33%] sm:right-[14%] sm:top-[29%] md:right-[12%] md:top-[28%] lg:right-[12%] lg:top-[26%] xl:top-[24%] xl:right-[10%]"
+                      <button className="flex justify-center text-[12px] text-white bg-[#606060] p-1 items-center gap-2 absolute right-[18%] top-[35%] sm:right-[16%] sm:top-[27%] md:right-[12%] md:top-[28%] lg:right-[12%] lg:top-[26%] xl:top-[26%] xl:right-[10%]"
                       onClick={()=>{copyToClipboard(codeToCopy)
                       
                       }}> <MdContentCopy /> Copy code</button>
-                  {isCopied && <p className="absolute top-[27%] text-[#00a3ff] right-[18%]">Copied!</p>}
+                  16{isCopied && <p className="absolute text-[#00a3ff] 
+                  right-[23%] top-[38%] sm:right-[19%] sm:top-[30%] md:right-[17%] md:top-[31%] lg:right-[17%] lg:top-[29%] xl:top-[30%] xl:right-[15%]">Copied!</p>}
                     </div>
                      <p className=" p-2 mt-5">Use the button links to add them to your scale</p>
             <table className="w-[95%]  flex flex-col flex-wrap divide-y divide-gray-200 bg-gray-50 overflow-auto mt-5 
@@ -78,13 +79,13 @@ export default function WebsiteScreen({codeToCopy,buttonLinks}){
             </tbody>
         </table>
         {showCopyIcon==0 && (
-            <button className="absolute top-[76%] right-[15%]"><MdContentCopy /></button>
+            <button className="absolute sm:top-[77%] top-[75%] right-[10%]"><MdContentCopy /></button>
         )}
           {showCopyIcon==1 && (
-            <button className="absolute top-[80%] right-[15%]"><MdContentCopy /></button>
+            <button className="absolute sm:top-[81%] top-[79%] right-[10%]"><MdContentCopy /></button>
         )}
           {showCopyIcon==2 && (
-            <button className="absolute top-[84%] right-[15%]"><MdContentCopy /></button>
+            <button className="absolute top-[84%] right-[10%]"><MdContentCopy /></button>
         )}
 </div>
     </>
