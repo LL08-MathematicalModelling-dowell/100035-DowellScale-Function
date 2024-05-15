@@ -374,8 +374,8 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
 
 
     return(
-          <div className="flex relative" style={{left: '23%'}}>
-          <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
+          <div className="flex relative" style={{left: '20%'}}>
+          <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[1200px]" style={{ fontFamily: 'Roboto, sans-serif' }}>
             <span className="  p-5 flex justify-start items-center gap-3 w-full">
          <FaLessThan onClick={handleBack} className=" cursor-pointer"/>
             <span  className=" font-bold  text-black">NPS LITE SCALE</span>
