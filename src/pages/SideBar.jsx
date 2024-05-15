@@ -11,7 +11,7 @@ import Modal from '../components/Modal/Modal';
 import { MdNewLabel } from "react-icons/md";
 import { LiaCloudscale } from "react-icons/lia";
 import { AiOutlineMenuUnfold } from "react-icons/ai";
-import { useFetchUserContext } from "../contexts/fetchUserContext";
+import { useNavigate } from 'react-router';
 
 const SideBar = () => {
 
@@ -25,6 +25,8 @@ const SideBar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalInfo,setModalInfo] = useState()
   const [reduceSize, setReduceSize] = useState(false)
+
+  const navigateTo = useNavigate();
   const getUserInfo = async () => {
     // setLoadingFetchUserInfo(true);
     const session_id = searchParams.get("session_id");
@@ -56,6 +58,10 @@ const SideBar = () => {
   
   const handleSizeToggle = () =>{
     setReduceSize(!reduceSize)
+  }
+
+  const handleHome = () =>{
+    navigateTo(`/100035-DowellScale-Function/?session_id=${sessionId}`)
   }
   
 
@@ -92,24 +98,24 @@ const SideBar = () => {
      <h3 style={{marginRight: '15px', display: reduceSize ? 'none' : 'block'}}>DoWell Scales</h3>
      <AiOutlineMenuFold onClick={handleSizeToggle} style={{fontSize: '25px', color:'#6D6E70', cursor: 'pointer', display: reduceSize ? 'none' : 'block'}} />
      </div>
-     <div style={{color: '#6D6E70', fontSize:'15px', display: 'flex', alignItems:'center', flexDirection: reduceSize ? 'column' : 'row', justifyContent: 'space-between', marginTop:'10px', padding: '15px'}}>
-     <Link
+     <div style={{color: '#6D6E70', fontSize:'15px', display: 'flex', alignItems:'center', flexDirection: reduceSize ? 'column' : 'row', justifyContent: 'space-between', marginTop:'10px', padding: '30px'}}>
+     {/* <Link
           to={`/100035-DowellScale-Function/?session_id=${sessionId}`}
           className="inline"
           style={{display: reduceSize ? 'block' : 'none', marginBottom:'10px'}}
         >
      <FaHome style={{fontSize: '25px', cursor:'pointer'}} />
-     </Link>
+     </Link> */}
      <FaUser title={`Welcome, ${userInfo?.username}`} style={{fontSize: '25px', cursor:'pointer', marginBottom: '10px'}} onClick={handleProfile} />
      <FaPowerOff 
      style={{fontSize: '25px', cursor:'pointer'}} onClick={handlePageChange}/>
-     <Link
+     {/* <Link
           to={`/100035-DowellScale-Function/?session_id=${sessionId}`}
           className="inline"
           style={{display: reduceSize ? 'none' : 'block'}}
         >
      <FaHome style={{fontSize: '25px', cursor:'pointer'}} />
-     </Link>
+     </Link> */}
      <FaEllipsisV onMouseEnter={() => setIsModalOpen(true)} onMouseLeave={() => setIsModalOpen(false)} style={{marginRight: '15px', fontSize: '25px', cursor:'pointer', display: reduceSize ? 'none' : ''}} />
      
       {isModalOpen && <Modal modalInfo={modalInfo} />}
@@ -119,7 +125,7 @@ const SideBar = () => {
         <h2 style={{color: 'white', fontSize: '20px', display: reduceSize ? 'none' : 'block'}}>Welcome, {userInfo?.username}</h2>
      </div>
      <div style={{fontSize:'15px', display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', marginTop:'15px'}}>
-      <div className='flex mt-10 bg-[#013220] text-white w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', cursor: 'pointer'}}>
+      <div className='flex mt-10 bg-[#013220] text-white w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', cursor: 'pointer'}} onClick={{handleHome}}>
         <MdNewLabel style={{marginRight:'6px'}} />
         <button className='' style={{display: reduceSize ? 'none' : 'block'}}>New scale</button>
       </div>
