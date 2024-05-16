@@ -196,13 +196,13 @@ console.log(confirmed)
 
 const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
     return(
-       <div className="fixed top-1/3 left-1/2 w-max h-max p-5 bg-white rounded-lg " style={{ fontFamily: 'Roboto, sans-serif' }}>
+       <div className="fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-max h-max p-5 bg-white rounded-lg " style={{ fontFamily: 'Roboto, sans-serif' }}>
          <p className="font-bold">{header}</p>
          <p className="mt-3 ">{text1}</p>
-         <p className="">{text2}</p>
+         <p className="hidden md:block">{text2}</p>
          <div className="flex gap-8 justify-center items-center mt-3">
-         <button className="p-2 px-8 bg-[#129561] rounded" onClick={onCancel}>No</button>
-         <button className="p-2 px-8 bg-[#ff4a4a] rounded" onClick={()=>onConfirm()}>Yes</button>
+         <button className="p-2 md:px-8 bg-[#129561] rounded" onClick={onCancel}>No</button>
+         <button className="p-2 md:px-8 bg-[#ff4a4a] rounded" onClick={()=>onConfirm()}>Yes</button>
          </div>
        </div>
     )
@@ -210,7 +210,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
 
 
     return(
-          <div className="flex relative sm:w-[100%] md:w-[75%] lg:w-[80%] xl:w-[83%] md:left-[25%] lg:left-[20%] xl:left-[17%]">
+          <div className="flex relative w-[100%] sm:w-[70%] sm:left-[30%] md:w-[75%] lg:w-[80%] xl:w-[83%] md:left-[25%] lg:left-[20%] xl:left-[17%]">
           <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
             <span className="  p-5 lg:pl-10 xl:pl-10 flex justify-center xl:justify-start items-center gap-3 w-full">
          <FaLessThan onClick={handleBack} className=" cursor-pointer"/>
@@ -280,7 +280,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                         }
                    
                       
-                        @media(min-width:1300px){
+                        @media(min-width:1400px){
                             .button-changes{
                                 padding:0.5rem;
                                 padding-left: 5rem;

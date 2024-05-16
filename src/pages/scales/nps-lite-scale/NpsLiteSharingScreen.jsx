@@ -17,8 +17,8 @@ export default function NpsLiteSharingScreen({setFinished,buttonLinks}){
         <>
         <div className="flex flex-col justify-center items-center bg-[#E8E8E8] rounded-lg  w-[70%] flex-wrap  p-5  relative" 
                 style={{ fontFamily: 'Roboto, sans-serif' }}>
-                    <p className="font-normal md:font-medium">Share your NPS LITE SCALE across different platforms and add to your customer touch points</p>
-                    <div className="flex justify-center items-center gap-5 mt-10 text-white font-medium">
+                    <p className="font-normal md:font-medium text-[12px] md:text-[16px]">Share your NPS LITE SCALE across different platforms and add to your customer touch points</p>
+                    <div className="flex justify-center items-center gap-5 mt-10 text-white font-medium text-[12px] md:text-[16px]">
                         <button className={`${showData=="website"? "bg-[#129561]" :"bg-[#00a3ff]" } flex justify-center items-center gap-2 px-2 p-1 lg:px-8 rounded `}
                         onClick={()=>{setShowData("website")}}><PiGlobeHemisphereWestFill/> Website</button>
                         <button  className={`${showData=="email"? "bg-[#129561]" :"bg-[#00a3ff]" } flex justify-center items-center gap-2 px-2 p-1 lg:px-8 rounded `}

@@ -17,7 +17,9 @@ const Home = () => {
     BtnLink,
     setBtnLink,
     scaleIndex,
-    setScaleIndex, } = useFetchUserContext()
+    setScaleIndex,
+    rSize, 
+    setRSize } = useFetchUserContext()
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
@@ -187,7 +189,7 @@ const Home = () => {
 console.log(BtnLink, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="w-4/5" style={{position: 'relative', left: '19%', backgroundColor: 'red'}}>
+    <div className="w-4/5" style={{position: 'relative', left: rSize ? '5%': '19%', backgroundColor: 'red'}}>
        {/* <div className='sidebar' > */}
        {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}

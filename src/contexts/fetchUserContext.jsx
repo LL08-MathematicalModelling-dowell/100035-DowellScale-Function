@@ -62,7 +62,7 @@ export const FetchUserContextProvider = ({ children }) => {
     scaleIndex,
     setScaleIndex,
     rSize,
-    setRSize, }}>
+    setRSize }}>
       {children}
     </FetchUserContext.Provider>
   );

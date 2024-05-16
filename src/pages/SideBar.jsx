@@ -12,12 +12,11 @@ import { MdNewLabel } from "react-icons/md";
 import { LiaCloudscale } from "react-icons/lia";
 import { AiOutlineMenuUnfold } from "react-icons/ai";
 import { useNavigate } from 'react-router';
+import { useFetchUserContext } from "../contexts/fetchUserContext";
 
 const SideBar = () => {
 
-  // const {
-  //   rSize,
-  //   setRSize} = useFetchUserContext()
+  const { rSize, setRSize } = useFetchUserContext();
   
   const [searchParams] = useSearchParams();
   const [userInfo, setUserInfo] = useState()
@@ -58,6 +57,7 @@ const SideBar = () => {
   
   const handleSizeToggle = () =>{
     setReduceSize(!reduceSize)
+    setRSize(!reduceSize)
   }
 
   const handleHome = () =>{
@@ -125,7 +125,7 @@ const SideBar = () => {
         <h2 style={{color: 'white', fontSize: '20px', display: reduceSize ? 'none' : 'block'}}>Welcome, {userInfo?.username}</h2>
      </div>
      <div style={{fontSize:'15px', display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', marginTop:'15px'}}>
-      <div className='flex mt-10 bg-[#013220] text-white w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', cursor: 'pointer'}} onClick={{handleHome}}>
+      <div className='flex mt-10 bg-[#013220] text-white w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', cursor: 'pointer'}} onClick={handleHome}>
         <MdNewLabel style={{marginRight:'6px'}} />
         <button className='' style={{display: reduceSize ? 'none' : 'block'}}>New scale</button>
       </div>

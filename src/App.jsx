@@ -31,8 +31,8 @@ function App() {
   return (
     <div className='flex'>
       <ToastContainer />
-      {!publicLink   &&  <SideBar />}
       <FetchUserContextProvider>
+      {!publicLink   &&  <SideBar />}
         <Outlet />
       </FetchUserContextProvider>
     </div>
