@@ -19,6 +19,7 @@ const Navbar = () => {
   //   isModalOn, 
   //   setIsNodalOn } = useFetchUserContext()
     const screenWidth = screen.width
+    console.log(screenWidth)
     console.log(screenWidth, "HHHHHHHHHHHHHHHHHHHHHHhhhh")
   useEffect(() => {
     const session_id =
@@ -27,7 +28,7 @@ const Navbar = () => {
   }, [searchParams]);
 
   return (
-    <nav className="navbar flex items-center justify-between w-full p-4 bg-[#FFF] md:justify-center" style={{display: screenWidth > 600 ? 'none': ''}}>
+    <nav className="navbar flex items-center justify-between w-full p-4 bg-[#FFF] md:justify-center" style={{display: screenWidth > 639 ? 'none': ''}}>
       <div className="md:flex-[0.5] flex justify-center items-center bg-red">
       <IoMdMenu className='w-10'/>
         <Link
