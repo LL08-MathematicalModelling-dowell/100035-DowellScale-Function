@@ -193,7 +193,7 @@ function handleNext(){
             </style>
 
         <div className="flex flex-col   gap-5  items-center text-[16px]"  style={{ fontFamily: 'Roboto, sans-serif' }}>
-            <div className="w-max flex flex-col justify-center items-center">
+            <div className="w-max flex flex-col lg:justify-center lg:items-center">
         <div className="w-max flex flex-col justify-center items-center">
         <div className="flex flex-col gap-1 mt-10 w-full">
             <label className="p-2  font-medium" htmlFor="scaleName">Scale Name:</label>
@@ -203,15 +203,15 @@ function handleNext(){
                 name="scaleName" 
                 placeholder="Enter scale name" 
                 onChange={e => handleFormData(e.target.value, e.target.name)} 
-                className="p-2 rounded-md px-4"
+                className="p-2 rounded-md px-4 w-max"
             />
              {nameErr && <p className="text-[12px] text-red-500">**min 3 characters</p>}
         </div>
        
         <div className="flex flex-col w-max gap-1 mt-5">
-            <label className="p-2 font-medium" htmlFor="numResponses">No. of Responses per Instance:</label>
+            <label className="p-2 pl-0 font-medium" htmlFor="numResponses">No. of Responses per Instance:</label>
             <input type="number" value={formData["numResponses"]} name="numResponses" placeholder="Enter number" 
-             className="p-2 rounded-md px-4"
+             className="p-2 rounded-md px-4 w-max"
              onChange={e => handleFormData(e.target.value,e.target.name)} />
              {numErr && <p className="text-[12px] text-red-500">**(min:25- max:10000)</p>}
         </div>
@@ -220,7 +220,7 @@ function handleNext(){
         {formData.channels.map((channel,index1)=>(
             <>
            
-            <div key={index1} className="flex flex-col lg:flex-row lg:justify-center lg:items-center gap-5 mt-5 channel-changes  ml-8">
+            <div key={index1} className="flex flex-col lg:flex-row lg:justify-center lg:items-center gap-5 mt-5 channel-changes lg:ml-8">
             <p className="hidden lg:block mt-9 font-medium text-[18px]">{index1+1}.</p>
              <div className="flex flex-col justify-start items-start gap-1">
              
@@ -273,7 +273,7 @@ function handleNext(){
         ))}
         </div>
         <div className="flex flex-col mt-10 justify-center items-center w-full gap-10">
-         <button className="flex  justify-center items-center ml-5  gap-2 bg-[#0D99FF] rounded p-2  w-[70%]"
+         <button className="flex  justify-center items-center lg:ml-5  gap-2 bg-[#0D99FF] rounded p-2  w-[70%]"
          onClick={addChannel}
          >Add Channel <CiCirclePlus/></button>
          
