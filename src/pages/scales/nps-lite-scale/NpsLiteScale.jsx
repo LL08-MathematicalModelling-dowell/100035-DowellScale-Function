@@ -102,6 +102,7 @@ import { useNavigate } from 'react-router';
 import ConfigureNpxLite from "./ConfigureNpxLite";
 // import PreviewNpxLite from "./PreviewNpxLite";
 
+import { FaArrowCircleLeft } from "react-icons/fa";
 
 
 import SideBar from "../../SideBar";
@@ -210,12 +211,18 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
 
 
     return(
-          <div className="flex relative w-[100%] sm:w-[70%] sm:left-[30%] md:w-[75%] lg:w-[80%] xl:w-[83%] md:left-[25%] lg:left-[20%] xl:left-[17%]">
+          <div className="flex relative w-[100%] sm:w-[65%] sm:left-[35%] md:w-[75%] lg:w-[80%] xl:w-[83%] md:left-[25%] lg:left-[20%] xl:left-[17%]">
           <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
-            <span className="  p-5 lg:pl-10 xl:pl-10 flex justify-center xl:justify-start items-center gap-3 w-full">
-         <FaLessThan onClick={handleBack} className=" cursor-pointer"/>
-            <span  className=" font-bold  text-black">NPS LITE SCALE</span>
-            </span>
+          {/* <div className="hidden p-5 lg:pl-10 xl:pl-10 xl:flex justify-center xl:justify-start items-center gap-3 w-full">
+            <FaLessThan onClick={handleBack} className="cursor-pointer" />
+            <span className="font-bold text-black">NPS LITE SCALE</span>
+            </div> */}
+            <div className=" flex justify-center items-center xl:justify-start  xl:items-start gap-3 w-full  p-5 xl:pl-10 ">
+                <FaArrowCircleLeft onClick={handleBack} className="cursor-pointer text-[24px]" />
+                <span className="font-bold text-black">NPS LITE SCALE</span>
+            </div>
+           
+
             {!buttonLinksGenerated ? (
             <>
             <style scoped>
@@ -256,13 +263,20 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                             padding:0.3rem;
                            font-size:10px;
                         }
-                        @media(min-width:448px){
+                        @media(min-width:630px){
+                            .button-changes{
+                                padding:0.5rem;
+                                font-size:10px;
+                            }
+                        }
+                          
+                        @media(min-width:670px){
                         .button-changes{
                             padding:0.5rem;
                            font-size:12px;
                         }
                     }
-                        @media(min-width:905px){
+                  @media(min-width:905px){
                             .button-changes{
                                 padding:0.5rem;
                                 padding-left: 1rem;
