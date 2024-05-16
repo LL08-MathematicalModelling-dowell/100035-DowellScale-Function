@@ -54,6 +54,8 @@ const SideBar = () => {
     setSessionId(session_id);
   }, [searchParams]);
 
+  const screenWidth = screen.width
+
   
   const handleSizeToggle = () =>{
     setReduceSize(!reduceSize)
@@ -91,7 +93,7 @@ const SideBar = () => {
   }, []);
 
   return (
-    <div className='lg:w-3/12  overflow-y-auto h-screen' style={{backgroundColor:'#54595F', width: reduceSize ? '50px' :'250px', marginRight: '50px', position: 'fixed'}}>
+    <div className='lg:w-3/12  overflow-y-auto h-screen' style={{backgroundColor:'#54595F', width: reduceSize ? '50px' :'250px', marginRight: '50px', position: 'fixed', display: screenWidth <= 600 ? 'none': ''}}>
      <div style={{color: '#D3D3D3', fontSize:'15px', fontWeight:'400', display: 'flex', flexDirection: reduceSize ? 'column' : 'row', alignItems:'center', justifyContent: 'center', marginTop: '20px'}}>
      <AiOutlineMenuUnfold onClick={handleSizeToggle} style={{fontSize: '25px', color:'#6D6E70', cursor: 'pointer', display: reduceSize ? 'block' : 'none'}}/>
      <img src= {dowellLogo} alt='image' style={{height: reduceSize ? '25px' : '60px', borderRadius:'8px'}}/>

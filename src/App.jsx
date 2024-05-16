@@ -29,12 +29,15 @@ function App() {
    
   
   return (
+    <div>
+      {!publicLink   &&  <Navbar />}
     <div className='flex'>
       <ToastContainer />
       <FetchUserContextProvider>
       {!publicLink   &&  <SideBar />}
         <Outlet />
       </FetchUserContextProvider>
+    </div>
     </div>
   );
 }
