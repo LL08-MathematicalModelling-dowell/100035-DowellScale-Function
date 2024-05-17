@@ -24,6 +24,7 @@ const SideBar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalInfo,setModalInfo] = useState()
   const [reduceSize, setReduceSize] = useState(false)
+  const [showData, setshowData] = useState("")
 
   const navigateTo = useNavigate();
   const getUserInfo = async () => {
@@ -109,8 +110,11 @@ const SideBar = () => {
      <FaHome style={{fontSize: '25px', cursor:'pointer'}} />
      </Link> */}
      <FaUser title={`Welcome, ${userInfo?.username}`} style={{fontSize: '25px', cursor:'pointer', marginBottom: '10px'}} onClick={handleProfile} />
-     <FaPowerOff 
-     style={{fontSize: '25px', cursor:'pointer'}} onClick={handlePageChange}/>
+     
+     <div className='relative'><FaPowerOff 
+     style={{fontSize: '25px', cursor:'pointer' }} onMouseEnter={()=>setshowData("Logout")} onMouseLeave={()=>setshowData("")} onClick={handlePageChange}/>
+     {showData.length>0 && <span className='text-white absolute top-6'>{showData}</span>}
+     </div>
      {/* <Link
           to={`/100035-DowellScale-Function/?session_id=${sessionId}`}
           className="inline"
