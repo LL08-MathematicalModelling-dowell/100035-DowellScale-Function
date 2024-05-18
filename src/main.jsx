@@ -91,8 +91,10 @@ import PercentSumScale from './pages/scales/percent-sum-scale.jsx/PercentSumScal
 import CreatePercentSumScale from './pages/scales/percent-sum-scale.jsx/CreatePercentSumScale.jsx';
 import PercentSumScaleSettings from './pages/scales/percent-sum-scale.jsx/PercentSumScaleSettings.jsx';
 import GenerateReport from './pages/GenerateReport.jsx';
+import LoadingScreen from './pages/LoadingScreen.jsx';
 
-const basePath = '/100035-DowellScale-Function/';
+export const basePath = '/100035-DowellScale-Function/';
+const base2='/100035-DowellScale-Function/home'
 const router = createBrowserRouter([
   {
     path: basePath,
@@ -100,211 +102,217 @@ const router = createBrowserRouter([
     children: [
       {
         path: basePath,
+        element: <LoadingScreen />,
+      },
+      {
+        path: `${basePath}/home`,
         element: <Home />,
       },
       {
-        path: `${basePath}/generate-report/:slug`,
+        path: `${basePath}/home/generate-report/:slug`,
         element: <GenerateReport />,
       },
+    
+    
       {
-        path: `${basePath}/pc-scale`,
+        path: `${basePath}/home/pc-scale`,
         element: <PairedScale />,
       },
       {
-        path: `${basePath}/percent-scale-settings/:slug`,
+        path: `${basePath}/home/percent-scale-settings/:slug`,
         element: <PercentScaleSettings />,
       },
       {
-        path: `${basePath}/percent-sum-scale-settings/:slug`,
+        path: `${basePath}/home/percent-sum-scale-settings/:slug`,
         element: <PercentSumScaleSettings />,
       },
       {
-        path: `${basePath}/percent-scale`,
+        path: `${basePath}/home/percent-scale`,
         element: <PercentScale />,
       },
       {
-        path:`${basePath}/create-percent-scale`,
+        path:`${basePath}/home/create-percent-scale`,
         element:<CreatePercentScale/>
       },
       
       {
-        path:`${basePath}/create-percent-sum-scale`,
+        path:`${basePath}/home/create-percent-sum-scale`,
         element:<CreatePercentSumScale/>
       },
       {
-        path: `${basePath}/pm-scale`,
+        path: `${basePath}/home/pm-scale`,
         element: <PerceptualScale />,
       },
       {
-        path: `${basePath}/nps-second-part`,
+        path: `${basePath}/home/nps-second-part`,
         element: <NpsScaleSecondPart />,
       },
       {
-        path: `${basePath}/ranking-scale`,
+        path: `${basePath}/home/ranking-scale`,
         element: <RankingScale />,
       },
       {
-        path: `${basePath}/nps-scale`,
+        path: `${basePath}/home/nps-scale`,
         element: <V2NPSScale />,
       },
       {
-        path: `${basePath}/npsLiteBtnLink`,
+        path: `${basePath}/home/npsLiteBtnLink`,
         element: <BtnLinksNpsLiteScale />
       },
       {
-        path: `${basePath}/npsBtnLink`,
+        path: `${basePath}/home/npsBtnLink`,
         element: <BtnLinkNPSScale />,
       },
       {
-        path: `${basePath}/percent-sum-scale`,
+        path: `${basePath}/home/percent-sum-scale`,
         element: <PercentSumScale />,
       },
       {
-        path: `${basePath}/create-scale`,
+        path: `${basePath}/home/create-scale`,
         element: <CreateRankingScale />,
       },
       {
-        path: `${basePath}/likert-scale/`,
+        path: `${basePath}/home/likert-scale/`,
         element: <LikertScale />
       },
       {
-        path: `${basePath}/likertBtnLink`,
+        path: `${basePath}/home/likertBtnLink`,
         element: <BtnLinksLikert />,
       },
       {
-        path: `${basePath}/create-paired-scale-settings`,
+        path: `${basePath}/home/create-paired-scale-settings`,
         element: <CreatePCScaleSettings />,
       },
       {
-        path: `${basePath}/create-scale-response/:id`,
+        path: `${basePath}/home/create-scale-response/:id`,
         element: <CreatePCResponse />,
       },
       {
-        path: `${basePath}/staple-scale`,
+        path: `${basePath}/home/staple-scale`,
         element: <StapleScale />,
       },
       {
-        path: `${basePath}/stapelBtnLink`,
+        path: `${basePath}/home/stapelBtnLink`,
         element: <BtnLinksStapel />,
       },
       {
-        path: `${basePath}/create-staple-scale-btnLink`,
+        path: `${basePath}/home/create-staple-scale-btnLink`,
         element: <BtnLinksCreateStapelScale />,
       },
       {
-        path: `${basePath}/create-staple-scale`,
+        path: `${basePath}/home/create-staple-scale`,
         element: <CreateStapleScale />,
       },
       {
-        path: `${basePath}/staple-scale-settings/:slug`,
+        path: `${basePath}/home/staple-scale-settings/:slug`,
         element: <StapleScaleSettings />,
       },
       {
-        path: `${basePath}/nps-lite-scale`,
+        path: `${basePath}/home/nps-lite-scale`,
         element: <NPSLiteScale />,
       },
       {
-        path: `${basePath}/create-nps-lite-scale`,
+        path: `${basePath}/home/create-nps-lite-scale`,
         element: <CreateNpsLiteScale />,
       },
       {
-        path: `${basePath}/create-nps-lite-scale-links`,
+        path: `${basePath}/home/create-nps-lite-scale-links`,
         element: <BtnLinksCreateNpsLiteScale />,
       },
       {
-        path: `${basePath}/update-nps-lite-scale/:slug`,
+        path: `${basePath}/home/update-nps-lite-scale/:slug`,
         element: <UpdateNpsLite />,
       },
       {
-        path: `${basePath}/nps-lite-scale-settings/:slug`,
+        path: `${basePath}/home/nps-lite-scale-settings/:slug`,
         element: <NpsLiteSettings />,
       },
       {
-        path: `${basePath}/create-perceptual-scale-settings`,
+        path: `${basePath}/home/create-perceptual-scale-settings`,
         element: <CreatePerceptualScaleSettings />,
       },
       {
-        path: `${basePath}/create-nps-scale`,
+        path: `${basePath}/home/create-nps-scale`,
         element: <CreateNPSScale />,
       },
       {
-        path: `${basePath}/create-nps-scale-links`,
+        path: `${basePath}/home/create-nps-scale-links`,
         element: <BtnLinkCreateNPSScale />,
       },
       {
-        path: `${basePath}/create-likert-scale`,
+        path: `${basePath}/home/create-likert-scale`,
         element: <CreateLikertScale />,
       },
       {
-        path: `${basePath}/create-likertbtn-scale`,
+        path: `${basePath}/home/create-likertbtn-scale`,
         element: <BtnLinksCreateLikertScale />,
       },
       {
-        path: `${basePath}/ranking-scale-settings/:slug`,
+        path: `${basePath}/home/ranking-scale-settings/:slug`,
         element: <RankingScaleSettings />,
       },
       {
-        path: `${basePath}/single-scale-settings/:id`,
+        path: `${basePath}/home/single-scale-settings/:id`,
         element: <SinglePCScaleSettings />,
       },
       {
-        path: `${basePath}/single-perceptual-scale-settings/:slug`,
+        path: `${basePath}/home/single-perceptual-scale-settings/:slug`,
         element: <SinglePerceptualScaleSettings />,
       },
       {
-        path: `${basePath}/nps-scale-settings/:slug`,
+        path: `${basePath}/home/nps-scale-settings/:slug`,
         element: <NPSScaleSettings />,
       },
       {
-        path: `${basePath}/scale-report/:slug`,
+        path: `${basePath}/home/scale-report/:slug`,
         element: <NpsReport />,
       },
       {
-        path: `${basePath}/btnLinksnps-scale-settings/:slug`,
+        path: `${basePath}/home/btnLinksnps-scale-settings/:slug`,
         element: <BtnLinksNPSScaleSettings />,
       },
       {
-        path: `${basePath}/btnLinksnpslite-scale-settings/:slug`,
+        path: `${basePath}/home/btnLinksnpslite-scale-settings/:slug`,
         element: <BtnLinkNpslitescaleSetting />,
       },
       {
-        path: `${basePath}/btnLinksLikert-scale-settings/:slug`,
+        path: `${basePath}/home/btnLinksLikert-scale-settings/:slug`,
         element: <BtnLinksLikertScaleSetting />,
       },
       {
-        path: `${basePath}/btnLinksstapel-scale-settings/:slug`,
+        path: `${basePath}/home/btnLinksstapel-scale-settings/:slug`,
         element: <BtnLinksStapelScaleSetting />,
       },
       {
-        path: `${basePath}/likert-scale-settings/:slug`,
+        path: `${basePath}/home/likert-scale-settings/:slug`,
         element: <LikertScaleSettings />,
       },
       {
-        path: `${basePath}/nps-scale-settings/:slug`,
+        path: `${basePath}/home/nps-scale-settings/:slug`,
         element: <NPSResponse />,
       },
       {
-        path: `${basePath}/update-paired-scale-settings/:id`,
+        path: `${basePath}/home/update-paired-scale-settings/:id`,
         element: <UpdatePCScaleSettings />,
       },
       {
-        path: `${basePath}/update-perceptual-scale-settings/:slug`,
+        path: `${basePath}/home/update-perceptual-scale-settings/:slug`,
         element: <UpdatePMSSettings />,
       },
       {
-        path: `${basePath}/update-ranking-scale/:slug`,
+        path: `${basePath}/home/update-ranking-scale/:slug`,
         element: <UpdateRankingScale />,
       },
       {
-        path: `${basePath}/update-nps-scale/:slug`,
+        path: `${basePath}/home/update-nps-scale/:slug`,
         element: <UpdateNPSScale />,
       },
       {
-        path: `${basePath}/update-likert-scale/:slug`,
+        path: `${basePath}/home/update-likert-scale/:slug`,
         element: <UpdateLikertScale />,
       },
       {
-        path: `${basePath}/update-staple-scale/:slug`,
+        path: `${basePath}/home/update-staple-scale/:slug`,
         element: <UpdateStapleScale />,
       },
     ],

@@ -262,7 +262,7 @@ function handleNext(){
         </div>
         <div className="flex justify-center items-center gap-1 md:gap-2 mt-10 h-max w-max">
         <button onClick={()=>decreaseInstance(index1)}>-</button>
-        <p className="md:p-2 p-[1px] rounded-xl md:rounded-none bg-white">{channel.instances.length} </p>
+        <p className="p-2 md:p-2 sm:p-[1px] rounded-xl md:rounded-none bg-white">{channel.instances.length} </p>
         <button onClick={()=>increaseInstance(index1)}>+</button>
       
         </div>

@@ -263,7 +263,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                             padding:0.3rem;
                            font-size:10px;
                         }
-                        @media(min-width:630px){
+                        @media(min-width:640px){
                             .button-changes{
                                 padding:0.5rem;
                                 font-size:10px;
