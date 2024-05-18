@@ -17,7 +17,9 @@ const Home = () => {
     BtnLink,
     setBtnLink,
     scaleIndex,
-    setScaleIndex, } = useFetchUserContext()
+    setScaleIndex,
+    rSize, 
+    setRSize } = useFetchUserContext()
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
@@ -150,6 +152,8 @@ const Home = () => {
   
   const [userInfo, setUserInfo] = useState()
 
+  const screenWidth = screen.width
+
   const getUserInfo = async () => {
     // setLoadingFetchUserInfo(true);
     const session_id = searchParams.get("session_id");
@@ -187,7 +191,7 @@ const Home = () => {
 console.log(BtnLink, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="w-4/5" style={{position: 'relative', left: '20%', backgroundColor: 'red'}}>
+    <div className="w-4/5" style={{position: 'relative', left: rSize || screenWidth <= 600 ? '10%': '19%', backgroundColor: 'red'}}>
        {/* <div className='sidebar' > */}
        {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}
