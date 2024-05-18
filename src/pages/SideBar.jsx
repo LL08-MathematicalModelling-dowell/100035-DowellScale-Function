@@ -59,18 +59,11 @@ const SideBar = () => {
       window.location.href= 'https://100093.pythonanywhere.com/'
     }
 
-  useEffect(() => {
-    const session_id = searchParams.get("session_id");
-    console.log(window.location.href)
-    if (!session_id) {
-      window.location.href =
-        "https://100014.pythonanywhere.com/?redirect_url=" +
-        `${window.location.href}`;
-      return;
-    }
-    getUserInfo();
-    sessionStorage.setItem('session_id', session_id);
-  }, []);
+   useEffect(() => {
+
+   getUserInfo();
+   
+ }, []);
 
   return (
     <div className='lg:w-3/12  overflow-y-auto h-screen' style={{backgroundColor:'#54595F', width:'250px', marginRight: '50px', position: 'fixed'}}>

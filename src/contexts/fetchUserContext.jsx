@@ -13,7 +13,7 @@ export const FetchUserContextProvider = ({ children }) => {
   const [BtnLink, setBtnLink] = useState("")
   const [scaleIndex, setScaleIndex] = useState(0)
   const [channelCount, setChannelCount] = useState(0)
-
+console.log("sdncksjndakl")
   useEffect(() => {
     const fetchData = async () => {
       if (userSessionId !== null) {

@@ -8,7 +8,7 @@ import ScaleCard from './ScaleCard';
 // import Cookies from 'universal-cookie';
 
 const Home = () => {
-
+console.log(sessionStorage.getItem("session_id"))
   const {  
     popuOption, 
     setPopupOption,
@@ -17,7 +17,9 @@ const Home = () => {
     BtnLink,
     setBtnLink,
     scaleIndex,
-    setScaleIndex, } = useFetchUserContext()
+    setScaleIndex,
+    rSize, 
+    setRSize } = useFetchUserContext()
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
@@ -94,65 +96,21 @@ const Home = () => {
   const navigateTo = useNavigate();
 
 
-  // const getUserInfo = async (session_id) => {
-  //   const session = {
-  //     session_id,
-  //   };
-
-  //   const res = await axios({
-  //     method: 'post',
-  //     url: 'https://100014.pythonanywhere.com/api/userinfo/',
-  //     data: session,
-  //   });
-
-  //   sessionStorage.setItem('userInfo', JSON.stringify(res.data));
-  // };
-  // const [searchParams] = useSearchParams();
-
-  // const localSession = sessionStorage.getItem('session_id')
-  //   ? sessionStorage.getItem('session_id')
-  //   : null;
-  // // const localId = sessionStorage.getItem('id')
-  // //   ? JSON.parse(sessionStorage.getItem('id'))
-  // //   : null;
-
-  // useEffect(() => {
-  //   const session_id = searchParams.get('session_id');
-  //   // const id = searchParams.get('id');
-
-  //   if (session_id) {
-  //     sessionStorage.setItem('session_id', session_id);
-  //     getUserInfo(session_id);
-
-  //     // if (id || localId) {
-  //     //   sessionStorage.setItem('id', id);
-  //     //   getUserInfoOther(session_id);
-  //     // } else {
-  //     //   getUserInfo(session_id);
-  //     // }
-  //   }
-  //   if (!localSession && !session_id) {
-  //     // cookie.remove('sessionid');
-  //     window.location.replace(
-  //       import.meta.env.DEV
-  //         ? 'https://100014.pythonanywhere.com/?redirect_url=http://localhost:3000/'
-  //         : 'https://100014.pythonanywhere.com/?redirect_url=https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/'
-  //     );
-  //   }
-  // }, [localSession, searchParams]);
 
   const handleStartCreating = () =>{
     setPopupOption(false)
-    navigateTo(`/100035-DowellScale-Function/${scaleTypes[scaleIndex].slug}`)
+    navigateTo(`/100035-DowellScale-Function/home/${scaleTypes[scaleIndex].slug}`)
   }
 
-  const [searchParams] = useSearchParams();
+
   
   const [userInfo, setUserInfo] = useState()
 
+  const screenWidth = screen.width
+
   const getUserInfo = async () => {
     // setLoadingFetchUserInfo(true);
-    const session_id = searchParams.get("session_id");
+    const session_id = sessionStorage.getItem("session_id");
     axios
       .post("https://100014.pythonanywhere.com/api/userinfo/", {
         session_id: session_id
@@ -172,22 +130,14 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const session_id = searchParams.get("session_id");
-    console.log("HHHHHHHHHHHHHHHHHHH",window.location.href)
-    if (!session_id) {
-      window.location.href =
-        "https://100014.pythonanywhere.com/?redirect_url=" +
-        `${window.location.href}`;
-      return;
-    }
+  
     getUserInfo();
-    sessionStorage.setItem('session_id', session_id);
     // setLoggedIn(true);
   }, []);
 console.log(BtnLink, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="w-4/5" style={{position: 'relative', left: '20%', backgroundColor: 'red'}}>
+    <div className="w-4/5" style={{position: 'relative', left: rSize || screenWidth <= 600 ? '10%': '19%', backgroundColor: 'red'}}>
        {/* <div className='sidebar' > */}
        {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}
