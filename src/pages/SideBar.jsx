@@ -64,7 +64,7 @@ const SideBar = () => {
   }
 
   const handleHome = () =>{
-    navigateTo(`/100035-DowellScale-Function/?session_id=${sessionId}`)
+    navigateTo(`/100035-DowellScale-Function/home?session_id=${sessionId}`)
   }
   
 
@@ -81,16 +81,9 @@ const SideBar = () => {
     }
 
   useEffect(() => {
-    const session_id = searchParams.get("session_id");
-    console.log(window.location.href)
-    if (!session_id) {
-      window.location.href =
-        "https://100014.pythonanywhere.com/?redirect_url=" +
-        `${window.location.href}`;
-      return;
-    }
+   
     getUserInfo();
-    sessionStorage.setItem('session_id', session_id);
+
   }, []);
 
   return (

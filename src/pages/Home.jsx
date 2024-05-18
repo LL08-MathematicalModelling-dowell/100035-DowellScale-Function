@@ -101,7 +101,7 @@ console.log(sessionStorage.getItem("session_id"))
 
   const handleStartCreating = () =>{
     setPopupOption(false)
-    navigateTo(`/100035-DowellScale-Function/${scaleTypes[scaleIndex].slug}`)
+    navigateTo(`/100035-DowellScale-Function/home/${scaleTypes[scaleIndex].slug}`)
   }
 
 
