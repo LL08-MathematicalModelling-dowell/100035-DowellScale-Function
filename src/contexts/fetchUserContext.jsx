@@ -14,7 +14,7 @@ export const FetchUserContextProvider = ({ children }) => {
   const [scaleIndex, setScaleIndex] = useState(0)
   const [channelCount, setChannelCount] = useState(0)
   const [rSize, setRSize] = useState(false)
-
+console.log("Inside user fetchiong")
   useEffect(() => {
     const fetchData = async () => {
       if (userSessionId !== null) {
@@ -68,4 +68,4 @@ export const FetchUserContextProvider = ({ children }) => {
   );
 };
 
-export const useFetchUserContext = () => useContext(FetchUserContext);
+export const useFetchUserContext = () => FetchUserContext;
