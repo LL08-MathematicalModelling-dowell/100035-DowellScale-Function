@@ -69,23 +69,24 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="lg:hidden w-full flex bg-[#FFF]" >
-      <div className="navbar flex items-center justify-between w-full p-4 bg-[#FFF] md:justify-center">
-      <div className="md:flex-[0.5] flex justify-center items-center bg-red">
-      <IoMdMenu ref={refOne} className='w-10 cursor-pointer' onClick={handleSidebar}/>
+    <nav className="lg:hidden w-full bg-[#FFF]" style={{WebkitBoxShadow: "0 10px 6px -6px #777"}} >
+      <div className="navbar flex  justify-start items-center w-full pt-4 bg-[#FFF]">
+      <div className="md:flex-[0.5] flex justify-center items-center bg-[#FFF]">
+      <IoMdMenu ref={refOne} className='w-7  h-7 cursor-pointer ml-4' onClick={handleSidebar}/>
         <Link
           to={`/100035-DowellScale-Function/?session_id=${sessionId}`}
-          className="inline"
+          className="inline ml-4"
+          style={{borderLeft: '2px solid lightgray', borderRight: '2px solid lightgray'}}
         >
           <img
             src={dowellLogo}
             alt="Dowell Logo"
-            className="inline w-10 cursor-pointer"
+            className="inline w-7 cursor-pointer"
           />
         </Link>
-        <h3 style={{}}>DoWell Scales</h3>
+        <h3 className='ml-4 font-medium' style={{fontFamily: 'Roboto', fontSize:'14px', lineHeight: '16.41px'}}>DoWell Scales</h3>
       </div>
-      <IoPersonCircle />
+      <IoPersonCircle className='w-7 h-7' style={{marginLeft: 'auto', fontSize:'large', cursor:'pointer', marginRight: '12%'}} />
       </div>
       <div ref={refOne} className='h-screen' style={{width: '250px', backgroundColor: 'white', position: 'fixed', zIndex: '1', borderRight: '1px solid lightgray', marginLeft: showSideBar ? '0' : '70px', opacity: showSideBar ? '1' : '0', visibility: showSideBar ? 'visible' : 'hidden', transition: 'all .3s ease-in .3s'}}>
         <img src={dowellLogo} style={{height: '60px', borderRadius:'8px', marginLeft: '180px'}}/>
