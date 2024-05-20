@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<title>NPS LITE SCALE</title>
+	<style>
+<!--    *{-->
+<!--        margin: 0;-->
+<!--        padding: 0;-->
+<!--    }-->
+
+    #serial{
+        color: black;
+        float: left;
+        font-size: 12px;
+        }
+
+    .success-msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 3px 3px 3px 3px;
+      color: #270;
+      background-color: #DFF2BF;
+      display: none;
+    }
+
+    .main-container_nps_lite{
+        display: flex;
+        flex-direction : column;
+        justify-content: center;
+        padding: 15px 30px;
+        border-radius: 15px;
+        width: 400px;
+        margin-top: 5%;
+        border: 1px solid darkgreen;
+        position: relative;
+    }
+
+    .time_nps_lite{
+        color: blue;
+        font-style: italic;
+        font-weight: bold;
+        position:absolute;
+        top: 0;
+        right: 0;
+        margin:10px;
+        font-size: 14px
+
+    }
+
+    .title_nps_lite{
+     display: flex;
+     justify-content: center;
+     text-align: center;
+     padding-top: 10px;
+     color: gray;
+     font-weight: bold;
+    }
+
+    .container_nps_lite{
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0px 0px 0px;
+    }
+
+    .container_nps_lite div{
+    background: #6df782;
+    color: green;
+    font-weight: bold;
+    padding: 5px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    margin: 5px;
+    text-align: center;
+    }
+
+    .container_nps_lite div:hover{
+    background: #2edb4e;
+    }
+
+
+
+	</style>
+</head>
+<form id="jsform" method="POST">
+	{% csrf_token %}
+	<input id="scoretag" name="scoretag" type="hidden">
+</form>
+
+<body style="display:flex; justify-content: center;">
+<div class="success-msg" id="success-msg">
+	<i class="fa fa-check"></i>
+	Thanks for your response! 😃
+</div>
+<div class="main-container_nps_lite" id="main-container_nps_lite">
+	<div>
+		<p id="serial">{{cur_url}}/{{no_of_scales}}</p>
+		<p class="time_nps_lite" id="countdown"></p>
+		<p class="title_nps_lite"></p>
+	</div>
+
+	<div class="container_nps_lite">
+		<div class="left_nps_lite" onclick="submitCategory('distractor')"></div>
+		<div class="center_nps_lite" onclick="submitCategory('promoter')"></div>
+		<div class="right_nps_lite" onclick="submitCategory('passive')"></div>
+	</div>
+</div>
+<script>
+    function checkStatus(){
+        console.log('{{score|safe}}')
+         if ('{{score|safe}}' === 'show'){
+            var success_msg = document.getElementById("success-msg")
+            var main_cont = document.getElementById("main-container_nps_lite")
+            success_msg.style.display = 'flex'
+            main_cont.style.display = 'none'
+        }
+    }
+    function Checklist(){
+                    const serial=window.location.href;
+            		let split_serial = serial.split('/');
+            		let series= split_serial[split_serial.length -1];
+        			if (series.length > 3){
+        				document.getElementById("serial").innerHTML = ""
+        			}
+        		}
+        		Checklist()
+    console.log('{{score|safe}}')
+
+	checkStatus()
+    if('{{defaults.orientation|safe}}' === "vertical"){
+        document.querySelector(".container_nps_lite").style.flexDirection = "column"
+        document.querySelector(".container_nps_lite").style.justifyContent = "space-between"
+    }
+
+    document.querySelector(".left_nps_lite").innerHTML = `🙁 {{defaults.left|safe}}`
+    document.querySelector(".center_nps_lite").innerHTML = `🙂 {{defaults.center|safe}}`
+    document.querySelector(".right_nps_lite").innerHTML = `😃 {{defaults.right|safe}}`
+    document.querySelector(".title_nps_lite").innerHTML = "{{defaults.question|safe}}"
+
+
+    document.querySelector(".left_nps_lite").style.background = "{{defaults.scalecolor|safe}}"
+    document.querySelector(".center_nps_lite").style.background = "{{defaults.scalecolor|safe}}"
+    document.querySelector(".right_nps_lite").style.background = "{{defaults.scalecolor|safe}}"
+
+    document.querySelector(".left_nps_lite").style.color = "{{defaults.fontcolor|safe}}"
+    document.querySelector(".center_nps_lite").style.color = "{{defaults.fontcolor|safe}}"
+    document.querySelector(".right_nps_lite").style.color = "{{defaults.fontcolor|safe}}"
+
+    function submitCategory(category){
+        var score_tag = document.getElementById("scoretag")
+        var success_msg = document.getElementById("success-msg")
+        var main_cont = document.getElementById("main-container_nps_lite")
+        success_msg.style.display = 'flex'
+        main_cont.style.display = 'none'
+        score_tag.value = category
+        document.getElementById('jsform').submit();
+        var success_msg = document.getElementById("success-msg")
+
+
+        var main_cont = document.getElementById("main-container_nps_lite")
+<!--        success_msg.style.display = 'flex'-->
+<!--        main_cont.style.display = 'none'-->
+
+        // if (score_tag.value !== ""){
+        //     window.location.replace("http://100014.pythonanywhere.com/main")
+        // }
+    }
+
+</script>
+<script>
+    let time = {{defaults.time|safe}};
+    const countdownEl = document.getElementById("countdown");
+
+
+    if (time === 0){
+        countdownEl.style.display = "none"
+    } else {
+        setInterval(updateCountdown, 1000)
+    }
+
+    function updateCountdown(){
+        const minutes = Math.floor(time/60);
+        let seconds = time % 60;
+
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        countdownEl.innerHTML = `${minutes}:${seconds}`
+        seconds < 10  && minutes == 0 ? countdownEl.style.color = "red" : countdownEl.style.color = "black" ;
+        time--;
+        time = time < 0 ? redirectMain() : time;
+    }
+
+
+    function redirectMain(){
+        window.location.replace("http://100014.pythonanywhere.com/main")
+    }
+
+</script>
+</body>
+</html>

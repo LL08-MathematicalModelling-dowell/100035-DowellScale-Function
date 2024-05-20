@@ -1,0 +1,428 @@
+{% load i18n %} {% load static %}
+<html lang="en">
+    <head>
+        <title>Percentage Scale</title>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+        />
+        <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+        />
+
+        <style media="all" id="fa-main">
+
+              /*!
+               * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
+               * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+               */
+               #snackbar {
+                visibility: hidden;
+                min-width: 250px;
+                margin-left: -125px;
+                background-color: green;
+                color: #fff;
+                text-align: center;
+                border-radius: 2px;
+                padding: 16px;
+                position: fixed;
+                z-index: 1;
+                right: 10%;
+                top: 30px;
+                font-size: 17px;
+              }
+
+              #snackbar.show {
+                visibility: visible;
+                -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+              }
+
+              @-webkit-keyframes fadein {
+                from {top: 0; opacity: 0;}
+                to {top: 30px; opacity: 1;}
+              }
+
+              @keyframes fadein {
+                from {top: 0; opacity: 0;}
+                to {top: 30px; opacity: 1;}
+              }
+
+              @-webkit-keyframes fadeout {
+                from {top: 30px; opacity: 1;}
+                to {top: 0; opacity: 0;}
+              }
+
+              @keyframes fadeout {
+                from {top: 30px; opacity: 1;}
+                to {top: 0; opacity: 0;}
+              }
+               .slidecontainer {
+                width: 100%; /* Width of the outside container */
+              }
+
+
+              /* The slider itself */
+              .slider {
+                -webkit-appearance: none;  /* Override default CSS styles */
+                appearance: none;
+                width: 100%; /* Full-width */
+                height: 15px;
+                border-radius: 5px;
+                background: #d3d3d3; /* Grey background */
+                outline: none; /* Remove outline */
+                opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+                -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+                transition: opacity .2s;
+              }
+
+              /* Mouse-over effects */
+              .slider:hover {
+                opacity: 1; /* Fully shown on mouse-over */
+              }
+
+
+              .slider::-webkit-slider-thumb {
+                -webkit-appearance: none; /* Override default look */
+                appearance: none;
+                width: 25px; /* Set a specific slider handle width */
+                height: 25px; /* Slider handle height */
+                background: rgb(255, 255, 255); /* Green background */
+                cursor: pointer; /* Cursor on hover */
+                border-radius: 50%;
+                border: 5px solid #000000;
+              }
+
+              .slider::-moz-range-thumb {
+                width: 25px; /* Set a specific slider handle width */
+                height: 25px; /* Slider handle height */
+                background: rgb(33, 30, 232);
+                cursor: pointer; /* Cursor on hover */
+                border-radius: 50%;
+              }
+
+               #horizontal h6{
+                   font-size: 30px;
+                   padding: 5px;
+                   height: 70px;
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
+                   width: 70px;
+                   border-radius: 50%;
+                   margin: 5px;
+                   cursor: pointer;
+               }
+
+
+
+                #vertical h6{
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 5px;
+                }
+
+                #vertical {
+                    padding: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    width: 100px;
+                    align-items: center;
+                }
+
+                #labels-vert{
+                    display: none;
+                    justify-content: space-between;
+                    flex-direction: column;
+                    }
+
+            <!--   #horizontal h6{-->
+            <!--       font-size: 30px;-->
+            <!--       padding: 10px;-->
+            <!--       border-radius: 50%;-->
+            <!--       margin: 5px;-->
+            <!--   }-->
+
+                #labels-vert{
+                    /*display: none;*/
+                    justify-content: space-between;
+                    flex-direction: column;
+                    }
+
+
+               #horizontal{
+                display: flex;
+                justify-content: space-between;
+               }
+               .Footer {
+                width: 100%;
+                margin: auto;
+                font-size: large;
+                font-weight: 800;
+              }
+              #checkbox {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 30px;
+            }
+
+
+            #checkbox input {
+                opacity: 0;
+                width: 10px;
+                height: 0;
+            }
+            #timeInput{
+                display: none;
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    </head>
+    <body class=".bg-secondary">
+        <div id="snackbar"></div>
+        <div class="container">
+            <div class="row" style="margin-top: 3%">
+                <div class="col-lg-1 col-md-2 d-sm-none"></div>
+                <div
+                    class="col-lg-10 clo-md-8 col-sm-12 bg-info"
+                    style="
+                        border: silver 2px solid;
+                        box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3);
+                    "
+                >
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <h2 style="text-align: center">
+                            <u>Customize your scale</u>
+                        </h2>
+                        <div class="form-group col-md-6">
+                            <label for="head">Name of Scale</label>
+                            <input
+                                type="text"
+                                name="nameofscale"
+                                class="form-control"
+                                id="head"
+                                placeholder="Name of scale"
+                                required="True"
+                            />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="head">Number of Scales</label>
+                            <input
+                                type="text"
+                                name="numberofscale"
+                                class="form-control"
+                                id="no_of_scales"
+                                placeholder="Number of scale"
+                                required="True"
+                                value="1"
+                            />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="orientation">Orientation</label>
+                            <select
+                                id="orientation"
+                                class="form-control"
+                                name="orientation"
+                                required=""
+                            >
+                                <option selected="">Choose...</option>
+                                <option value="horizontal">Horizontal</option>
+                                <option value="vertical">Vertical</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="scolor">Slider Color</label>
+                            <input
+                                type="color"
+                                name="scolor"
+                                class="form-control"
+                                id="scolor"
+                                placeholder="Slider Color"
+                                required=""
+                            />
+                        </div>
+                        <div
+                            class="form-group col-md-3"
+                            style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                margin-top: 25px;
+                            ">
+                            <label for="checkbox">
+                                <input id="checkbox" type="checkbox" />
+                            </label>
+                            <span style="font-weight: bold">
+                                Click to set Time</span>
+                        </div>
+                        <div class="form-group col-md-3" id="timeInput">
+                            <label for="time">Time (sec)</label>
+                            <input
+                                class="form-control"
+                                id="time"
+                                value="0"
+                                name="time"
+                                onchange="myTime()"
+                                placeholder="Time"
+                                type="number"
+                            />
+                        </div>
+
+                        <div class="form-group col-md-12 text-right p-15">
+                            <button type="submit" class="btn btn-primary">
+                                Save
+                            </button>
+                            <a
+                                onclick="preview();"
+                                class="btn btn-primary"
+                                data-toggle="modal"
+                                data-target="#exampleModalCenter"
+                                >Preview
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-lg-1 col-md-2 d-sm-none" id="ghost"></div>
+
+                <div
+                    class="modal fade"
+                    id="exampleModalCenter"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="exampleModalCenterTitle"
+                    aria-hidden="true"
+                >
+                    <div
+                        class="modal-dialog modal-lg modal-dialog-centered"
+                        role="document"
+                    >
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2
+                                    class="modal-title"
+                                    id="exampleModalLongTitle"
+                                    align="center"
+                                ></h2>
+                                <button
+                                    type="button"
+                                    class="close"
+                                    data-dismiss="modal"
+                                    aria-label="Close"
+                                >
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="modal-body">
+                                <div class="slidecontainer">
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        value="50"
+                                        class="slider"
+                                        id="myRange"
+                                    />
+                                </div>
+                                <br />
+                                <div class="Footer">
+                                    <div style="float: left" id="left">0%</div>
+                                    <div style="float: right" id="right">
+                                        100%
+                                    </div>
+                                    <div align="center" id="demo"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    data-dismiss="modal"
+                                >
+                                    Close
+                                </button>
+                                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+    function myTime() {
+        time = document.getElementById("time").value;
+    }
+    let checkbox = document.getElementById("checkbox");
+    checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+            document.getElementById("timeInput").style.display = "block";
+        } else {
+            document.getElementById("timeInput").style.display = "none";
+        }
+    });
+    var slid = document.getElementsByClassName("slidecontainer");
+    function preview() {
+        var slider = document.getElementById("myRange");
+        var output = document.getElementById("demo");
+        slider.style.background = $("#scolor").val();
+
+        output.innerHTML = slider.value + "%"; // Display the default slider value
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider.oninput = function () {
+            output.innerHTML = this.value + "%";
+        };
+
+        var scale_bg = document.getElementById("horizontal");
+        var vert = document.getElementById("vert-div");
+        var sca_vert = document.getElementById("labels-vert");
+
+        var lab_hor = document.getElementById("lab-hor");
+        var modal = document.getElementById("modal-body");
+        var c = document.getElementById("center");
+        var footer = document.getElementsByClassName("Footer");
+
+        var e = document.getElementById("orientation");
+        function onChange() {
+            var value = e.value;
+            console.log(slid);
+            if (value === "vertical") {
+                slid.orient = "vertical";
+
+                //[].forEach.call(
+                //    document.getElementsByClassName("slider"),
+                //    function (slid) {
+                //        slid.style =
+                //            "-webkit-appearance: slider-vertical; width: 100%; min-height: 150px; max-height: 100%; height: 100%;";
+                //        slider.style.background = $("#scolor").val();
+                //}
+            }
+        }
+        e.onchange = onChange;
+        onChange();
+
+        document.getElementById("exampleModalLongTitle").innerHTML =
+            $("#head").val();
+        document.getElementById("left").innerHTML = 0;
+        document.getElementById("right").innerHTML = 100;
+        //$("#red").attr("class", $("#orientation").val());
+        //  $("#horizontal").attr("id", $("#orientation").val());
+        //  em = $("#orientation").val();
+        // $("#" + em).empty();
+    }
+</script>

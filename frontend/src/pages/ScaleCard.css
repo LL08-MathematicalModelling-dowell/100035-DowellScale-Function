@@ -1,0 +1,8 @@
+.card {
+    background: #b2dbbf;
+}
+
+.card:hover {
+    transform: translateY(5px) scale(1.005) translateZ(0);
+    background: #0079E3;
+  }

@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/100035-DowellScale-Function/static/css/main.f855e6bc.css",
+    "main.js": "/100035-DowellScale-Function/static/js/main.cb4ce0f0.js",
+    "static/js/787.fc4cd219.chunk.js": "/100035-DowellScale-Function/static/js/787.fc4cd219.chunk.js",
+    "static/media/logo.svg": "/100035-DowellScale-Function/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/100035-DowellScale-Function/index.html",
+    "main.f855e6bc.css.map": "/100035-DowellScale-Function/static/css/main.f855e6bc.css.map",
+    "main.cb4ce0f0.js.map": "/100035-DowellScale-Function/static/js/main.cb4ce0f0.js.map",
+    "787.fc4cd219.chunk.js.map": "/100035-DowellScale-Function/static/js/787.fc4cd219.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.cb4ce0f0.js"
+  ]
+}

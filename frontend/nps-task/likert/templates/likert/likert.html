@@ -1,0 +1,83 @@
+{% extends "index.html" %}
+{% block title %}Likert Scale{% endblock %}
+{% block content %}
+        <style>
+            $spacing-unit: 16px;
+            $half-spacing-unit: $spacing-unit / 2;
+            $quarter-spacing-unit: $spacing-unit / 4;
+
+            *, *:before, *:after {
+            box-sizing: border-box;
+            }
+
+            html {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: black;
+            }
+            .likert {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ddd;
+            padding: $spacing-unit * 3;
+            font-family: 'Open Sans', sans-serif;
+            text-align: center;
+
+            input {
+                display: none;
+            }
+
+            > label {
+                display: inline-block;
+                position: relative;
+                margin-right: $spacing-unit;
+                padding-left: $spacing-unit + $half-spacing-unit;
+                cursor: pointer;
+
+
+                &:before {
+                content: "";
+                display: block;
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                left: 0;
+                top: 50%;
+                margin-top: -8px;
+                border: 1px solid #fff;
+                border-radius: 8px;
+                }
+    </style>
+    </head>
+    <body>
+        <div class ="likert">
+
+            <form id="form" method="POST" action="" onsubmit="myFunction()">
+                {% csrf_token %}
+                <h2 id=form-prompt>Select Suitable Likert Scale</h2><br>
+                <input type="radio" id="yes/no" name="likert" value="2">
+                <label for="yes/no">Yes/No</label><br>
+                <input type="radio" id="3" name="likert" value="3">
+                <label for="3">3 Points Scale</label><br>
+                <input type="radio" id="4" name="likert" value="4">
+                <label for="4">4 Points Scale</label><br>
+                <input type="radio" id="5" name="likert" value="5">
+                <label for="5">5 Points Scale</label><br>
+                <input type="radio" id="7" name="likert" value="7">
+                <label for="7">7 Points Scale</label><br>
+                <input type="radio" id="9" name="likert" value="9">
+                <label for="9">9 Points Scale</label>
+                <div><button type="submit" id="button" class="btn btn-secondary">Submit</button></div>
+              </form>
+
+        </div>
+        <script>
+        function myFunction(){
+            window.location.replace("{{public_url|safe}}/likert/likert-scale/default/")
+        }
+        </script>
+{% endblock %}

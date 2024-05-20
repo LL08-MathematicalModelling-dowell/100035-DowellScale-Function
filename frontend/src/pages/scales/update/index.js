@@ -1,0 +1,1 @@
+export { default as UpdateRankingScale } from './UpdateRankingScale'

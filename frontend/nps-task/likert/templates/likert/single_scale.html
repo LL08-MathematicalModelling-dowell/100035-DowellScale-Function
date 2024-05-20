@@ -1,0 +1,494 @@
+{% load i18n %} {% load static %}
+<html lang="en">
+    <head>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+        />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>VOC_Likert</title>
+        <style>
+            #snackbar {
+                visibility: hidden;
+                min-width: 250px;
+                margin-left: -125px;
+                background-color: green;
+                color: #fff;
+                text-align: center;
+                border-radius: 2px;
+                padding: 16px;
+                position: fixed;
+                z-index: 1;
+                right: 10%;
+                top: 30px;
+                font-size: 17px;
+            }
+
+            #snackbar.show {
+                visibility: visible;
+                -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            }
+
+            @-webkit-keyframes fadein {
+                from {
+                    top: 0;
+                    opacity: 0;
+                }
+                to {
+                    top: 30px;
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadein {
+                from {
+                    top: 0;
+                    opacity: 0;
+                }
+                to {
+                    top: 30px;
+                    opacity: 1;
+                }
+            }
+
+            @-webkit-keyframes fadeout {
+                from {
+                    top: 30px;
+                    opacity: 1;
+                }
+                to {
+                    top: 0;
+                    opacity: 0;
+                }
+            }
+
+            @keyframes fadeout {
+                from {
+                    top: 30px;
+                    opacity: 1;
+                }
+                to {
+                    top: 0;
+                    opacity: 0;
+                }
+            }
+            #horizontal {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 20px;
+            }
+
+            #horizontal p {
+                font-size: 18px;
+                font-weight: bold;
+                padding: 5px;
+                min-height: 50px;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
+                width: 120px;
+                border-radius: 25px;
+                margin: 5px;
+                cursor: pointer;
+            }
+
+            /*#labels{*/
+            /*display: flex;*/
+            /*justify-content: space-between;*/
+            /*}*/
+
+            #labels-vert {
+                display: none;
+                justify-content: space-between;
+                flex-direction: column;
+            }
+            #serial {
+                color: black;
+                padding: 10px 20px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            #countdown {
+                color: black;
+                float: right;
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+
+            @media screen and (max-width: 600px) {
+                #horizontal p {
+                    font-size: 18px;
+                    font-weight: bold;
+                    padding: 5px;
+                    min-height: 50px;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    justify-content: center;
+                    width: 120px;
+                    border-radius: 25px;
+                    margin: 5px;
+                    cursor: pointer;
+                }
+
+                #labels {
+                    font-size: 20px;
+                }
+            }
+
+            @media screen and (max-width: 995px) {
+                #horizontal {
+                    padding: 10px;
+                }
+                #horizontal p {
+                    font-size: 18px;
+                    font-weight: bold;
+                    padding: 5px;
+                    min-height: 50px;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    justify-content: center;
+                    width: 120px;
+                    border-radius: 25px;
+                    margin: 5px;
+                    cursor: pointer;
+                }
+
+                #labels {
+                    font-size: 14px;
+                }
+            }
+            @media screen and (max-width: 335px) {
+                #horizontal {
+                    padding: 10px;
+                }
+                #horizontal p {
+                    font-size: 18px;
+                    font-weight: bold;
+                    padding: 5px;
+                    min-height: 50px;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    justify-content: center;
+                    width: 120px;
+                    border-radius: 25px;
+                    margin: 5px;
+                    cursor: pointer;
+                }
+
+                #labels {
+                    font-size: 14px;
+                }
+            }
+            .card-header {
+                color: #88b04b;
+                font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+                font-weight: 900;
+                font-size: 40px;
+                margin-bottom: 10px;
+            }
+            .card-paragraph {
+                color: #404f5e;
+                font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+                font-size: 20px;
+                margin: 0;
+            }
+
+            .card {
+                background: white;
+                padding: 60px;
+                border-radius: 4px;
+                box-shadow: 0 2px 3px #c8d0d8;
+                margin: 0 auto;
+                width: 600px;
+                display: none;
+            }
+
+            .checkmark {
+                color: #9abc66;
+                font-size: 100px;
+                line-height: 200px;
+                margin-left: -15px;
+            }
+        </style>
+        <script>
+            var mbuttons = [];
+
+            $(document).ready(function () {
+                const serial=window.location.href;
+            	let split_serial = serial.split('/');
+            	let series= split_serial[split_serial.length -1];
+            	let se = document.getElementById("serial");
+            	let num ={{defaults.number_of_scales}};
+            	let view = document.getElementById('res');
+            	//console.log(series.length)
+            	function Checklist(){
+            		if (series.length > 3){
+            			se.innerHTML = ""
+            		}
+            		else{
+            			se.innerHTML=series +"/" + num;
+            		}
+            	}
+                Checklist()
+                    var check = "{{recorded_score}}";
+
+                   if (check === "101"){
+                       console.log("No answer given")
+                    }
+                   else {
+                       var scale_container = document.getElementById("scale-container-main")
+                       var card_response = document.getElementById("card-response")
+                       scale_container.style.display = "none"
+                       card_response.style.display = "inline-block"
+            		   view.innerHTML="Your response of "+ check +" has been submitted"
+
+
+                }
+                // Get mbuttons list
+                mbuttons = document.getElementsByClassName("number");
+                console.log(mbuttons);
+                const inputArray = [...mbuttons].map(
+                    (mbuttons) => mbuttons.innerHTML
+                );
+
+                if (mbuttons.length >= 0) {
+                    for (var i = 0; i < mbuttons.length; i++) {
+                        mbuttons[i].style.cursor = "pointer";
+                        mbuttons[i].style.backgroundColor="{{defaults.roundcolor|safe}}";
+                        mbuttons[i].onclick = function () {
+                            this.style.backgroundColor = "red";
+                            console.log(this.innerHTML);
+                            var score_tag = document.getElementById("scoretag");
+                            score_tag.value = this.innerHTML;
+                            document.getElementById("jsform").submit();
+                           checkStatus();
+                        };
+                        mbuttons[i].ondblclick = function () {
+                            this.style.backgroundColor = "white";
+                        };
+                        mbuttons[i].onmouseover = function () {
+                            this.style.backgroundColor =
+                                "green";
+                        };
+                        mbuttons[i].onmouseout = function () {
+                            if (this.style.backgroundColor === "red") {
+                                this.style.backgroundColor = "red";
+                            } else {
+                                this.style.backgroundColor = "{{defaults.roundcolor|safe}}";
+                            }
+                        };
+
+                        //  setrating(this.id);
+                        //   postScore(this.id,inputArray[this.id])
+                        //   para = document.getElementById("lg").innerHTML=this.id;
+                        //document.getElementById("myText").value=this.id
+                    }
+                }
+            });
+
+            setrating = function (id) {
+                for (var i = 0; i < mbuttons.length; i++) {
+                    if (+id >= +mbuttons[i].id) {
+                        mbuttons[i].style.color = "white";
+                        mbuttons[i].style.background = "#5cb85c";
+                    } else {
+                        mbuttons[i].style.color = "red";
+                        mbuttons[i].style.background = "#fff";
+                    }
+                }
+            };
+        </script>
+    </head>
+    <body>
+        <form method="POST" id="jsform">
+            {% csrf_token %}
+            <input type="hidden" name="scoretag" id="scoretag" />
+        </form>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-sm-2"></div>
+                <div class="card" id="card-response">
+                    <div
+                        style="
+                            border-radius: 200px;
+                            height: 200px;
+                            width: 200px;
+                            background: #f8faf5;
+                            margin: 0 auto;
+                            text-align: center;
+                        "
+                    >
+                        <i class="checkmark">✓</i>
+                    </div>
+                    <h1 class="card-header text-center">Success</h1>
+                    <p class="card-paragraph text-center" id="res">
+                        We received your response;<br />
+                        Thanks!
+                    </p>
+                </div>
+                <div
+                    class="col-sm-8 bg-light"
+                    id="scale-container-main"
+                    style="
+                        border: silver 2px solid;
+                        box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3);
+                    "
+                >
+                    <span id="serial" style="float: left"></span>
+                    <h1 style="text-align: center" class="text-danger">
+                        <b>{{defaults.name}}</b><span id="countdown"></span>
+                    </h1>
+                    <br />
+                    <div id="scale-container">
+                        <div id="horizontal"></div>
+                        <div
+                            class="pl-3"
+                            id="labels-vert"
+                            style="font-size: 2em"
+                        ></div>
+                    </div>
+                    <!--        <div id="horizontal" ></div>-->
+                    <div class="pl-3" id="labels"></div>
+                    <br />
+                </div>
+                <script>
+                                    var vert="vertical";
+                                    var hori="horizontal";
+                                    var name="number";
+
+                                    var scale_bg = document.getElementById("horizontal")
+                                    var sca_vert = document.getElementById("labels-vert")
+                                    var scale_cont = document.getElementById("scale-container")
+                                    var labels = document.getElementById("labels")
+                                    scale_bg.style.background = '{{defaults.scalecolor|safe}}';
+                                    scale_bg.style.padding = "20px 20px";
+
+
+                                    if ('{{defaults.orientation|safe}}' ==="vertical" ){
+                                        scale_bg.style.flexDirection = "column";
+                                        labels.style.display = "none";
+                                        scale_bg.style.width = "100px";
+                                        scale_bg.style.margin = "auto";
+                                        scale_cont.style.display = "flex";
+                                        sca_vert.style.display = "flex";
+                                        scale_cont.style.width = "300px";
+                                        scale_cont.style.margin = "auto";
+                                    }
+                                    var labeltype = {{labeltype|safe}}
+                                    var v = {{labelscale|safe}}
+                                   // console.log(labeltype)
+                                   // console.log(v)
+                                   function checkStatus(){
+                                                 var scale_container = document.getElementById("scale-container-main")
+                                                 var card_response = document.getElementById("card-response")
+                                                 scale_container.style.display = "none"
+                                                 card_response.style.display = "inline-block"
+                                             }
+                                    function scale(){
+                                        if (v=== 2){
+                                            var n = ["&#x1F603","&#128532"];
+                                            return n
+                                        }
+                                        else if (v ===3){
+                                            var n = ["&#128532","&#128578","&#x1F603"];
+
+                                            return n
+
+                                        }
+                                        else if (v ===4){
+                                            var n = ["&#128545","&#128532","&#128522","&#x1F603"];
+                                            return n
+
+                                        }
+                                        else if (v ===5){
+                                            var n =["&#128545","&#128532","&#128578","&#128522","&#x1F603"];
+                                            return n
+
+                                        }
+                                        else if (v ===7){
+                                            var n = ["&#128545","&#128530","&#128533","&#128578","&#128522","&#128512","&#x1F603"];
+                                            return n
+
+                                        }
+                                        else {
+                                            var n = ["&#128545","&#128534","&#128530","&#128533","&#128578","&#128512","&#128516","&#x1F603","&#128525"];
+                                            return n
+
+                                        }
+                                    }
+
+                                    var labelscale = scale();
+                                    console.log(labelscale)
+                                    var k = "None"
+                                    var ans = {{scale|safe}};
+                                    ans = ans.filter(function(item){
+                                        return item !== k
+                                    })
+
+
+                                     for (let i = 0; i < v; i++) {
+                                        const para = document.createElement("p");
+                                        if( labeltype ===2){
+
+                                                para.innerHTML = labelscale[i]}
+                                        else{
+                                            para.innerHTML = ans[i];
+                                        }
+                                        para.id=i
+                                        para.classList.add("number");
+                                        document.getElementById("horizontal").appendChild(para);
+                    <!--                    document.getElementById(i).innerHTML = i;-->
+                                        //document.getElementById(i).style.background ='{{defaults.roundcolor|safe}}';
+                                        document.getElementById(i).style.background ='#FFFFFF';
+                                        document.getElementById(i).style.color ="{{defaults.fontcolor|safe }}";
+                                    }
+
+                                    let time = {{defaults.time|safe}};
+
+                                    const countdownEl = document.getElementById("countdown");
+
+                                    if (window.location.href === "https://100035.pythonanywhere.com/likert/likert-scale1/Likert-default6544?brand_name=your%20brand&product_name=your%20product" || time === 0 ){
+                                        countdownEl.style.display = "none"
+                                    } else {
+                                        setInterval(updateCountdown, 1000)
+                                    }
+
+                                    function updateCountdown(){
+                                        const minutes = Math.floor(time/60);
+                                        let seconds = time % 60;
+
+                                        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                                        countdownEl.innerHTML = `${minutes}:${seconds}`
+                                        seconds < 10  && minutes == 0 ? countdownEl.style.color = "red" : countdownEl.style.color = "black" ;
+                                        time--;
+                                        time = time < 0 ? redirectMain() : time;
+                                    }
+
+
+                                    function redirectMain(){
+                                       // window.location.replace("http://100014.pythonanywhere.com/main")
+                                    }
+                </script>
+                <div class="col-sm-2"></div>
+            </div>
+        </div>
+    </body>
+</html>

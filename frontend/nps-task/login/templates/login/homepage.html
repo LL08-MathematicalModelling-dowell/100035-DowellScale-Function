@@ -1,0 +1,132 @@
+{% extends "index.html" %}
+{% block title %}Scales{% endblock %}
+{% block content %}
+<style>
+      .header {
+        font-size: 24px;
+        font-weight: bold;
+        flex-direction: column;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: green;
+      }
+      .scales a:link,
+      .scales a:visited {
+        background-color: #05890b;
+        color: white;
+        padding: 14px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 25px;
+        margin-top: 20px;
+        width: 180px;
+      }
+
+      .scales a:hover,
+      .scales a:active {
+        background-color: blue;
+      }
+      .landing-header {
+        color: #05890b;
+        font-size: 20px;
+      }
+
+
+
+      .scales{
+        font-size:20px;
+        justify-content:space-between;
+        display:flex;
+        flex-wrap: wrap;
+        width: 450px;
+<!--        flex-direction:column;-->
+      }
+
+      @media(max-width: 480px){
+      .header {
+      width:100%;
+      }
+	  .scales{
+	    width:100%;
+        font-size:16px;
+        display:flex;
+        justify-content:space-evenly;
+      }
+	}
+
+	@media(max-width: 380px){
+      .header {
+      width:100%;
+      }
+	  .scales{
+	    width:100%;
+        font-size:16px;
+        display:flex;
+<!--        flex-direction:column;-->
+        justify-content:center;
+      }
+	}
+
+</style>
+{% load static %}
+<div class="header">
+	<img
+			alt=""
+			alt="Home"
+			class="attachment-thumbnail size-thumbnail"
+			height="200"
+			loading="lazy"
+			sizes="(max-width: 150px) 100vw, 150px"
+			src="/static/images/dowell-logo.png"
+			srcset="
+            /static/images/dowell-logo.png 150w,
+            /static/images/dowell-logo.png  48w,
+            /static/images/dowell-logo.png 300w
+          "
+			width="200"
+	/>
+	<h1>Dowell Scales</h1>
+
+	<br/>
+	<div class="scales">
+		<a id="likert">Likert Scale</a>
+		<a id="percent">Percent Scale</a>
+		<a id="percent-sum" style="font-size: 16px;">Percent-Sum Scale</a>
+		<a id="nps">Nps Scale</a>
+		<a id="stapel">Stapel scale</a>
+		<a id="nps-lite">Nps Lite scale</a>
+	</div>
+	<script>
+      var test = "{{user_role|safe}}";
+      console.log(test)
+      console.log(test);
+      var percent = document.getElementById("percent");
+      var likert = document.getElementById("likert");
+      var stapel = document.getElementById("stapel");
+      var nps = document.getElementById("nps");
+      var npsLite = document.getElementById("nps-lite");
+      var percent_sum = document.getElementById("percent-sum");
+
+      if (test==="owner"){
+        percent.href = "{{public_url|safe}}/percent/percent-admin/default"
+        likert.href = "{{public_url|safe}}/likert/likert-admin/default"
+        nps.href = "{{public_url|safe}}/nps-admin/default"
+        stapel.href = "{{public_url|safe}}/stapel/stapel-admin/default"
+        npsLite.href = "{{public_url|safe}}/nps-lite/nps-lite-default-admin/"
+        percent_sum.href = "{{public_url|safe}}/percent-sum/percent-sum-admin/default"
+      }
+      else{
+        percent.href = "{{public_url|safe}}/percent/percent-scale/default"
+        likert.href = "{{public_url|safe}}/likert/likert-scale/default"
+        nps.href = "{{public_url|safe}}/nps-scale/default"
+        stapel.href = "{{public_url|safe}}/stapel/stapel-scale/default"
+        npsLite.href = "{{public_url|safe}}/nps-lite/nps-lite-default/"
+      }
+
+	</script>
+</div>
+{% endblock %}
