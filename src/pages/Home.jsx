@@ -21,6 +21,8 @@ console.log(sessionStorage.getItem("session_id"))
     rSize, 
     setRSize } = useFetchUserContext()
 
+    console.log(useFetchUserContext())
+
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
   useEffect(() => {

@@ -102,6 +102,7 @@ import { useNavigate } from 'react-router';
 import ConfigureNpxLite from "./ConfigureNpxLite";
 // import PreviewNpxLite from "./PreviewNpxLite";
 
+import { FaArrowCircleLeft } from "react-icons/fa";
 
 
 import SideBar from "../../SideBar";
@@ -114,12 +115,7 @@ export default function NpsLiteScale(){
    
 const[goBack,setGoBack]=useState(false)
 const[step,setStep]=useState(1)
-const[numErr,setNumErr]=useState(false)
-const[nameErr,setNameErr]=useState(false)
-const[channelErr,setChannelErr]=useState(-1)
-const[instanceErr,setInstanceErr]=useState({index:-1,idx:-1})
-const[requiredChannel,setRequiredChannel]=useState(-1)
-const[requiredInstance,setRequiredInstance]=useState({index:-1,idx:-1})
+
 const[confirmScale,setConfirmScale]=useState(false)
 const[confirmed,setConfirmed]=useState(false)
 const[buttonLinks,setButtonLinks]=useState([])
@@ -196,177 +192,18 @@ const navigateTo = useNavigate();
 console.log(confirmed)
 
 
-function handleFormData(value, name, index = 0, idx = 0) {
-    switch (name) {
-        case "scaleName":
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
-            if (value.length < 3) setNameErr(true);
-            else setNameErr(false);
-            break;
 
-        case "numResponses":
-            let num = Number(value);
-            setFormData(prev => ({
-                ...prev,
-                [name]: num
-            }));
-            if (num < 30 || num > 10000) {
-                setNumErr(true);
-            } else {
-                setNumErr(false);
-            }
-            break;
-
-        case "channelName":
-            setRequiredChannel(-1)
-            const nameExists = formData.channels.some((channel, idx) => idx !== index && channel.channelName === value);
-            if (nameExists) {
-                setChannelErr(index)
-            }else{
-                setChannelErr(-1);
-            }
-            setFormData(prev => ({
-                ...prev,
-                channels: prev.channels.map((channel, idx) => idx === index ? { ...channel, channelName: value } : channel)
-            }));
-          
-            break;
-
-        case "InstanceName":
-            setRequiredInstance({index:-1,idx:-1})
-            const instanceExists = formData.channels[index].instances.includes(value)
-              
-            
-            if (instanceExists) {
-                setInstanceErr({index,idx});
-            } else {
-                setInstanceErr({index:-1,idx:-1});
-            }
-  
-            setFormData(prev => ({
-                ...prev,
-                channels: prev.channels.map((channel, i) => i === index ? {
-                    ...channel,
-                    instances: channel.instances.map((inst, iidx) => iidx === idx ? value : inst)
-                } : channel)
-            }));
-        
-            break;
-
-        default:
-            return formData;
-    }
-}
-
-function increaseInstance(index){
-    setFormData((prev)=>({
-        ...prev,
-        channels:prev.channels.map((channel,idx)=>idx==index?{
-            ...channel,
-            instances:[...channel.instances,""]
-        }:channel)
-    }))
-}
-
-function decreaseInstance(index){
-  
-    setFormData(prev => ({
-        ...prev,
-        channels: prev.channels.map((channel, idx) => {
-            if (idx === index && channel.instances.length>1) {
-                return {
-                    ...channel,
-                    instances: channel.instances.slice(0, -1)
-                };
-            }
-            return channel;
-        })
-    }));
-    if(instanceErr.index==index){
-        setInstanceErr({index:-1,idx:-1})
-    }
-
-    
-}
-
-function addChannel(){
-    let newChannel={
-        channelName:"",
-        instances:[""]
-    }
-    setFormData(prev => ({
-        ...prev,
-        channels:[...prev.channels,newChannel]
-        
-    }));
-    
-}
-
-function deleteChannel(index){
-    setFormData(prev => ({
-        ...prev,
-        channels: prev.channels.filter((channel, idx) => idx !== index)
-        
-    })); 
-    if(channelErr==index){
-        setChannelErr(-1)
-    }
-}
-
-function handleNext(){
-            let error=false
-        if(formData.scaleName.length<3){
-            setNameErr(true)
-            error=true
-        }
-
-        if(formData.numResponses<25 || formData.numResponses>10000){
-            setNumErr(true)
-            error=true
-            
-        }
-
-        formData.channels.map((channel, index) => {
-        
-            if (channel.channelName.length === 0) {
-                setRequiredChannel(index);
-                error=true
-            }
-        });
-
-
-        formData.channels.map((channel, index) => {
-            channel.instances.map((instance, idx) => {
-                if (instance.length === 0) {
-                    setRequiredInstance({index, idx});
-                    error=true
-                }
-            });
-        });
-
-
-
-        if(error)
-            return
-        else
-        setConfirmScale(true)
-// setStep((prev)=>prev+1)
-
-}
 
 
 const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
     return(
-       <div className="fixed top-1/3 left-1/2 w-max h-max p-5 bg-white rounded-lg " style={{ fontFamily: 'Roboto, sans-serif' }}>
+       <div className="fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-max h-max p-5 bg-white rounded-lg " style={{ fontFamily: 'Roboto, sans-serif' }}>
          <p className="font-bold">{header}</p>
          <p className="mt-3 ">{text1}</p>
-         <p className="">{text2}</p>
+         <p className="hidden md:block">{text2}</p>
          <div className="flex gap-8 justify-center items-center mt-3">
-         <button className="p-2 px-8 bg-[#129561] rounded" onClick={onCancel}>No</button>
-         <button className="p-2 px-8 bg-[#ff4a4a] rounded" onClick={()=>onConfirm()}>Yes</button>
+         <button className="p-2 md:px-8 bg-[#129561] rounded" onClick={onCancel}>No</button>
+         <button className="p-2 md:px-8 bg-[#ff4a4a] rounded" onClick={()=>onConfirm()}>Yes</button>
          </div>
        </div>
     )
@@ -374,12 +211,18 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
 
 
     return(
-          <div className="flex relative" style={{left: '20%'}}>
-          <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[1200px]" style={{ fontFamily: 'Roboto, sans-serif' }}>
-            <span className="  p-5 flex justify-start items-center gap-3 w-full">
-         <FaLessThan onClick={handleBack} className=" cursor-pointer"/>
-            <span  className=" font-bold  text-black">NPS LITE SCALE</span>
-            </span>
+          <div className="flex relative w-[100%] sm:w-[65%] sm:left-[35%] md:w-[75%] lg:w-[80%] xl:w-[83%] md:left-[25%] lg:left-[20%] xl:left-[17%]">
+          <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
+          {/* <div className="hidden p-5 lg:pl-10 xl:pl-10 xl:flex justify-center xl:justify-start items-center gap-3 w-full">
+            <FaLessThan onClick={handleBack} className="cursor-pointer" />
+            <span className="font-bold text-black">NPS LITE SCALE</span>
+            </div> */}
+            <div className=" flex justify-center items-center xl:justify-start  xl:items-start gap-3 w-full  p-5 xl:pl-10 ">
+                <FaArrowCircleLeft onClick={handleBack} className="cursor-pointer text-[24px]" />
+                <span className="font-bold text-black">NPS LITE SCALE</span>
+            </div>
+           
+
             {!buttonLinksGenerated ? (
             <>
             <style scoped>
@@ -417,10 +260,23 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                             }
                         }
                         .button-changes{
+                            padding:0.3rem;
+                           font-size:10px;
+                        }
+                        @media(min-width:640px){
+                            .button-changes{
+                                padding:0.5rem;
+                                font-size:10px;
+                            }
+                        }
+                          
+                        @media(min-width:670px){
+                        .button-changes{
                             padding:0.5rem;
                            font-size:12px;
                         }
-                        @media(min-width:850px){
+                    }
+                  @media(min-width:905px){
                             .button-changes{
                                 padding:0.5rem;
                                 padding-left: 1rem;
@@ -438,7 +294,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                         }
                    
                       
-                        @media(min-width:1300px){
+                        @media(min-width:1400px){
                             .button-changes{
                                 padding:0.5rem;
                                 padding-left: 5rem;
@@ -495,12 +351,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
                 </div>
                 {step==1 && (
                      <ConfigureNpxLite
-                     formData={formData} 
-                     handleFormData={handleFormData} nameErr={nameErr} numErr={numErr} channelErr={channelErr}
-                     requiredChannel={requiredChannel} requiredInstance={requiredInstance} instanceErr={instanceErr}
-                    decreaseInstance={decreaseInstance} increaseInstance={increaseInstance} addChannel={addChannel}
-                    deleteChannel={deleteChannel} handleNext={handleNext}
-                     />
+                     formData={formData} setFormData={setFormData} setConfirmScale={setConfirmScale}/>
                  )}
                 {/* {step==2 && (
                     <CustomizeNpxLite formData={formData} setFormData={setFormData} setStep={setStep}/>
