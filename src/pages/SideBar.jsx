@@ -16,7 +16,7 @@ import { useFetchUserContext } from "../contexts/fetchUserContext";
 
 const SideBar = () => {
 
-  const { rSize, setRSize } = useFetchUserContext();
+  const { rSize, setRSize, newScaleBtn, setNewScaleBtn, myScalesBtn, setMyScalesBtn } = useFetchUserContext();
   
   const [searchParams] = useSearchParams();
   const [userInfo, setUserInfo] = useState()
@@ -57,6 +57,10 @@ const SideBar = () => {
 
   const screenWidth = screen.width
 
+  const handleMyScales = () =>{
+    setMyScalesBtn(true)
+    setNewScaleBtn(false)
+  }
   
   const handleSizeToggle = () =>{
     setReduceSize(!reduceSize)
@@ -64,6 +68,8 @@ const SideBar = () => {
   }
 
   const handleHome = () =>{
+    setMyScalesBtn(false)
+    setNewScaleBtn(true)
     navigateTo(`/100035-DowellScale-Function/home?session_id=${sessionId}`)
   }
   
@@ -87,7 +93,7 @@ const SideBar = () => {
   }, []);
 
   return (
-    <div className='lg:w-3/12   h-screen' style={{backgroundColor:'#54595F', width: reduceSize ? '50px' :'250px', marginRight: '50px', position: 'fixed', display: screenWidth < 640 ? 'none': ''}}>
+    <div className='hidden lg:block lg:w-3/12   h-screen' style={{backgroundColor:'#54595F', width: reduceSize ? '50px' :'250px', marginRight: '50px', position: 'fixed', }}>
      <div style={{color: '#D3D3D3', fontSize:'15px', fontWeight:'400', display: 'flex', flexDirection: reduceSize ? 'column' : 'row', alignItems:'center', justifyContent: 'center', marginTop: '20px'}}>
      <AiOutlineMenuUnfold onClick={handleSizeToggle} style={{fontSize: '25px', color:'#6D6E70', cursor: 'pointer', display: reduceSize ? 'block' : 'none'}}/>
      <img src= {dowellLogo} alt='image' style={{height: reduceSize ? '25px' : '60px', borderRadius:'8px'}}/>
@@ -124,11 +130,11 @@ const SideBar = () => {
         <h2 style={{color: 'white', fontSize: '20px', display: reduceSize ? 'none' : 'block'}}>Welcome, {userInfo?.username}</h2>
      </div>
      <div style={{fontSize:'15px', display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center', marginTop:'15px'}}>
-      <div className='flex mt-10 bg-[#013220] text-white w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', cursor: 'pointer'}} onClick={handleHome}>
+      <div className='flex mt-10 hover:bg-[#013220] hover:text-white bg-[white] text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', cursor: 'pointer', backgroundColor: newScaleBtn ? '#013220' : 'white', color: newScaleBtn ? 'white' : 'black'}} onClick={handleHome}>
         <MdNewLabel style={{marginRight:'6px'}} />
         <button className='' style={{display: reduceSize ? 'none' : 'block'}}>New scale</button>
       </div>
-      <div className='flex mt-5 bg-white text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px'}}>
+      <div onClick={handleMyScales} className='flex mt-5 hover:bg-[#013220] hover:text-white bg-white text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', backgroundColor: myScalesBtn ? '#013220' : 'white', color: myScalesBtn ? 'white' : 'black'}}>
        <LiaCloudscale style={{marginRight:'6px'}} />
        <button style={{display: reduceSize ? 'none' : 'block'}}>My scales</button>
       </div>

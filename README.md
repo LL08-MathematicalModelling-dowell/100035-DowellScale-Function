@@ -76,7 +76,7 @@
 
 
 
-#Sending Emails for Npx Lite Scale
+**#Sending Emails for Npx Lite Scale**
 
 
 
