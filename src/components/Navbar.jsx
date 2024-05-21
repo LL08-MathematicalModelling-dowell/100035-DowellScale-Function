@@ -7,6 +7,7 @@ import { IoMdMenu } from "react-icons/io";
 import { FaUsers } from "react-icons/fa";
 import { IoPersonCircle } from "react-icons/io5";
 import { MdSpeed } from "react-icons/md";
+import Modal from '../components/Modal/Modal';
 import { useNavigate } from 'react-router';
 import { LuLogOut } from "react-icons/lu";
 
@@ -17,6 +18,8 @@ const Navbar = () => {
   const [showSideBar, setShowSideBar] = useState(false)
   const refOne = useRef(null)
   const navigateTo = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalInfo, setModalInfo] = useState()
   // const {  
   //   popuOption, 
   //   setPopupOption,
@@ -28,11 +31,14 @@ const Navbar = () => {
   //   setIsNodalOn } = useFetchUserContext()
     const screenWidth = screen.width
     console.log(screenWidth)
-    console.log(screenWidth, "HHHHHHHHHHHHHHHHHHHHHHhhhh")
+    console.log(modalInfo, "HHHHHHHHHHHHHHHHHHHHHHhhhh")
+
+    
   useEffect(() => {
     const session_id =
       searchParams.get('session_id') || sessionStorage.getItem('session_id');
-    setSessionId(session_id);
+      setSessionId(session_id);
+      setModalInfo((JSON.parse(sessionStorage.getItem('userInfo')))?.portfolio_info[0])
   }, [searchParams]);
 
   const handleSidebar = () =>{
@@ -86,13 +92,16 @@ const Navbar = () => {
         </Link>
         <h3 className='ml-4 font-medium' style={{fontFamily: 'Roboto', fontSize:'14px', lineHeight: '16.41px'}}>DoWell Scales</h3>
       </div>
-      <IoPersonCircle className='w-7 h-7' style={{marginLeft: 'auto', fontSize:'large', cursor:'pointer', marginRight: '12%'}} />
+      <div onMouseEnter={() => setIsModalOpen(true)} onMouseLeave={() => setIsModalOpen(false)} style={{marginLeft: 'auto', fontSize:'large', cursor:'pointer', marginRight: '12%'}}>
+      <IoPersonCircle className='w-7 h-7'  />
+      {isModalOpen && <div className='' style={{}}><Modal modalInfo={modalInfo} /></div>}
+      </div>
       </div>
       <div ref={refOne} className='h-screen' style={{width: '250px', backgroundColor: 'white', position: 'fixed', zIndex: '1', borderRight: '1px solid lightgray', marginLeft: showSideBar ? '0' : '70px', opacity: showSideBar ? '1' : '0', visibility: showSideBar ? 'visible' : 'hidden', transition: 'all .3s ease-in .3s'}}>
         <img src={dowellLogo} style={{height: '60px', borderRadius:'8px', marginLeft: '180px'}}/>
         <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', }}>
         <div onClick={handleHome} className='flex mt-10 hover:bg-[#013220] hover:text-white w-5/6 text-black' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', cursor: 'pointer', }}>
-        <IoSpeedometerSharp style={{marginRight:'6px'}} />
+        <IoSpeedometerSharp style={{marginRight:'6px', color:'red'}} />
         <button className='' style={{}}>NEW SCALE</button>
       </div>
       <div className='flex mt-5 hover:bg-[#013220] hover:text-white w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px'}}>
