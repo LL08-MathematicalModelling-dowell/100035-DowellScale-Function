@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, npslite_home, dowell_npslite_scale, dowell_npslite_scale_settings, npslite_home_admin,brand_product_error, settings_api_view_create, submit_response_view, npslite_response_view, scale_response_api_view
+from .views import  npslite_home, dowell_npslite_scale, dowell_npslite_scale_settings, npslite_home_admin,brand_product_error, settings_api_view_create, submit_response_view, npslite_response_view, scale_response_api_view
 from .api_v4 import CreateNPSLiteScale, CreateNPSLiteResponse
 
 app_name = 'nps-lite'
