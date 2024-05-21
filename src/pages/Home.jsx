@@ -2,21 +2,29 @@ import { useState, useEffect } from 'react';
 import SideBar from './SideBar';
 import { useFetchUserContext } from "../contexts/fetchUserContext";
 import { useSearchParams, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import axios from 'axios';
 import ScaleCard from './ScaleCard';
 // import Cookies from 'universal-cookie';
 
 const Home = () => {
-
+console.log(sessionStorage.getItem("session_id"))
   const {  
     popuOption, 
     setPopupOption,
     sName,
     setSName,
     BtnLink,
-    setBtnLink } = useFetchUserContext()
+    setBtnLink,
+    scaleIndex,
+    setScaleIndex,
+    rSize, 
+    setRSize } = useFetchUserContext()
+
+    console.log(useFetchUserContext())
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [screenWidth, setScreenWidth] = useState(screen.width)
 
   useEffect(() => {
     function handleResize() {
@@ -33,7 +41,7 @@ const Home = () => {
       name: 'NPS LITE SCALE',
       slug: 'nps-lite-scale',
       btnLink: 'npsLiteBtnLink',
-      description: 'Net promoter score (NPS) is a widely used market research metric that is based on a single survey question',
+      description: 'Net promoter score (NPS) is a widely used market research metric that is based on a single survey question. We can also provide more information like use cases of this scale...',
       image: 'https://www.mailerlite.com/img/containers/assets/SEO/cover-automation-nps-1571391762.png/03e0db977bad2866419531ed9874a4eb.png'
     },
     {
@@ -88,63 +96,28 @@ const Home = () => {
       image: 'https://www.scales.dowellstore.org/wp-content/uploads/2022/12/percentage-scale-150x150.png'
     }
   ];
-  // const navigateTo = useNavigate();
+  const navigateTo = useNavigate();
 
 
-  // const getUserInfo = async (session_id) => {
-  //   const session = {
-  //     session_id,
-  //   };
 
-  //   const res = await axios({
-  //     method: 'post',
-  //     url: 'https://100014.pythonanywhere.com/api/userinfo/',
-  //     data: session,
-  //   });
+  const handleStartCreating = () =>{
+    setPopupOption(false)
+    navigateTo(`/100035-DowellScale-Function/home/${scaleTypes[scaleIndex].slug}`)
+  }
 
-  //   sessionStorage.setItem('userInfo', JSON.stringify(res.data));
-  // };
-  // const [searchParams] = useSearchParams();
 
-  // const localSession = sessionStorage.getItem('session_id')
-  //   ? sessionStorage.getItem('session_id')
-  //   : null;
-  // // const localId = sessionStorage.getItem('id')
-  // //   ? JSON.parse(sessionStorage.getItem('id'))
-  // //   : null;
-
-  // useEffect(() => {
-  //   const session_id = searchParams.get('session_id');
-  //   // const id = searchParams.get('id');
-
-  //   if (session_id) {
-  //     sessionStorage.setItem('session_id', session_id);
-  //     getUserInfo(session_id);
-
-  //     // if (id || localId) {
-  //     //   sessionStorage.setItem('id', id);
-  //     //   getUserInfoOther(session_id);
-  //     // } else {
-  //     //   getUserInfo(session_id);
-  //     // }
-  //   }
-  //   if (!localSession && !session_id) {
-  //     // cookie.remove('sessionid');
-  //     window.location.replace(
-  //       import.meta.env.DEV
-  //         ? 'https://100014.pythonanywhere.com/?redirect_url=http://localhost:3000/'
-  //         : 'https://100014.pythonanywhere.com/?redirect_url=https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/'
-  //     );
-  //   }
-  // }, [localSession, searchParams]);
-
-  const [searchParams] = useSearchParams();
   
   const [userInfo, setUserInfo] = useState()
 
+  // const screenWidth = screen.width
+
+  const between = (x, min, max) => {
+    return x >= min && x <= max;
+  }
+
   const getUserInfo = async () => {
     // setLoadingFetchUserInfo(true);
-    const session_id = searchParams.get("session_id");
+    const session_id = sessionStorage.getItem("session_id");
     axios
       .post("https://100014.pythonanywhere.com/api/userinfo/", {
         session_id: session_id
@@ -163,61 +136,79 @@ const Home = () => {
       });
   };
 
-  useEffect(() => {
-    const session_id = searchParams.get("session_id");
-    console.log("HHHHHHHHHHHHHHHHHHH",window.location.href)
-    if (!session_id) {
-      window.location.href =
-        "https://100014.pythonanywhere.com/?redirect_url=" +
-        `${window.location.href}`;
-      return;
+  window.onresize = function(){
+    setScreenWidth(screen.width)
     }
+
+  useEffect(() => {
+  
     getUserInfo();
-    sessionStorage.setItem('session_id', session_id);
     // setLoggedIn(true);
   }, []);
-console.log(BtnLink, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
+console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="flex" style={{position: 'relative'}}>
+    <div className="w-4/5 mt-5" style={{position: 'relative', left: rSize ? '8%':  between(screenWidth, 1025, 1075) ? '25%' : '19%'}}>
        {/* <div className='sidebar' > */}
-       {isSidebarVisible && <SideBar />}
+       {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}
-      <div className="" style={{ filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'center'}}>
-        {scaleTypes.map((scale) => (
+      <div className=''>
+        <h3 className='mb-4 font-bold' style={{fontFamily: 'Roboto', fontSize:'16px', lineHeight: '18.75px', }}>DoWell Scales offers different types of scales for your business</h3>
+        <p className='font-normal' style={{fontFamily: 'Roboto', fontSize:'12px', lineHeight: '14.06px'}}>Select the type of scale you want to create</p>
+      </div>
+      <div className="" style={{ filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'flex-start', backgroundColor:'white'}}>
+        {scaleTypes.map((scale, index) => (
           <ScaleCard scaleName={scale.name} 
           description={scale.description}
           imageSource={scale.image}
           slug={scale.slug}
+          index={index}
           btnLinks = {scale.btnLink}
           key={scale.slug}/>
         ))}
       </div>
 
-      {popuOption && <div className='popup' style={{width: '450px', height: '400px', display: 'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', left: '50%', top: '50%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'#4054B2', borderRadius: '8px'}}>
+      {popuOption && 
+      <div className='popup' style={{width: '550px', height: '240px', display: 'flex', left: '53%', top: '25%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'white', borderRadius: '8px'}}>
       <button
           onClick={() => setPopupOption(false)}
-          className="absolute px-2 text-white bg-red-500 rounded-full right-2 top-2"
+          className="absolute px-2 text-black bg-white rounded-full right-2 top-2"
         >
-          x
+          X
         </button>
-      <Link
+        <div className='border' style={{ marginRight: '40px', width: '100px',height:"100px", marginTop: '30px', marginLeft: '40px' }}>
+            <img src={scaleTypes[scaleIndex].image} style={{ width: '100px',height:"100px",objectFit:"cover",background:"black", marginRight: '10px' }} alt={scaleTypes[scaleIndex].name} />
+          </div>
+
+          <div style={{marginTop: '20px'}}>
+            <h3 style={{ fontFamily:"Changa, sans-serif", fontWeight:'500' }}>{scaleTypes[scaleIndex].name}</h3>
+            <p className="text-black-600" style={{ width: '340px', fontSize: 'medium' }}>{scaleTypes[scaleIndex].description}</p>
+            <button
+              className="text-center text-white capitalize bg-primary"
+              style={{ width: '200px', marginTop:"10px", height: '40px' }}
+              onClick={handleStartCreating}
+             >
+             Start creating
+          </button>
+          </div>
+      {/* <Link
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
         style={{ width: '250px', marginTop:"10px" }}
         to={`/100035-DowellScale-Function/${sName}`}
         onClick={() => setPopupOption(false)}
       >
         Create a masterlink
-      </Link>
-      <Link
+      </Link> */}
+      {/* <Link
         className="w-full py-3 text-center text-white capitalize rounded-lg bg-primary hover:bg-gray-700/50"
         style={{ width: '250px', marginTop:"30px" }}
         to={`/100035-DowellScale-Function/${BtnLink}`}
         onClick={() => setPopupOption(false)}
       >
         Create Button Link
-      </Link>
-      </div>}
+      </Link> */}
+      </div>
+      }
     </div>
   );
 };
