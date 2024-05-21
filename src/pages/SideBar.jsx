@@ -60,6 +60,7 @@ const SideBar = () => {
   const handleMyScales = () =>{
     setMyScalesBtn(true)
     setNewScaleBtn(false)
+    navigateTo(`/100035-DowellScale-Function/myscales`)
   }
   
   const handleSizeToggle = () =>{

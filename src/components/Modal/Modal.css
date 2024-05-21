@@ -7,7 +7,7 @@
   width: 400px; /* Adjust width as needed */
   position: fixed; /* Fixed position to stay fixed relative to the viewport */
   top: 35%; /* Center vertically */
-  left: 15%; /* Center horizontally */
+  left: auto; /* Center horizontally */
   transform: translate(-50%, -50%); /* Center both horizontally and vertically */
   z-index: 9999; /* Ensure modal appears above other content */
 }
