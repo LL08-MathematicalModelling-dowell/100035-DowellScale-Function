@@ -87,7 +87,7 @@ function ScaleCard({ scaleName, description, imageSource, slug, btnLinks, index 
               display: showScaleTitle ? 'block' : 'none'
             }}
             onClick={handleLearnMoreBtn}
-            disabled = {slug !== 'nps-lite-scale' ? true : false}
+            // disabled = {slug !== 'nps-lite-scale' ? true : false}
           >
             Learn more
           </button>

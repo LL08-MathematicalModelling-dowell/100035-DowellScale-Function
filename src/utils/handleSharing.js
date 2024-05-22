@@ -1,4 +1,4 @@
-export default async function handleSharing(formData,setButtonLinks,setButtonLinksGenerated) {
+export default async function handleSharing(formData,setButtonLinks,setButtonLinksGenerated,scaleType) {
     try {
         let { channels } = formData;
         let channelInstanceList = [];
@@ -33,7 +33,7 @@ export default async function handleSharing(formData,setButtonLinks,setButtonLin
                 "username": "CustomerSupport",
                 "scale_name": formData.scaleName,
                 "channel_instance_list":channelInstanceList,
-                "scale_type": "nps_lite",
+                "scale_type": scaleType,
                 "user_type": true,
                 "no_of_responses":100000
             }

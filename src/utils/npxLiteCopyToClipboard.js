@@ -1,4 +1,4 @@
-function copyData(buttonLinks) {
+function copyNpxLiteData(buttonLinks) {
   return `
   export default function App() {
     const paragraphStyle = {
@@ -39,4 +39,4 @@ function copyData(buttonLinks) {
 `;
 }
    
-export default copyData;
+export default copyNpxLiteData;
