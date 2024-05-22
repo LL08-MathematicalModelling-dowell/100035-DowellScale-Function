@@ -110,7 +110,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
 }
 
 const confirmText=`Your ${textContent.scale} has been confirmed`
-
+console.log(confirmText)
 const sharingText=`Share your ${textContent.scale}  across different platforms and add to your customer touch points `
 
 return (
@@ -207,7 +207,7 @@ return (
                             <button className="bg-[#129561] rounded button-changes">{textContent.experience[2]}</button>
                         </div>  
                        )}
-                        {textContent.experience.length==10 && (
+                        {textContent.experience.length==11 && (
                        <div className="w-full flex justify-center items-center gap-5">
                         {textContent.experience.map((score, index)=>(
                         <button
@@ -223,6 +223,59 @@ return (
                          ))}
                         </div>
                     )}
+                     {textContent.experience.length==10 && (
+                       <div className="w-full flex justify-center items-center gap-5">
+                        {textContent.experience.map((score, index)=>(
+                        <button
+                        key={index}
+                            onClick={() => handleSelectScore(score)}
+                            className={`rounded-lg ${
+                
+                          'bg-primary text-white'
+                            }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                            >
+                            {score}
+                            </button>
+                         ))}
+                        </div>
+                    )}
+                     {textContent.experience.length==5 && (
+                       <div className="w-full flex justify-center items-center gap-5">
+                         <style scoped>
+                            {`
+
+                            .button-changes {
+                                padding: 10px 10px;
+                                font-size: 1.5rem;
+                                }
+
+                            @media (min-width: 670px) { 
+                                .button-changes {
+                                padding: 5px 5px;
+                                font-size: 1rem;
+                                }
+                                }
+                    
+                                @media (min-width: 1400px) { 
+                                .button-changes {
+                                    padding: 10px 20px;
+                                }
+                                }
+                            `}
+                        </style>
+            {textContent.experience.map((score, index)=>(
+                     <button key={index} style={{
+                        fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
+                        backgroundColor:  "hsl(120, 70%, 60%)",
+                        fontWeight: 500,
+                        border: "none",
+                        borderRadius: '30px',
+                        cursor: 'pointer',
+                        margin: '5px',
+                    }} className="button-changes">{score}</button>
+                    ))}
+                    </div>
+                )}
                     </div>
 
                     <div className="mt-14 pt-10 bg-[#E8E8E8] rounded-lg h-max w-[80%] div-changes">

@@ -1,7 +1,18 @@
 import scaleconfirmedimage from "../../../../src/assets/scaleconfirmed.png"
 import handleSharing from "../../../utils/handleSharing";
 export default function ConfirmationScale({formData,setButtonLinks,setButtonLinksGenerated,text}){
-    const scaleType=text.includes("LITE") ? "nps_lite" : "nps" ;
+    let scaleType;
+console.log(text)
+if (text.includes("LITE")) {
+    scaleType = "nps_lite";
+} else if (text.includes("STAPEL")) {
+    scaleType = "stapel";
+} else if (text.includes("LIKERT")) {
+    scaleType = "likert";
+} else {
+    scaleType = "nps";
+}
+
   
     return(
         <>

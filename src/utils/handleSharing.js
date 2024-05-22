@@ -1,4 +1,8 @@
 export default async function handleSharing(formData,setButtonLinks,setButtonLinksGenerated,scaleType) {
+  let axis_limit=scaleType=="stapel"?5:0
+  let pointers=scaleType=="likert"?5:0
+
+console.log(scaleType,axis_limit,pointers)
     try {
         let { channels } = formData;
         let channelInstanceList = [];
@@ -35,11 +39,13 @@ export default async function handleSharing(formData,setButtonLinks,setButtonLin
                 "channel_instance_list":channelInstanceList,
                 "scale_type": scaleType,
                 "user_type": true,
-                "no_of_responses":100000
+                "no_of_responses":100000,
+               "axis_limit":axis_limit,
+               "pointers":pointers || 0
             }
             )
         };
-
+console.log(requestOptions)
 
         const response = await fetch(
             "https://100035.pythonanywhere.com/addons/create-scale/v3/",

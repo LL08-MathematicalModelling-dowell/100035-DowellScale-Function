@@ -3,15 +3,19 @@ import { MdContentCopy } from "react-icons/md";
 import { PiFileCsvDuotone } from "react-icons/pi";
 import {useState} from "react"
 export default function ScaleOutputScreen({codeToCopy,buttonLinks}){
-    const [isHovered, setIsHovered] = useState(false);
+
     const[showOptions,setShowOptions]=useState(false)
     const[isCopied,setIsCopied]=useState(false)
     const[showCopyIcon,setShowCopyIcon]=useState(-1)
     let ratings;
-    if(buttonLinks.length==3){
+    if(buttonLinks.length==3=="Bad"){
        ratings=["Bad","Average", "Excellent"]
-    }else{
+    }else if(buttonLinks.length==11){
         ratings=[0,1,2,3,4,5,6,7,8,9,10]
+    }else if(buttonLinks.length==10){
+      ratings=[-5,-4,-3,-2,-1,1,2,3,4,5]
+    }else{
+      ratings=["😞 Strongly Disagree", "😔 Disagree", "😔 Neutral", "😄 Agree", "😁 Strongly Agree"]
     }
    
 
@@ -72,7 +76,7 @@ export default function ScaleOutputScreen({codeToCopy,buttonLinks}){
               <div className="text-[#00a3ff] truncate">{link}</div>
               {showCopyIcon === index && (
                 <MdContentCopy
-                  className="absolute right-[55%] top-1/2 transform -translate-y-1/2 cursor-pointer text-black"
+                  className="absolute left-[17%] lg:left-[27%] xl:left-[40%] top-1/2 transform -translate-y-1/2 cursor-pointer text-black"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent triggering the row click
                     copyToClipboard(link);
@@ -88,7 +92,7 @@ export default function ScaleOutputScreen({codeToCopy,buttonLinks}){
         <BsThreeDotsVertical className="cursor-pointer" onClick={()=>setShowOptions((prev)=>!prev)}/>
     </div>
     {showOptions && (
-        <div className="text-xs flex flex-col absolute top-[25%] right-[0%] bg-white p-2 gap-2 divide divide-x divide-gray-200 font-normal justify-center items-start">
+        <div className="text-xs flex flex-col absolute top-[10%] right-[0%] bg-white p-2 gap-2 divide divide-x divide-gray-200 font-normal justify-center items-start">
         <button className="flex justify-center text-[12px] items-center gap-2"
         onClick={()=>{copyToClipboard(buttonLinks)
             setShowOptions(false)
