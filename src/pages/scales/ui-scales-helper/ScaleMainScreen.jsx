@@ -114,7 +114,7 @@ console.log(confirmText)
 const sharingText=`Share your ${textContent.scale}  across different platforms and add to your customer touch points `
 
 return (
-    <div className="flex relative w-[100%] sm:w-[65%] sm:left-[35%] md:w-[75%] lg:w-[80%] xl:w-[83%] md:left-[25%] lg:left-[20%] xl:left-[17%]">
+    <div className="flex relative w-[100%]  lg:w-[80%] xl:w-[83%]  lg:left-[20%] xl:left-[17%]">
         <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
             <div className="flex justify-center items-center xl:justify-start xl:items-start gap-3 w-full p-5 xl:pl-10">
                 <FaArrowCircleLeft onClick={handleBack} className="cursor-pointer text-[24px]" />
@@ -208,19 +208,25 @@ return (
                         </div>  
                        )}
                         {textContent.experience.length==11 && (
-                       <div className="w-full flex justify-center items-center gap-5">
+                            <div className="w-full flex flex-col justify-center items-center">
+                                <div className="w-max flex flex-col">
+                       <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max">
                         {textContent.experience.map((score, index)=>(
                         <button
                         key={index}
                             onClick={() => handleSelectScore(score)}
-                            className={`rounded-lg ${
-                
-                          'bg-primary text-white'
-                            }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
+                            className=" text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2  sm:px-3 rounded  md:px-4 bg-[#00a3ff] text-white "   
                             >
                             {score}
                             </button>
                          ))}
+                        </div>
+                       <div className="w-full flex p-2 justify-between items-center text-[12px] sm:text-[14px] ">
+                             <p>Bad</p>
+                             <p>Average</p>
+                             <p>Excellent</p>
+                       </div>
+                        </div>
                         </div>
                     )}
                      {textContent.experience.length==10 && (
@@ -241,34 +247,14 @@ return (
                     )}
                      {textContent.experience.length==5 && (
                        <div className="w-full flex justify-center items-center gap-5">
-                         <style scoped>
-                            {`
-
-                            .button-changes {
-                                padding: 10px 10px;
-                                font-size: 1.5rem;
-                                }
-
-                            @media (min-width: 670px) { 
-                                .button-changes {
-                                padding: 5px 5px;
-                                font-size: 1rem;
-                                }
-                                }
-                    
-                                @media (min-width: 1400px) { 
-                                .button-changes {
-                                    padding: 10px 20px;
-                                }
-                                }
-                            `}
-                        </style>
+                         
             {textContent.experience.map((score, index)=>(
                      <button key={index} style={{
                         fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
                         backgroundColor:  "hsl(120, 70%, 60%)",
                         fontWeight: 500,
                         border: "none",
+                        padding:"5px",
                         borderRadius: '30px',
                         cursor: 'pointer',
                         margin: '5px',
