@@ -94,7 +94,7 @@ const SideBar = () => {
   }, []);
 
   return (
-    <div className='hidden lg:block lg:w-3/12   h-screen' style={{backgroundColor:'#54595F', width: reduceSize ? '50px' :'250px', marginRight: '50px', position: 'fixed', }}>
+    <div className='hidden lg:block lg:w-3/12 h-screen' style={{backgroundColor:'#54595F', width: reduceSize ? '50px' :'250px', marginRight: '50px', position: 'fixed', }}>
      <div style={{color: '#D3D3D3', fontSize:'15px', fontWeight:'400', display: 'flex', flexDirection: reduceSize ? 'column' : 'row', alignItems:'center', justifyContent: 'center', marginTop: '20px'}}>
      <AiOutlineMenuUnfold onClick={handleSizeToggle} style={{fontSize: '25px', color:'#6D6E70', cursor: 'pointer', display: reduceSize ? 'block' : 'none'}}/>
      <img src= {dowellLogo} alt='image' style={{height: reduceSize ? '25px' : '60px', borderRadius:'8px'}}/>
@@ -135,7 +135,7 @@ const SideBar = () => {
         <MdNewLabel style={{marginRight:'6px'}} />
         <button className='' style={{display: reduceSize ? 'none' : 'block'}}>New scale</button>
       </div>
-      <div onClick={handleMyScales} className='flex mt-5 hover:bg-[#013220] hover:text-white bg-white text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', backgroundColor: myScalesBtn ? '#013220' : 'white', color: myScalesBtn ? 'white' : 'black'}}>
+      <div onClick={handleMyScales} className='flex mt-5 hover:bg-[#013220] hover:text-white bg-white text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', backgroundColor: myScalesBtn ? '#013220' : 'white', color: myScalesBtn ? 'white' : 'black', cursor: 'pointer'}}>
        <LiaCloudscale style={{marginRight:'6px'}} />
        <button style={{display: reduceSize ? 'none' : 'block'}}>My scales</button>
       </div>

@@ -148,7 +148,7 @@ console.log(sessionStorage.getItem("session_id"))
 console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="w-4/5 mt-5" style={{position: 'relative', left: rSize ? '8%':  between(screenWidth, 1025, 1075) ? '25%' : '19%'}}>
+    <div className="w-4/5 ml-[10%] mt-10 mr-[10%] lg:ml-[25%]">
        {/* <div className='sidebar' > */}
        {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}
@@ -156,7 +156,7 @@ console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
         <h3 className='mb-4 font-bold' style={{fontFamily: 'Roboto', fontSize:'16px', lineHeight: '18.75px', }}>DoWell Scales offers different types of scales for your business</h3>
         <p className='font-normal' style={{fontFamily: 'Roboto', fontSize:'12px', lineHeight: '14.06px'}}>Select the type of scale you want to create</p>
       </div>
-      <div className="" style={{ filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'flex-start', backgroundColor:'white'}}>
+      <div className="" style={{filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'flex-start', backgroundColor:'white'}}>
         {scaleTypes.map((scale, index) => (
           <ScaleCard scaleName={scale.name} 
           description={scale.description}

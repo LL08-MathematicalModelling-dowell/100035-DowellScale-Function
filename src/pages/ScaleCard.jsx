@@ -51,29 +51,11 @@ function ScaleCard({ scaleName, description, imageSource, slug, btnLinks, index 
     >
       {/* <ReactCardFlip isFlipped={isFlipped} containerStyle={{height:"300px",marginBottom:"20px"}} flipDirection="vertical"> */}
         <div className='card'
-          style={{
-            width: '200px',
-            height: '200px',
-            // background: '#b2dbbf',
-            // boxShadow: "0 15px 10px #777",
-            WebkitBoxShadow: "0 10px 6px -6px #777",
-            // border:"6px solid black",
-            fontSize: '20px',
-            color: 'black',
-            margin: '20px',
-            borderRadius: '8px',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.3s ease-out',
-            // padding: '10px',
-          }}
+         
         >
           <h6 style={{fontFamily:"Changa, sans-serif", fontWeight:'500', color:'white',display:showScaleTitle ? 'block' : 'none'}}>{scaleName}</h6>
 
-          <img src={imageSource} style={{ width: '100px',height:"100px",objectFit:"cover",borderRadius:"10%",background:"black" }} alt={scaleName} />
+          <img className='scaleImage' src={imageSource} alt={scaleName} />
           <h6 style={{fontFamily:"Changa, sans-serif", fontWeight:'500', marginTop:'15px', display: showScaleTitle ? 'none' : 'block'}}>{scaleName}</h6>
           <button
             style={{
