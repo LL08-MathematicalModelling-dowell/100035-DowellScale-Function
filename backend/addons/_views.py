@@ -21,8 +21,8 @@ class ScaleCreateAPI(APIView):
         scale_range = settings["scale_range"]
         
         for idx in scale_range:
-            # url = f"{public_url}/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
-            url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
+            url = f"{public_url}/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
+            # url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
             urls.append(url)
         return urls
 
@@ -361,6 +361,37 @@ def create_scale_response(request):
     else:
         return Response("Method not allowed")
     
+def calcualte_learning_index(score_list):
+    group_size = len(score_list)
+    learner_catergory = {
+                         "reading":0,
+                         "understanding":0,
+                         "explaining":0,
+                         "evaluating":0,
+                         "applying":0
+                    }
+            
+    for score in score_list:
+        if 0 <= score <= 2:
+            learner_catergory["reading"] += 1
+        elif 3 <= score <= 4:
+            learner_catergory["understanding"] += 1
+        elif 5 <= score <= 6:
+            learner_catergory["explaining"] += 1
+        elif 7 <= score <= 8:
+            learner_catergory["evaluating"] += 1
+        elif 9 <= score <= 10:
+            learner_catergory["applying"] += 1
+
+    percentages = {}
+    for key, value in learner_catergory.items():
+        percentages[key] = (value / group_size) * 100
+
+    LLx = (percentages["evaluating"]+percentages["applying"]) / (percentages["reading"]+percentages["understanding"])
+
+    return percentages, LLx
+    
+    
 @api_view(['GET'])
 def get_scale_response(request):
    
@@ -371,9 +402,44 @@ def get_scale_response(request):
             fields = {"scale_id":scale_id}
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
             data = response_data['data']
+            
             return Response({"success":"true",
                              "message":"fetched the data",
                              "total_no_of_responses": len(data),
-                             "data":data}, status=status.HTTP_200_OK)
+                             "data":data
+                             }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(e)
+
+@api_view(['GET'])
+def learning_index_report(request):
+   
+    scale_id = request.GET.get('scale_id')
+
+    if request.method == "GET":
+        try:
+            fields = {"scale_id":scale_id}
+            response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
+            data = response_data['data']
+            scores = [ response["score"] for response in data]
+    
+            percentages, LLx = calcualte_learning_index(scores)
+
+            if 0 <= LLx <=1:
+                learning_stage = "learning"
+            else:
+                learning_stage = "applying in context" 
+    
+            return Response({"success":"true",
+                             "message":"fetched the data",
+                             "total_no_of_responses": len(data),
+                             "data":data,
+                             "learning_index_data": {
+                                "control_group_size":len(data),
+                                "learning_level_percentages":percentages,
+                                "learning_level_index":LLx,
+                                "learning_stage":learning_stage
+                                }
+                             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(e)
