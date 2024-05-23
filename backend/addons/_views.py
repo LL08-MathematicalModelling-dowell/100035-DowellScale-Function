@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .v3_serializers import ScaleSerializer, InstanceDetailsSerializer, ChannelInstanceSerializer
+from ._serializers import ScaleSerializer, InstanceDetailsSerializer, ChannelInstanceSerializer
 from dowellnps_scale_function.settings import public_url
 from .datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
 from api.utils import dowell_time
@@ -16,16 +16,20 @@ class ScaleCreateAPI(APIView):
 
     def build_urls(self, channel_instance,payload,instance_idx):
         urls = []
-        scale_range = payload["scale_range"]
+        print(payload)
+        settings = payload["settings"]
+        scale_range = settings["scale_range"]
+        
         for idx in scale_range:
             # url = f"{public_url}/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
-            url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
+            url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
             urls.append(url)
         return urls
 
     def generate_urls(self, payload):
         response = []
-        for channel_instance in payload["channel_instance_list"]:
+        settings = payload["settings"]
+        for channel_instance in settings["channel_instance_list"]:
             channel_response = {
                 "channel_name": channel_instance["channel_name"],
                 "channel_display_name": channel_instance["channel_display_name"],
@@ -135,40 +139,39 @@ class ScaleCreateAPI(APIView):
             payload["total_no_of_items"] = total_no_of_items
            
             scale_range = self.adjust_scale_range(payload)
+            print("Scale range",scale_range)
             payload["scale_range"] = scale_range
 
             event_id = get_event_id()
 
-            payload = {"settings": {
-                            "api_key": api_key,
+            payload = {
+                        "workspace_id": workspace_id,
+                        "settings": {
                             "scale_name": scale_name,
-                            "total_no_of_items": total_no_of_items,
+                            "username": username,
                             "scale_category": scale_type,
+                            "user_type": user_type,
+                            "total_no_of_items": total_no_of_items,
                             "no_of_channels": len(channel_instance_list),
                             "channel_instance_list":channel_instance_list,
                             "no_of_responses": no_of_responses,
-                            "user_type": user_type,
                             "allow_resp": True,
-                            "workspace_id": workspace_id,
-                            "username": username,
-                            "event_id": event_id,
                             "scale_range": list(scale_range),
                             "pointers": pointers if scale_type == "likert" else None,
-                            "axis_limit": axis_limit if scale_type == "stapel" else None
+                            "axis_limit": axis_limit if scale_type == "stapel" else None,
+                            "event_id": event_id
                 }
             }
             
             try:
-                # response = datacube_db(payload=payload, api_key=api_key, operation="insert")
                 response = json.loads(datacube_data_insertion(api_key, "livinglab_scales", "collection_3", payload))
                 scale_id = response['data'].get("inserted_id")
                 payload['settings'].update({"scale_id":scale_id})
 
                 # generate the button urls
-                urls = self.generate_urls(payload['settings'])
+                urls = self.generate_urls(payload)
                
                 # insert urls into the db
-                # datacube_db(payload=payload, api_key=api_key, operation="update", id=scale_id, update_data={"urls": urls})
                 datacube_data_update(api_key, "livinglab_scales", "collection_3", {"_id": scale_id}, {"urls":urls})
                 
                 response_data = {
@@ -190,45 +193,58 @@ class ScaleCreateAPI(APIView):
         return Response(scale_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def get(self, request, format=None):
+    def get(self, request):
         try:
-            id = request.query_params.get('scale_id')
+            print(request.GET)
+            if 'scale_id' in request.GET:
+                scale_id = request.query_params.get('scale_id')
 
-            # response_data = datacube_db(api_key=api_key, operation="fetch", id=id)
-            response_data = datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"_id":id}, 10000, 0, False)
-            response = response_data['data'][0]
-            settings = response["settings"]
-           
-            if response:
-                # Extract the relevant information from the response
-                scale_name = settings.get('scale_name')
-                scale_type = settings.get('scale_category')
-                scale_type = settings.get('scale_category')
-                total_no_of_items = settings.get('total_no_of_items')
-                no_of_instances = settings.get('no_of_scales')
-                no_of_instances = settings.get('no_of_scales')
-                urls = response.get('urls')
+                response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"_id":scale_id}, 10000, 0, False))
+                response = response_data['data'][0]
+                settings = response["settings"]
+            
+                if response:
+                    # Extract the relevant information from the response
+                    scale_name = settings.get('scale_name')
+                    scale_type = settings.get('scale_category')
+                    total_no_of_items = settings.get('total_no_of_items')
+                    urls = response.get('urls')
 
-                api_response_data = {
-                    "scale_id": id,
-                    "scale_name": scale_name,
-                    "scale_type": scale_type,
-                    "total_no_of_buttons": total_no_of_items,
-                    "no_of_instances": no_of_instances,
-                    "urls": urls
-                }
+                    api_response_data = {
+                        "scale_id": scale_id,
+                        "scale_name": scale_name,
+                        "scale_type": scale_type,
+                        "total_no_of_buttons": total_no_of_items,
+                        "urls": urls
+                    }
 
-                return Response(
-                    {"success": True, "message": "settings fetched successfully", "settings": api_response_data},
-                    status=status.HTTP_200_OK)
+                    return Response(
+                        {"success": True, "message": "settings fetched successfully", "scale_data": api_response_data},
+                        status=status.HTTP_200_OK)
+                else:
+                    return Response("Scale not found", status=status.HTTP_404_NOT_FOUND)
+                
+            elif 'workspace_id' in request.GET:
+                workspace_id = request.GET.get('workspace_id')
+
+                response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"workspace_id":workspace_id}, 10000, 0, False))
+            
+                if response_data['data']:
+                    response = response_data['data'][0]
+                    print(response)
+                    settings = response["settings"]
+                    return Response(
+                        {"success": True, "message": "settings fetched successfully", "scale_data": response_data['data']},
+                        status=status.HTTP_200_OK)
+                else:
+                    return Response("No scales found in the requested workspace", status=status.HTTP_404_NOT_FOUND)
             else:
-                return Response("Scale not found", status=status.HTTP_404_NOT_FOUND)
+                return Response("scale_id or workspace_id required", status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
             print(e)
             return Response(f"Unexpected error occured while fetching your data", status=status.HTTP_400_BAD_REQUEST)
         
-    def update(self, request):
-        return("resource updated")
 
 
 @api_view(['POST', 'GET', 'PUT'])
@@ -315,7 +331,6 @@ def create_scale_response(request):
                     "instance_name":instance_name
                 })
                 
-                # responses =datacube_db_response(api_key=api_key, payload=existing_data, operation="insert")
                 responses = json.loads(datacube_data_insertion(api_key, "livinglab_scale_response", "collection_1", existing_data))
                 response_id = responses['data']['inserted_id']
                 

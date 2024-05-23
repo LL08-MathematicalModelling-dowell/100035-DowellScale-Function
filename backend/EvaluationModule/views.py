@@ -1,9 +1,7 @@
 from datetime import datetime
-
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.core.cache import cache
-
 from api.views import find_category
 from .calculate_function import *
 from .normality import *
@@ -13,7 +11,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 """
-This module takes random number, attaches it to the product name and doc_no and first saves that data with 
+This module takes random number, attaches it to the product name and doc_no and first saves that data with
 Evaluation API with process id as the process id is the random number. It then uses the same random number to
 process the Normality API and get the responses of both the APIs, and finally renders the data to the template.
 """
@@ -212,8 +210,8 @@ def by_username_api(request, username, scale_category):
         scale_category = 'npslite scale'
     user_details = dowellconnection("dowellscale", "bangalore", "dowellscale", "users", "users", "1098",
                                     "ABCDE", "fetch", {"username": username}, "nil")
-    
-    
+
+
     user_dets = json.loads(user_details)
     print("user_dets" , user_dets)
     # print(user_dets)
@@ -252,10 +250,10 @@ def Target_API(request):
     # get all response from this API payload
 
     """
-    Fetching scales reports based on date_range they were created. 
-    
+    Fetching scales reports based on date_range they were created.
+
     """
-    
+
     period = request.data.get("period")
 
     if not period:
@@ -274,7 +272,7 @@ def Target_API(request):
             'period': period,
             "time_type_in_db" : 'iso'
         }
-    
+
     if period.lower().strip() =="custom":
         start_date = request.data.get("start_date")
         end_date = request.data.get("end_date")
@@ -282,27 +280,27 @@ def Target_API(request):
         if not (start_date and end_date):
             return Response({"isSuccess" : True , "error_message" : "start_date or end_date parameters not sent"} ,
                             status = status.HTTP_400_BAD_REQUEST)
-        
+
         DATE_REGEX = r"\d{1,5}[-/]\d{1,3}[-/]\d{1,5}"
 
         import re
-        
+
         if not (re.search(DATE_REGEX , start_date) and re.search(DATE_REGEX, end_date)):
             return Response({"isSuccess" : True , "error_message" : "start_date or end_date are not in date formats"} ,
                             status = status.HTTP_400_BAD_REQUEST)
-        
+
         time_input["start_point"] = start_date
         time_input["end_point"] = end_date
-        
+
 
     distribution_input={
             'normal': 1,
-            
+
         }
-    
+
     target_api_request = {
         "database_details" : database_details,
-        "time_input" : time_input, 
+        "time_input" : time_input,
         "distribution_input" : distribution_input,
     }
 
@@ -318,9 +316,9 @@ def Target_API(request):
     # Make a GET request to the original API with the payload
     response = requests.post("http://100032.pythonanywhere.com/api/targeted_population/",
                               json=target_api_request , headers={"content-type" : "application/json"})
-    
-   
-    
+
+
+
 
 
     # print(f"response: {response.json()}...")
@@ -341,10 +339,10 @@ def Target_API(request):
         try:
             settings = response_data['data'][0]['settings']
             date_created = settings['date_created']
-            start_date = "2019/01/08"  
-            end_date = "2023/01/25"  
-            period = "life_time"  
-            
+            start_date = "2019/01/08"
+            end_date = "2023/01/25"
+            period = "life_time"
+
             if period == "life_time":
                 # Use date_created as the start_date and current date as the end_date
                 start_date = datetime.datetime.strptime(date_created, "%Y-%m-%d %H:%M:%S")
@@ -354,13 +352,13 @@ def Target_API(request):
                 current_date = datetime.datetime.now()
                 end_date = datetime.datetime(current_date.year, current_date.month, 1) - datetime.timedelta(days=1)
                 start_date = datetime.datetime(end_date.year, end_date.month, 1)
-            
+
             # Print the date range
             print("Start Date:", start_date)
             print("End Date:", end_date)
         except:
             pass
-    
+
     x = dowellconnection("dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                          "1094", "ABCDE", "fetch")
     print(f"x: {x}...")
@@ -526,6 +524,7 @@ def statistics(scores, process_id):
     print(f"\n\nscores: {scores}\n\nprocess_id: {process_id}..\n\n")
     try:
         stattrics = stattricks_api("evaluation_module", process_id, 16, 3, {"list1": scores})
+        print("++++++++",stattrics)
     except Exception as e:
         print(f"\n\nException: {e}\n\n")
         stattrics = {}
@@ -570,6 +569,7 @@ def evaluation_api(request):
                 return Response({"error": "Please provide a process_id in the request body for 'process' report type"},
                                 status=status.HTTP_400_BAD_REQUEST)
         elif report_type == "document":
+            print("+++++++++++++++new docwise report+++++++++++++++")
             document_id = response_data.get("document_id")
             process_id = response_data.get("process_id")
             if not document_id or not process_id:
@@ -579,11 +579,11 @@ def evaluation_api(request):
         elif report_type == "scale":
             template_id = response_data.get("template_id")
             type_of_element = response_data.get("type_of_element")
-            element = response_data.get("element")
+            element_id = response_data.get("element_id")
             process_id = response_data.get("process_id")
-            if not template_id or not type_of_element or not element or not process_id:
+            if not template_id or not type_of_element or not element_id or not process_id:
                 return Response({
-                    "error": "Please provide 'template_id', 'type_of_element', 'element', and 'process_id' in the request body for 'scale' report type"},
+                    "error": "Please provide 'template_id', 'type_of_element', 'element_id', and 'process_id' in the request body for 'scale' report type"},
                     status=status.HTTP_400_BAD_REQUEST)
 
         print("\n\n\nresponse_data", response_data)
@@ -600,12 +600,14 @@ def evaluation_api(request):
             return Response({"error": "Not enough scores found for the given info."}, status=status.HTTP_403_FORBIDDEN)
 
         response_ = categorize_scale_generate_scale_specific_report(scale_type, scores)
+        print("response----->",response_)
         process_id = f'{process_id}{report_type}'
         normality, stattrics = statistics(scores, process_id)
         print("\n\n\nnormality: ", normality)
         print("\n\n\nstattrics: ", stattrics)
         response_["normality_analysis"] = normality
         response_["central_tendencies"] = stattrics
+        print("RES",response_)
         return Response({"success": response_}, status=status.HTTP_200_OK)
 
     except IndexError as e:
@@ -651,21 +653,21 @@ def get_brand_product(request):
             "nil"
         )
 
-    return Response({"success": data_future.result()}, status=status.HTTP_200_OK)    
+    return Response({"success": data_future.result()}, status=status.HTTP_200_OK)
 @api_view(["GET" ,])
 def scalewise_report(request , scale_id):
     """
     The view function that returns statiscal reports about a particular scale
 
     User provides the scale_id as a path parameter. The same scale_id is used as process id for the normality
-    API. 
+    API.
     """
     process_id = scale_id
 
     allowed_scale_types = ["nps scale"]
 
-    reports = {}        
-        
+    reports = {}
+
     field_add = {"scale_data.scale_id": scale_id}
     random_number = generate_random_number()
 
@@ -676,22 +678,22 @@ def scalewise_report(request , scale_id):
                 "dowellscale", "bangalore", "dowellscale", "scale_reports", "scale_reports",
                                         "1094", "ABCDE", "fetch", field_add, "nil"
             )
-            
+
             normal_api_executor = executor.submit(Normality_api , process_id
                                             )
 
-            result= json.loads(data_future.result())    
-            
+            result= json.loads(data_future.result())
+
             normality = normal_api_executor.result()
 
     except:
         return Response({"isSuccess" : True , "message" : "Error fetching fetching scores"} , status = status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-    
-    try:     
-        
+
+
+    try:
+
         normality_result = normality
-        
+
     except Exception as error:
         pass
 
@@ -706,18 +708,18 @@ def scalewise_report(request , scale_id):
 
         if not scale_data:
             return Response({"isSuccess" : True , "message" : "No scale data found"} , status = status.HTTP_400_BAD_REQUEST)
-        
+
         if not scale_data.get("scale_type" , None):
             return Response({"isSuccess" : True , "message" : "No scale_type found"} , status = status.HTTP_400_BAD_REQUEST)
-        
+
 
         scale_type = scale_data.get("scale_type")
 
         if scale_type not in allowed_scale_types:
             return  Response({"isSuccess" : True , "message" : "Can only generate report for nps scale only"} , status = status.HTTP_400_BAD_REQUEST)
 
-            
-        for x in result["data"]: 
+
+        for x in result["data"]:
             score = x.get("score", None)
             if not score:
                 continue
@@ -740,19 +742,18 @@ def scalewise_report(request , scale_id):
 
     except:
         pass
-        
+
     with ThreadPoolExecutor() as executor:
         response_json_future = executor.submit(stattricks_api, "evaluation_module", random_number, 16, 3,
                                                {"list1": all_scores})
         statricks_api_response_json = response_json_future.result()
-        
-        
+
+
     poison_case_results = statricks_api_response_json.get("poison case results", {})
     normal_case_results = statricks_api_response_json.get("normal case results", {})
-    
-    reports["poisson_case_results"] = poison_case_results 
+
+    reports["poisson_case_results"] = poison_case_results
     reports["normal_case_results"]= normal_case_results
-        
+
     return Response({"report" : reports} , status=status.HTTP_200_OK)
-    
-    
+
