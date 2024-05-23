@@ -35,7 +35,9 @@ export default function App() {
 `;
   }else{
     return `
+    import {useState} from "react"
     export default function App() {
+      const[loading,setLoading]=useState(-1)
       return (
        <div className="w-full flex flex-col justify-center items-center ">
        <p className="flex justify-center items-center font-sans font-medium p-3 mt-5 text-base">
@@ -46,10 +48,29 @@ export default function App() {
                             ${ratings.map((score, index) => `
                             <button
                               key="${index}"
-                              onClick={() => window.location.href = "${buttonLinks[index]}"}
-                              className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded md:px-4 bg-[#00a3ff] text-white"
-                            >
-                              ${score}
+                              onClick={() =>{ window.location.href = "${buttonLinks[index]}"
+                            setLoading(${index})}}
+                              className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded md:px-4 cursor-pointer bg-[#00a3ff] text-white"
+                           disabled={loading==${index}}
+                              >
+                              {loading==${index}?(
+                                <>
+                               
+                                <div className="flex h-full w-full items-center justify-center">
+                                <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
+                                  <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                  </svg>
+                                 
+                                </button>
+                              </div>
+
+                                </>
+                              ):(
+                                ${score}
+                              )}
+                             
                             </button>
                           `).join('')}
                         </div>
