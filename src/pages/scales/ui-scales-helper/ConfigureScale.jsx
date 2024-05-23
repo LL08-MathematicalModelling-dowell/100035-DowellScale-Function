@@ -2,7 +2,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 import { useState } from "react";
 
-export default function ConfigureScale({formData,setFormData}){
+export default function ConfigureScale({formData,setFormData,scale,setConfirmScale,setStep}){
     const[numErr,setNumErr]=useState(false)
 const[nameErr,setNameErr]=useState(false)
 const[channelErr,setChannelErr]=useState(-1)
@@ -134,6 +134,48 @@ function deleteChannel(index){
 }
 
 
+function handleNext(){
+    let error=false
+    if(formData.scaleName.length<3){
+        setNameErr(true)
+        error=true
+    }
+
+    if(formData.numResponses<25 || formData.numResponses>10000){
+        setNumErr(true)
+        error=true
+        
+    }
+
+    formData.channels.map((channel, index) => {
+
+        if (channel.channelName.length === 0) {
+            setRequiredChannel(index);
+            error=true
+        }
+    });
+
+
+    formData.channels.map((channel, index) => {
+        channel.instances.map((instance, idx) => {
+            if (instance.length === 0) {
+                setRequiredInstance({index, idx});
+                error=true
+            }
+        });
+    });
+
+
+
+    if(error)
+        return
+    else if(scale!=="LIKERT SCALE")
+    setConfirmScale(true)
+    else
+    setStep((prev)=>prev+1)
+
+}
+
 
     return(
         <>
@@ -237,7 +279,7 @@ function deleteChannel(index){
          <button className="flex  justify-center items-center lg:ml-5  gap-2 bg-[#0D99FF] rounded p-2  w-[70%]"
          onClick={addChannel}
          >Add Channel <CiCirclePlus/></button>
-         
+           <button className="bg-green-600 p-2 px-20 rounded " onClick={()=>handleNext()}>Next</button>
        
         </div>
         </div>

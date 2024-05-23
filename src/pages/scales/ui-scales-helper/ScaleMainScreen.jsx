@@ -57,7 +57,10 @@ const[formData,setFormData]=useState({
     rightColor: "#E5E7E8",
     centerColor: "#E5E7E8",
     scaleColor:"#E5E7E8",
-    scaleBackGroundColor:"#E5E7E8"
+    scaleBackGroundColor:"#E5E7E8",
+    scaleText:[],
+    likertPointers:"5 Point Scale",
+    pointersText:[]
 })
 
 useEffect(() => {
@@ -94,48 +97,6 @@ const navigateTo = useNavigate();
        
     }
 console.log(confirmed)
-
-function handleNext(){
-    let error=false
-    if(formData.scaleName.length<3){
-        setNameErr(true)
-        error=true
-    }
-
-    if(formData.numResponses<25 || formData.numResponses>10000){
-        setNumErr(true)
-        error=true
-        
-    }
-
-    formData.channels.map((channel, index) => {
-
-        if (channel.channelName.length === 0) {
-            setRequiredChannel(index);
-            error=true
-        }
-    });
-
-
-    formData.channels.map((channel, index) => {
-        channel.instances.map((instance, idx) => {
-            if (instance.length === 0) {
-                setRequiredInstance({index, idx});
-                error=true
-            }
-        });
-    });
-
-
-
-    if(error)
-        return
-    else if(textContent.scale!=="LIKERT SCALE")
-    setConfirmScale(true)
-    else
-    setStep((prev)=>prev+1)
-
-}
 
 
 
@@ -328,22 +289,15 @@ return (
                      
                             </div>
                             {step == 1 && (
-                            <ConfigureScale formData={formData} setFormData={setFormData} setConfirmScale={setConfirmScale} />
+                            <ConfigureScale formData={formData} setFormData={setFormData} setConfirmScale={setConfirmScale} scale={textContent.scale} setStep={setStep}/>
                             )} 
                             {step==2 && (
-                                <CustomizeScale formData={formData} setFormData={setFormData} setStep={setStep}/>
+                                <CustomizeScale formData={formData} setFormData={setFormData} setStep={setStep} />
                             )}
                             {step==3 && (
-                                <PreviewScale formData={formData} setStep={setStep}/>
+                                <PreviewScale formData={formData} setStep={setStep} scale={textContent.scale} setConfirmScale={setConfirmScale}/>
                             )}
-                             <div className="w-full flex justify-center items-center gap-5 mt-5" >
-                             {step>1 && (
-                                    <button className="bg-gray-400 p-2 px-20 rounded " onClick={()=>setStep((prev)=>prev-1)}>Previous</button>
-                              )}
-                             
-                              <button className="bg-green-600 p-2 px-20 rounded " onClick={()=>handleNext()}>Next</button>
-                         
-                              </div>
+                           
                      </>
                      )}
                             

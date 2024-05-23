@@ -19,7 +19,7 @@ console.log(value)
         
           }}
         >
-          {name !== "fontSize" && <option value="">-- select {txt} --</option>}
+          {name !== "fontSize" && <option value="">-- Select {txt} --</option>}
           {options.map((opt, i) => (
             <option key={i} value={opt}>
               {opt}

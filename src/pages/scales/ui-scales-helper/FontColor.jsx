@@ -2,7 +2,7 @@ export default function FontColor({name,text,formData,handleChange}){
     const value = formData && formData[name] ? formData[name] : "#000000";
    
     return(
-        <div className="flex flex-col gap-5 mb-3">
+        <div className="flex flex-col gap-5 mb-[10px]">
                     <label htmlFor={name} className="font-medium">{text}</label>
                     <input 
                     label={text}
