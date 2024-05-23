@@ -1,18 +1,29 @@
 
-import copyNpxLiteData from "../../../utils/npxLiteCopyToClipboard";
+import reactCode from "../../../utils/reactCode";
 import { PiGlobeHemisphereWestFill } from "react-icons/pi";
 import { MdEmail } from "react-icons/md";
 import { HiMiniCube } from "react-icons/hi2";
 import {useState} from "react"
-import emailNpxLiteCopy from "../../../utils/emailNpxLite";
+import emailCode from "../../../utils/emailCode";
 import ProductScreen from "./ProductScreen";
 import ScaleOutputScreen from "./ScaleOutputScreen";
 
 export default function ScaleSharingScreen({setFinished,buttonLinks,text}){
+    let ratings;
+    if (text.includes("LITE")) {
+        ratings=["Bad","Average", "Excellent"]
+    } else if (text.includes("STAPEL")) {
+        ratings=[-5,-4,-3,-2,-1,1,2,3,4,5]
+    } else if (text.includes("LIKERT")) {
+        ratings=["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+    } else {
+        ratings=[0,1,2,3,4,5,6,7,8,9,10]
+    }
+   
     console.log(buttonLinks)
     const[showData,setShowData]=useState("")
-    const websiteCodeToCopy=copyNpxLiteData(buttonLinks)
-    const emailCodeToCopy=emailNpxLiteCopy(buttonLinks)
+    const websiteCodeToCopy=reactCode(buttonLinks,ratings)
+    const emailCodeToCopy=emailCode(buttonLinks,ratings)
     return(
         <>
         <div className="flex flex-col justify-center items-center bg-[#E8E8E8] rounded-lg  w-[70%] flex-wrap  p-5  relative" 
@@ -27,14 +38,15 @@ export default function ScaleSharingScreen({setFinished,buttonLinks,text}){
                         onClick={()=>{setShowData("product")}}><span className="hidden md:block"><HiMiniCube/></span> Product</button>
                     </div>
                     {showData=="website" && (
-                       <ScaleOutputScreen codeToCopy={websiteCodeToCopy} buttonLinks={buttonLinks}/>
+                       <ScaleOutputScreen codeToCopy={websiteCodeToCopy} buttonLinks={buttonLinks} ratings={ratings}/>
                     )}
                     {showData=="email" && (
-                       <ScaleOutputScreen codeToCopy={emailCodeToCopy} buttonLinks={buttonLinks}/>
+                       <ScaleOutputScreen codeToCopy={emailCodeToCopy} buttonLinks={buttonLinks} ratings={ratings}/>
                     )}
                   
                   {showData=="product" && (
-                       <ProductScreen codeToCopy={websiteCodeToCopy} buttonLinks={buttonLinks}/>
+                     <ScaleOutputScreen codeToCopy={websiteCodeToCopy} buttonLinks={buttonLinks} ratings={ratings}/>
+                    //    <ProductScreen codeToCopy={websiteCodeToCopy} buttonLinks={buttonLinks}/>
                     )}
                             
              

@@ -200,36 +200,35 @@ return (
                             <p className="text-[14px]">{textContent.scaleDescription}</p>
                         </div>
                         <p className="flex justify-center items-center font-sans p-3 mt-5 text-changes">{textContent.experiencePrompt}</p>
-                       {textContent.experience.length==3 && (
+                       {textContent.experience.length==3 ? (
                         <div className="flex justify-center items-center gap-12 mt-5">
                             <button className="bg-[#ff4a4a] rounded button-changes">{textContent.experience[0]}</button>
                             <button className="bg-[#f3dd1f] rounded button-changes">{textContent.experience[1]}</button>
                             <button className="bg-[#129561] rounded button-changes">{textContent.experience[2]}</button>
                         </div>  
+                       ):(
+                        <div className="w-full flex flex-col justify-center items-center">
+                        <div className="w-max flex flex-col">
+                            <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max">
+                                {textContent.experience.map((score, index)=>(
+                                <button
+                                key={index}
+                                    className=" text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2  sm:px-3 rounded  md:px-4 bg-[#00a3ff] text-white "   
+                                    >
+                                    {score}
+                                    </button>
+                                ))}
+                        </div>
+                        <div className="w-full flex p-2 justify-between items-center text-[12px] sm:text-[14px] ">
+                                <p>Bad</p>
+                                <p>Average</p>
+                                <p>Excellent</p>
+                        </div>
+                    </div>
+                </div>
                        )}
-                        {textContent.experience.length==11 && (
-                            <div className="w-full flex flex-col justify-center items-center">
-                                <div className="w-max flex flex-col">
-                       <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max">
-                        {textContent.experience.map((score, index)=>(
-                        <button
-                        key={index}
-                            onClick={() => handleSelectScore(score)}
-                            className=" text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2  sm:px-3 rounded  md:px-4 bg-[#00a3ff] text-white "   
-                            >
-                            {score}
-                            </button>
-                         ))}
-                        </div>
-                       <div className="w-full flex p-2 justify-between items-center text-[12px] sm:text-[14px] ">
-                             <p>Bad</p>
-                             <p>Average</p>
-                             <p>Excellent</p>
-                       </div>
-                        </div>
-                        </div>
-                    )}
-                     {textContent.experience.length==10 && (
+                        
+                     {/* {textContent.experience.length==10 && (
                        <div className="w-full flex justify-center items-center gap-5">
                         {textContent.experience.map((score, index)=>(
                         <button
@@ -261,7 +260,7 @@ return (
                     }} className="button-changes">{score}</button>
                     ))}
                     </div>
-                )}
+                )} */}
                     </div>
 
                     <div className="mt-14 pt-10 bg-[#E8E8E8] rounded-lg h-max w-[80%] div-changes">

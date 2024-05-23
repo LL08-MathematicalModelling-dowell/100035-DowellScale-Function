@@ -1,4 +1,4 @@
-export default function emailNpxLiteCopy(buttonLinks){
+export default function emailCode(buttonLinks){
 return `
 <!DOCTYPE html>
 <html lang="en">

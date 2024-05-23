@@ -2,22 +2,12 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdContentCopy } from "react-icons/md";
 import { PiFileCsvDuotone } from "react-icons/pi";
 import {useState} from "react"
-export default function ScaleOutputScreen({codeToCopy,buttonLinks}){
+export default function ScaleOutputScreen({codeToCopy,buttonLinks,ratings}){
 
     const[showOptions,setShowOptions]=useState(false)
     const[isCopied,setIsCopied]=useState(false)
     const[showCopyIcon,setShowCopyIcon]=useState(-1)
-    let ratings;
-    if(buttonLinks.length==3=="Bad"){
-       ratings=["Bad","Average", "Excellent"]
-    }else if(buttonLinks.length==11){
-        ratings=[0,1,2,3,4,5,6,7,8,9,10]
-    }else if(buttonLinks.length==10){
-      ratings=[-5,-4,-3,-2,-1,1,2,3,4,5]
-    }else{
-      ratings=["😞 Strongly Disagree", "😔 Disagree", "😔 Neutral", "😄 Agree", "😁 Strongly Agree"]
-    }
-   
+  
 
     const copyToClipboard = (data) => {
        
@@ -50,7 +40,8 @@ export default function ScaleOutputScreen({codeToCopy,buttonLinks}){
                   {isCopied && <p className="absolute text-[#00a3ff]  top-[16%] right-[2%]">Copied!</p>}
                     </div>
                      <p className=" p-2 mt-5">Use the button links to add them to your scale</p>
-            <table className="w-[95%]  flex flex-col flex-wrap divide-y divide-gray-200 bg-gray-50 overflow-auto mt-5  relative
+                     <div className="flex w-full justify-center items-center">
+            <table className="w-max  flex flex-col flex-wrap divide-y divide-gray-200 bg-gray-50 overflow-auto mt-5  relative
             md:text-[12px] text-[8px]" >
             <thead>
                 <tr>
@@ -72,11 +63,11 @@ export default function ScaleOutputScreen({codeToCopy,buttonLinks}){
         >
           <td className="px-6 py-2">{ratings[index]}</td>
           <td className="px-6 py-2">
-            <div className="relative overflow-auto">
+            <div className="relative overflow-auto max-w-md">
               <div className="text-[#00a3ff] truncate">{link}</div>
               {showCopyIcon === index && (
                 <MdContentCopy
-                  className="absolute left-[17%] lg:left-[27%] xl:left-[40%] top-1/2 transform -translate-y-1/2 cursor-pointer text-black"
+                  className="absolute right-[90%] sm:right-[25%] md:right-[10%] lg::right-[0%] top-1/2 transform -translate-y-1/2 cursor-pointer text-black"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent triggering the row click
                     copyToClipboard(link);
@@ -111,6 +102,7 @@ export default function ScaleOutputScreen({codeToCopy,buttonLinks}){
             <button className="absolute top-[84%] right-[5%] text-[14px]"><MdContentCopy /></button>
         )} */}
         </table>
+        </div>
       
 </div>
     </>
