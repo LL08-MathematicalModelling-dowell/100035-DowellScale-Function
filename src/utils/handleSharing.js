@@ -1,8 +1,8 @@
 export default async function handleSharing(formData,setButtonLinks,setButtonLinksGenerated,scaleType) {
   let axis_limit=scaleType=="stapel"?5:0
-  let pointers=scaleType=="likert"?5:0
+//   let pointers=scaleType=="likert"?5:0
 
-console.log(scaleType,axis_limit,pointers)
+console.log(scaleType,axis_limit,formData.likertPointers[0])
     try {
         let { channels } = formData;
         let channelInstanceList = [];
@@ -41,7 +41,7 @@ console.log(scaleType,axis_limit,pointers)
                 "user_type": true,
                 "no_of_responses":100000,
                "axis_limit":axis_limit,
-               "pointers":pointers || 0
+               "pointers":Number(formData.likertPointers[0]) || 0
             }
             )
         };

@@ -279,7 +279,7 @@ function handleNext(){
          <button className="flex  justify-center items-center lg:ml-5  gap-2 bg-[#0D99FF] rounded p-2  w-[70%]"
          onClick={addChannel}
          >Add Channel <CiCirclePlus/></button>
-           <button className="bg-green-600 p-2 px-20 rounded " onClick={()=>handleNext()}>Next</button>
+           <button className="bg-green-600 p-2 px-20 rounded " onClick={()=>handleNext()}>Confirm</button>
        
         </div>
         </div>

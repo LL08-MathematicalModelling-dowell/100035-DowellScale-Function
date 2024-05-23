@@ -8,7 +8,7 @@ import emailCode from "../../../utils/emailCode";
 import ProductScreen from "./ProductScreen";
 import ScaleOutputScreen from "./ScaleOutputScreen";
 
-export default function ScaleSharingScreen({setFinished,buttonLinks,text}){
+export default function ScaleSharingScreen({setFinished,buttonLinks,text,formData}){
     let ratings;
     if (text.includes("LITE")) {
         ratings=["Bad","Average", "Excellent"]
@@ -22,7 +22,11 @@ export default function ScaleSharingScreen({setFinished,buttonLinks,text}){
    
     console.log(buttonLinks)
     const[showData,setShowData]=useState("")
-    const websiteCodeToCopy=reactCode(buttonLinks,ratings)
+    let websiteCodeToCopy
+    if(text.includes("LIKERT"))
+     websiteCodeToCopy=reactCode(buttonLinks,formData.pointersText,formData)
+    else
+    websiteCodeToCopy=reactCode(buttonLinks,ratings,formData)
     const emailCodeToCopy=emailCode(buttonLinks,ratings)
     return(
         <>
@@ -37,9 +41,20 @@ export default function ScaleSharingScreen({setFinished,buttonLinks,text}){
                         <button  className={`${showData=="product"? "bg-[#129561]" :"bg-[#00a3ff]" } flex justify-center items-center gap-2  px-2 p-1 lg:px-8 rounded `}
                         onClick={()=>{setShowData("product")}}><span className="hidden md:block"><HiMiniCube/></span> Product</button>
                     </div>
-                    {showData=="website" && (
+                    {text.includes("LIKERT") ? (
+                       <>
+                       {showData=="website" && (
+                       <ScaleOutputScreen codeToCopy={websiteCodeToCopy} buttonLinks={buttonLinks} ratings={formData.pointersText}/>
+                    )}
+                       </>
+                    ):(
+                        <>
+                        {showData=="website" && (
                        <ScaleOutputScreen codeToCopy={websiteCodeToCopy} buttonLinks={buttonLinks} ratings={ratings}/>
                     )}
+                        </>
+                    )}
+                    
                     {showData=="email" && (
                        <ScaleOutputScreen codeToCopy={emailCodeToCopy} buttonLinks={buttonLinks} ratings={ratings}/>
                     )}

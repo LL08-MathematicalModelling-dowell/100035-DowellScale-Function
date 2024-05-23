@@ -264,9 +264,7 @@ return (
                              {step == 1 && (
                                  <ConfigureScale formData={formData} setFormData={setFormData} setConfirmScale={setConfirmScale} />
                              )}
-                             <div className="w-full flex justify-center items-center">
-                              <button className="bg-green-600 p-2 px-20 rounded mt-5 " onClick={()=>handleNext()}>Confirm</button>
-                              </div>
+                            
                              </>
                             ):(
                             <>     
@@ -308,7 +306,7 @@ return (
                     </div>
                 </>
             ) : (
-                <ScaleSharingScreen setFinished={setFinished} buttonLinks={buttonLinks} text={sharingText}/>
+                <ScaleSharingScreen setFinished={setFinished} buttonLinks={buttonLinks} text={sharingText} formData={formData}/>
             )}
 
             {goBack && (

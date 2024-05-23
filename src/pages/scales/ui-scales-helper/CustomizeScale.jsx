@@ -147,23 +147,31 @@ export default function CustomizeScale({formData,setFormData,setStep}){
                     {empty.timer && <p className="text-xs text-red-600 p-1">**required</p>}
                  </div> */}
                 {formData.likertPointers && (
-                    < div className="flex flex-col gap-4">
-                    <div className="grid grid-cols-3  gap-6 justify-center">
+                    <div className="max-w-screen-md mx-auto">
+                    <div className="flex flex-col gap-4 w-full">
+                      <div className="flex flex-wrap gap-6 justify-start">
                         {Array.from({ length: formData.likertPointers[0] }).map((_, index) => (
-                            <div className="flex flex-col gap-2 justify-center">
-                            <label htmlFor={`pointersText${index}`}
-                                className="font-medium "
-                            >Scale Pointer {index+1}</label>
-                          <input type="text" name={`pointersText${index}`} placeholder="Enter text value" value={formData.pointersText[index]} className="p-2 font-light  w-[280px]"
-                          onChange={(e)=>handleChange(e.target.name,e.target.value)}/>
+                          <div key={index} className="flex flex-col gap-2 justify-center  w-1/2 md:w-1/4 ">
+                            <label htmlFor={`pointersText${index}`} className="font-medium">
+                              Scale Pointer {index + 1}
+                            </label>
+                            <input
+                              type="text"
+                              name={`pointersText${index}`}
+                              placeholder="Enter text value"
+                              value={formData.pointersText[index]}
+                              className="p-2 font-light w-full"
+                              onChange={(e) => handleChange(e.target.name, e.target.value)}
+                            />
                           </div>
                         ))}
-                        
-                    </div>
-                    {empty.textError && (
+                      </div>
+                      {empty.textError && (
                         <p className="text-xs text-red-600 p-1">Please fill all the fields of scale text</p>
-                    )}
+                      )}
                     </div>
+                  </div>
+                  
                 )}
                   <div className="w-full flex justify-center items-center gap-5 mt-5" >        
                         <button className="bg-gray-400 p-2 px-20 rounded " onClick={()=>setStep((prev)=>prev-1)}>Previous</button>

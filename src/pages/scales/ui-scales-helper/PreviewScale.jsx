@@ -53,7 +53,7 @@ export default function PreviewScale({formData,setStep,scale,setConfirmScale}){
                 fontSize:Number(formData.fontSize)
             }}>{formData.rightText}</button> */}
             {Array.from({ length: formData.likertPointers[0] }).map((_, index) => (
-                             <button  className=" text-[12px] md:text-[14px] py-[8px] px-[2px] sm:p-1  sm:px-2 rounded md:p-2 md:px-4  " 
+                             <button  className="py-[8px] px-[2px] sm:p-1  sm:px-2 rounded md:p-2 md:px-4  " 
                              style={{
                                backgroundColor:formData.scaleColor,
                                fontFamily: formData.fontStyle,
