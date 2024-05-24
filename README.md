@@ -72,3 +72,42 @@
    - Example:
 
    - Documentation: https://documenter.getpostman.com/view/21255221/2s9YJjQyfX
+
+
+
+
+**#Sending Emails for Npx Lite Scale**
+
+
+
+
+
+## Demo
+
+Step-1 :-Follow this link and install the extension 
+https://chromewebstore.google.com/detail/ioinaaeeacahcmbgfmeaaofhfkijpdeb
+
+![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/127480764/540dd15f-bf41-44f0-a67b-a9638bc8aca0)
+
+
+Step-2 :-Open your Gmail and signup for the extension (there will be a pop for signup)
+
+Step-3 :-
+![emailextension](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/127480764/a30f9031-2b3b-4dbe-a1bb-c6bf2ac74c83)
+
+Click on the red highlited icon,it will open the editor like below
+
+
+![Screenshot 2024-05-15 201231](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/127480764/64a9fc57-8d90-46ac-bda2-08726d02b9e8)
+
+Click on the source and paste the code (remove the content which is already present)
+
+![image](https://github.com/LL08-MathematicalModelling-dowell/100035-DowellScale-Function/assets/127480764/56e6e60f-910a-4d9d-97da-803d5125e85b)
+
+Now you can see the buttons,click on the close editor on top left.
+
+Add the remaining email content as per the requirement.
+
+Note:-The content inside the button and text that is visible can be editable directly based on your requirements.
+
+
