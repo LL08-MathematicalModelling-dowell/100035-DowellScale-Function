@@ -34,8 +34,7 @@ export default function PreviewScale({formData,setStep,scale,setConfirmScale}){
                 fontSize:Number(formData.fontSize)
             }}>{formData.rightText}</button> */}
             {Array.from({ length: formData.likertPointers[0] }).map((_, index) => (
-                             <button  className="py-[8px] px-[2px] sm:p-1  rounded xl:p-2 md:px-2 
-                          " 
+                             <button  className={`py-[8px] px-[2px] sm:p-1  rounded xl:p-2 md:px-2 ${formData.orientation=="Horizontal" ?"w-max" : "w-full"} `}
                              style={{
                                backgroundColor:formData.scaleColor,
                                fontFamily: formData.fontStyle,

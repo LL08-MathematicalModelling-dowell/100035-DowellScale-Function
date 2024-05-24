@@ -46,7 +46,7 @@ else if(typeof ratings[0]!="number"){
      How was your experience using our product? Please rate your experience below.
    </p>
                       <div className="w-max flex flex-col">
-                          <div className={"${formData.orientation=="Vertical" ? "flex flex-col gap-5" : "flex xl:gap-10"}  p-1 py-2 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max justify-center items-center gap-1 sm:gap-3"}
+                          <div className={"${formData.orientation=="Vertical" ? "flex flex-col gap-5" : "flex "}  p-1 py-2 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max justify-center items-center gap-1 sm:gap-3"}
                           style={{ backgroundColor:"${formData.scaleBackGroundColor}"}}>
                          
                           ${ratings.map((score, index) => `

@@ -27,7 +27,7 @@ export default function ScaleSharingScreen({setFinished,buttonLinks,text,formDat
      websiteCodeToCopy=reactCode(buttonLinks,formData.pointersText,formData)
     else
     websiteCodeToCopy=reactCode(buttonLinks,ratings,formData)
-    const emailCodeToCopy=emailCode(buttonLinks,ratings)
+    const emailCodeToCopy=emailCode(buttonLinks,ratings,formData)
     return(
         <>
         <div className="flex flex-col justify-center items-center bg-[#E8E8E8] rounded-lg  w-[70%] flex-wrap  p-5  relative" 

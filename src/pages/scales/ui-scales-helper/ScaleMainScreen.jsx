@@ -77,6 +77,7 @@ const navigateTo = useNavigate();
     function handleCancel(){
         setGoBack(false)
         setFinished(false)
+        setConfirmScale(false)
     }
 
     function handleConfirm(text){//nmeed to know the details
