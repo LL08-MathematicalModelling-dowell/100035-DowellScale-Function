@@ -2,12 +2,38 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdContentCopy } from "react-icons/md";
 import { PiFileCsvDuotone } from "react-icons/pi";
 import {useState} from "react"
+import {CSVLink} from "react-csv"
 export default function ScaleOutputScreen({codeToCopy,buttonLinks,ratings}){
 
     const[showOptions,setShowOptions]=useState(false)
     const[isCopied,setIsCopied]=useState(false)
     const[showCopyIcon,setShowCopyIcon]=useState(-1)
-  
+    const csvArray = [];
+
+   
+    buttonLinks.forEach((link, index) => {  
+        const obj = {
+            rating: ratings[index],
+            buttonLink: link
+        };
+        csvArray.push(obj);
+    });
+
+    const headers=[
+      {
+        label:"Data", key:"rating"
+      },
+      {
+        label:"Link", key:"buttonLink"
+      }
+      
+    ]
+console.log(csvArray)
+    const csvLink={
+      filename:"buttonLinks.csv",
+      headers,
+      data:csvArray
+    }
 
     const copyToClipboard = (data) => {
        
@@ -89,7 +115,7 @@ export default function ScaleOutputScreen({codeToCopy,buttonLinks,ratings}){
             setShowOptions(false)
         }}><MdContentCopy/> Copy all links</button>
         <div className=" h-[1px] w-full  bg-gray-600 "></div> {/* Line */}
-        <button className="flex justify-center items-center gap-2 text-[12px]"><PiFileCsvDuotone/> Generate a .csv file</button>
+        <CSVLink {...csvLink} className="flex justify-center items-center gap-2 text-[12px]"><PiFileCsvDuotone/> Generate a .csv file</CSVLink>
         </div>
     )}
       {/* {showCopyIcon==0 && (
