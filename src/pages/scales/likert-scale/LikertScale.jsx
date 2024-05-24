@@ -128,7 +128,7 @@ export default function LikertScale(){
         scaleEg: "LIKERT SCALE eg.",
         scaleDescription: "This is how a likert scale would look.",
         experiencePrompt: "How was your experience using our product? Please rate your experience below.",
-        experience:["😞 Strongly Disagree", "😔 Disagree", "😔 Neutral", "😄 Agree", "😁 Strongly Agree"],
+        experience:["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"],
         configureYourScale: "Configure your scale",
         confirmationScalePrompt: "You won't be able to edit the scale once you confirm it. Are you sure you want to confirm the scale?",
         goBackPrompt: {

@@ -9,6 +9,8 @@ import ConfirmationScale from "./ScaleConfirmation";
 import { useSearchParams } from 'react-router-dom';
 import ConfigureScale from "./ConfigureScale";
 import ScaleSharingScreen from "./ScaleSharingScreen";
+import CustomizeScale from "./CustomizeScale";
+import PreviewScale from "./PreviewScale";
 
 
 export default function ScaleMainScreen({textContent}){
@@ -54,6 +56,11 @@ const[formData,setFormData]=useState({
     leftColor: "#E5E7E8",
     rightColor: "#E5E7E8",
     centerColor: "#E5E7E8",
+    scaleColor:"#E5E7E8",
+    scaleBackGroundColor:"#E5E7E8",
+    scaleText:[],
+    likertPointers:"5 Point Scale",
+    pointersText:[]
 })
 
 useEffect(() => {
@@ -70,6 +77,7 @@ const navigateTo = useNavigate();
     function handleCancel(){
         setGoBack(false)
         setFinished(false)
+        setConfirmScale(false)
     }
 
     function handleConfirm(text){//nmeed to know the details
@@ -90,8 +98,6 @@ const navigateTo = useNavigate();
        
     }
 console.log(confirmed)
-
-
 
 
 
@@ -194,95 +200,114 @@ return (
                         `}
                     </style>
 
-                    <div className="mt-5 bg-[#E8E8E8] rounded-lg h-max w-[80%] div-changes">
+                    <div className="mt-5 bg-[#E8E8E8] rounded-lg h-max w-[90%] sm:w-[80%] div-changes">
                         <div className="flex flex-col justify-start items-start">
                             <p className="font-medium">{textContent.scaleEg}</p>
                             <p className="text-[14px]">{textContent.scaleDescription}</p>
                         </div>
                         <p className="flex justify-center items-center font-sans p-3 mt-5 text-changes">{textContent.experiencePrompt}</p>
-                       {textContent.experience.length==3 && (
+                       {textContent.experience[0]=="Bad" ? (
                         <div className="flex justify-center items-center gap-12 mt-5">
                             <button className="bg-[#ff4a4a] rounded button-changes">{textContent.experience[0]}</button>
                             <button className="bg-[#f3dd1f] rounded button-changes">{textContent.experience[1]}</button>
                             <button className="bg-[#129561] rounded button-changes">{textContent.experience[2]}</button>
                         </div>  
+                       ):(
+                        
+                        <div className="w-full flex flex-col justify-center items-center">
+                            {typeof textContent.experience[0]=="number" ?(
+                                  <div className="w-max flex flex-col">
+                                  <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max">
+                                      {textContent.experience.map((score, index)=>(
+                                      <button
+                                      key={index}
+                                          className=" text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2  sm:px-3 rounded  md:px-4 bg-[#00a3ff] text-white "   
+                                          >
+                                          {score}
+                                          </button>
+                                      ))}
+                              </div>
+                              <div className="w-full flex p-2 justify-between items-center text-[12px] sm:text-[14px] ">
+                                      <p>Bad</p>
+                                      <p>Average</p>
+                                      <p>Excellent</p>
+                              </div>
+                          </div>
+                            ):(
+                                  <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-1 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max">
+                                      {textContent.experience.map((score, index)=>(
+                                      <button
+                                      key={index}
+                                          className=" text-[12px] md:text-[14px] py-[8px] px-[2px] sm:p-1  sm:px-2 rounded md:p-2 md:px-4 bg-[#00a3ff] text-white "   
+                                          >
+                                          {score}
+                                          </button>
+                                      ))}
+                              </div>
+                             
+                            )}
+                      
+                </div>
                        )}
-                        {textContent.experience.length==11 && (
-                            <div className="w-full flex flex-col justify-center items-center">
-                                <div className="w-max flex flex-col">
-                       <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max">
-                        {textContent.experience.map((score, index)=>(
-                        <button
-                        key={index}
-                            onClick={() => handleSelectScore(score)}
-                            className=" text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2  sm:px-3 rounded  md:px-4 bg-[#00a3ff] text-white "   
-                            >
-                            {score}
-                            </button>
-                         ))}
-                        </div>
-                       <div className="w-full flex p-2 justify-between items-center text-[12px] sm:text-[14px] ">
-                             <p>Bad</p>
-                             <p>Average</p>
-                             <p>Excellent</p>
-                       </div>
-                        </div>
-                        </div>
-                    )}
-                     {textContent.experience.length==10 && (
-                       <div className="w-full flex justify-center items-center gap-5">
-                        {textContent.experience.map((score, index)=>(
-                        <button
-                        key={index}
-                            onClick={() => handleSelectScore(score)}
-                            className={`rounded-lg ${
-                
-                          'bg-primary text-white'
-                            }  h-[2rem] w-[2rem] md:h-[3rem] md:w-[3rem]`}
-                            >
-                            {score}
-                            </button>
-                         ))}
-                        </div>
-                    )}
-                     {textContent.experience.length==5 && (
-                       <div className="w-full flex justify-center items-center gap-5">
-                         
-            {textContent.experience.map((score, index)=>(
-                     <button key={index} style={{
-                        fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
-                        backgroundColor:  "hsl(120, 70%, 60%)",
-                        fontWeight: 500,
-                        border: "none",
-                        padding:"5px",
-                        borderRadius: '30px',
-                        cursor: 'pointer',
-                        margin: '5px',
-                    }} className="button-changes">{score}</button>
-                    ))}
-                    </div>
-                )}
+                        
                     </div>
 
-                    <div className="mt-14 pt-10 bg-[#E8E8E8] rounded-lg h-max w-[80%] div-changes">
+                    <div className="mt-14 pt-10 bg-[#E8E8E8] rounded-lg h-max w-[90%] sm:w-[80%] div-changes">
                         {!confirmed ? (
                             <>
-                                <div className="flex justify-center items-center">
-                                    <div className="flex flex-col justify-center items-center">
-                                        <p className="w-max text-[24px] font-bold text-orange-600">{textContent.configureYourScale}</p>
-                                    </div>
+                            {textContent.scale!=="LIKERT SCALE" ? (
+                                <>
+                                 <div className="flex justify-center items-center">
+                                 <div className="flex flex-col justify-center items-center">
+                                     <p className="w-max text-[24px] font-bold text-orange-600">{textContent.configureYourScale}</p>
+                                 </div>
+                             </div>
+                             {step == 1 && (
+                                 <ConfigureScale formData={formData} setFormData={setFormData} setConfirmScale={setConfirmScale} />
+                             )}
+                            
+                             </>
+                            ):(
+                            <>     
+                             <div className="flex justify-center items-center">
+                                <div className="flex flex-col justify-center items-center gap-2">
+                            
+                                    <p className={` bg-green-500  rounded-full text-[14px] xl:text-[18px] w-max p-1 px-3 xl:p-2 xl:px-4`}>1</p>
+                                    <p className="w-max text-[14px] md:text-[18px] md:font-medium mt-2 xl:font-bold flex gap-2">Configure <span className="hidden xl:block">your scale</span> </p>
                                 </div>
-                                {step == 1 && (
-                                    <ConfigureScale formData={formData} setFormData={setFormData} setConfirmScale={setConfirmScale} />
-                                )}
-                            </>
+                                <div className={`h-[6px] w-[200px] ${step>1 ?"bg-green-500" :"bg-gray-400"} rounded-lg mt-5 m-3`}></div>
+                                <div className="flex flex-col justify-center items-center gap-2">
+                                    <p className={` ${step>1 ?"bg-green-500" :"bg-gray-400 "} rounded-full text-[14px] xl:text-[18px] w-max p-1 px-3 xl:p-2 xl:px-4`}>2</p>
+                                    <p className="w-max  text-[14px] md:text-[18px] md:font-medium mt-2 xl:font-bold flex gap-2">Customize <span className="hidden xl:block">your scale</span></p>
+                                </div>
+                                <div className={`h-[6px] w-[200px] ${step>2 ?"bg-green-500" :"bg-gray-400"} rounded-lg mt-5 m-3`}></div>
+                                <div className="flex flex-col justify-center items-center gap-2">
+                                    <p className={` ${step>2 ?"bg-green-500" :"bg-gray-400 "}  rounded-full text-[14px] xl:text-[18px] w-max p-1 px-3 xl:p-2 xl:px-4`}>3</p>
+                                    <p className="w-max  text-[14px] md:text-[18px] md:font-medium mt-2 xl:font-bold flex gap-2">Preview <span className="hidden xl:block">your scale</span></p>
+                                </div>
+                     
+                            </div>
+                            {step == 1 && (
+                            <ConfigureScale formData={formData} setFormData={setFormData} setConfirmScale={setConfirmScale} scale={textContent.scale} setStep={setStep}/>
+                            )} 
+                            {step==2 && (
+                                <CustomizeScale formData={formData} setFormData={setFormData} setStep={setStep} />
+                            )}
+                            {step==3 && (
+                                <PreviewScale formData={formData} setStep={setStep} scale={textContent.scale} setConfirmScale={setConfirmScale}/>
+                            )}
+                           
+                     </>
+                     )}
+                            
+                    </>
                         ) : (
                             <ConfirmationScale formData={formData} setButtonLinks={setButtonLinks} setButtonLinksGenerated={setButtonLinksGenerated} text={confirmText}/>
                         )}
                     </div>
                 </>
             ) : (
-                <ScaleSharingScreen setFinished={setFinished} buttonLinks={buttonLinks} text={sharingText}/>
+                <ScaleSharingScreen setFinished={setFinished} buttonLinks={buttonLinks} text={sharingText} formData={formData}/>
             )}
 
             {goBack && (
