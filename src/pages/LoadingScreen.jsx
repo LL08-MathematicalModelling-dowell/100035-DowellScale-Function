@@ -11,7 +11,7 @@ const LoadingScreen = () => {
     const intervalId = setInterval(() => {
       const nextIndex = (index + 1) % letters.length; // Cyclic increment
       setIndex(nextIndex);
-    }, 1000); // Adjust interval for desired speed
+    }, 100); // Adjust interval for desired speed
 
     return () => clearInterval(intervalId);
   }, [index, letters.length]);
