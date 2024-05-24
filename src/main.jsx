@@ -63,7 +63,7 @@ import {
 import {
   Report,
   ScaleReportSettings,
-    } from './pages/scales/scale-report';
+} from './pages/scales/report';
 
 import {
   BtnLinksNpsLiteScale,
