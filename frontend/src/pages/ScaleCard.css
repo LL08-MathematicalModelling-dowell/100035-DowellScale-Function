@@ -1,8 +1,45 @@
 .card {
+    width: 200px;
+    height: 200px;
     background: #b2dbbf;
+    box-sizing: 0 15px 10px #777;
+    font-size: 20px;
+    color: black;
+    margin: 20px;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-out;
+}
+
+.scaleImage {
+    width: 100px; 
+    height: 100px; 
+    object-fit: cover;
+    border-radius: 10%;
+    background: black
 }
 
 .card:hover {
     transform: translateY(5px) scale(1.005) translateZ(0);
     background: #0079E3;
+    /* width: 200px;
+    height: 200px; */
+            /* // background: '#b2dbbf',
+    /* webkit-box-shadow: 0 10px 6px -6px #777; */
+            /* // border:"6px solid black", */
+  }
+
+  @media only screen and (max-width: 850px){
+    .card {
+        width: 140px;
+        height: 140px;
+    }
+    .scaleImage {
+        width: 50px;
+        height: 50px;
+    }
   }

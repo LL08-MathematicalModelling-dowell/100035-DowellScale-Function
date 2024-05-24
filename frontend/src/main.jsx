@@ -6,6 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 
 import Home from './pages/Home.jsx';
+import Report from './pages/ScaleReport/Report.jsx';
 import {
   RankingScale,
   CreateRankingScale,
@@ -107,6 +108,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/home`,
         element: <Home />,
+      },
+      {
+        path: `${basePath}/myscales`,
+        element: <Report />,
       },
       {
         path: `${basePath}/home/generate-report/:slug`,

@@ -24,6 +24,7 @@ console.log(sessionStorage.getItem("session_id"))
     console.log(useFetchUserContext())
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  const [screenWidth, setScreenWidth] = useState(screen.width)
 
   useEffect(() => {
     function handleResize() {
@@ -108,7 +109,11 @@ console.log(sessionStorage.getItem("session_id"))
   
   const [userInfo, setUserInfo] = useState()
 
-  const screenWidth = screen.width
+  // const screenWidth = screen.width
+
+  const between = (x, min, max) => {
+    return x >= min && x <= max;
+  }
 
   const getUserInfo = async () => {
     // setLoadingFetchUserInfo(true);
@@ -131,22 +136,27 @@ console.log(sessionStorage.getItem("session_id"))
       });
   };
 
+  window.onresize = function(){
+    setScreenWidth(screen.width)
+    }
+
   useEffect(() => {
   
     getUserInfo();
     // setLoggedIn(true);
   }, []);
-console.log(BtnLink, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
+console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="w-4/5" style={{position: 'relative', left: rSize || screenWidth <= 600 ? '10%': '19%', backgroundColor: 'red'}}>
+    <div className="w-4/5 ml-[10%] mt-10 mr-[10%] lg:ml-[25%]">
        {/* <div className='sidebar' > */}
        {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}
-      <div>
-        <h1></h1>
+      <div className=''>
+        <h3 className='mb-4 font-bold' style={{fontFamily: 'Roboto', fontSize:'16px', lineHeight: '18.75px', }}>DoWell Scales offers different types of scales for your business</h3>
+        <p className='font-normal' style={{fontFamily: 'Roboto', fontSize:'12px', lineHeight: '14.06px'}}>Select the type of scale you want to create</p>
       </div>
-      <div className="" style={{ filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'center', backgroundColor:'white'}}>
+      <div className="" style={{filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'flex-start', backgroundColor:'white'}}>
         {scaleTypes.map((scale, index) => (
           <ScaleCard scaleName={scale.name} 
           description={scale.description}
