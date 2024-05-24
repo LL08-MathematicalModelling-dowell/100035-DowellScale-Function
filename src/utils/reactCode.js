@@ -46,7 +46,7 @@ else if(typeof ratings[0]!="number"){
      How was your experience using our product? Please rate your experience below.
    </p>
                       <div className="w-max flex flex-col">
-                          <div className={"${formData.orientation=="Vertical" ? "flex flex-col gap-5" : "flex gap-10"}  p-1 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max"}
+                          <div className={"${formData.orientation=="Vertical" ? "flex flex-col gap-5" : "flex xl:gap-10"}  p-1 py-2 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max justify-center items-center gap-1 sm:gap-3"}
                           style={{ backgroundColor:"${formData.scaleBackGroundColor}"}}>
                          
                           ${ratings.map((score, index) => `
@@ -54,13 +54,14 @@ else if(typeof ratings[0]!="number"){
                             key="${index}"
                             onClick={() =>{ window.location.href = "${buttonLinks[index]}"
                           setLoading(${index})}}
-                            className="  py-[2px] px-[6px] sm:p-2 sm:px-3 rounded md:px-4 cursor-pointer "
+                            className=" rounded md:px-4 cursor-pointer 
+                            text-[12px] md:text-[14px] py-[8px] px-[2px] sm:p-1  sm:px-2  md:p-2 "
                          disabled={loading==${index}}
                          style={{
                           backgroundColor:"${formData.scaleColor}",
                           fontFamily:" ${formData.fontStyle}",
                           color: "${formData.fontColor}",
-                          fontSize:"${Number(formData.fontSize)}"
+                          fontSize:window.innerWidth >= 500 ?"${Number(formData.fontSize)}px":"12px"
                       }}  
                          >
                             {loading==${index}?(

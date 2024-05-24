@@ -269,20 +269,20 @@ return (
                             ):(
                             <>     
                              <div className="flex justify-center items-center">
-                                <div className="flex flex-col justify-center items-center">
+                                <div className="flex flex-col justify-center items-center gap-2">
                             
-                                    <p className={` bg-green-500  rounded-full text-[18px] w-max p-2 px-4`}>1</p>
-                                    <p className="w-max  p-2 font-bold">Configure your scale</p>
+                                    <p className={` bg-green-500  rounded-full text-[14px] xl:text-[18px] w-max p-1 px-3 xl:p-2 xl:px-4`}>1</p>
+                                    <p className="w-max text-[14px] md:text-[18px] md:font-medium mt-2 xl:font-bold flex gap-2">Configure <span className="hidden xl:block">your scale</span> </p>
                                 </div>
                                 <div className={`h-[6px] w-[200px] ${step>1 ?"bg-green-500" :"bg-gray-400"} rounded-lg mt-5 m-3`}></div>
-                                <div className="flex flex-col justify-center items-center">
-                                    <p className={` ${step>1 ?"bg-green-500" :"bg-gray-400 "} rounded-full text-[18px] w-max p-2 px-4`}>2</p>
-                                    <p className="w-max  p-2 font-bold">Customize your scale</p>
+                                <div className="flex flex-col justify-center items-center gap-2">
+                                    <p className={` ${step>1 ?"bg-green-500" :"bg-gray-400 "} rounded-full text-[14px] xl:text-[18px] w-max p-1 px-3 xl:p-2 xl:px-4`}>2</p>
+                                    <p className="w-max  text-[14px] md:text-[18px] md:font-medium mt-2 xl:font-bold flex gap-2">Customize <span className="hidden xl:block">your scale</span></p>
                                 </div>
                                 <div className={`h-[6px] w-[200px] ${step>2 ?"bg-green-500" :"bg-gray-400"} rounded-lg mt-5 m-3`}></div>
-                                <div className="flex flex-col justify-center items-center">
-                                    <p className={` ${step>2 ?"bg-green-500" :"bg-gray-400 "} text-[18px] rounded-full p-2 px-4 w-max`}>3</p>
-                                    <p className="w-max  p-2 font-bold">Preview your scale</p>
+                                <div className="flex flex-col justify-center items-center gap-2">
+                                    <p className={` ${step>2 ?"bg-green-500" :"bg-gray-400 "}  rounded-full text-[14px] xl:text-[18px] w-max p-1 px-3 xl:p-2 xl:px-4`}>3</p>
+                                    <p className="w-max  text-[14px] md:text-[18px] md:font-medium mt-2 xl:font-bold flex gap-2">Preview <span className="hidden xl:block">your scale</span></p>
                                 </div>
                      
                             </div>

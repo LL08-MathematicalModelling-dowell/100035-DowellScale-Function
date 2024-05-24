@@ -27,10 +27,10 @@ export default function ScaleOutputScreen({codeToCopy,buttonLinks,ratings}){
         <>
     
  
-     <div className="flex flex-col justify-center items-start font-normal mt-5 flex-wrap w-[100%]">
+     <div className="flex flex-col justify-center items-start  mt-5 flex-wrap w-[100%]">
                     <p className=" p-2 mb-5 ">Copy the source code of your scale and integrate it on your website</p>
                     <div className="h-[300px] w-[95%] bg-white overflow-auto p-2 text-[12px] relative">
-                        <pre  style={{ fontFamily: 'Roboto, sans-serif' }} className="text-[14px]">
+                        <pre  style={{ fontFamily: 'Roboto, sans-serif' }} className="text-[12px] md:text-[14px]">
                        {codeToCopy}
                        </pre>
                       <button className="flex justify-center text-[12px] text-white bg-[#606060] p-1 items-center gap-2 absolute top-[2%] right-[2%]"
