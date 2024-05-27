@@ -148,7 +148,7 @@ console.log(sessionStorage.getItem("session_id"))
 console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="w-4/5 ml-[10%] mt-10 mr-[10%] lg:ml-[25%]">
+    <div className="w-4/5 ml-[10%] mt-10 mr-[10%] lg:ml-[23.5%]">
        {/* <div className='sidebar' > */}
        {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}

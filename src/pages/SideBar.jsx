@@ -13,10 +13,11 @@ import { LiaCloudscale } from "react-icons/lia";
 import { AiOutlineMenuUnfold } from "react-icons/ai";
 import { useNavigate } from 'react-router';
 import { useFetchUserContext } from "../contexts/fetchUserContext";
+import ScaleMainScreen from './scales/ui-scales-helper/ScaleMainScreen';
 
 const SideBar = () => {
 
-  const { rSize, setRSize, newScaleBtn, setNewScaleBtn, myScalesBtn, setMyScalesBtn } = useFetchUserContext();
+  const { rSize, setRSize, newScaleBtn, setNewScaleBtn, myScalesBtn, setMyScalesBtn, scaleIndex } = useFetchUserContext();
   
   const [searchParams] = useSearchParams();
   const [userInfo, setUserInfo] = useState()
@@ -25,6 +26,7 @@ const SideBar = () => {
   const [modalInfo,setModalInfo] = useState()
   const [reduceSize, setReduceSize] = useState(false)
   const [showData, setshowData] = useState("")
+  const [popup, setPopUp] = useState(false)
 
   const navigateTo = useNavigate();
   const getUserInfo = async () => {
@@ -56,7 +58,7 @@ const SideBar = () => {
   }, [searchParams]);
 
   const screenWidth = screen.width
-
+  
   const handleMyScales = () =>{
     setMyScalesBtn(true)
     setNewScaleBtn(false)
@@ -71,8 +73,21 @@ const SideBar = () => {
   const handleHome = () =>{
     setMyScalesBtn(false)
     setNewScaleBtn(true)
-    navigateTo(`/100035-DowellScale-Function/home?session_id=${sessionId}`)
+    if(scaleIndex < 0 && scaleIndex > 9){
+      
+    }else {
+      setPopUp(true)
+    }
   }
+
+  function handleCancel(){
+    setPopUp(false)
+}
+
+const handleConfirm = () =>{
+  navigateTo(`/100035-DowellScale-Function/home?session_id=${sessionId}`)
+  setPopUp(false)
+}
   
 
   const handlePageChange = () => {
@@ -140,6 +155,14 @@ const SideBar = () => {
        <button style={{display: reduceSize ? 'none' : 'block'}}>My scales</button>
       </div>
      </div>
+     {popup &&<div className='fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-[420px] h-max p-5 bg-white rounded-lg' style={{ fontFamily: 'Roboto, sans-serif', zIndex:'999'}}>
+      <p className="font-bold">Are you sure?</p>
+      <p className="mt-3">Changes made so far will not be saved. Do you really want to cancel the process and go back?</p>
+      <div className="flex gap-8 justify-center items-center mt-3">
+        <button className="p-2 md:px-8 bg-[#129561] rounded" onClick={handleCancel}>No</button>
+        <button className="p-2 md:px-8 bg-[#ff4a4a] rounded" onClick={handleConfirm}>Yes</button>
+      </div>
+      </div>}
     </div>
   )
 }
