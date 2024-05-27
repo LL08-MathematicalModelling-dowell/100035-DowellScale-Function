@@ -9,7 +9,7 @@
 // import Fallback from '../../../components/Fallback';
 // import { Button } from '../../../components/button';
 
-import ScaleMainScreen from "../ui-scales-helper/ScaleMainScreen";
+import ScaleMainScreen from "../ui-scales-helper/mainscreen/ScaleMainScreen";
 
 // const LikertScale = () => {
 

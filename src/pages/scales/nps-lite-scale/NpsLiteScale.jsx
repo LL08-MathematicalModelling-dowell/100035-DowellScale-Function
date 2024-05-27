@@ -91,7 +91,7 @@
 // export default NpsLiteScale
 
 
-import ScaleMainScreen from "../ui-scales-helper/ScaleMainScreen";
+import ScaleMainScreen from "../ui-scales-helper/mainscreen/ScaleMainScreen";
 
 
 export default function NpsLiteScale(){
