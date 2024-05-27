@@ -27,31 +27,6 @@ const SideBar = () => {
   const [reduceSize, setReduceSize] = useState(false)
   const [showData, setshowData] = useState("")
   const [popup, setPopUp] = useState(false)
-  
-  const textContent = {
-    scale: "NPS SCALE",
-    scaleEg: "NPS SCALE eg.",
-    scaleDescription: "This is how a nps  scale would look.",
-    experiencePrompt: "How was your experience using our product? Please rate your experience below.",
-    experience:[0,1,2,3,4,5,6,7,8,9,10],
-    configureYourScale: "Configure your scale",
-    confirmationScalePrompt: "You won't be able to edit the scale once you confirm it. Are you sure you want to confirm the scale?",
-    goBackPrompt: {
-        header: "Are you sure?",
-        text1: "Changes made so far will not be saved. Do you really",
-        text2: "want to cancel the process and go back?"
-    },
-    confirmScalePrompt: {
-        header: "Confirm scale",
-        text1: "You won't be able to edit the scale once you confirm",
-        text2: "it. Are you sure you want to confirm the scale?"
-    },
-    finishSharingPrompt: {
-        header: "Are you sure?",
-        text1: "You want to finish up sharing the scale and go back",
-        text2: "to my scales page?"
-    }
-};
 
   const navigateTo = useNavigate();
   const getUserInfo = async () => {
@@ -98,7 +73,9 @@ const SideBar = () => {
   const handleHome = () =>{
     setMyScalesBtn(false)
     setNewScaleBtn(true)
-    if(scaleIndex !== 0){
+    if(scaleIndex < 0 && scaleIndex > 9){
+      
+    }else {
       setPopUp(true)
     }
   }
@@ -178,7 +155,7 @@ const handleConfirm = () =>{
        <button style={{display: reduceSize ? 'none' : 'block'}}>My scales</button>
       </div>
      </div>
-     {<div className='fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-[420px] h-max p-5 bg-white rounded-lg' style={{ fontFamily: 'Roboto, sans-serif', zIndex:'999'}}>
+     {popup &&<div className='fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-[420px] h-max p-5 bg-white rounded-lg' style={{ fontFamily: 'Roboto, sans-serif', zIndex:'999'}}>
       <p className="font-bold">Are you sure?</p>
       <p className="mt-3">Changes made so far will not be saved. Do you really want to cancel the process and go back?</p>
       <div className="flex gap-8 justify-center items-center mt-3">
