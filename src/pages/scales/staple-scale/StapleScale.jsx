@@ -90,7 +90,7 @@
 
 // export default StapleScale
 
-import ScaleMainScreen from "../ui-scales-helper/mainscreen/ScaleMainScreen";
+import ScaleMainScreen from "../ui-scales-helper/ScaleMainScreen";
 
 export default function StapleScale(){
     const textContent = {

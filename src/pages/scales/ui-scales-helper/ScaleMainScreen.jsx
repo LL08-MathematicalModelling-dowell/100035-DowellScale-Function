@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router';
 import { FaArrowCircleLeft } from "react-icons/fa";
 
 
-import ConfirmationScale from "../ScaleConfirmation";
+import ConfirmationScale from "./ScaleConfirmation";
 import { useSearchParams } from 'react-router-dom';
-import ConfigureScale from "../ConfigureScale";
-import ScaleSharingScreen from "../ScaleSharingScreen";
-import CustomizeScale from "../CustomizeScale";
-import PreviewScale from "../PreviewScale";
+import ConfigureScale from "./ConfigureScale";
+import ScaleSharingScreen from "./ScaleSharingScreen";
+import CustomizeScale from "./CustomizeScale";
+import PreviewScale from "./PreviewScale";
 
 
 export default function ScaleMainScreen({textContent}){
@@ -137,7 +137,7 @@ return (
                             <p className="text-[14px]">{textContent.scaleDescription}</p>
                         </div>
                         <p className="flex justify-center items-center font-sans p-3 mt-5 text-changes">{textContent.experiencePrompt}</p>
-                       {textContent.experience[0].includes("Bad") ? (
+                       {typeof textContent.experience[0]=="string" && textContent.experience[0].includes("Bad") ? (
                         <div className="flex justify-center items-center gap-3 sm:gap-12 mt-5">
                             <button className="bg-[#ff4a4a] rounded sm:px-5 lg:px-10 p-2 text-[12px] sm:text-[16px]">{textContent.experience[0]}</button>
                             <button className="bg-[#f3dd1f] rounded sm:px-5 lg:px-10 p-2 text-[12px] sm:text-[16px]">{textContent.experience[1]}</button>
