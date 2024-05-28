@@ -148,15 +148,15 @@ console.log(sessionStorage.getItem("session_id"))
 console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
 
   return (
-    <div className="w-4/5 ml-[10%] mt-10 mr-[10%] lg:ml-[23.5%]">
+    <div className="w-[100%] ml-[1%] mt-10 mr-[1%] lg:ml-[24.5%] xl:ml-[19.5%]">
        {/* <div className='sidebar' > */}
        {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}
       <div className=''>
-        <h3 className='mb-4 font-bold' style={{fontFamily: 'Roboto', fontSize:'16px', lineHeight: '18.75px', }}>DoWell Scales offers different types of scales for your business</h3>
-        <p className='font-normal' style={{fontFamily: 'Roboto', fontSize:'12px', lineHeight: '14.06px'}}>Select the type of scale you want to create</p>
+        <h3 className='mb-4 font-bold' style={{fontFamily: 'Roboto, sans-serif', fontSize:'16px', lineHeight: '18.75px', }}>DoWell Scales offers different types of scales for your business</h3>
+        <p className='font-normal' style={{fontFamily: 'Roboto, sans-serif', fontSize:'12px', lineHeight: '14.06px'}}>Select the type of scale you want to create</p>
       </div>
-      <div className="" style={{filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'flex-start', backgroundColor:'white'}}>
+      <div className="" style={{width: '100%',filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'flex-start', backgroundColor:'white'}}>
         {scaleTypes.map((scale, index) => (
           <ScaleCard scaleName={scale.name} 
           description={scale.description}
