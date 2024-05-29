@@ -21,8 +21,8 @@ class ScaleCreateAPI(APIView):
         scale_range = settings["scale_range"]
         
         for idx in scale_range:
-            url = f"{public_url}/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
-            # url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
+            # url = f"{public_url}/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
+            url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
             urls.append(url)
         return urls
 
@@ -50,8 +50,13 @@ class ScaleCreateAPI(APIView):
 
     def adjust_scale_range(self, payload):
         print("Inside adjust_scale_range function")
-        scale_type = payload['scale_type']
-        total_no_of_items = int(payload['total_no_of_items'])
+        settings = payload["settings"]
+        scale_type = settings['scale_type']
+        print(f"Scale type: {scale_type}")
+        
+        total_no_of_items = int(settings['total_no_of_items'])
+        print(f"Total number of items: {total_no_of_items}")
+        print("++++++++++++++")
         if "pointers" in payload:
             pointers = payload['pointers']
         if "axis_limit" in payload:
@@ -79,15 +84,19 @@ class ScaleCreateAPI(APIView):
             raise ValueError("Unsupported scale type")
 
     def scale_type(self, scale_type, payload):
+        print("inside scale type")
+        print(payload)
+        settings = payload["settings"]
+        
         if scale_type == "nps":
             no_of_items = 11
         elif scale_type == "nps lite":
             no_of_items = 3
         elif scale_type == "likert":
-            pointers = payload['pointers']
+            pointers = settings['pointers']
             no_of_items = pointers
         elif scale_type == "stapel":
-            axis_limit = payload["axis_limit"]
+            axis_limit = settings["axis_limit"]
             no_of_items = 2 * axis_limit
             print(no_of_items)
         else:
@@ -116,27 +125,31 @@ class ScaleCreateAPI(APIView):
                         validated_instance_details = instance_serializer.validated_data
                        
                    
-            payload = {
+            payload = {"settings":{
                         "scale_type": scale_type,
                         "channel_instance_list": channel_instance_list
-                    }
+                        }
+            }
+            settings = payload["settings"]
+            print(settings)
            
             if scale_type == "likert":
                 pointers = scale_serializer.validated_data.get('pointers')
                 if pointers is not None:
-                    payload['pointers'] = pointers
+                    settings['pointers'] = pointers
                 else:
                     return Response("Missing field for likert", status=status.HTTP_400_BAD_REQUEST)
 
             if scale_type == "stapel":
                 axis_limit = scale_serializer.validated_data.get('axis_limit')
                 if axis_limit is not None:
-                    payload['axis_limit'] = axis_limit
+                    settings['axis_limit'] = axis_limit
                 else:
                     return Response("Missing field for stapel", status=status.HTTP_400_BAD_REQUEST)
-
+            print("???????????????",payload)
             total_no_of_items = self.scale_type(scale_type, payload)
-            payload["total_no_of_items"] = total_no_of_items
+            settings["total_no_of_items"] = total_no_of_items
+            print("???????????????",payload)
            
             scale_range = self.adjust_scale_range(payload)
             print("Scale range",scale_range)
@@ -251,6 +264,35 @@ class ScaleCreateAPI(APIView):
 def error_response(request, message, status):
     return Response(message, status=status)
 
+def calcualte_learning_index(score, group_size):
+    print(score,group_size)
+    learner_catergory = {
+                         "reading":0,
+                         "understanding":0,
+                         "explaining":0,
+                         "evaluating":0,
+                         "applying":0
+                    }
+            
+    if 0 <= score <= 2:
+        learner_catergory["reading"] += 1
+    elif 3 <= score <= 4:
+        learner_catergory["understanding"] += 1
+    elif 5 <= score <= 6:
+        learner_catergory["explaining"] += 1
+    elif 7 <= score <= 8:
+        learner_catergory["evaluating"] += 1
+    elif 9 <= score <= 10:
+        learner_catergory["applying"] += 1
+
+    percentages = {}
+    for key, value in learner_catergory.items():
+        percentages[key] = (value / group_size) * 100
+
+    LLx = (percentages["evaluating"]+percentages["applying"]) / (percentages["reading"]+percentages["understanding"])
+
+    return learner_catergory, percentages, LLx
+
 
 @api_view(['GET'])
 def create_scale_response(request):
@@ -287,10 +329,12 @@ def create_scale_response(request):
                     category = "passive"
                 elif 9 <= item <=10:
                     category = "promoter"
+
                 else:
                     return Response({"success":"false",
                                     "message":"Invalid value for score"},
                                     status=status.HTTP_400_BAD_REQUEST)
+                
             else:
                 category = "N/A"
         
@@ -323,13 +367,31 @@ def create_scale_response(request):
                 event_id = get_event_id()
                 created_time = dowell_time("Asia/Calcutta")
 
+                learner_catergory, percentages, LLx = calcualte_learning_index(item,current_response_count)
+                print("ho gaya")
+
+                if 0 <= LLx <=1:
+                    learning_stage = "learning"
+                else:
+                    learning_stage = "applying in context" 
+
+                learning_index_data = {
+                                    "control_group_size":len(data),
+                                    "learning_level_count":learner_catergory,
+                                    "learning_level_percentages":percentages,
+                                    "learning_level_index":LLx,
+                                    "learning_stage":learning_stage
+                                    }
+
                 existing_data.update({
                     "event_id":event_id,
                     "dowell_time":created_time,
                     "current_response_count": current_response_count,
                     "channel_name":channel_name,
-                    "instance_name":instance_name
+                    "instance_name":instance_name,
+                    "learning_index_data":learning_index_data
                 })
+                
                 
                 responses = json.loads(datacube_data_insertion(api_key, "livinglab_scale_response", "collection_1", existing_data))
                 response_id = responses['data']['inserted_id']
@@ -361,35 +423,7 @@ def create_scale_response(request):
     else:
         return Response("Method not allowed")
     
-def calcualte_learning_index(score_list):
-    group_size = len(score_list)
-    learner_catergory = {
-                         "reading":0,
-                         "understanding":0,
-                         "explaining":0,
-                         "evaluating":0,
-                         "applying":0
-                    }
-            
-    for score in score_list:
-        if 0 <= score <= 2:
-            learner_catergory["reading"] += 1
-        elif 3 <= score <= 4:
-            learner_catergory["understanding"] += 1
-        elif 5 <= score <= 6:
-            learner_catergory["explaining"] += 1
-        elif 7 <= score <= 8:
-            learner_catergory["evaluating"] += 1
-        elif 9 <= score <= 10:
-            learner_catergory["applying"] += 1
 
-    percentages = {}
-    for key, value in learner_catergory.items():
-        percentages[key] = (value / group_size) * 100
-
-    LLx = (percentages["evaluating"]+percentages["applying"]) / (percentages["reading"]+percentages["understanding"])
-
-    return percentages, LLx
     
     
 @api_view(['GET'])
@@ -421,25 +455,18 @@ def learning_index_report(request):
             fields = {"scale_id":scale_id}
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
             data = response_data['data']
-            scores = [ response["score"] for response in data]
-    
-            percentages, LLx = calcualte_learning_index(scores)
-
-            if 0 <= LLx <=1:
-                learning_stage = "learning"
-            else:
-                learning_stage = "applying in context" 
-    
+            
+            data ={
+                    "response_id":data["_id"],
+                    "score":data["score"],
+                     "category":data["category"],
+                     "learning_index_data": data["learning_index_data"],
+                     "date_created":data.get("dowell_time", {}).get("current_time")
+                    } 
             return Response({"success":"true",
                              "message":"fetched the data",
-                             "total_no_of_responses": len(data),
-                             "data":data,
-                             "learning_index_data": {
-                                "control_group_size":len(data),
-                                "learning_level_percentages":percentages,
-                                "learning_level_index":LLx,
-                                "learning_stage":learning_stage
-                                }
+                             "control_group_size": len(data),
+                             "data":data
                              }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(e)
