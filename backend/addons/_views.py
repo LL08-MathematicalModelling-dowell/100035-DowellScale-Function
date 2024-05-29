@@ -266,32 +266,48 @@ def error_response(request, message, status):
 
 def calcualte_learning_index(score, group_size):
     print(score,group_size)
-    learner_catergory = {
+
+    learner_category = {
                          "reading":0,
                          "understanding":0,
                          "explaining":0,
                          "evaluating":0,
                          "applying":0
-                    }
+                }
             
-    if 0 <= score <= 2:
-        learner_catergory["reading"] += 1
-    elif 3 <= score <= 4:
-        learner_catergory["understanding"] += 1
-    elif 5 <= score <= 6:
-        learner_catergory["explaining"] += 1
-    elif 7 <= score <= 8:
-        learner_catergory["evaluating"] += 1
-    elif 9 <= score <= 10:
-        learner_catergory["applying"] += 1
+    score_ranges = {
+                    (0, 2): "reading",
+                    (3, 4): "understanding",
+                    (5, 6): "explaining",
+                    (7, 8): "evaluating",
+                    (9, 10): "applying"
+                }
 
-    percentages = {}
-    for key, value in learner_catergory.items():
-        percentages[key] = (value / group_size) * 100
+    # Determine the learner category for the given score
+    for range_tuple, category in score_ranges.items():
+        if range_tuple[0] <= score <= range_tuple[1]:
+            learner_category[category] += 1
+            break
 
-    LLx = (percentages["evaluating"]+percentages["applying"]) / (percentages["reading"]+percentages["understanding"])
+    # Calculate percentages
+    percentages = {key: (value / group_size) * 100 for key, value in learner_category.items()}
 
-    return learner_catergory, percentages, LLx
+    # Calculate LLx while avoiding division by zero
+    denominator = percentages["reading"] + percentages["understanding"]
+    if denominator == 0:
+        LL_percent = (percentages["evaluating"] + percentages["applying"]) 
+    else:
+        LL_percent = (percentages["evaluating"] + percentages["applying"]) / denominator
+    
+    LLx = LL_percent / 100
+
+    if 0 <= LLx <=1:
+        learning_stage = "learning"
+    else:
+        learning_stage = "applying in context" 
+
+    return learner_category, percentages, LLx, learning_stage
+
 
 
 @api_view(['GET'])
@@ -362,21 +378,17 @@ def create_scale_response(request):
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
             
             current_response_count = len(response_data['data']) + 1 if response_data['data'] else 1
+            print(current_response_count)
 
             if current_response_count <= no_of_responses:
                 event_id = get_event_id()
                 created_time = dowell_time("Asia/Calcutta")
 
-                learner_catergory, percentages, LLx = calcualte_learning_index(item,current_response_count)
+                learner_catergory, percentages, LLx, learning_stage = calcualte_learning_index(item,current_response_count)
                 print("ho gaya")
 
-                if 0 <= LLx <=1:
-                    learning_stage = "learning"
-                else:
-                    learning_stage = "applying in context" 
-
                 learning_index_data = {
-                                    "control_group_size":len(data),
+                                    "control_group_size":current_response_count,
                                     "learning_level_count":learner_catergory,
                                     "learning_level_percentages":percentages,
                                     "learning_level_index":LLx,
@@ -455,18 +467,18 @@ def learning_index_report(request):
             fields = {"scale_id":scale_id}
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
             data = response_data['data']
+            print(data)
             
-            data ={
+            results =[{
                     "response_id":data["_id"],
                     "score":data["score"],
                      "category":data["category"],
                      "learning_index_data": data["learning_index_data"],
                      "date_created":data.get("dowell_time", {}).get("current_time")
-                    } 
+                    } for data in data]
             return Response({"success":"true",
                              "message":"fetched the data",
-                             "control_group_size": len(data),
-                             "data":data
+                             "data":results
                              }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(e)
