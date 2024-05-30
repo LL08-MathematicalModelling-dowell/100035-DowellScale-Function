@@ -82,6 +82,7 @@ const SideBar = () => {
     setNewScaleBtn(true)
     if(scaleIndex >= 0 && scaleIndex <= 9){
       setPopUp(true)
+      console.log(scaleIndex, "TTTTTTTTTTTTTTTTTTTTTt")
     }else {
       navigateTo(`/100035-DowellScale-Function/home?session_id=${sessionId}`)
     }
@@ -169,7 +170,15 @@ const handleConfirm = () =>{
        <button style={{display: reduceSize ? 'none' : 'block'}}>My scales</button>
       </div>
      </div>
-     {popup || myScalesPopUp &&<div className='fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-[420px] h-max p-5 bg-white rounded-lg' style={{ fontFamily: 'Roboto, sans-serif', zIndex:'999'}}>
+     {myScalesPopUp &&<div className='fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-[420px] h-max p-5 bg-white rounded-lg' style={{ fontFamily: 'Roboto, sans-serif', zIndex:'999'}}>
+      <p className="font-bold">Are you sure?</p>
+      <p className="mt-3">Changes made so far will not be saved. Do you really want to cancel the process and go back?</p>
+      <div className="flex gap-8 justify-center items-center mt-3">
+        <button className="p-2 md:px-8 bg-[#129561] rounded" onClick={handleCancel}>No</button>
+        <button className="p-2 md:px-8 bg-[#ff4a4a] rounded" onClick={handleConfirm}>Yes</button>
+      </div>
+      </div>}
+      {popup &&<div className='fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-[420px] h-max p-5 bg-white rounded-lg' style={{ fontFamily: 'Roboto, sans-serif', zIndex:'999'}}>
       <p className="font-bold">Are you sure?</p>
       <p className="mt-3">Changes made so far will not be saved. Do you really want to cancel the process and go back?</p>
       <div className="flex gap-8 justify-center items-center mt-3">

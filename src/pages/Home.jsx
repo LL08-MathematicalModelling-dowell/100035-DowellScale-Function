@@ -143,6 +143,7 @@ console.log(sessionStorage.getItem("session_id"))
   useEffect(() => {
   
     getUserInfo();
+    setScaleIndex(10)
     // setLoggedIn(true);
   }, []);
 console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
