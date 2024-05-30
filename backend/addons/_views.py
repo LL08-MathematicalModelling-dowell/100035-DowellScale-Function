@@ -264,17 +264,8 @@ class ScaleCreateAPI(APIView):
 def error_response(request, message, status):
     return Response(message, status=status)
 
-def calcualte_learning_index(score, group_size):
-    print(score,group_size)
-
-    learner_category = {
-                         "reading":0,
-                         "understanding":0,
-                         "explaining":0,
-                         "evaluating":0,
-                         "applying":0
-                }
-            
+def calcualte_learning_index(score, group_size, learner_category):
+    print(score,group_size,learner_category)    
     score_ranges = {
                     (0, 2): "reading",
                     (3, 4): "understanding",
@@ -283,31 +274,29 @@ def calcualte_learning_index(score, group_size):
                     (9, 10): "applying"
                 }
 
-    # Determine the learner category for the given score
+    #determine the learner category for the given score
     for range_tuple, category in score_ranges.items():
         if range_tuple[0] <= score <= range_tuple[1]:
             learner_category[category] += 1
             break
 
-    # Calculate percentages
+    #calculate percentages for each learner category
     percentages = {key: (value / group_size) * 100 for key, value in learner_category.items()}
 
-    # Calculate LLx while avoiding division by zero
+    #calculate LLx while avoiding division by zero
     denominator = percentages["reading"] + percentages["understanding"]
     if denominator == 0:
-        LL_percent = (percentages["evaluating"] + percentages["applying"]) 
+        LLx = (percentages["evaluating"] + percentages["applying"]) 
     else:
-        LL_percent = (percentages["evaluating"] + percentages["applying"]) / denominator
-    
-    LLx = LL_percent / 100
+        LLx = (percentages["evaluating"] + percentages["applying"]) / denominator
 
+    #identify the learning stage for the control group
     if 0 <= LLx <=1:
         learning_stage = "learning"
     else:
         learning_stage = "applying in context" 
 
-    return learner_category, percentages, LLx, learning_stage
-
+    return percentages, LLx, learning_stage
 
 
 @api_view(['GET'])
@@ -354,57 +343,64 @@ def create_scale_response(request):
             else:
                 category = "N/A"
         
-            existing_data = {
-                "workspace_id":workspace_id,
-                "username":username,
-                "scale_id":scale_id,
-                "score": item,
-                "category":category,
-                "user_type":user_type,
-                "user_info":header
-            }
 
             #fetch the relevant settings meta data 
-            # settings_meta_data = datacube_db(api_key=api_key, operation="fetch", id=scale_id)
             settings_meta_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3",{"_id":scale_id}, 10000, 0, False))
             data = settings_meta_data['data'][0]['settings']
             
             no_of_responses = data["no_of_responses"]
             
-            #response submission logic
-            # response_data = datacube_db_response(api_key=api_key, scale_id=scale_id,channel_name=channel_name,instance_name=instance_name, operation="fetch")
-           
+            # ---- response submission logic ----   
             fields = {"scale_id":scale_id,"channel_name":channel_name,"instance_name":instance_name}
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
             
             current_response_count = len(response_data['data']) + 1 if response_data['data'] else 1
-            print(current_response_count)
-
+    
             if current_response_count <= no_of_responses:
                 event_id = get_event_id()
                 created_time = dowell_time("Asia/Calcutta")
 
-                learner_catergory, percentages, LLx, learning_stage = calcualte_learning_index(item,current_response_count)
-                print("ho gaya")
-
+                # learning level index calculation
+                if current_response_count == 1:
+                    learner_category = {
+                         "reading":0,
+                         "understanding":0,
+                         "explaining":0,
+                         "evaluating":0,
+                         "applying":0
+                    }
+                else:
+                    response = response_data['data'][-1]
+                    learner_category = response.get("learning_index_data",{}).get("learning_level_count")
+                    
+                percentages, LLx, learning_stage = calcualte_learning_index(item,current_response_count,learner_category)
+                
                 learning_index_data = {
                                     "control_group_size":current_response_count,
-                                    "learning_level_count":learner_catergory,
+                                    "learning_level_count":learner_category,
                                     "learning_level_percentages":percentages,
                                     "learning_level_index":LLx,
                                     "learning_stage":learning_stage
                                     }
 
-                existing_data.update({
-                    "event_id":event_id,
-                    "dowell_time":created_time,
-                    "current_response_count": current_response_count,
-                    "channel_name":channel_name,
-                    "instance_name":instance_name,
-                    "learning_index_data":learning_index_data
-                })
+                existing_data = {
+                                    "workspace_id":workspace_id,
+                                    "username":username,
+                                    "scale_id":scale_id,
+                                    "score": item,
+                                    "category":category,
+                                    "user_type":user_type,
+                                    "user_info":header,
+                                    "event_id":event_id,
+                                    "dowell_time":created_time,
+                                    "current_response_count": current_response_count,
+                                    "channel_name":channel_name,
+                                    "instance_name":instance_name,
+                                    "learning_index_data":learning_index_data
+                                }
                 
                 
+                # insertion into the db
                 responses = json.loads(datacube_data_insertion(api_key, "livinglab_scale_response", "collection_1", existing_data))
                 response_id = responses['data']['inserted_id']
                 
@@ -436,8 +432,6 @@ def create_scale_response(request):
         return Response("Method not allowed")
     
 
-    
-    
 @api_view(['GET'])
 def get_scale_response(request):
    
