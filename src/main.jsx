@@ -63,6 +63,7 @@ import {
 import {
   Report,
   ScaleReportSettings,
+  ReportAnalyis,
 } from './pages/scales/report';
 
 import {
@@ -257,6 +258,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/myscales`,
         element: <Report />,
+      },
+      {
+        path: `${basePath}/home/scale-analysis/:slug`,
+        element: <ReportAnalyis />,
       },
       {
         path: `${basePath}/home/scale-report-settings/:slug`,

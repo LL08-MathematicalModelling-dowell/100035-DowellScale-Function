@@ -11,14 +11,16 @@ import Fallback from '../../../components/Fallback';
 import { useNavigate } from 'react-router';
 import './Report.css'
 import { useSearchParams, Link } from 'react-router-dom';
+import axios from 'axios';
 
 function Report() {
 
   const { rSize, setRSize, newScaleBtn, setNewScaleBtn, myScalesBtn, setMyScalesBtn, scaleIndex,
     setScaleIndex, } = useFetchUserContext();
     const [searchParams] = useSearchParams();
-    const { isLoading, scaleData, fetchScaleData } = useGetScale();
+    const [scaleData, setScaleData ] = useState();
     const session_id = searchParams.get("session_id");
+    const [isLoading, setIsLoading] = useState(false);
 
     // const [screenWidth, setScreenWidth] = useState(screen.width)
     const [openSlider, setOpenSlider] = useState(false)
@@ -27,7 +29,29 @@ function Report() {
     const navigateTo = useNavigate();
 
     useEffect(()=>{
-      fetchScaleData('nps-lite-scale');
+      const fetchData = async () => {
+        //await handleFetchSingleScale(slug);
+        try {
+          setIsLoading(true);
+          const response = await axios.get(
+            `https://100035.pythonanywhere.com/addons/create-scale/v3/?workspace_id=653637a4950d738c6249aa9a`
+          );
+          console.log(response.data.scale_data)
+          setScaleData(response.data.scale_data)
+          let arrayData = response.data.report.poisson_case_results.series.list1
+          for(let i = 0; i<response.data.report.no_of_scales; i++) {
+            let scaleObj = {name: i+1, score: arrayData[i], pv: 2400, amt: 2400}
+            if(BtnLinks.includes(`'${scaleObj.name}'`) === false){
+              BtnLinks.push(scaleObj)
+            }
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchData();
   },[]);
 
   useEffect(() => {
@@ -42,7 +66,7 @@ function Report() {
   }
 
   const handleUserReport = (scale) =>{
-    navigateTo(`/100035-DowellScale-Function/home/scale-report-settings/${scale._id}`)
+    navigateTo(`/100035-DowellScale-Function/home/scale-analysis/${scale._id}`)
   }
 
   const handleBack = () =>{
@@ -90,11 +114,12 @@ function Report() {
           <div onClick={() =>handleSlideOpen(index)} key={index} className='flex items-center justify-between w-[95%] mt-[10px] bg-[white] m-auto rounded-lg cursor-pointer pl-10 pr-5 pb-1' style={{WebkitBoxShadow: "0 10px 6px -6px #777"}}>
           <div className=''>
             <div className='flex items-center'>
-            <p>{index + 1}</p><div className='ml-[17%] w-full' >{scale?.settings?.name}</div>
+            <p>{index + 1}</p><div className='ml-[17%] w-full' >{scale?.settings?.scale_name
+}</div>
             </div>
             <div className='ml-[20%]' style={{display: openSlider && index == sliderKey ? 'block' : 'none' }}>
             <div className='flex'>
-            <h3>150+ </h3>
+            <h3>{scale?.settings?.no_of_responses} </h3>
             <p style={{fontSize: 'small', color: 'black'}}>responses</p>
             </div>
             <div className='flex items-center justify-center bg-[#129561] w-[180px] text-[white]'>
@@ -105,8 +130,11 @@ function Report() {
         </div>
           </div>
           <div className='flex items-center justify-between'>
+          <div className='mr-5 flex flex-col items-center justify-center'>
+              <p style={{fontWeight:'400', fontSize:'12px'}}>nps lite</p>
+            </div>
             <div className='' style={{display: openSlider && index == sliderKey ? 'none' : 'block'}}>
-            <h3>150+ </h3>
+            <h3>{scale?.settings?.no_of_responses} </h3>
             <p style={{fontSize: 'small', color: 'lightgray'}}>responses</p>
             </div>
             <div className='' style={{display: openSlider && index == sliderKey ? 'flex' : 'none'}}>
