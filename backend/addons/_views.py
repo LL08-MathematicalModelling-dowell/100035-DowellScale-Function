@@ -21,7 +21,7 @@ class ScaleCreateAPI(APIView):
         scale_range = settings["scale_range"]
         
         for idx in scale_range:
-            # url = f"{public_url}/addons/create-response/v3/?user={payload['user_type']}&scale_type={payload['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&item={idx}"
+            # url = f"{public_url}/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
             url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
             urls.append(url)
         return urls
@@ -63,7 +63,7 @@ class ScaleCreateAPI(APIView):
             axis_limit = payload['axis_limit']
         print(f"Scale type: {scale_type}, Total number of items: {total_no_of_items}")
 
-        if scale_type == 'nps':
+        if scale_type == 'nps' or scale_type == 'learning_index':
             scale_range = range(0, 11)
             print(scale_range)
             return scale_range
@@ -88,7 +88,7 @@ class ScaleCreateAPI(APIView):
         print(payload)
         settings = payload["settings"]
         
-        if scale_type == "nps":
+        if scale_type == "nps" or scale_type == 'learning_index':
             no_of_items = 11
         elif scale_type == "nps lite":
             no_of_items = 3
@@ -264,20 +264,13 @@ class ScaleCreateAPI(APIView):
 def error_response(request, message, status):
     return Response(message, status=status)
 
-def calcualte_learning_index(score, group_size, learner_category):
+def calcualte_learning_index(score, group_size, learner_category, category):
     print(score,group_size,learner_category)    
-    score_ranges = {
-                    (0, 2): "reading",
-                    (3, 4): "understanding",
-                    (5, 6): "explaining",
-                    (7, 8): "evaluating",
-                    (9, 10): "applying"
-                }
 
     #determine the learner category for the given score
-    for range_tuple, category in score_ranges.items():
-        if range_tuple[0] <= score <= range_tuple[1]:
-            learner_category[category] += 1
+    for key in learner_category.items():
+        if category == key:
+            learner_category[key] += 1
             break
 
     #calculate percentages for each learner category
@@ -335,6 +328,18 @@ def create_scale_response(request):
                 elif 9 <= item <=10:
                     category = "promoter"
 
+            elif scale_type == "learning_index":
+                if item in range(0,2):
+                    category = "reading"
+                elif item in range(3,4):
+                    category = "understanding"
+                elif item in range(5,6):
+                    category = "explaining"
+                elif item in range(7,8):
+                    category = "evaluating"
+                elif item in range(9,10):
+                    category = "applying"
+
                 else:
                     return Response({"success":"false",
                                     "message":"Invalid value for score"},
@@ -355,33 +360,36 @@ def create_scale_response(request):
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
             
             current_response_count = len(response_data['data']) + 1 if response_data['data'] else 1
+            print(current_response_count)
     
             if current_response_count <= no_of_responses:
                 event_id = get_event_id()
                 created_time = dowell_time("Asia/Calcutta")
 
-                # learning level index calculation
-                if current_response_count == 1:
-                    learner_category = {
-                         "reading":0,
-                         "understanding":0,
-                         "explaining":0,
-                         "evaluating":0,
-                         "applying":0
-                    }
-                else:
-                    response = response_data['data'][-1]
-                    learner_category = response.get("learning_index_data",{}).get("learning_level_count")
+                if scale_type == 'learning_index':
+                    # learning level index calculation
+                    if current_response_count == 1:
+                        learner_category = {
+                            "reading":0,
+                            "understanding":0,
+                            "explaining":0,
+                            "evaluating":0,
+                            "applying":0
+                        }
+                    else:
+                        response = response_data['data'][-1]
+                        print(response)
+                        learner_category = response.get("learning_index_data",{}).get("learning_level_count")
+                        
+                    percentages, LLx, learning_stage = calcualte_learning_index(item,current_response_count,learner_category, category)
                     
-                percentages, LLx, learning_stage = calcualte_learning_index(item,current_response_count,learner_category)
-                
-                learning_index_data = {
-                                    "control_group_size":current_response_count,
-                                    "learning_level_count":learner_category,
-                                    "learning_level_percentages":percentages,
-                                    "learning_level_index":LLx,
-                                    "learning_stage":learning_stage
-                                    }
+                    learning_index_data = {
+                                        "control_group_size":current_response_count,
+                                        "learning_level_count":learner_category,
+                                        "learning_level_percentages":percentages,
+                                        "learning_level_index":LLx,
+                                        "learning_stage":learning_stage
+                                        }
 
                 existing_data = {
                                     "workspace_id":workspace_id,
@@ -396,7 +404,7 @@ def create_scale_response(request):
                                     "current_response_count": current_response_count,
                                     "channel_name":channel_name,
                                     "instance_name":instance_name,
-                                    "learning_index_data":learning_index_data
+                                    "learning_index_data":learning_index_data if scale_type =='learning_index' else "" 
                                 }
                 
                 
@@ -467,6 +475,8 @@ def learning_index_report(request):
                     "response_id":data["_id"],
                     "score":data["score"],
                      "category":data["category"],
+                     "channel":data["channel_name"],
+                     "instance":data["instance_name"],
                      "learning_index_data": data["learning_index_data"],
                      "date_created":data.get("dowell_time", {}).get("current_time")
                     } for data in data]
