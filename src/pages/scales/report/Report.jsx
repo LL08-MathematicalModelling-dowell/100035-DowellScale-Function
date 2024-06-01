@@ -27,6 +27,7 @@ function Report() {
     const [sliderKey, setSliderKey] = useState()
     const [sessionId, setSessionId] = useState('')
     const navigateTo = useNavigate();
+    const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
 
     useEffect(()=>{
       const fetchData = async () => {
@@ -34,7 +35,7 @@ function Report() {
         try {
           setIsLoading(true);
           const response = await axios.get(
-            `https://100035.pythonanywhere.com/addons/create-scale/v3/?workspace_id=653637a4950d738c6249aa9a`
+            `https://100035.pythonanywhere.com/addons/create-scale/v3/?workspace_id=${userinfo.userinfo.client_admin_id}`
           );
           console.log(response.data.scale_data)
           setScaleData(response.data.scale_data)
@@ -58,6 +59,9 @@ function Report() {
     const session_id =
     searchParams.get('session_id') || sessionStorage.getItem('session_id');
     setSessionId(session_id);
+    setScaleIndex(10)
+    setMyScalesBtn(true)
+    setNewScaleBtn(false)
   }, [searchParams]);
 
   const handleSlideOpen = (index) =>{
@@ -131,7 +135,7 @@ function Report() {
           </div>
           <div className='flex items-center justify-between'>
           <div className='mr-5 flex flex-col items-center justify-center'>
-              <p style={{fontWeight:'400', fontSize:'12px'}}>nps lite</p>
+              <p style={{fontWeight:'400', fontSize:'12px'}}>{scale?.settings?.scale_category}</p>
             </div>
             <div className='' style={{display: openSlider && index == sliderKey ? 'none' : 'block'}}>
             <h3>{scale?.settings?.no_of_responses} </h3>

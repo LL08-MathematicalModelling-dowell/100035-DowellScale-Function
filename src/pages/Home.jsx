@@ -19,7 +19,9 @@ console.log(sessionStorage.getItem("session_id"))
     scaleIndex,
     setScaleIndex,
     rSize, 
-    setRSize } = useFetchUserContext()
+    setRSize,
+    setMyScalesBtn,
+    setNewScaleBtn } = useFetchUserContext()
 
     console.log(useFetchUserContext())
 
@@ -144,6 +146,8 @@ console.log(sessionStorage.getItem("session_id"))
   
     getUserInfo();
     setScaleIndex(10)
+    setMyScalesBtn(false)
+    setNewScaleBtn(true)
     // setLoggedIn(true);
   }, []);
 console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
