@@ -2,6 +2,7 @@ export default async function handleSharing(formData,setButtonLinks,setButtonLin
   let axis_limit=scaleType=="stapel"?5:0
 //   let pointers=scaleType=="likert"?5:0
 
+const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
 console.log(scaleType,axis_limit,formData.likertPointers[0])
     try {
         let { channels } = formData;
@@ -33,7 +34,7 @@ console.log(scaleType,axis_limit,formData.likertPointers[0])
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                "workspace_id": "653637a4950d738c6249aa9a",
+                "workspace_id": userinfo.userinfo.client_admin_id,
                 "username": "CustomerSupport",
                 "scale_name": formData.scaleName,
                 "channel_instance_list":channelInstanceList,
