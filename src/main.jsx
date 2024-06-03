@@ -65,6 +65,7 @@ import {
   ScaleReportSettings,
   ReportAnalyis,
   Booth,
+  NpsScaleTest,
 } from './pages/scales/report';
 
 import {
@@ -120,9 +121,17 @@ const router = createBrowserRouter([
         element: <GenerateReport />,
       },
       {
+        path: `${basePath}/home/master-link/:slug`,
+        element: <Booth />,
+      },
+      {
         path: `${basePath}/home/master-link`,
         element: <Booth />,
-      },  
+      },
+      {
+        path: `${basePath}/home/master-link/scale`,
+        element: <NpsScaleTest />,
+      },
       {
         path: `${basePath}/home/pc-scale`,
         element: <PairedScale />,
