@@ -120,7 +120,7 @@ const router = createBrowserRouter([
         element: <GenerateReport />,
       },
       {
-        path: `${basePath}/home/booth`,
+        path: `${basePath}/home/master-link`,
         element: <Booth />,
       },  
       {
