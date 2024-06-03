@@ -3,27 +3,22 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from addons.datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
-from addons.v3_serializers import ChannelInstanceSerializer, InstanceDetailsSerializer
+from addons._serializers import ChannelInstanceSerializer, InstanceDetailsSerializer
 from .serializer import ScaleSerializer, ScaleSettingsSerializer, ScaleResponseSerializer
 from api.utils import dowell_time
 from nps.eventID import get_event_id
 import json
-from itertools import chain
-from rest_framework.decorators import api_view
-from dowellnps_scale_function.settings import public_url
-import ipinfo
+
 
 class CreatedNPSLiteScale(APIView):
     def build_url(self, payload):
         for channel_instance in payload['channel_instance_list']:
-            longitude = channel_instance.get('long')
-            latitude = channel_instance.get('lat')
-            if longitude is not None and latitude is not None:
-                print('long', longitude)
-                print('lat', latitude)
-                url = f"http://127.0.0.1:8000/nps-lite/api/v5/nps-lite-create-response/?user={payload['user_type']}&scale_type={payload['scale_category']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}"
+            first_channel = payload['channel_instance_list'][0]
+            channel_name = first_channel.get('channel_name')
+            if channel_name is not None:
+                url = f"http://127.0.0.1:8000/nps-lite/api/v5/nps-lite-create-scale/?user={payload['user_type']}&scale_type={payload['scale_category']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&channel_name={channel_name}"
                 return url  # Return the first valid URL
-        return None  # Return None if no valid long/lat pairs are found
+        return None  
 
     def generate_url(self, payload):
         return self.build_url(payload)
@@ -96,17 +91,13 @@ class CreatedNPSLiteScale(APIView):
                     instances_details = channel_instance.get('instances_details', [])
                     for instance_detail in instances_details:
                         instance_name = instance_detail.get('instance_name')
-                        longitude = instance_detail.get('long')
-                        latitude = instance_detail.get('lat')
                         user_info = instance_detail.get('user_info')
                         
                         # Append instance details to payload if long and lat exist
-                        if longitude is not None and latitude is not None:
+                        if instance_name is not None:
                             payload['channel_instance_list'].append({
                                 "channel_name": channel_name,
                                 "instance_name": instance_name,
-                                "long": longitude,
-                                "lat": latitude,
                                 "user_info": user_info
                             })
 
@@ -132,7 +123,6 @@ class CreatedNPSLiteScale(APIView):
 
 
                 payload['settings'].update({"scale_id":scale_id})
-
                 # generate the button urls
                 url = self.generate_url(payload['settings'])
                 datacube_data_update(api_key, "livinglab_scales", "collection_3", {"_id": scale_id}, {"urls":url})
@@ -167,7 +157,7 @@ class CreatedNPSLiteScale(APIView):
             workspace_id = response['configs'].get('workspace_id')
             scale_type = response['configs'].get('scale_type')
             channel_instance_list = response['configs']['channel_instance_list']
-            channel_name = request.GET.get('channel_name')
+            channel_name = response['configs']['channel_instance_list'][0]['channel_name']
             instance_name = request.GET.get('instance_name')
             
 
@@ -185,8 +175,6 @@ class CreatedNPSLiteScale(APIView):
                                     'channel_name': channel['channel_name'],
                                     'instance_name': instance.get('instance_name'),
                                     'instance_display_name': instance.get('instance_display_name'),
-                                    'long': instance.get('long'),
-                                    'lat': instance.get('lat')
                                 }
                                 break
                 if instance_details:
