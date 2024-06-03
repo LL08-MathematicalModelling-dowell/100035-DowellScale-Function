@@ -64,6 +64,7 @@ import {
   Report,
   ScaleReportSettings,
   ReportAnalyis,
+  Booth,
 } from './pages/scales/report';
 
 import {
@@ -117,6 +118,10 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/home/generate-report/:slug`,
         element: <GenerateReport />,
+      },
+      {
+        path: `${basePath}/home/booth`,
+        element: <Booth />,
       },  
       {
         path: `${basePath}/home/pc-scale`,

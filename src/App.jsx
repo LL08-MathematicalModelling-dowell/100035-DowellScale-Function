@@ -13,6 +13,7 @@ function App() {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const publicLink = queryParams.get('scale_type');
+  const plinks = queryParams.get('booth');
   const location = useLocation();
   const isHome = location.pathname === '/100035-DowellScale-Function//home';
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -30,11 +31,11 @@ function App() {
   
   return (
     <div>
-      {!publicLink   &&  <Navbar />}
+      {!publicLink &&  <Navbar />}
     <div className='flex'>
       <ToastContainer />
       <FetchUserContextProvider>
-      {!publicLink   &&  <SideBar />}
+      {!publicLink &&  <SideBar />}
         <Outlet />
       </FetchUserContextProvider>
     </div>
