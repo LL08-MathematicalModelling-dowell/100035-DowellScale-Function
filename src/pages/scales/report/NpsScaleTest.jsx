@@ -39,6 +39,12 @@ const NpsScaleTest = () => {
           className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
           onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
         >
+          3
+        </button>
+        <button
+          className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
+          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
+        >
           4
         </button>
         <button
