@@ -129,88 +129,19 @@ return (
 
             {!buttonLinksGenerated ? (
                 <>
-                    <style scoped>
-                        {`
-                        .div-changes {
-                            padding: 40px 10px;
-                            margin-left: 20px;
-                        }  
-                        .content-changes {
-                            width: 100px;
-                            font-size: 0.8rem;
-                        }
-                        @media (min-width: 768px) {
-                            .div-changes {
-                                padding: 40px;
-                                margin-left: 56px;
-                            }
-                            .content-changes {
-                                width: 150px;
-                                font-size:1rem
-                            }
-                        }
-                        .text-changes {
-                            font-size: 0.8rem;
-                        }
-                        @media (min-width:523px) {
-                            .text-changes {
-                                font-size: 1rem;
-                            }
-                        }
-                        .button-changes {
-                            padding: 0.3rem;
-                            font-size: 10px;
-                        }
-                        @media(min-width:640px) {
-                            .button-changes {
-                                padding: 0.5rem;
-                                font-size: 10px;
-                            }
-                        }
-                        @media(min-width:670px) {
-                            .button-changes {
-                                padding: 0.5rem;
-                                font-size: 12px;
-                            }
-                        }
-                        @media(min-width:905px) {
-                            .button-changes {
-                                padding: 0.5rem;
-                                padding-left: 1rem;
-                                padding-right: 1rem;
-                                font-size: 18px;
-                            }
-                        }
-                        @media(min-width:1152px) {
-                            .button-changes {
-                                padding: 0.5rem;
-                                padding-left: 3rem;
-                                padding-right: 3rem;
-                                font-size: 18px;
-                            }
-                        }
-                        @media(min-width:1400px) {
-                            .button-changes {
-                                padding: 0.5rem;
-                                padding-left: 5rem;
-                                padding-right: 5rem;
-                                font-size: 18px;
-                            }
-                        }
-                        `}
-                    </style>
+                    
 
-                    <div className="mt-5 bg-[#E8E8E8] rounded-lg h-max w-[90%] sm:w-[80%] div-changes">
+                    <div className="mt-5 bg-[#E8E8E8] rounded-lg h-max w-[90%] sm:w-[80%] p-5">
                         <div className="flex flex-col justify-start items-start">
                             <p className="font-medium">{textContent.scaleEg}</p>
                             <p className="text-[14px]">{textContent.scaleDescription}</p>
                         </div>
                         <p className="flex justify-center items-center font-sans p-3 mt-5 text-changes">{textContent.experiencePrompt}</p>
-                       {textContent.experience[0]=="Bad" ? (
-                        <div className="flex justify-center items-center gap-12 mt-5">
-                            <button className="bg-[#ff4a4a] rounded button-changes">{textContent.experience[0]}</button>
-                            <button className="bg-[#f3dd1f] rounded button-changes">{textContent.experience[1]}</button>
-                            <button className="bg-[#129561] rounded button-changes">{textContent.experience[2]}</button>
+                       {typeof textContent.experience[0]=="string" && textContent.experience[0].includes("Bad") ? (
+                        <div className="flex justify-center items-center gap-3 sm:gap-12 mt-5">
+                            <button className="bg-[#ff4a4a] rounded sm:px-5 lg:px-10 p-2 text-[12px] sm:text-[16px]">{textContent.experience[0]}</button>
+                            <button className="bg-[#f3dd1f] rounded sm:px-5 lg:px-10 p-2 text-[12px] sm:text-[16px]">{textContent.experience[1]}</button>
+                            <button className="bg-[#129561] rounded  sm:px-5 lg:px-10 p-2 text-[12px] sm:text-[16px]">{textContent.experience[2]}</button>
                         </div>  
                        ):(
                         
@@ -234,11 +165,11 @@ return (
                               </div>
                           </div>
                             ):(
-                                  <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-1 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max">
+                                  <div className="flex justify-center items-center gap-3 bg-white p-1 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max">
                                       {textContent.experience.map((score, index)=>(
                                       <button
                                       key={index}
-                                          className=" text-[12px] md:text-[14px] py-[8px] px-[2px] sm:p-1  sm:px-2 rounded md:p-2 md:px-4 bg-[#00a3ff] text-white "   
+                                          className=" text-[12px] md:text-[14px]  p-1  px-2 rounded md:p-2 md:px-4 bg-[#00a3ff] text-white "   
                                           >
                                           {score}
                                           </button>
@@ -252,7 +183,7 @@ return (
                         
                     </div>
 
-                    <div className="mt-14 pt-10 bg-[#E8E8E8] rounded-lg h-max w-[90%] sm:w-[80%] div-changes">
+                    <div className="mt-14 pt-10 bg-[#E8E8E8] rounded-lg h-max w-[90%] sm:w-[80%] ">
                         {!confirmed ? (
                             <>
                             {textContent.scale!=="LIKERT SCALE" ? (

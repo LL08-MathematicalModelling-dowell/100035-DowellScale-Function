@@ -16,7 +16,7 @@ function App() {
   const location = useLocation();
   const { slug } = useParams();
   const isHome = location.pathname === '/100035-DowellScale-Function//home';
-  const masterLink = location.pathname === `/100035-DowellScale-Function/home/master-link`;
+  const masterLink = location.pathname.includes(`/home/master-link`) 
   const scale = location.pathname === `/100035-DowellScale-Function/home/master-link/scale`;
   
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
