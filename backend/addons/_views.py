@@ -268,28 +268,29 @@ def calcualte_learning_index(score, group_size, learner_category, category):
     print(score,group_size,learner_category)    
 
     #determine the learner category for the given score
-    for key in learner_category.items():
+    print(learner_category.items())
+    for key, value in learner_category.items():
         if category == key:
+            
             learner_category[key] += 1
-            break
+           
+            #calculate percentages for each learner category
+            percentages = {key: (value / group_size) * 100 for key, value in learner_category.items()}
 
-    #calculate percentages for each learner category
-    percentages = {key: (value / group_size) * 100 for key, value in learner_category.items()}
+            #calculate LLx while avoiding division by zero
+            denominator = percentages["reading"] + percentages["understanding"]
+            if denominator == 0:
+                LLx = (percentages["evaluating"] + percentages["applying"]) 
+            else:
+                LLx = (percentages["evaluating"] + percentages["applying"]) / denominator
 
-    #calculate LLx while avoiding division by zero
-    denominator = percentages["reading"] + percentages["understanding"]
-    if denominator == 0:
-        LLx = (percentages["evaluating"] + percentages["applying"]) 
-    else:
-        LLx = (percentages["evaluating"] + percentages["applying"]) / denominator
+            #identify the learning stage for the control group
+            if 0 <= LLx <=1:
+                learning_stage = "learning"
+            else:
+                learning_stage = "applying in context" 
 
-    #identify the learning stage for the control group
-    if 0 <= LLx <=1:
-        learning_stage = "learning"
-    else:
-        learning_stage = "applying in context" 
-
-    return percentages, LLx, learning_stage
+    return percentages, LLx, learning_stage, learner_category
 
 
 @api_view(['GET'])
@@ -354,11 +355,11 @@ def create_scale_response(request):
             data = settings_meta_data['data'][0]['settings']
             
             no_of_responses = data["no_of_responses"]
-            channel_instance_list = data["channel_instance_list"]
-            print(channel_instance_list)
-            # instance_details = channel_instance_list["instance_details"]
-            channel_display_names = [data["channel_display_name"] for data in channel_instance_list if channel_name == data["channel_name"] and instance_name == instance["instance_name"] for instance in data["instances_details"]]
-            print(channel_display_names)
+            # channel_instance_list = data["channel_instance_list"]
+            # print(channel_instance_list)
+            # # instance_details = channel_instance_list["instance_details"]
+            # channel_display_names = [data["channel_display_name"] for data in channel_instance_list if channel_name == data["channel_name"] and instance_name == instance["instance_name"] for instance in data["instances_details"]]
+            # print(channel_display_names)
             # ---- response submission logic ----   
             fields = {"scale_id":scale_id,"channel_name":channel_name,"instance_name":instance_name}
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
@@ -385,11 +386,11 @@ def create_scale_response(request):
                         print(response)
                         learner_category = response.get("learning_index_data",{}).get("learning_level_count")
                         
-                    percentages, LLx, learning_stage = calcualte_learning_index(item,current_response_count,learner_category, category)
+                    percentages, LLx, learning_stage, learner_category_cal = calcualte_learning_index(item,current_response_count,learner_category, category)
                     
                     learning_index_data = {
                                         "control_group_size":current_response_count,
-                                        "learning_level_count":learner_category,
+                                        "learning_level_count":learner_category_cal,
                                         "learning_level_percentages":percentages,
                                         "learning_level_index":LLx,
                                         "learning_stage":learning_stage
@@ -407,7 +408,7 @@ def create_scale_response(request):
                                     "dowell_time":created_time,
                                     "current_response_count": current_response_count,
                                     "channel_name":channel_name,
-                                    "channel_display_name":channel_display_names[0],
+                                    # "channel_display_name":channel_display_names[0],
                                     "instance_name":instance_name,
                                     "learning_index_data":learning_index_data if scale_type =='learning_index' else "" 
                                 }
@@ -429,7 +430,7 @@ def create_scale_response(request):
                         "score": item,
                         "category":category,
                         "channel":channel_name,
-                        "channel_display_name":channel_display_names[0],
+                        # "channel_display_name":channel_display_names[0],
                         "current_response_no": current_response_count,
                         "no_of_available_responses": no_of_responses - current_response_count,
                         "time_stamp": created_time["current_time"]
