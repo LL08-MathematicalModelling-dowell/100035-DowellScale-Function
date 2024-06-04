@@ -121,13 +121,14 @@ const router = createBrowserRouter([
         element: <GenerateReport />,
       },
       {
-        path: `${basePath}/home/master-link/:slug`,
-        element: <Booth />,
-      },
-      {
         path: `${basePath}/home/master-link`,
         element: <Booth />,
       },
+      // {
+      //   path: `${basePath}/home/master-link/:slug`,
+      //   element: <Booth />,
+      // }
+      ,
       {
         path: `${basePath}/home/master-link/scale`,
         element: <NpsScaleTest />,

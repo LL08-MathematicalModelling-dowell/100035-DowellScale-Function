@@ -9,7 +9,7 @@
 // import Fallback from '../../../components/Fallback';
 // import { Button } from '../../../components/button';
 
-import ScaleMainScreen from "../ui-scales-helper/ScaleMainScreen";
+
 
 
 // const StapleScale = () => {
@@ -89,6 +89,8 @@ import ScaleMainScreen from "../ui-scales-helper/ScaleMainScreen";
 // }
 
 // export default StapleScale
+
+import ScaleMainScreen from "../ui-scales-helper/ScaleMainScreen";
 
 export default function StapleScale(){
     const textContent = {

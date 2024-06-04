@@ -179,21 +179,7 @@ function handleNext(){
 
     return(
         <>
-         <style scoped>
-                {
-                    `
-                    .channel-changes{
-                        display: grid;
-                       
-                    }
-                    @media(min-width:968px){
-                    .channel-changes{
-                        display: flex
-                    }
-                }
-                    `
-                }
-            </style>
+      
 
         <div className="flex flex-col   gap-5  items-center text-[16px]"  style={{ fontFamily: 'Roboto, sans-serif' }}>
             <div className="w-max flex flex-col lg:justify-center lg:items-center">
@@ -223,7 +209,7 @@ function handleNext(){
         {formData.channels.map((channel,index1)=>(
             <>
            
-            <div key={index1} className="flex flex-col lg:flex-row lg:justify-center lg:items-center gap-5 mt-5 channel-changes lg:ml-8">
+            <div key={index1} className="grid lg:flex lg:flex-row lg:justify-center lg:items-center gap-5 mt-5  lg:ml-8">
             <p className="hidden lg:block mt-9 font-medium text-[18px]">{index1+1}.</p>
              <div className="flex flex-col justify-start items-start gap-1">
              
