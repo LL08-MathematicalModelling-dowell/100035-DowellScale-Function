@@ -120,8 +120,8 @@ console.log(confirmText)
 const sharingText=`Share your ${textContent.scale}  across different platforms and add to your customer touch points `
 
 return (
-    <div className="flex relative w-[100%]  lg:w-[80%] xl:w-[83%]  lg:left-[20%] xl:left-[17%]">
-        <div className="h-full relative overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
+    <div className="flex w-[100%]  lg:w-[80%] xl:w-[83%] ml-[10%] mr-[10%] lg:ml-[18%]">
+        <div className="h-full overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
             <div className="flex justify-center items-center xl:justify-start xl:items-start gap-3 w-full p-5 xl:pl-10">
                 <FaArrowCircleLeft onClick={handleBack} className="cursor-pointer text-[24px]" />
                 <span className="font-bold text-black">{textContent.scale}</span>

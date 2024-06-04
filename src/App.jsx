@@ -4,7 +4,7 @@ import { FetchUserContextProvider } from './contexts/fetchUserContext';
 import Navbar from './components/Navbar';
 import { Outlet } from "react-router-dom";
 import {
-  useLocation,
+  useLocation, useParams
 } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import SideBar from './pages/SideBar';
@@ -14,7 +14,11 @@ function App() {
   const queryParams = new URLSearchParams(search);
   const publicLink = queryParams.get('scale_type');
   const location = useLocation();
+  const { slug } = useParams();
   const isHome = location.pathname === '/100035-DowellScale-Function//home';
+  const masterLink = location.pathname === `/100035-DowellScale-Function/home/master-link`;
+  const scale = location.pathname === `/100035-DowellScale-Function/home/master-link/scale`;
+  
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
   useEffect(() => {
@@ -30,11 +34,11 @@ function App() {
   
   return (
     <div>
-      {!publicLink   &&  <Navbar />}
+      {!publicLink &&  (!masterLink && !scale)  && <Navbar />}
     <div className='flex'>
       <ToastContainer />
       <FetchUserContextProvider>
-      {!publicLink   &&  <SideBar />}
+      {!publicLink && (!masterLink && !scale) &&  <SideBar />}
         <Outlet />
       </FetchUserContextProvider>
     </div>

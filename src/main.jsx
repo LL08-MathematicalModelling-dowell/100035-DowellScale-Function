@@ -6,7 +6,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 
 import Home from './pages/Home.jsx';
-import Report from './pages/ScaleReport/Report.jsx';
 import {
   RankingScale,
   CreateRankingScale,
@@ -62,6 +61,14 @@ import {
 } from './pages/scales/nps-lite-scale';
 
 import {
+  Report,
+  ScaleReportSettings,
+  ReportAnalyis,
+  Booth,
+  NpsScaleTest,
+} from './pages/scales/report';
+
+import {
   BtnLinksNpsLiteScale,
   BtnLinksCreateNpsLiteScale,
   BtnLinkNpslitescaleSetting,
@@ -110,15 +117,21 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: `${basePath}/myscales`,
-        element: <Report />,
-      },
-      {
         path: `${basePath}/home/generate-report/:slug`,
         element: <GenerateReport />,
       },
-    
-    
+      {
+        path: `${basePath}/home/master-link/:slug`,
+        element: <Booth />,
+      },
+      {
+        path: `${basePath}/home/master-link`,
+        element: <Booth />,
+      },
+      {
+        path: `${basePath}/home/master-link/scale`,
+        element: <NpsScaleTest />,
+      },
       {
         path: `${basePath}/home/pc-scale`,
         element: <PairedScale />,
@@ -255,6 +268,18 @@ const router = createBrowserRouter([
       {
         path: `${basePath}/home/ranking-scale-settings/:slug`,
         element: <RankingScaleSettings />,
+      },
+      {
+        path: `${basePath}/myscales`,
+        element: <Report />,
+      },
+      {
+        path: `${basePath}/home/scale-analysis/:slug`,
+        element: <ReportAnalyis />,
+      },
+      {
+        path: `${basePath}/home/scale-report-settings/:slug`,
+        element: <ScaleReportSettings />,
       },
       {
         path: `${basePath}/home/single-scale-settings/:id`,
