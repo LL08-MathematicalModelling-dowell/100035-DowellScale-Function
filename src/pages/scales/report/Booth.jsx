@@ -1,16 +1,19 @@
 import React from 'react'
 import { useState, useEffect} from 'react';
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 
 const Booth = () => {
 
   const [boothInput, setBoothInput] = useState()
-  const [searchParams, setSearchParams] = useSearchParams({});
+  const {slug}=useParams()
+  console.log(slug)
+  const [searchParams, setSearchParams] = useSearchParams();
+  console.log(searchParams.get("scale_id"))
   let currentUrlParams = new URLSearchParams(window.location.search);
 
-  useEffect(()=>{
-    setSearchParams({ scale_id: "665a8277d5d158ec8391aaf7" });
-  }, [])
+  // useEffect(()=>{
+  //   setSearchParams({ scale_id: "665a8277d5d158ec8391aaf7" });
+  // }, [])
 
   const handleGoButton = () =>{
     console.log(boothInput)
