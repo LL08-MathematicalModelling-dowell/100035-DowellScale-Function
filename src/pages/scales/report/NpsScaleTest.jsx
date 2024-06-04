@@ -17,72 +17,26 @@ const NpsScaleTest = () => {
       </p>
       
       <div className="flex border p-5 justify-center items-center mt-5">
+      <div className="flex justify-center items-center gap-6 md:gap-12 mt-5">
         <button
-          className="bg-[#129561] mr-[2%] rounded-lg  w-[30px] h-[30px]  text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href ="https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=0"}
+          className="bg-[#ff4a4a] rounded-lg  p-1 px-3 sm:p-2 sm:px-6 md:p-4 md:px-12  text-base sm:font-medium cursor-pointer"
+          onClick={() => window.location.href ="https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=665ee1738c9b16f4f9967dd1&item=0"}
         >
-          0
+          Bad 😞
         </button>
         <button
-          className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px]  text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href ="https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=1"}
+          className="bg-[#f3dd1f] rounded-lg  p-1 px-3 sm:p-2 sm:px-6 md:p-4 md:px-12  text-base sm:font-medium cursor-pointer"
+          onClick={() => window.location.href ="https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=665ee1738c9b16f4f9967dd1&item=1"}
         >
-          1
+          Average 😐
         </button>
         <button
-          className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
+          className="bg-[#129561] rounded-lg p-1 px-3 sm:p-2 sm:px-6 md:p-4 md:px-12 text-base sm:font-medium cursor-pointer"
+          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=665ee1738c9b16f4f9967dd1&item=2"}
         >
-          2
+          Excellent 😄
         </button>
-        <button
-          className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
-        >
-          3
-        </button>
-        <button
-          className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
-        >
-          4
-        </button>
-        <button
-          className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
-        >
-          5
-        </button>
-        <button
-          className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
-        >
-          6
-        </button>
-        <button
-          className="bg-[#129561] mr-[2%] rounded-lg  w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
-        >
-          7
-        </button>
-        <button
-          className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
-        >
-          8
-        </button>
-        <button
-          className="bg-[#129561] mr-[2%] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
-        >
-          9
-        </button>
-        <button
-          className="bg-[#129561] rounded-lg w-[30px] h-[30px] text-base sm:font-medium cursor-pointer"
-          onClick={() => window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps_lite&channel=channel_1&instance=instances_1&workspace_id=653637a4950d738c6249aa9a&username=CustomerSupport&scale_id=6656f055d57731003026715e&item=2"}
-        >
-          10
-        </button>
+      </div>
       </div>
     </div>
   )
