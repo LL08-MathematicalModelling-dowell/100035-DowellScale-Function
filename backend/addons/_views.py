@@ -21,8 +21,8 @@ class ScaleCreateAPI(APIView):
         scale_range = settings["scale_range"]
         
         for idx in scale_range:
-            # url = f"{public_url}/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
-            url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
+            url = f"{public_url}/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
+            # url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
             urls.append(url)
         return urls
 
@@ -329,15 +329,15 @@ def create_scale_response(request):
                     category = "promoter"
 
             elif scale_type == "learning_index":
-                if item in range(0,2):
+                if item in range(0,3):
                     category = "reading"
-                elif item in range(3,4):
+                elif item in range(3,5):
                     category = "understanding"
-                elif item in range(5,6):
+                elif item in range(5,7):
                     category = "explaining"
-                elif item in range(7,8):
+                elif item in range(7,9):
                     category = "evaluating"
-                elif item in range(9,10):
+                elif item in range(9,11):
                     category = "applying"
 
                 else:
@@ -354,7 +354,11 @@ def create_scale_response(request):
             data = settings_meta_data['data'][0]['settings']
             
             no_of_responses = data["no_of_responses"]
-            
+            channel_instance_list = data["channel_instance_list"]
+            print(channel_instance_list)
+            # instance_details = channel_instance_list["instance_details"]
+            channel_display_names = [data["channel_display_name"] for data in channel_instance_list if channel_name == data["channel_name"] and instance_name == instance["instance_name"] for instance in data["instances_details"]]
+            print(channel_display_names)
             # ---- response submission logic ----   
             fields = {"scale_id":scale_id,"channel_name":channel_name,"instance_name":instance_name}
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
@@ -403,6 +407,7 @@ def create_scale_response(request):
                                     "dowell_time":created_time,
                                     "current_response_count": current_response_count,
                                     "channel_name":channel_name,
+                                    "channel_display_name":channel_display_names[0],
                                     "instance_name":instance_name,
                                     "learning_index_data":learning_index_data if scale_type =='learning_index' else "" 
                                 }
@@ -424,6 +429,7 @@ def create_scale_response(request):
                         "score": item,
                         "category":category,
                         "channel":channel_name,
+                        "channel_display_name":channel_display_names[0],
                         "current_response_no": current_response_count,
                         "no_of_available_responses": no_of_responses - current_response_count,
                         "time_stamp": created_time["current_time"]
