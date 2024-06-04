@@ -155,10 +155,10 @@ class CreatedNPSLiteScale(APIView):
 
             response = response_data['data'][0]
             workspace_id = response['configs'].get('workspace_id')
-            scale_type = response['configs'].get('scale_type')
             channel_instance_list = response['configs']['channel_instance_list']
             channel_name = response['configs']['channel_instance_list'][0]['channel_name']
             instance_name = request.GET.get('instance_name')
+            instance_id = request.GET.get('instance_id')
             
 
             instance_details = None
@@ -178,22 +178,18 @@ class CreatedNPSLiteScale(APIView):
                                 }
                                 break
                 if instance_details:
-                    break
-
-            if not instance_details:
-                return Response({"success": "false", "message": "Instance not found"}, status=status.HTTP_404_NOT_FOUND)
+                    break       
 
         
-            product_url = "https://www.uxlive.me/dowellscale/npslitescale"
-            redirect_url = f"{product_url}/?workspace_id={workspace_id}&scale_type={scale_type}&channel={channel_name}&instance={instance_name}"
+            product_url = "https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/home/master-link"
             
-            return Response({
-                "success": "true",
-                "message": "Scale details retrieved successfully",
-                "scale_id": scale_id,
-                "instance_details": instance_details,
-                "redirect_url": redirect_url
-            }, status=status.HTTP_200_OK)
+            if instance_id:
+                redirect_url=f'{product_url}/scale?/?workspace_id={workspace_id}&scale_id={scale_id}&channel_name={channel_name}&instance=instance_{instance_id}'
+            else:
+                redirect_url = f"{product_url}/?workspace_id={workspace_id}&scale_id={scale_id}&channel_name={channel_name}"
+
+            
+            return redirect(redirect_url)
         except Exception as e:
             print("EXCEPTION:", e)
             return Response({"success": "false", "message": "Unexpected error occurred while fetching your data"}, status=status.HTTP_400_BAD_REQUEST)
