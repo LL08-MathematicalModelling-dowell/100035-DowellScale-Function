@@ -20,6 +20,7 @@ import {
   Legend,
   scales,
 } from "chart.js";
+import { useParams } from 'react-router-dom';
 import { Line, Bar } from "react-chartjs-2";
 import StackBarData from "./StackBarData";
 
@@ -156,6 +157,7 @@ const ReportAnalysis = () => {
   const [displayDataForAllSelection, setDisplayDataForAllSelection] = useState(
     []
   );
+  const { slug } = useParams();
   const [stackBarData, setStackBarData] = useState({
     labels: [],
     datasets: [],
@@ -325,17 +327,17 @@ const ReportAnalysis = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "https://100035.pythonanywhere.com/addons/get-response/?scale_id=66556a7ff11edcfcfb8b0d54"
+        `https://100035.pythonanywhere.com/addons/get-response/?scale_id=${slug}`
       );
       const data = response.data.data;
-console.log(data)
+      console.log(data, "BBBBBBBBBBBBBBB")
       const uniqueChannels = Array.from(
         new Set(data.map((item) => item.channel_name))
       );
       const uniqueInstances = Array.from(
         new Set(data.map((item) => item.instance_name.trim()))
       );
-
+      console.log("Channel", uniqueChannels)
       setChannels([allChannelsNameTag, ...uniqueChannels]);
       setInstances(uniqueInstances);
       setData(data);
@@ -356,6 +358,7 @@ console.log(data)
       setTotalCount(0);
     }
   };
+  console.log(channels, "ChannelsGGGGG")
 
   const handleInstanceSelect = (event) => {
     setSelectedInstance(event.target.value);

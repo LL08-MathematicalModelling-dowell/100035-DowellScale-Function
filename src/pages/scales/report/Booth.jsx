@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect} from 'react';
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const Booth = () => {
 
@@ -10,7 +10,7 @@ const Booth = () => {
 
   useEffect(()=>{
     setSearchParams({ scale_id: "665a8277d5d158ec8391aaf7" });
-  })
+  }, [])
 
   const handleGoButton = () =>{
     console.log(boothInput)
@@ -21,7 +21,7 @@ const Booth = () => {
       <h3 className='mt-[140px]'>Please enter your booth number</h3>
       <input name='boothInput' value={boothInput} onChange={(e) =>setBoothInput(e.target.value)} type='number' className='w-[150px] h-[30px] border-2 border-black mt-5' />
       <button className='w-[70px] h-[30px] rounded-lg mt-[100px] bg-[#FEC39C]'
-      onClick={handleGoButton}>Go</button>
+      onClick={handleGoButton}><Link to="http://127.0.0.1:8000/nps-lite/api/v5/nps-lite-create-scale/?user=True&scale_type=nps_lite&workspace_id=65b8d6f13d801280ffe56d65&username=Paolo&scale_id=665ed61fa746caf0d6d407c9&channel_name=channel_1">Go</Link></button>
     </div>
   )
 }
