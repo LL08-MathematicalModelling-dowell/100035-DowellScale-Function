@@ -3,15 +3,15 @@ import { useState, useEffect} from 'react';
 import { useSearchParams } from "react-router-dom";
 import axios from "axios"
 const NpsScaleTest = () => {
-
+   const[submitted,setSubmitted]=useState(-1)
   const [searchParams, setSearchParams] = useSearchParams();
   const workspaceId=searchParams.get("workspace_id")
   const scaleId=searchParams.get("scale_id")
-  const channelName=searchParams.get("channel_name")
+  const channelName=searchParams.get("channel")
   const instanceName=searchParams.get("instance")
 
   async function submit(index){
-    console.log(index)
+setSubmitted(index)
     const headers = {
         "Content-Type": "application/json"
     };
@@ -30,7 +30,11 @@ const NpsScaleTest = () => {
 
     try {
         const response = await axios.post("https://100035.pythonanywhere.com/nps-lite/api/v5/nps-lite-create-response/", body, { headers });
-        console.log(response.data);
+    
+        if(response.data.success=="true"){
+          console.log("redirecting.....")
+        window.location.href=response.data.redirect_url
+       }
     } catch (error) {
         console.error("Error submitting response:", error.response ? error.response.data : error.message);
     }
@@ -44,23 +48,48 @@ const NpsScaleTest = () => {
       
       <div className="flex border md:p-5 p-2 justify-center items-center mt-5">
       <div className="flex justify-center items-center gap-6 md:gap-12 md:mt-5 text-[12px] sm:text-[14px] md:text-[18px]">
+      <style>
+                        {`
+                       @keyframes spin {
+                        to {
+                          transform: rotate(360deg);
+                        }
+                      }
+                      
+                      .loader {
+                        display: inline-block;
+                        width: 20px;
+                        height: 20px;
+                        border: 3px solid rgba(255, 255, 255, 0.3);
+                        border-radius: 50%;
+                        border-top-color: #fff;
+                        animation: spin 1s linear infinite;
+                      }
+                      
+                      
+                          
+                        `}
+                    </style>
         <button
           className="bg-[#ff4a4a] rounded-lg  py-[6px] px-[3px] sm:p-2 sm:px-6 md:p-4 md:px-12  sm:font-medium cursor-pointer"
           onClick={() => submit(0)}
         >
-          Bad 😞
+           {submitted==0 ? <div className="loader"></div> : "Bad 😞"}
+          
         </button>
         <button
           className="bg-[#f3dd1f] rounded-lg  py-[6px] px-[3px] sm:p-2 sm:px-6 md:p-4 md:px-12   sm:font-medium cursor-pointer"
           onClick={() => submit(1)}
         >
-          Average 😐
+           {submitted==1 ? <div className="loader"></div> : " Average 😐"}
+        
         </button>
         <button
           className="bg-[#129561] rounded-lg py-[6px] px-[3px] sm:p-2 sm:px-6 md:p-4 md:px-12  sm:font-medium cursor-pointer"
           onClick={() => submit(2)}
         >
-          Excellent 😄
+           {submitted==2 ? <div className="loader"></div> : "Excellent 😄"}
+          
         </button>
       </div>
       </div>
