@@ -34,7 +34,7 @@
 import React from 'react'
 import { useState, useEffect} from 'react';
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import logo from "../../../../public/dowell.png"
+import logo from "../../../../src/assets/dowell.png"
 const Booth = () => {
 
   const [boothInput, setBoothInput] = useState(0)
@@ -42,7 +42,7 @@ const Booth = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const workspaceId=searchParams.get("workspace_id")
   const scaleId=searchParams.get("scale_id")
-  const channelName=searchParams.get("channel_name")
+  const channelName=searchParams.get("channel")
   console.log(scaleId,channelName,workspaceId)
 
 
