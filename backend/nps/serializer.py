@@ -1,19 +1,30 @@
 from rest_framework import serializers
-from .models import system_settings, response
-from bson.objectid import ObjectId
 
 
-class SystemSettingsSerializer(serializers.ModelSerializer):
+class ScaleSerializer(serializers.Serializer):
+    workspace_id = serializers.CharField()
+    username = serializers.CharField()
+    scale_name = serializers.CharField()
+    customizations = serializers.DictField()
+    user_type = serializers.BooleanField()
+    no_of_responses = serializers.IntegerField()
+    channel_instance_list = serializers.ListField()
+    
+class ScaleSettingsSerializer(serializers.Serializer):
+    orientation = serializers.CharField(max_length=250)
+    scalecolor =serializers.CharField(max_length=250)
+    fontcolor = serializers.CharField(max_length=250)
+    fontstyle = serializers.CharField(max_length=250)
 
-    class Meta:
-        model = system_settings
-        fields = '__all__'
-        # fields = ('_id','direction','color','hex_color','timing','time','label','labelA','labelB', 'scale_limit','spacing_unit','scale', 'labels')
-
-
-class ResponseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = response
-        fields = ('scale_name', 'score', 'brand_name', 'user', 'email')
-
+class ScaleResponseSerializer(serializers.Serializer):
+    scale_id = serializers.CharField(max_length=250)
+    workspace_id = serializers.CharField(max_length=250)
+    username = serializers.CharField(max_length=250)
+    # scale_name = serializers.CharField(max_length=250)
+    scale_type = serializers.CharField(max_length=250)
+    user_type = serializers.BooleanField()
+    channel = serializers.CharField(max_length=250)
+    instance = serializers.CharField(max_length=250)
+    score = serializers.IntegerField()
+    
 

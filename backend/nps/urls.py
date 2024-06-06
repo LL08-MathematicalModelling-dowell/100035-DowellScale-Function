@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import custom_configuration_list,dowell_editor_admin,custom_configuration_view,dowell_scale_admin,dowell_scale1, default_scale, default_scale_admin,brand_product_error, scale_settings_api_view, single_scale_settings_api_view, single_scale_response_api_view, scale_response_api_view, settings_api_view_create,nps_response_view_submit,dynamic_scale_instances
-
+from .api_v5 import CreatedNPSScale, CreatedNPSResponse
 
 app_name="nps"
 urlpatterns = [
@@ -12,6 +12,9 @@ urlpatterns = [
     path('nps-admin/default/', default_scale_admin, name='default_page_admin'),
     path('nps-editor/settings/<str:id>', dowell_editor_admin, name='default_page_admin'),
     # Rest endpoints
+
+    path('api/v5/nps-create-scale/', CreatedNPSScale.as_view(), name='nps-created-scale'),
+    path('api/v5/nps-create-response/', CreatedNPSResponse.as_view(), name='nps-created-response'),
 
 ]
 """

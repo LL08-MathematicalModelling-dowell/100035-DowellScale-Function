@@ -10,13 +10,13 @@ from nps.eventID import get_event_id
 import json
 
 
-class CreatedNPSLiteScale(APIView):
+class CreatedNPSScale(APIView):
     def build_url(self, payload):
         for channel_instance in payload['channel_instance_list']:
             first_channel = payload['channel_instance_list'][0]
             channel_name = first_channel.get('channel_name')
             if channel_name is not None:
-                url = f"http://127.0.0.1:8000/nps-lite/api/v5/nps-lite-create-scale/?user={payload['user_type']}&scale_type={payload['scale_category']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&channel_name={channel_name}"
+                url = f"http://127.0.0.1:8000/nps/api/v5/nps-create-scale/?user={payload['user_type']}&scale_type={payload['scale_category']}&workspace_id={payload['workspace_id']}&username={payload['username']}&scale_id={payload['scale_id']}&channel_name={channel_name}"
                 return url  # Return the first valid URL
         return None  
 
@@ -32,7 +32,7 @@ class CreatedNPSLiteScale(APIView):
                 scale_name = scale_serializer.validated_data['scale_name']
                 user_type = scale_serializer.validated_data['user_type']
                 no_of_responses = scale_serializer.validated_data['no_of_responses']
-                scale_type = "nps_lite"
+                scale_type = "nps"
                 
                 scale_customizations = scale_serializer.validated_data['customizations']
                 scale_settings_serializer = ScaleSettingsSerializer(data=scale_customizations)
@@ -128,7 +128,7 @@ class CreatedNPSLiteScale(APIView):
                 datacube_data_update(api_key, "livinglab_scales", "collection_3", {"_id": scale_id}, {"urls":url})
 
                 return Response({"success":"true",
-                                "message":"NPS Lite scale created successfully",
+                                "message":"NPS scale created successfully",
                                 "scale_id":scale_id,
                                 "scale_settings":settings,
                                 "master_link": url
@@ -169,7 +169,6 @@ class CreatedNPSLiteScale(APIView):
 
                     if isinstance(instances, list):
                         for instance in instances:
-                            print('instance',instance['instance_name'])
                             if instance['instance_name'] == instance_name:
                                 instance_details = {
                                     'channel_name': channel['channel_name'],
@@ -184,7 +183,7 @@ class CreatedNPSLiteScale(APIView):
             product_url = "https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/home/master-link"
             
             if instance_id:
-                redirect_url=f'{product_url}/scale?/?workspace_id={workspace_id}&scale_id={scale_id}&channel_name={channel_name}&instance=instance_{instance_id}'
+                redirect_url=f'{product_url}/scale?/?workspace_id={workspace_id}&scale_id={scale_id}&channel_name={channel_name}&instance_name=instance_{instance_id}'
             else:
                 redirect_url = f"{product_url}/?workspace_id={workspace_id}&scale_id={scale_id}&channel_name={channel_name}"
 
@@ -195,7 +194,7 @@ class CreatedNPSLiteScale(APIView):
             return Response({"success": "false", "message": "Unexpected error occurred while fetching your data"}, status=status.HTTP_400_BAD_REQUEST)
         
 
-class CreatedNPSLiteResponse(APIView):
+class CreatedNPSResponse(APIView):
     def post(self, request):
         response_serializer = ScaleResponseSerializer(data=request.data)
         try:
@@ -228,11 +227,11 @@ class CreatedNPSLiteResponse(APIView):
                     existing_response_count = 0
                 current_response_count = existing_response_count + 1
 
-                if score == 0:
+                if 0 <= score <= 6:
                     category = "detractor"
-                elif score == 1:
-                    category = "neutral"
-                elif score == 2:
+                elif 7 <= score <= 8:
+                    category = "passive"
+                elif 9 <= score <= 10:
                     category = "promoter"
                 else:
                     return Response({"success": "false", "message": "Invalid value for score"}, status=status.HTTP_400_BAD_REQUEST)

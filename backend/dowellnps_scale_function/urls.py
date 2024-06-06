@@ -29,6 +29,7 @@ urlpatterns = [
     path('addons/', include('addons.urls')),
     path('percent/', include('percent.urls')),
     path('nps-lite/', include('npslite.urls')),
+    path('nps/', include('nps.urls')),
     path('likert/', include('likert.urls')),
     path('percent-sum/', include('percent_sum.urls')),
     path('ranking/', include('ranking.urls')),
