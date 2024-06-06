@@ -4,3 +4,4 @@ export { default as ScaleReportSettings } from './ScaleReportSettings';
 export { default as ReportAnalyis } from './ReportAnalysis';
 export { default as Booth } from './Booth'
 export { default as NpsScaleTest } from './NpsScaleTest'
+export { default as NPSScale } from './NPSScale'

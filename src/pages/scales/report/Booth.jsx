@@ -33,17 +33,21 @@
 
 import React from 'react'
 import { useState, useEffect} from 'react';
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useLocation, useSearchParams } from "react-router-dom";
 import logo from "../../../../src/assets/dowell.png"
 const Booth = () => {
 
   const [boothInput, setBoothInput] = useState(0)
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const workspaceId=searchParams.get("workspace_id")
   const scaleId=searchParams.get("scale_id")
+  const scale_type =searchParams.get("scale_type")
   const channelName=searchParams.get("channel")
   console.log(scaleId,channelName,workspaceId)
+
+  console.log(scale_type, "GGG")
 
 
   const handleGoButton = () =>{

@@ -117,9 +117,9 @@ function Report() {
         {scaleData && scaleData?.map((scale, index)=>(
           <div onClick={() =>handleSlideOpen(index)} key={index} className='flex items-center justify-between w-[95%] mt-[10px] bg-[white] m-auto rounded-lg cursor-pointer pl-10 pr-5 pb-1' style={{WebkitBoxShadow: "0 10px 6px -6px #777"}}>
           <div className=''>
-            <div className='flex items-center'>
+            <div className='flex items-center justify-between w-5/6'>
             <p>{index + 1}</p><div className='ml-[17%] w-full' >{scale?.settings?.scale_name
-}</div>
+            }</div>
             </div>
             <div className='ml-[20%]' style={{display: openSlider && index == sliderKey ? 'block' : 'none' }}>
             <div className='flex'>

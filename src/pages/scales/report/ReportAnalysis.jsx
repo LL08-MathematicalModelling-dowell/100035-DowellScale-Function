@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import {
   Chart as ChartJS,
+  BarElement,
   CategoryScale,
   LinearScale,
   LineElement,
@@ -23,9 +24,11 @@ import {
 import { useParams } from 'react-router-dom';
 import { Line, Bar } from "react-chartjs-2";
 import StackBarData from "./StackBarData";
+import { useFetchUserContext } from "../../../contexts/fetchUserContext";
 
 ChartJS.register(
   CategoryScale,
+  BarElement,
   LinearScale,
   LineElement,
   PointElement,
@@ -35,11 +38,11 @@ ChartJS.register(
 );
 
 const instanceNames = {
-  instance_1: "Attendance",
-  instance_2: "Re-Explaination",
-  instance_3: "Understood",
-  instance_4: "Explaination",
-  instance_5: "Application in life",
+  instances_1: "Attendance",
+  instances_2: "Re-Explaination",
+  instances_3: "Understood",
+  instances_4: "Explaination",
+  instances_5: "Application in life",
 };
 
 const allChannelsNameTag = "channel_all_x";
@@ -142,6 +145,10 @@ const initialScoreData = {
 };
 
 const ReportAnalysis = () => {
+
+  const { rSize, setRSize, newScaleBtn, setNewScaleBtn, myScalesBtn, setMyScalesBtn, scaleIndex,
+    setScaleIndex, } = useFetchUserContext();
+
   const [channels, setChannels] = useState([]);
   const [instances, setInstances] = useState([]);
   const [selectedChannel, setSelectedChannel] = useState("");
@@ -229,6 +236,9 @@ const ReportAnalysis = () => {
   }, [selectedChannel, selectedInstance, data]);
 
   useEffect(() => {
+    setScaleIndex(10)
+    setMyScalesBtn(true)
+    setNewScaleBtn(false)
     if (selectedChannel !== allChannelsNameTag)
       return setDisplayDataForAllSelection([]);
 
@@ -460,7 +470,7 @@ console.log(scores)
       {selectedChannel === allChannelsNameTag ? (
         <>
         <>
-                    {/* <Box
+                    <Box
                       sx={{
                         mt: 4,
                         width: "100%",
@@ -473,7 +483,7 @@ console.log(scores)
                        data={StackBarData[0]}
                        options={optionsStack}
                     />}
-                    </Box> */}
+                    </Box>
                   </>
           {React.Children.toArray(
             displayDataForAllSelection.map((item, index) => {
