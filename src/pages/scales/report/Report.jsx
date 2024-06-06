@@ -39,13 +39,13 @@ function Report() {
           );
           console.log(response.data.scale_data)
           setScaleData(response.data.scale_data)
-          let arrayData = response.data.report.poisson_case_results.series.list1
-          for(let i = 0; i<response.data.report.no_of_scales; i++) {
-            let scaleObj = {name: i+1, score: arrayData[i], pv: 2400, amt: 2400}
-            if(BtnLinks.includes(`'${scaleObj.name}'`) === false){
-              BtnLinks.push(scaleObj)
-            }
-          }
+          // let arrayData = response.data.report.poisson_case_results.series.list1
+          // for(let i = 0; i<response.data.report.no_of_scales; i++) {
+          //   let scaleObj = {name: i+1, score: arrayData[i], pv: 2400, amt: 2400}
+          //   if(BtnLinks.includes(`'${scaleObj.name}'`) === false){
+          //     BtnLinks.push(scaleObj)
+          //   }
+          // }
         } catch (error) {
           console.error(error);
         } finally {
