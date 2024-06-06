@@ -34,7 +34,7 @@
 import React from 'react'
 import { useState, useEffect} from 'react';
 import { Link, useParams, useLocation, useSearchParams } from "react-router-dom";
-import logo from "../../../assets/dowell.png"
+import logo from "../../../../src/assets/dowell.png"
 const Booth = () => {
 
   const [boothInput, setBoothInput] = useState(0)
@@ -43,9 +43,11 @@ const Booth = () => {
   const location = useLocation();
   const workspaceId=searchParams.get("workspace_id")
   const scaleId=searchParams.get("scale_id")
-  const channelName=searchParams.get("channel_name")
-  const scaleType=searchParams.get("scale_type")
-  console.log(scaleType, "GGGGG")
+  const scale_type =searchParams.get("scale_type")
+  const channelName=searchParams.get("channel")
+  console.log(scaleId,channelName,workspaceId)
+
+  console.log(scale_type, "GGG")
 
 
   const handleGoButton = () =>{
