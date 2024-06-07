@@ -98,7 +98,7 @@ function Report() {
          <p style={{fontFamily: 'Roboto, sans-serif', fontWeight:'400', fontSize: '12px', lineHeight:'14.06px'}}>View detailed analytics report for your scale</p>
       </div>
       </div>
-      <div className='report-data mt-10 rounded-lg bg-[#E8E8E8]'>
+      <div className='report-data mt-10 rounded-lg bg-[#E8E8E8] pb-10'>
         <div className='flex flex-wrap justify-between w-full flex mt-10 mb-10'>
         <div className='flex items-center justify-start bg-[#FFF] rounded-lg w-1/3 ml-5'>
           <input className='rounded-lg w-full ml-5 outline-none' style={{height: '29px'}}/>
@@ -116,9 +116,9 @@ function Report() {
         <div>
         {scaleData && scaleData?.map((scale, index)=>(
           <div onClick={() =>handleSlideOpen(index)} key={index} className='flex items-center justify-between w-[95%] mt-[10px] bg-[white] m-auto rounded-lg cursor-pointer pl-10 pr-5 pb-1' style={{WebkitBoxShadow: "0 10px 6px -6px #777"}}>
-          <div className=''>
-            <div className='flex items-center justify-between w-5/6'>
-            <p>{index + 1}</p><div className='ml-[17%] w-full' >{scale?.settings?.scale_name
+          <div className='w-1/2'>
+            <div className='flex items-center justify-start w-full'>
+            <p>{index + 1}</p><div className='ml-[40px] w-full' >{scale?.settings?.scale_name
             }</div>
             </div>
             <div className='ml-[20%]' style={{display: openSlider && index == sliderKey ? 'block' : 'none' }}>
