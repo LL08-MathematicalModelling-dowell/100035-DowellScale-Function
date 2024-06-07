@@ -14,13 +14,13 @@ export default function App() {
                 <p className="text-[14px] mt-[20px]">Give your feedback</p>
                 <p className="text-[14px]">(Low)0-10(High)</p>
                <div className="w-max flex flex-col">
-                        <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 border-2 border-[#bfbfbf] w-max">
+                        <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 w-max">
                         
                         <button
                           key="0"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=0"
                         setLoading(0)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==0}
                           >
                           {loading==0?(
@@ -47,7 +47,7 @@ export default function App() {
                           key="1"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=1"
                         setLoading(1)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==1}
                           >
                           {loading==1?(
@@ -74,7 +74,7 @@ export default function App() {
                           key="2"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=2"
                         setLoading(2)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==2}
                           >
                           {loading==2?(
@@ -101,7 +101,7 @@ export default function App() {
                           key="3"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=3"
                         setLoading(3)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==3}
                           >
                           {loading==3?(
@@ -128,7 +128,7 @@ export default function App() {
                           key="4"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=4"
                         setLoading(4)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==4}
                           >
                           {loading==4?(
@@ -155,7 +155,7 @@ export default function App() {
                           key="5"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=5"
                         setLoading(5)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==5}
                           >
                           {loading==5?(
@@ -182,7 +182,7 @@ export default function App() {
                           key="6"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=6"
                         setLoading(6)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==6}
                           >
                           {loading==6?(
@@ -209,7 +209,7 @@ export default function App() {
                           key="7"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=7"
                         setLoading(7)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==7}
                           >
                           {loading==7?(
@@ -236,7 +236,7 @@ export default function App() {
                           key="8"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=8"
                         setLoading(8)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==8}
                           >
                           {loading==8?(
@@ -263,7 +263,7 @@ export default function App() {
                           key="9"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=9"
                         setLoading(9)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==9}
                           >
                           {loading==9?(
@@ -290,7 +290,7 @@ export default function App() {
                           key="10"
                           onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=10"
                         setLoading(10)}}
-                          className="text-[12px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
                        disabled={loading==10}
                           >
                           {loading==10?(
