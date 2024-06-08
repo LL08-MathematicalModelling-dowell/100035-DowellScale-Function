@@ -77,7 +77,7 @@ function degreesToRadians(degrees) {
 }
 
 
-  const handleGoButton = () =>{
+  const handleGoButton = async() =>{
     setSubmitted(true)
     if(boothInput<=0 || isNaN(boothInput))
       {
@@ -85,10 +85,12 @@ function degreesToRadians(degrees) {
         setBoothErr(true)
         return
       }else{
+     const response=await axios.get(`https://100035.pythonanywhere.com/addons/register/?shop_number=${boothInput}`)
+     console.log(response.data.data)
       const distance=calculateDistance(latitude,longitude,latitude,longitude)
       console.log(distance)
       if(distance<=3){
-        window.location.href=`https://100035.pythonanywhere.com/nps-lite/api/v5/nps-lite-create-scale/?user=False&scale_type=${scaleType}&workspace_id=${workspaceId}&username=HeenaK&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
+       window.location.href=`https://100035.pythonanywhere.com/nps-lite/api/v5/nps-lite-create-scale/?user=False&scale_type=${scaleType}&workspace_id=${workspaceId}&username=HeenaK&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
       }else{
         setValid(-1)
         setSubmitted(false)
