@@ -39,9 +39,9 @@ import MapComponent from './MapComponent';
 import axios from 'axios';
 const Booth = () => {
 
-  const [boothInput, setBoothInput] = useState(0)
-  const[boothErr,setBoothErr]=useState(false)
-  const [searchParams, setSearchParams] = useSearchParams();
+const [boothInput, setBoothInput] = useState(0)
+const[boothErr,setBoothErr]=useState(false)
+const [searchParams, setSearchParams] = useSearchParams();
 const[submitted,setSubmitted]=useState(false)
 const[latitude,setLatitude]=useState("")
 const[longitude,setLongitude]=useState("")
@@ -53,9 +53,9 @@ const[valid,setValid]=useState(0)
   const scaleType =searchParams.get("scale_type")
   const channelName=searchParams.get("channel")
 
+  const myParam = new URLSearchParams(location.search).get('scale_type');
 
-
-
+  console.log(myParam, "GGGGG")
 
   function calculateDistance(lat1, lon1, lat2, lon2) {
     const earthRadiusKm = 6371; // Radius of the Earth in kilometers
