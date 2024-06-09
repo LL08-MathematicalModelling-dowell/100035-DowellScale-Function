@@ -9,6 +9,7 @@ export default function App() {
     <div className="flex flex-col justify-center items-center font-sans font-medium p-10 mt-5 text-[20px] text-[#E45E4C]">
     <p className="font-sans font-bold font-medium text-[20px] text-[#E45E4C] text-center">
     Would you like to use our products/services
+    
     </p>
     </div>
                 <p className="text-[14px] mt-[20px]">Give your feedback</p>
