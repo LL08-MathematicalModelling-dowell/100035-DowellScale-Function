@@ -108,7 +108,7 @@ function degreesToRadians(degrees) {
    async function fetchLocation(){
         const response=await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-56d63b0b-5d6c-4d6e-b011-d19a9aa8773b")
         const detailedReport = response.data.response.detailed_report;
-
+console.log(response.data)
    if (Array.isArray(detailedReport) && detailedReport.length > 0) {
     
        
