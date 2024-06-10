@@ -1,325 +1,176 @@
 
 import {useState} from "react"
+import axios from "axios"
+import { useSearchParams } from "react-router-dom";
 export default function App() {
   const[loading,setLoading]=useState(-1)
+  const[submitted, setSubmitted]=useState(-1)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const workspaceId=searchParams.get("workspace_id")
+  const scaleId=searchParams.get("scale_id")
+  const channelName=searchParams.get("channel")
+  const instanceName=searchParams.get("instance")
+
+  async function submit(index){
+    setSubmitted(index)
+        const headers = {
+            "Content-Type": "application/json"
+        };
+    
+    
+        const body = {
+            "scale_id":scaleId,
+            "workspace_id": workspaceId,
+            "username": "CustomerSupport",
+            "scale_type": "nps",
+            "user_type": true,
+            "score": index,
+            "channel": channelName,
+            "instance": instanceName
+        };
+    
+        try {
+            const response = await axios.post("https://100035.pythonanywhere.com/nps/api/v5/nps-create-response/", body, { headers });
+        
+            if(response.data.success=="true"){
+              console.log("redirecting.....")
+            window.location.href=response.data.redirect_url
+           }
+        } catch (error) {
+            console.error("Error submitting response:", error.response ? error.response.data : error.message);
+        }
+  }
+
+
   return (
    <div className="w-full flex flex-col justify-center items-center ">
-    <p className="mt-20 text-[14px]">Stand/Shop Number</p>
+    <p className="mt-[150px] text-[20px]">Give your feedback</p>
+    <p className="mt-3 text-[14px]">Stand/Shop Number</p>
     <p className="w-[190px] border-2 h-[50px] rounded-3xl flex items-center justify-center">1</p>
-    <div className="flex flex-col justify-center items-center font-sans font-medium p-10 mt-5 text-[20px] text-[#E45E4C]">
+    <div className="flex flex-col justify-center items-center font-sans font-medium p-3 mt-5 text-[20px] text-[#E45E4C]">
     <p className="font-sans font-bold font-medium text-[20px] text-[#E45E4C] text-center">
     Would you like to use our products/services
     
     </p>
     </div>
-                <p className="text-[14px] mt-[20px]">Give your feedback</p>
-                <p className="text-[14px]">(Low)0-10(High)</p>
+                {/* <p className="text-[14px]">(Low)0-10(High)</p> */}
                <div className="w-max flex flex-col">
                         <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 w-max">
-                        
+                        <style>
+                        {`
+                       @keyframes spin {
+                        to {
+                          transform: rotate(360deg);
+                        }
+                      }
+                      
+                      .loader {
+                        display: inline-block;
+                        width: 20px;
+                        height: 20px;
+                        border: 3px solid rgba(255, 255, 255, 0.3);
+                        border-radius: 50%;
+                        border-top-color: #fff;
+                        animation: spin 1s linear infinite;
+                      }
+                      
+                      
+                          
+                        `}
+                    </style>
                         <button
                           key="0"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=0"
-                        setLoading(0)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==0}
+                          onClick={()=>submit(0)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200 "
                           >
-                          {loading==0?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            0
-                          )}
-                         
+                         {submitted==0 ? <div className="loader"></div> : 0}
                         </button>
                       
                         <button
                           key="1"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=1"
-                        setLoading(1)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==1}
+                          onClick={()=>submit(1)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==1?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            1
-                          )}
-                         
+                          {submitted==1 ? <div className="loader"></div> : 1}
                         </button>
                       
                         <button
                           key="2"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=2"
-                        setLoading(2)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==2}
+                          onClick={()=>submit(2)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==2?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            2
-                          )}
-                         
+                           {submitted==2 ? <div className="loader"></div> : 2}
                         </button>
-                      
                         <button
                           key="3"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=3"
-                        setLoading(3)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==3}
+                          onClick={()=>submit(3)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==3?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            3
-                          )}
-                         
+                          {submitted==3 ? <div className="loader"></div> : 3}
                         </button>
                       
                         <button
                           key="4"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=4"
-                        setLoading(4)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==4}
+                          onClick={()=>submit(4)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==4?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            4
-                          )}
-                         
+                          {submitted==4 ? <div className="loader"></div> : 4}
                         </button>
                       
                         <button
                           key="5"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=5"
-                        setLoading(5)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==5}
+                          onClick={()=>submit(5)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==5?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            5
-                          )}
-                         
+                         {submitted==5 ? <div className="loader"></div> : 5}
                         </button>
                       
                         <button
                           key="6"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=6"
-                        setLoading(6)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==6}
+                          onClick={()=>submit(6)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==6?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            6
-                          )}
-                         
+                         {submitted==6 ? <div className="loader"></div> : 6}
                         </button>
                       
                         <button
                           key="7"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=7"
-                        setLoading(7)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==7}
+                          onClick={()=>submit(7)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==7?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            7
-                          )}
-                         
+                         {submitted==7 ? <div className="loader"></div> : 7}
                         </button>
                       
                         <button
                           key="8"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=8"
-                        setLoading(8)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==8}
+                          onClick={()=>submit(8)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==8?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            8
-                          )}
-                         
+                         {submitted==8 ? <div className="loader"></div> : 8}
                         </button>
                       
                         <button
                           key="9"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=9"
-                        setLoading(9)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==9}
+                          onClick={()=>submit(9)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==9?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            9
-                          )}
-                         
+                          {submitted==9 ? <div className="loader"></div> : 9}
                         </button>
                       
                         <button
                           key="10"
-                          onClick={() =>{ window.location.href = "https://100035.pythonanywhere.com/addons/create-response/v3/?user=True&scale_type=nps&channel=channel_1&instance=instances_1&workspace_id=6385c0e68eca0fb652c9449a&username=CustomerSupport&scale_id=666178864ef3c835170173f9&item=10"
-                        setLoading(10)}}
-                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold"
-                       disabled={loading==10}
+                          onClick={()=>submit(10)}
+                          className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
                           >
-                          {loading==10?(
-                            <>
-                           
-                            <div className="flex h-full w-full items-center justify-center">
-                            <button type="button" className="flex items-center rounded-lg  px-4 py-2 text-white" disabled>
-                              <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                             
-                            </button>
-                          </div>
-
-                            </>
-                          ):(
-                            10
-                          )}
-                         
+                        {submitted==10 ? <div className="loader"></div> : 10}
                         </button>
                       
                     </div>
-                    {/* <div className="w-full flex p-2 justify-between items-center text-[12px] sm:text-[14px] ">
-                            <p>Bad</p>
+                    <div className="w-full flex p-2 justify-between items-center text-[12px] sm:text-[14px] ">
+                            <p>low</p>
                             <p>Average</p>
-                            <p>Excellent</p>
-                    </div> */}
+                            <p>High</p>
+                    </div>
                 </div>
             </div>
   );
