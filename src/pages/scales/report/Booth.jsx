@@ -90,7 +90,11 @@ function degreesToRadians(degrees) {
       const distance=calculateDistance(latitude,longitude,latitude,longitude)
       console.log(distance)
       if(distance<=3){
+        if(scaleType === 'nps_lite'){
        window.location.href=`https://100035.pythonanywhere.com/nps-lite/api/v5/nps-lite-create-scale/?user=False&scale_type=${scaleType}&workspace_id=${workspaceId}&username=HeenaK&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
+        }else if(scaleType === 'nps'){
+          window.location.href=`https://100035.pythonanywhere.com/nps/api/v5/nps-create-scale/?user=False&scale_type=${scaleType}&workspace_id=${workspaceId}&username=HeenaK&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
+        }
       }else{
         setValid(-1)
         setSubmitted(false)
@@ -126,10 +130,10 @@ console.log(response.data)
     <div className='flex flex-col items-center justify-center w-full'>
       <img className='mt-5 w-[150px] sm:w-[250px]' src={logo} alt='booth image'/>
       <div className="flex flex-col gap-2 mt-[20px] sm:mt-[50px]"> 
-          <label htmlFor="boothNumber" className="text-[14px] sm:text-[16px] font-medium self-center">Please enter your booth number</label>
-          <input id="boothNumber" name="boothNumber" value={boothInput} type="number"
+          <label htmlFor="boothNumber" className="text-[14px] sm:text-[16px] font-medium self-center">Please enter your shop number</label>
+          <input id="boothNumber" name="boothNumber" value={boothInput}
           placeholder="enter shop/stand number"  onChange={(e) => {
-            setBoothInput(e.target.value);
+           setBoothInput(e.target.value);
            setBoothErr(false)
            setValid(0)
           }
@@ -137,7 +141,7 @@ console.log(response.data)
         disabled={submitted==true}
           className={`border rounded-full p-2 px-6 sm:text-base text-sm ${setSubmitted==true ? "bg-gray-300" : ""}`}/>
           </div>
-          {boothErr && <p className="text-red-500 text-[12px] sm:text-[14px]">**Booth number is not valid**</p>}
+          {boothErr && <p className="text-red-500 text-[12px] sm:text-[14px]">**Shop number is not valid**</p>}
           <div className="w-[300px] sm:w-[500px] h-[250px] m-5 sm:m-10">
             {locationLoading==0 ? (
               <>
