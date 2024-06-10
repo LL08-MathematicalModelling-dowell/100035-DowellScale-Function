@@ -121,6 +121,7 @@ function degreesToRadians(degrees) {
        setLongitude(detailedReport[detailedReport.length - 1].long+"")
        setLocationLoading(1)
    } else {
+    
        console.log("detailed_report is either not an array or is empty");
        setLocationLoading(-1)
    }
