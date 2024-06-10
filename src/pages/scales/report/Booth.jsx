@@ -48,14 +48,12 @@ const[longitude,setLongitude]=useState("")
 const[locationLoading,setLocationLoading]=useState(0)
 const[valid,setValid]=useState(0)
 
-  const workspaceId=searchParams.get("workspace_id")
-  const scaleId=searchParams.get("scale_id")
-  const scaleType =searchParams.get("scale_type")
-  const channelName=searchParams.get("channel")
+const workspaceId=searchParams.get("workspace_id")
+const scaleType=searchParams.get("scale_type")
+const scaleId=searchParams.get("scale_id")
+const channelName=searchParams.get("channel_name")
 
-  const myParam = new URLSearchParams(location.search).get('scale_type');
 
-  console.log(myParam, "GGGGG")
 
   function calculateDistance(lat1, lon1, lat2, lon2) {
     const earthRadiusKm = 6371; // Radius of the Earth in kilometers
@@ -76,7 +74,7 @@ function degreesToRadians(degrees) {
     return degrees * (Math.PI / 180);
 }
 
-
+console.log(scaleType)
   const handleGoButton = async() =>{
     setSubmitted(true)
     if(boothInput<=0 || isNaN(boothInput))
@@ -89,8 +87,15 @@ function degreesToRadians(degrees) {
      console.log(response.data.data)
       const distance=calculateDistance(latitude,longitude,latitude,longitude)
       console.log(distance)
+     
       if(distance<=3){
-       window.location.href=`https://100035.pythonanywhere.com/nps-lite/api/v5/nps-lite-create-scale/?user=False&scale_type=${scaleType}&workspace_id=${workspaceId}&username=HeenaK&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
+      if(scaleType=="nps"){
+        window.location.href=`https://100035.pythonanywhere.com/nps/api/v5/nps-create-scale/?user=True&scale_type=nps&workspace_id=${workspaceId}&username=Paolo&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
+      }else if (scaleType=="nps_lite"){
+        window.location.href=`https://100035.pythonanywhere.com/nps-lite/api/v5/nps-lite-create-scale/?user=False&scale_type=${scaleType}&workspace_id=${workspaceId}&username=HeenaK&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
+      }else{
+        console.log("No valid endpoint")
+      }
       }else{
         setValid(-1)
         setSubmitted(false)
@@ -123,10 +128,10 @@ console.log(response.data)
 
 
   return (
-    <div className='flex flex-col items-center justify-center w-full'>
+    <div className='flex flex-col items-center justify-center w-full gap-5 sm:gap-2'>
       <img className='mt-5 w-[150px] sm:w-[250px]' src={logo} alt='booth image'/>
       <div className="flex flex-col gap-2 mt-[20px] sm:mt-[50px]"> 
-          <label htmlFor="boothNumber" className="text-[14px] sm:text-[16px] font-medium self-center">Please enter your booth number</label>
+          <label htmlFor="boothNumber" className="text-[14px] sm:text-[16px] font-medium self-center mt-2">Please enter your shop number</label>
           <input id="boothNumber" name="boothNumber" value={boothInput} type="number"
           placeholder="enter shop/stand number"  onChange={(e) => {
             setBoothInput(e.target.value);
@@ -136,8 +141,9 @@ console.log(response.data)
         }
         disabled={submitted==true}
           className={`border rounded-full p-2 px-6 sm:text-base text-sm ${setSubmitted==true ? "bg-gray-300" : ""}`}/>
+           {boothErr && <p className="text-red-500 text-[12px] sm:text-[14px] self-center">**Shop number is not valid**</p>}
           </div>
-          {boothErr && <p className="text-red-500 text-[12px] sm:text-[14px]">**Booth number is not valid**</p>}
+         
           <div className="w-[300px] sm:w-[500px] h-[250px] m-5 sm:m-10">
             {locationLoading==0 ? (
               <>
@@ -151,15 +157,37 @@ console.log(response.data)
             </>
           ):(
           <>
-           <p className="text-[18px] w-full h-full flex justify-center items-center bg-gray-100">Failed to Load Location details</p>
+           <p className="text-[14px] sm:text-[18px] w-full h-full flex justify-center items-center bg-gray-100">Failed to Load Location details</p>
           </>
         )}
           </>
         )}
           
          </div>
-      <button className='w-[70px] h-[30px] rounded-lg mt-5  bg-orange-500 font-medium'
-      onClick={handleGoButton}>GO</button>
+         <style>
+                        {`
+                       @keyframes spin {
+                        to {
+                          transform: rotate(360deg);
+                        }
+                      }
+                      
+                      .loader {
+                        display: inline-block;
+                        width: 20px;
+                        height: 20px;
+                        border: 3px solid rgba(255, 255, 255, 0.3);
+                        border-radius: 50%;
+                        border-top-color: #fff;
+                        animation: spin 1s linear infinite;
+                      }
+                      
+                      
+                          
+                        `}
+                    </style>
+      <button className='w-[100px] h-[40px] rounded-lg mt-5  bg-orange-500 font-medium '
+      onClick={handleGoButton}>{submitted==true ? <div className="loader"></div> : "GO"}</button>
       {valid==-1 && <p className='text-red-600 p-2 mt-2 text-[12px] sm:text-[16px]'>Please check the details and try again</p>}
     </div>
     

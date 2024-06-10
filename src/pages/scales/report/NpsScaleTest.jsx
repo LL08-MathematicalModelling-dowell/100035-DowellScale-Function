@@ -7,9 +7,22 @@ const NpsScaleTest = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const workspaceId=searchParams.get("workspace_id")
   const scaleId=searchParams.get("scale_id")
-  const channelName=searchParams.get("channel")
-  const instanceName=searchParams.get("instance")
-
+  const channelName=searchParams.get("channel_name")
+  const instanceName=searchParams.get("instance_name")
+  let instanceId
+  if(instanceName){
+ 
+    const match = instanceName.match(/(\d+)$/);
+    instanceId = match ? parseInt(match[0], 10) : -1;
+  }
+else
+  {
+    return(
+      <>
+      <p className="w-screen h-screen font-bold flex justify-center items-center">Invalid Shop/Stand Number..</p>
+      </>
+    )
+  }
   async function submit(index){
 setSubmitted(index)
     const headers = {
@@ -41,13 +54,19 @@ setSubmitted(index)
 }
 
   return (
-    <div className='flex flex-col justify-center items-center font-sans font-medium p-3 mt-5 text-base m-auto w-full'>
-      <p className="flex justify-center items-center font-sans font-medium p-3 mt-5 text-[12px] sm:text-[18px] text-orange-600">
-        Would you like to use our product/ service?
+    <div className="min-h-screen flex flex-col  items-center bg-gray-100 sm:p-4 w-screen">
+    <p className=" text-[16px] sm:text-[20px] font-bold mt-20">Give your feedback</p>
+    <p className="mt-8 text-[14px] font-medium">Stand/Shop Number</p>
+    <p className="w-[80px] sm:w-[150px] border-2 h-[30px] sm:h-[50px] mt-2 rounded-3xl flex items-center justify-center font-medium">{instanceId}</p>
+    <div className="flex flex-col justify-center items-center font-sans font-medium sm:p-3 mt-28 text-[20px] text-[#E45E4C]">
+      <p className="font-sans sm:font-bold font-medium text-[14px] sm:text-[20px] text-[#E45E4C] text-center">
+        Would you like to use our products/services
       </p>
+    </div>
+     
       
-      <div className="flex border md:p-5 p-2 justify-center items-center mt-5">
-      <div className="flex justify-center items-center gap-6 md:gap-12 text-[12px] sm:text-[14px] md:text-[18px]">
+      <div className="flex border md:p-5 p-2 justify-center items-center mt-10">
+      <div className="flex justify-center items-center gap-6 md:gap-12 text-[14px] md:text-[18px]">
       <style>
                         {`
                        @keyframes spin {
@@ -71,24 +90,24 @@ setSubmitted(index)
                         `}
                     </style>
         <button
-          className="bg-[#ff4a4a] rounded-lg   p-[9px] sm:p-2 sm:px-6 md:p-4 md:px-12  sm:font-medium cursor-pointer"
+          className="bg-[#ff4a4a] rounded-lg  p-2 px-6 md:p-4 md:px-12 font-medium cursor-pointer"
           onClick={() => submit(0)}
         >
-           {submitted==0 ? <div className="loader"></div> : "Bad 😞"}
+           {submitted==0 ? <div className="loader"></div> : "No"}
           
         </button>
         <button
-          className="bg-[#f3dd1f] rounded-lg p-[9px] sm:p-2 sm:px-6 md:p-4 md:px-12   sm:font-medium cursor-pointer"
+          className="bg-[#f3dd1f] rounded-lg  p-2 px-6 md:p-4 md:px-12 font-medium cursor-pointer"
           onClick={() => submit(1)}
         >
-           {submitted==1 ? <div className="loader"></div> : " Average 😐"}
+           {submitted==1 ? <div className="loader"></div> : "Maybe"}
         
         </button>
         <button
-          className="bg-[#129561] rounded-lg p-[9px] sm:p-2 sm:px-6 md:p-4 md:px-12  sm:font-medium cursor-pointer"
+          className="bg-[#129561] rounded-lg p-2 px-6 md:p-4 md:px-12 font-medium cursor-pointer"
           onClick={() => submit(2)}
         >
-           {submitted==2 ? <div className="loader"></div> : "Excellent 😄"}
+           {submitted==2 ? <div className="loader"></div> : "Yes"}
           
         </button>
       </div>

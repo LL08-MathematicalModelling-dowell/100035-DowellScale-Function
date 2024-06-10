@@ -9,12 +9,23 @@ export default function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const workspaceId=searchParams.get("workspace_id")
   const scaleId=searchParams.get("scale_id")
-  const channelName=searchParams.get("channel")
-  const instanceName=searchParams.get("instance")
+  const channelName=searchParams.get("channel_name")
+  const instanceName=searchParams.get("instance_name")
   const buttons = Array.from({ length: 11 }, (_, i) => i);
-
-
-
+  let instanceId
+  if(instanceName){
+ 
+    const match = instanceName.match(/(\d+)$/);
+    instanceId = match ? parseInt(match[0], 10) : -1;
+  }
+else
+  {
+    return(
+      <>
+      <p className="w-screen h-screen font-bold flex justify-center items-center">Invalid Shop/Stand Number..</p>
+      </>
+    )
+  }
   async function submit(index){
     setSubmitted(index)
         const headers = {
@@ -47,55 +58,51 @@ export default function App() {
 
 
   return (
-   <div className="w-full flex flex-col justify-center items-center ">
-    <p className="mt-5 text-[16px] sm:text-[20px] font-bold">Give your feedback</p>
-    <p className="mt-3 text-[14px]">Stand/Shop Number</p>
-    <p className=" w-[80px] sm:w-[150px] border-2 h-[30px] sm:h-[50px] mt-2 rounded-3xl flex items-center justify-center">1</p>
-    <div className="flex flex-col justify-center items-center font-sans font-medium p-3 mt-5 text-[20px] text-[#E45E4C]">
-    <p className="font-sans sm:font-bold font-medium text-[14px] sm:text-[20px] text-[#E45E4C] text-center">
-    Would you like to use our products/services
-    
-    </p>
+    <div className="min-h-screen flex flex-col  items-center bg-gray-100 p-4 w-screen">
+      <p className=" text-[16px] sm:text-[20px] font-bold mt-20">Give your feedback</p>
+      <p className="mt-8 text-[14px] font-medium">Stand/Shop Number</p>
+      <p className="w-[80px] sm:w-[150px] border-2 h-[30px] sm:h-[50px] mt-2 rounded-3xl flex items-center justify-center font-medium">{instanceId}</p>
+      <div className="flex flex-col justify-center items-center font-sans font-medium sm:p-3 mt-24 text-[20px] text-[#E45E4C]">
+        <p className="font-sans sm:font-bold font-medium text-[14px] sm:text-[20px] text-[#E45E4C] text-center">
+          Would you like to use our products/services
+        </p>
+      </div>
+      <div className="w-full flex flex-col items-center mt-8">
+        <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 w-max">
+          <style>
+            {`
+              @keyframes spin {
+                to {
+                  transform: rotate(360deg);
+                }
+              }
+              .loader {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 3px solid rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                border-top-color: #fff;
+                animation: spin 1s linear infinite;
+              }
+            `}
+          </style>
+          {buttons.map((value) => (
+            <button
+              key={value}
+              onClick={() => submit(value)}
+              className="md:text-[20px] sm:text-[14px] py-[1px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-orange-400 text-white font-bold hover:bg-green-200"
+            >
+              {submitted === value ? <div className="loader"></div> : value}
+            </button>
+          ))}
+        </div>
+        <div className=" flex justify-center items-center gap-20 sm:gap-52  text-[12px] sm:text-[14px] mt-4">
+          <p>Low</p>
+          <p>Average</p>
+          <p>High</p>
+        </div>
+      </div>
     </div>
-                {/* <p className="text-[14px]">(Low)0-10(High)</p> */}
-               <div className="w-max flex flex-col">
-            
-
-  <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 w-max">
-    <style>
-      {`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-        .loader {
-          display: inline-block;
-          width: 20px;
-          height: 20px;
-          border: 3px solid rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
-          border-top-color: #fff;
-          animation: spin 1s linear infinite;
-        }
-      `}
-    </style>
-    {buttons.map((value) => (
-      <button
-        key={value}
-        onClick={() => submit(value)}
-        className="md:text-[20px] sm:text-[14px] py-[2px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-[#FCEAD4] text-[#F7B75F] font-bold hover:bg-green-200"
-      >
-        {submitted === value ? <div className="loader"></div> : value}
-      </button>
-    ))}
-  </div>
-                    <div className="w-full flex  justify-center items-center gap-24 sm:gap-48 text-[12px] sm:text-[14px] ">
-                            <p>low</p>
-                            <p>Average</p>
-                            <p>High</p>
-                    </div>
-                </div>
-            </div>
   );
 }
