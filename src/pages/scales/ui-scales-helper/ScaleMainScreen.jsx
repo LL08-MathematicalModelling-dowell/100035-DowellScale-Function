@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router';
-
+import { useFetchUserContext } from "../../../contexts/fetchUserContext";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
 
@@ -15,6 +15,20 @@ import PreviewScale from "./PreviewScale";
 
 export default function ScaleMainScreen({textContent}){
    
+const {  
+        popuOption, 
+        setPopupOption,
+        sName,
+        setSName,
+        BtnLink,
+        setBtnLink,
+        scaleIndex,
+        setScaleIndex,
+        rSize, 
+        setRSize,
+        setMyScalesBtn,
+        setNewScaleBtn } = useFetchUserContext()
+
 const[goBack,setGoBack]=useState(false)
 const[step,setStep]=useState(1)
 

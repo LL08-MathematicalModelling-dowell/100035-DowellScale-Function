@@ -34,14 +34,14 @@ else
     
     
         const body = {
-            "scale_id":scaleId,
+            "scale_id":"665a8277d5d158ec8391aaf7",
             "workspace_id": workspaceId,
             "username": "CustomerSupport",
             "scale_type": "nps",
             "user_type": true,
             "score": index,
-            "channel": channelName,
-            "instance": instanceName
+            "channel_name": channelName,
+            "instance_name": instanceName
         };
     
         try {
@@ -53,22 +53,25 @@ else
            }
         } catch (error) {
             console.error("Error submitting response:", error.response ? error.response.data : error.message);
+            setSubmitted(-2)
         }
   }
 
 
   return (
     <div className="min-h-screen flex flex-col  items-center bg-gray-100 p-4 w-screen">
-      <p className=" text-[16px] sm:text-[20px] font-bold mt-20">Give your feedback</p>
+     
       <p className="mt-8 text-[14px] font-medium">Stand/Shop Number</p>
       <p className="w-[80px] sm:w-[150px] border-2 h-[30px] sm:h-[50px] mt-2 rounded-3xl flex items-center justify-center font-medium">{instanceId}</p>
-      <div className="flex flex-col justify-center items-center font-sans font-medium sm:p-3 mt-24 text-[20px] text-[#E45E4C]">
+      <div className="flex flex-col justify-center items-center font-sans font-medium sm:p-3 sm:mt-14 mt-24 text-[20px] text-[#E45E4C]">
         <p className="font-sans sm:font-bold font-medium text-[14px] sm:text-[20px] text-[#E45E4C] text-center">
           Would you like to use our products/services
         </p>
       </div>
-      <div className="w-full flex flex-col items-center mt-8">
-        <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 w-max">
+      <div className="w-full flex flex-col items-center sm:mt-8">
+      <p className=" text-[14px] sm:text-[20px] mt-10  font-medium">Give your feedback</p>
+      <p className="p-2 text-[12px] sm:text-[16px] font-medium">(Low) 0-10 (High)</p>
+        <div className="flex justify-center items-center gap-1 sm:gap-3 bg-white p-2 md:p-4 lg:px-8 w-max mt-5">
           <style>
             {`
               @keyframes spin {
@@ -91,17 +94,14 @@ else
             <button
               key={value}
               onClick={() => submit(value)}
-              className="md:text-[20px] sm:text-[14px] py-[1px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-orange-400 text-white font-bold hover:bg-green-200"
+              className="md:text-[20px] sm:text-[14px] py-[1px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-orange-400 text-white font-bold hover:bg-indigo-600"
             >
-              {submitted === value ? <div className="loader"></div> : value}
+              {submitted === value ? <div className="loader flex justify-center items-center"></div> : value}
             </button>
           ))}
         </div>
-        <div className=" flex justify-center items-center gap-20 sm:gap-52  text-[12px] sm:text-[14px] mt-4">
-          <p>Low</p>
-          <p>Average</p>
-          <p>High</p>
-        </div>
+       
+        {submitted==-2 && <p className="text-red-600 p-2 mt-2 self-center text-[12px] sm:text-[16px]">Unable to submit your feedback at the moment</p>}
       </div>
     </div>
   );

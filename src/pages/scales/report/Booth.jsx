@@ -134,7 +134,7 @@ console.log(response.data)
           <label htmlFor="boothNumber" className="text-[14px] sm:text-[16px] font-medium self-center mt-2">Please enter your shop number</label>
           <input id="boothNumber" name="boothNumber" value={boothInput} type="number"
           placeholder="enter shop/stand number"  onChange={(e) => {
-            setBoothInput(e.target.value);
+           setBoothInput(e.target.value);
            setBoothErr(false)
            setValid(0)
           }

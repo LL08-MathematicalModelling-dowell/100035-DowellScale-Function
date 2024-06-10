@@ -17,7 +17,8 @@ import ScaleMainScreen from './scales/ui-scales-helper/ScaleMainScreen';
 
 const SideBar = () => {
 
-  const { rSize, setRSize, newScaleBtn, setNewScaleBtn, myScalesBtn, setMyScalesBtn, scaleIndex,
+  const { popuOption, 
+    setPopupOption, rSize, setRSize, newScaleBtn, setNewScaleBtn, myScalesBtn, setMyScalesBtn, scaleIndex,
     setScaleIndex, } = useFetchUserContext();
   
   const [searchParams] = useSearchParams();
@@ -124,7 +125,7 @@ const handleConfirm = () =>{
   }, []);
 
   return (
-    <div className='hidden lg:block lg:w-3/12 h-screen' style={{backgroundColor:'#54595F', width: reduceSize ? '50px' :'250px', marginRight: '50px', position: 'fixed', }}>
+    <div className='hidden lg:block lg:w-3/12 h-screen' style={{backgroundColor:'#54595F', width: reduceSize ? '50px' :'250px', marginRight: '50px', position: 'fixed', filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '' }}>
      <div style={{color: '#D3D3D3', fontSize:'15px', fontWeight:'400', display: 'flex', flexDirection: reduceSize ? 'column' : 'row', alignItems:'center', justifyContent: 'center', marginTop: '20px'}}>
      <AiOutlineMenuUnfold onClick={handleSizeToggle} style={{fontSize: '25px', color:'#6D6E70', cursor: 'pointer', display: reduceSize ? 'block' : 'none'}}/>
      <img src= {dowellLogo} alt='image' style={{height: reduceSize ? '25px' : '60px', borderRadius:'8px'}}/>
