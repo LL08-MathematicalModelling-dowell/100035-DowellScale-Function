@@ -51,7 +51,7 @@ const[valid,setValid]=useState(0)
   const workspaceId=searchParams.get("workspace_id")
   const scaleId=searchParams.get("scale_id")
   const scaleType =searchParams.get("scale_type")
-  const channelName=searchParams.get("channel")
+  const channelName=searchParams.get("channel_name")
 
   const myParam = new URLSearchParams(location.search).get('scale_type');
 

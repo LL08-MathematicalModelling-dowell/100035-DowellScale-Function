@@ -7,8 +7,8 @@ const NpsScaleTest = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const workspaceId=searchParams.get("workspace_id")
   const scaleId=searchParams.get("scale_id")
-  const channelName=searchParams.get("channel")
-  const instanceName=searchParams.get("instance")
+  const channelName=searchParams.get("channel_name")
+  const instanceName=searchParams.get("instance_name")
 
   async function submit(index){
 setSubmitted(index)
