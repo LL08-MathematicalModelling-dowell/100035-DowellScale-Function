@@ -146,39 +146,11 @@ class CreatedNPSScale(APIView):
     def get(self, request):
         try:
             scale_id = request.GET.get('scale_id')
-            if not scale_id:
-                return Response({"success": "false", "message": "scale_id parameter is missing"}, status=status.HTTP_400_BAD_REQUEST)
-
-            response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"_id": scale_id}, 10000, 0, False))
-            if not response_data['data']:
-                return Response({"success": "false", "message": "Scale not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            response = response_data['data'][0]
-            workspace_id = response['configs'].get('workspace_id')
-            channel_instance_list = response['configs']['channel_instance_list']
-            channel_name = response['configs']['channel_instance_list'][0]['channel_name']
+            workspace_id = request.GET.get('workspace_id')
+            channel_name = request.GET.get('channel_name')
             instance_name = request.GET.get('instance_name')
             instance_id = request.GET.get('instance_id')
             
-
-            instance_details = None
-
-            for channel in channel_instance_list:
-                if channel['channel_name'] == channel_name:
-                    instances = channel.get('instances_details', [])
-
-                    if isinstance(instances, list):
-                        for instance in instances:
-                            if instance['instance_name'] == instance_name:
-                                instance_details = {
-                                    'channel_name': channel['channel_name'],
-                                    'instance_name': instance.get('instance_name'),
-                                    'instance_display_name': instance.get('instance_display_name'),
-                                }
-                                break
-                if instance_details:
-                    break       
-
         
             product_url = "https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/home/master-link"
             

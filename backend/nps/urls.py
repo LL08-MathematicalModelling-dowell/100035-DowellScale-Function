@@ -13,8 +13,8 @@ urlpatterns = [
     path('nps-editor/settings/<str:id>', dowell_editor_admin, name='default_page_admin'),
     # Rest endpoints
 
-    path('api/v5/nps-create-scale/', CreatedNPSScale.as_view(), name='nps-created-scale'),
-    path('api/v5/nps-create-response/', CreatedNPSResponse.as_view(), name='nps-created-response'),
+    path('nps/api/v5/nps-create-scale/', CreatedNPSScale.as_view(), name='nps-created-scale'),
+    path('nps/api/v5/nps-create-response/', CreatedNPSResponse.as_view(), name='nps-created-response'),
 
 ]
 """
