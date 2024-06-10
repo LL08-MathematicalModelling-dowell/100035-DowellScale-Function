@@ -24,6 +24,7 @@ else
     )
   }
   async function submit(index){
+    
 setSubmitted(index)
     const headers = {
         "Content-Type": "application/json"
@@ -37,8 +38,8 @@ setSubmitted(index)
         "scale_type": "nps_lite",
         "user_type": true,
         "score": index,
-        "channel": channelName,
-        "instance": instanceName
+        "channel_name": channelName,
+        "instance_name": instanceName
     };
 
     try {
@@ -50,6 +51,8 @@ setSubmitted(index)
        }
     } catch (error) {
         console.error("Error submitting response:", error.response ? error.response.data : error.message);
+        setSubmitted(-2)
+       
     }
 }
 
@@ -112,6 +115,7 @@ setSubmitted(index)
         </button>
       </div>
       </div>
+      {submitted==-2 && <p className="text-red-600 p-2 mt-2 self-center text-[12px] sm:text-[16px]">Unable to submit your feedback at the moment</p>}
     </div>
   )
 }
