@@ -42,12 +42,12 @@ setSubmitted(index)
 
   return (
     <div className='flex flex-col justify-center items-center font-sans font-medium p-3 mt-5 text-base m-auto w-full'>
-      <p className="flex justify-center items-center font-sans font-medium p-3 mt-5 text-base">
-        How was your experience using our product? Please rate your experience below.
+      <p className="flex justify-center items-center font-sans font-medium p-3 mt-5 text-[12px] sm:text-[18px] text-orange-600">
+        Would you like to use our product/ service?
       </p>
       
       <div className="flex border md:p-5 p-2 justify-center items-center mt-5">
-      <div className="flex justify-center items-center gap-6 md:gap-12 md:mt-5 text-[12px] sm:text-[14px] md:text-[18px]">
+      <div className="flex justify-center items-center gap-6 md:gap-12 text-[12px] sm:text-[14px] md:text-[18px]">
       <style>
                         {`
                        @keyframes spin {
@@ -71,21 +71,21 @@ setSubmitted(index)
                         `}
                     </style>
         <button
-          className="bg-[#ff4a4a] rounded-lg  py-[6px] px-[3px] sm:p-2 sm:px-6 md:p-4 md:px-12  sm:font-medium cursor-pointer"
+          className="bg-[#ff4a4a] rounded-lg   p-[9px] sm:p-2 sm:px-6 md:p-4 md:px-12  sm:font-medium cursor-pointer"
           onClick={() => submit(0)}
         >
            {submitted==0 ? <div className="loader"></div> : "Bad 😞"}
           
         </button>
         <button
-          className="bg-[#f3dd1f] rounded-lg  py-[6px] px-[3px] sm:p-2 sm:px-6 md:p-4 md:px-12   sm:font-medium cursor-pointer"
+          className="bg-[#f3dd1f] rounded-lg p-[9px] sm:p-2 sm:px-6 md:p-4 md:px-12   sm:font-medium cursor-pointer"
           onClick={() => submit(1)}
         >
            {submitted==1 ? <div className="loader"></div> : " Average 😐"}
         
         </button>
         <button
-          className="bg-[#129561] rounded-lg py-[6px] px-[3px] sm:p-2 sm:px-6 md:p-4 md:px-12  sm:font-medium cursor-pointer"
+          className="bg-[#129561] rounded-lg p-[9px] sm:p-2 sm:px-6 md:p-4 md:px-12  sm:font-medium cursor-pointer"
           onClick={() => submit(2)}
         >
            {submitted==2 ? <div className="loader"></div> : "Excellent 😄"}

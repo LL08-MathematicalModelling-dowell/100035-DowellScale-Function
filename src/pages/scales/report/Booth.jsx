@@ -77,7 +77,7 @@ function degreesToRadians(degrees) {
 }
 
 
-  const handleGoButton = () =>{
+  const handleGoButton = async() =>{
     setSubmitted(true)
     if(boothInput<=0 || isNaN(boothInput))
       {
@@ -85,10 +85,12 @@ function degreesToRadians(degrees) {
         setBoothErr(true)
         return
       }else{
+     const response=await axios.get(`https://100035.pythonanywhere.com/addons/register/?shop_number=${boothInput}`)
+     console.log(response.data.data)
       const distance=calculateDistance(latitude,longitude,latitude,longitude)
       console.log(distance)
       if(distance<=3){
-        window.location.href=`https://100035.pythonanywhere.com/nps-lite/api/v5/nps-lite-create-scale/?user=False&scale_type=${scaleType}&workspace_id=${workspaceId}&username=HeenaK&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
+       window.location.href=`https://100035.pythonanywhere.com/nps-lite/api/v5/nps-lite-create-scale/?user=False&scale_type=${scaleType}&workspace_id=${workspaceId}&username=HeenaK&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
       }else{
         setValid(-1)
         setSubmitted(false)
@@ -104,9 +106,9 @@ function degreesToRadians(degrees) {
    },[])
 
    async function fetchLocation(){
-        const response=await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-d4234c7b-77c1-4ed6-8ea1-9417d9ad63d3/")
+        const response=await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-56d63b0b-5d6c-4d6e-b011-d19a9aa8773b")
         const detailedReport = response.data.response.detailed_report;
-
+console.log(response.data)
    if (Array.isArray(detailedReport) && detailedReport.length > 0) {
     
        

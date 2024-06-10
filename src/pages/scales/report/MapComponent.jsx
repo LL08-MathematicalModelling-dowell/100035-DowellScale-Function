@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript } from '@react-google-maps/api';
+// src/MapComponent.js
+import React from 'react';
+import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api';
 
 const containerStyle = {
   width: '100%',
@@ -7,34 +8,22 @@ const containerStyle = {
 };
 
 const MapComponent = ({ lat, lng }) => {
-  const mapRef = useRef(null);
-
-  useEffect(() => {
-    const initializeMap = async () => {
-      if (mapRef.current && window.google) {
-        const { AdvancedMarkerElement } = window.google.maps.marker;
-        
-        const map = mapRef.current.state.map;
-        new AdvancedMarkerElement({
-          position: { lat: parseFloat(lat), lng: parseFloat(lng) },
-          map: map,
-        });
-      }
-    };
-
-    initializeMap().catch((error) => console.error('Error loading Google Maps:', error));
-  }, [lat, lng]);
+  const center = {
+    lat: parseFloat(lat),
+    lng: parseFloat(lng)
+  };
 
   return (
     <LoadScript googleMapsApiKey="AIzaSyAsH8omDk8y0lSGLTW9YtZiiQ2MkmsF-uQ">
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={{ lat: parseFloat(lat), lng: parseFloat(lng) }}
-        zoom={10}
-        onLoad={(map) => (mapRef.current = { state: { map } })}
-      />
+        center={center}
+        zoom={15}
+      >
+        <MarkerF position={center} />
+      </GoogleMap>
     </LoadScript>
   );
-};
+}
 
 export default MapComponent;
