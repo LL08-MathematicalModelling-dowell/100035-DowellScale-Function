@@ -34,7 +34,7 @@ else
     
     
         const body = {
-            "scale_id":"665a8277d5d158ec8391aaf7",
+            "scale_id":scaleId,
             "workspace_id": workspaceId,
             "username": "CustomerSupport",
             "scale_type": "nps",
@@ -87,6 +87,7 @@ else
                 border-radius: 50%;
                 border-top-color: #fff;
                 animation: spin 1s linear infinite;
+                margin-top:4px
               }
             `}
           </style>
@@ -96,7 +97,7 @@ else
               onClick={() => submit(value)}
               className="md:text-[20px] sm:text-[14px] py-[1px] px-[6px] sm:p-2 sm:px-3 rounded-full md:px-4 cursor-pointer bg-orange-400 text-white font-bold hover:bg-indigo-600"
             >
-              {submitted === value ? <div className="loader flex justify-center items-center"></div> : value}
+              {submitted === value ? <div className="loader flex justify-center items-center "></div> : value}
             </button>
           ))}
         </div>
