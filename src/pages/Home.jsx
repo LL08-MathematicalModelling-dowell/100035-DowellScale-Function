@@ -174,7 +174,7 @@ console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
       </div>
 
       {popuOption && 
-      <div className='popup' style={{width: '550px', height: '240px', display: 'flex', left: '53%', top: '25%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'white', borderRadius: '8px'}}>
+      <div className='popup' style={{width: '550px', height: '240px', display: 'flex', left: '51%', top: '53%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'white', borderRadius: '8px'}}>
       <button
           onClick={() => setPopupOption(false)}
           className="absolute px-2 text-black bg-white rounded-full right-2 top-2"
