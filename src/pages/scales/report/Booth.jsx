@@ -47,6 +47,7 @@ const[latitude,setLatitude]=useState("")
 const[longitude,setLongitude]=useState("")
 const[locationLoading,setLocationLoading]=useState(0)
 const[valid,setValid]=useState(0)
+const[err,setErr]=useState(false)
 
 const workspaceId=searchParams.get("workspace_id")
 const scaleType=searchParams.get("scale_type")
@@ -83,11 +84,19 @@ function degreesToRadians(degrees) {
         setBoothErr(true)
         return
       }else{
+        try{
      const response=await axios.get(`https://100035.pythonanywhere.com/addons/register/?shop_number=${boothInput}`)
- 
-      const distance=calculateDistance(latitude,longitude,latitude,longitude)
- 
+     const arr = response.data.data;
+
      
+     const lat = arr[arr.length - 1]?.shop_lat ? Number(arr[arr.length - 1].shop_lat) : 0;
+     const lng = arr[arr.length - 1]?.shop_long ? Number(arr[arr.length - 1].shop_long) : 0;
+     
+ 
+      
+      const distance=calculateDistance(latitude,longitude,lat,lng)
+ 
+ 
       if(distance<=3){
       if(scaleType=="nps"){
         window.location.href=`https://100035.pythonanywhere.com/nps/api/v5/nps-create-scale/?user=True&scale_type=nps&workspace_id=${workspaceId}&username=Paolo&scale_id=${scaleId}&channel_name=${channelName}&instance_id=${boothInput}`
@@ -100,7 +109,13 @@ function degreesToRadians(degrees) {
         setValid(-1)
         setSubmitted(false)
       }
+      } 
+      catch(error){
+        console.log(error)
+        setErr(true)
       }
+    }
+   
     
   }
 
@@ -111,20 +126,27 @@ function degreesToRadians(degrees) {
    },[])
 
    async function fetchLocation(){
-        const response=await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-71b0c608-ee3d-4b89-b4e4-19f76a6e50ec")
+    try{
+      const response=await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-71b0c608-ee3d-4b89-b4e4-19f76a6e50ec")
         const detailedReport = response.data.response.detailed_report;
 
    if (Array.isArray(detailedReport) && detailedReport.length > 0) {
     
        
-       setLatitude(detailedReport[detailedReport.length - 1].lat+"")
-       setLongitude(detailedReport[detailedReport.length - 1].long+"")
+       setLatitude(detailedReport[detailedReport.length - 1].lat)
+       setLongitude(detailedReport[detailedReport.length - 1].long)
        setLocationLoading(1)
    } else {
     
        console.log("detailed_report is either not an array or is empty");
        setLocationLoading(-1)
    }
+
+    }catch(error){
+      console.log(error)
+      setErr(true)
+    }
+        
    }
 
 
@@ -138,6 +160,7 @@ function degreesToRadians(degrees) {
            setBoothInput(e.target.value);
            setBoothErr(false)
            setValid(0)
+           setErr(false)
           }
         }
         disabled={submitted==true}
@@ -190,6 +213,7 @@ function degreesToRadians(degrees) {
       <button className='w-[100px] h-[40px] rounded-lg mt-5  bg-orange-500 font-medium '
       onClick={handleGoButton}>{submitted==true ? <div className="loader"></div> : "GO"}</button>
       {valid==-1 && <p className='text-red-600 p-2 mt-2 text-[12px] sm:text-[16px]'>Please check the details and try again</p>}
+      {err && <p className='text-red-600 p-2 mt-2 text-[12px] sm:text-[16px]'>Something went wrong contact Admin!..</p>}
     </div>
     
   )
