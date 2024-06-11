@@ -126,7 +126,8 @@ function degreesToRadians(degrees) {
    },[])
 
    async function fetchLocation(){
-        const response=await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-71b0c608-ee3d-4b89-b4e4-19f76a6e50ec")
+    try{
+      const response=await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-71b0c608-ee3d-4b89-b4e4-19f76a6e50ec")
         const detailedReport = response.data.response.detailed_report;
 
    if (Array.isArray(detailedReport) && detailedReport.length > 0) {
@@ -140,6 +141,12 @@ function degreesToRadians(degrees) {
        console.log("detailed_report is either not an array or is empty");
        setLocationLoading(-1)
    }
+
+    }catch(error){
+      console.log(error)
+      setErr(true)
+    }
+        
    }
 
 
@@ -153,6 +160,7 @@ function degreesToRadians(degrees) {
            setBoothInput(e.target.value);
            setBoothErr(false)
            setValid(0)
+           setErr(false)
           }
         }
         disabled={submitted==true}
@@ -205,6 +213,7 @@ function degreesToRadians(degrees) {
       <button className='w-[100px] h-[40px] rounded-lg mt-5  bg-orange-500 font-medium '
       onClick={handleGoButton}>{submitted==true ? <div className="loader"></div> : "GO"}</button>
       {valid==-1 && <p className='text-red-600 p-2 mt-2 text-[12px] sm:text-[16px]'>Please check the details and try again</p>}
+      {err && <p className='text-red-600 p-2 mt-2 text-[12px] sm:text-[16px]'>Something went wrong contact Admin!..</p>}
     </div>
     
   )
