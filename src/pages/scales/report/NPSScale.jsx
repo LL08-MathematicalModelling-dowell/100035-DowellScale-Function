@@ -2,6 +2,7 @@
 import {useState} from "react"
 import axios from "axios"
 import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function App() {
   const[loading,setLoading]=useState(-1)
@@ -12,6 +13,11 @@ export default function App() {
   const channelName=searchParams.get("channel_name")
   const instanceName=searchParams.get("instance_name")
   const buttons = Array.from({ length: 11 }, (_, i) => i);
+
+  useEffect(()=>{
+    setLoading(false)
+  },[])
+
   let instanceId
   if(instanceName){
  
@@ -46,7 +52,7 @@ else
     
         try {
             const response = await axios.post("https://100035.pythonanywhere.com/nps/api/v5/nps-create-response/", body, { headers });
-        console.log(response.data)
+     
             if(response.data.success=="true"){
               console.log("redirecting.....")
             window.location.href=response.data.redirect_url

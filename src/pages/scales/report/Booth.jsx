@@ -125,31 +125,78 @@ function degreesToRadians(degrees) {
     fetchLocation()
    },[])
 
-   async function fetchLocation(){
-    try{
-      const response=await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-71b0c608-ee3d-4b89-b4e4-19f76a6e50ec")
-        const detailedReport = response.data.response.detailed_report;
+   async function fetchLocation() {
+    const { browserLatitude, browserLongitude } = await getBrowserLocation();
 
-   if (Array.isArray(detailedReport) && detailedReport.length > 0) {
-    
+    try {
+      const response = await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-71b0c608-ee3d-4b89-b4e4-19f76a6e50ec");
+      const detailedReport = response.data.response.detailed_report;
+
+
+      if (Array.isArray(detailedReport) && detailedReport.length > 0) {
        
-       setLatitude(detailedReport[detailedReport.length - 1].lat)
-       setLongitude(detailedReport[detailedReport.length - 1].long)
-       setLocationLoading(1)
-   } else {
-    
-       console.log("detailed_report is either not an array or is empty");
-       setLocationLoading(-1)
-   }
+        const closestReport = findClosestLocation(detailedReport, browserLatitude, browserLongitude);
 
-    }catch(error){
-      console.log(error)
-      setErr(true)
+        setLatitude(closestReport.lat);
+        setLongitude(closestReport.long);
+        setLocationLoading(1);
+      } else {
+        console.log("detailed_report is either not an array or is empty");
+        setLocationLoading(-1);
+      }
+    } catch (error) {
+      console.log(error);
+      setErr(true);
     }
+  }
+
+  function getBrowserLocation() {
+    return new Promise((resolve, reject) => {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            resolve({
+              browserLatitude: position.coords.latitude,
+              browserLongitude: position.coords.longitude,
+            });
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      } else {
+        reject(new Error("Geolocation is not supported by your browser."));
+      }
+    });
+  }
+
+  function findClosestLocation(detailedReport, browserLatitude, browserLongitude) {
+    return detailedReport.reduce((closest, report) => {
+      const distance = calculateDistance(browserLatitude, browserLongitude, report.lat, report.long);
+      if (!closest || distance < closest.distance) {
+        return { ...report, distance };
+      }
+      return closest;
+    }, null);
+  }
+
+ 
+  //  function checkLocationMatch() {
+  // let browserLatitude,browserLongitude
+  //   if ("geolocation" in navigator) {
+  //     navigator.geolocation.getCurrentPosition(function(position) {
+  //        browserLatitude = position.coords.latitude;
+  //        browserLongitude = position.coords.longitude;
         
-   }
+      
+  //     });
+  //   } else {
+  //     console.log("Geolocation is not supported by your browser.");
+  //   }
+  //   return{browserLatitude,browserLongitude}
+  // }
 
-
+  
   return (
     <div className='flex flex-col items-center justify-center w-full gap-5 sm:gap-2'>
       <img className='mt-5 w-[150px] sm:w-[250px]' src={logo} alt='booth image'/>
@@ -212,7 +259,7 @@ function degreesToRadians(degrees) {
                     </style>
       <button className='w-[100px] h-[40px] rounded-lg mt-5  bg-orange-500 font-medium '
       onClick={handleGoButton}>{submitted==true ? <div className="loader"></div> : "GO"}</button>
-      {valid==-1 && <p className='text-red-600 p-2 mt-2 text-[12px] sm:text-[16px]'>Please check the details and try again</p>}
+      {valid==-1 && <p className='text-red-600 p-2 mt-2 text-[12px] sm:text-[16px]'>Please scan the QR code within 3 meters distance of the shop.</p>}
       {err && <p className='text-red-600 p-2 mt-2 text-[12px] sm:text-[16px]'>Something went wrong contact Admin!..</p>}
     </div>
     
