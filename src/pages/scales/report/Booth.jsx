@@ -133,9 +133,11 @@ function degreesToRadians(degrees) {
       const detailedReport = response.data.response.detailed_report;
 
 
+
       if (Array.isArray(detailedReport) && detailedReport.length > 0) {
        
-        const closestReport = findClosestLocation(detailedReport, browserLatitude, browserLongitude);
+        const closestReport = detailedReport[detailedReport.length-1]
+        //findClosestLocation(detailedReport, browserLatitude, browserLongitude);
 
         setLatitude(closestReport.lat);
         setLongitude(closestReport.long);
