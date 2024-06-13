@@ -92,10 +92,10 @@ function degreesToRadians(degrees) {
      const lat = arr[arr.length - 1]?.shop_lat ? Number(arr[arr.length - 1].shop_lat) : 0;
      const lng = arr[arr.length - 1]?.shop_long ? Number(arr[arr.length - 1].shop_long) : 0;
      
- 
+
       
       const distance=calculateDistance(latitude,longitude,lat,lng)
- 
+
  
       if(distance<=3){
       if(scaleType=="nps"){
