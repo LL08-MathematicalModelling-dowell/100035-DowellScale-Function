@@ -132,7 +132,7 @@ function degreesToRadians(degrees) {
       const response = await axios.get("https://www.qrcodereviews.uxlivinglab.online/api/v6/qrcode-data/22-71b0c608-ee3d-4b89-b4e4-19f76a6e50ec");
       const detailedReport = response.data.response.detailed_report;
 
-       console.log(detailedReport)
+ 
 
       if (Array.isArray(detailedReport) && detailedReport.length > 0) {
        
