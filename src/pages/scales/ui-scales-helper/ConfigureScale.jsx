@@ -181,11 +181,11 @@ function handleNext(){
         <>
       
 
-        <div className="flex flex-col   gap-5  items-center text-[16px]"  style={{ fontFamily: 'Roboto, sans-serif' }}>
+        <div className="flex flex-col   gap-5  items-center text-[16px] ml-3"  style={{ fontFamily: 'Roboto, sans-serif' }}>
             <div className="w-max flex flex-col lg:justify-center lg:items-center">
         <div className="w-max flex flex-col justify-center items-center">
         <div className="flex flex-col gap-1 mt-10 w-full">
-            <label className="p-2  font-medium" htmlFor="scaleName">Scale Name:</label>
+            <label className="p-2 text-[14px] sm:text-[16px] font-medium" htmlFor="scaleName">Scale Name:</label>
             <input 
                 type="text" 
                 value={formData["scaleName"]} 
@@ -198,7 +198,7 @@ function handleNext(){
         </div>
        
         <div className="flex flex-col w-max gap-1 mt-5">
-            <label className="p-2 pl-0 font-medium" htmlFor="numResponses">No. of Responses per Instance:</label>
+            <label className="p-2 pl-0 font-medium text-[14px] sm:text-[16px]" htmlFor="numResponses">No. of Responses per Instance:</label>
             <input type="number" value={formData["numResponses"]} name="numResponses" placeholder="Enter number" 
              className="p-2 rounded-md px-4 w-max"
              onChange={e => handleFormData(e.target.value,e.target.name)} />
@@ -214,7 +214,7 @@ function handleNext(){
              <div className="flex flex-col justify-start items-start gap-1">
              
                 <div className="flex flex-col  gap-1">
-            <label className="p-2 font-medium" htmlFor="channelName">Specify Channel:</label>
+            <label className="p-2 font-medium text-[14px] sm:text-[16px]" htmlFor="channelName">Specify Channel:</label>
             <div className="flex justify-center items-center gap-2 ">
            
          
@@ -231,7 +231,7 @@ function handleNext(){
         </div>
         <div className="flex gap-1 md:gap-3 justify-center items-center w-max">
         <div className={`${index1==0 ? "ml-0 lg:ml-6" : "ml-0"} flex flex-col  gap-1`}>
-            <label className="p-2 font-medium" htmlFor="InstanceName">Specify Instances:</label>
+            <label className="p-2 font-medium text-[14px] sm:text-[16px]" htmlFor="InstanceName">Specify Instances:</label>
             {channel.instances.map((instance, index) => (
                 <div  key={index} className="flex flex-col  gap-2">
             <input
@@ -251,7 +251,7 @@ function handleNext(){
         </div>
         <div className="flex justify-center items-center gap-1 md:gap-2 mt-10 h-max w-max">
         <button onClick={()=>decreaseInstance(index1)}>-</button>
-        <p className="p-2 md:p-2 sm:p-[1px] rounded-xl md:rounded-none bg-white">{channel.instances.length} </p>
+        <p className="p-[2px] sm:p-2 rounded-xl md:rounded-none bg-white text-[10px] sm:text-[14px]">{channel.instances.length} </p>
         <button onClick={()=>increaseInstance(index1)}>+</button>
       
         </div>

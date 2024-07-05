@@ -1,7 +1,7 @@
-export default async function handleSharing(formData,setButtonLinks,setButtonLinksGenerated,scaleType) {
+export default async function handleSharing(formData,setButtonLinks,setButtonLinksGenerated,scaleType,setSubmitted,setErr) {
   let axis_limit=scaleType=="stapel"?5:0
 //   let pointers=scaleType=="likert"?5:0
-
+setSubmitted(true)
 const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
 console.log(scaleType,axis_limit,formData.likertPointers[0])
     try {
@@ -54,16 +54,20 @@ console.log(requestOptions)
         );
         const data = await response.json();
 
-    
+
+
         if (data.urls && data.urls.length > 0) {
-            const instanceURL = data.urls[0].urls[0].instance_urls;
-            setButtonLinks(instanceURL)
+           // const instanceURL = data.urls[0].urls[0].instance_urls;
+            setButtonLinks(data.urls)
             setButtonLinksGenerated(true)
+           
             console.log(instanceURL);
         }
     } catch (error) {
+        setErr("Check details and try again")
         console.error("Error:", error);
     } finally {
+        setSubmitted(false)
         console.log("finally");
     }
 

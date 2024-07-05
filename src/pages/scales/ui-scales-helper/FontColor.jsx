@@ -3,7 +3,7 @@ export default function FontColor({name,text,formData,handleChange}){
    
     return(
         <div className="flex flex-col gap-5 mb-[10px]">
-                    <label htmlFor={name} className="font-medium">{text}</label>
+                    <label htmlFor={name} className="font-medium text-[13px] sm:text-[16px]">{text}</label>
                     <input 
                     label={text}
                     name={name}
@@ -12,7 +12,7 @@ export default function FontColor({name,text,formData,handleChange}){
                     placeholder={text}
                     value={value}
                 onChange={(e)=>handleChange(e.target.name,e.target.value)}
-                className={` w-[280px] rounded-none `}
+                className={`${window.innerWidth<500 ? "w-[200px]" :"w-[280px]"}  rounded-none `}
                 style={{ boxShadow: '0 0 0 6px white' }}
                     />
          </div>

@@ -9,6 +9,7 @@
 // import Fallback from '../../../components/Fallback';
 // import { Button } from '../../../components/button';
 
+import { useEffect } from "react";
 import ScaleMainScreen from "../ui-scales-helper/ScaleMainScreen";
 
 // const LikertScale = () => {
@@ -121,14 +122,28 @@ import ScaleMainScreen from "../ui-scales-helper/ScaleMainScreen";
 // }
 
 // export default LikertScale
-
+import { useState } from "react";
 export default function LikertScale(){
+    const[experience,setExperience]=useState(["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"])
+    useEffect(()=>{
+      window.addEventListener("resize",handleResize)
+         return(()=>{
+            window.removeEventListener("resize",handleResize)
+         })
+    },[])
+    function handleResize(){
+        if(window.innerWidth<510)
+            setExperience( ["😞", "😔 ", "😐 ", "😄 ", "😁 "])
+        else
+        setExperience(["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"])
+    }
+   
     const textContent = {
         scale: "LIKERT SCALE",
         scaleEg: "LIKERT SCALE eg.",
         scaleDescription: "This is how a likert scale would look.",
         experiencePrompt: "How was your experience using our product? Please rate your experience below.",
-        experience:["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"],
+        experience:experience,
         configureYourScale: "Configure your scale",
         confirmationScalePrompt: "You won't be able to edit the scale once you confirm it. Are you sure you want to confirm the scale?",
         goBackPrompt: {

@@ -76,44 +76,47 @@ const Navbar = () => {
 
   return (
     <nav className="lg:hidden w-full bg-[#FFF]" style={{WebkitBoxShadow: "0 10px 6px -6px #777"}} >
-      <div className="navbar flex  justify-start items-center w-full pt-4 bg-[#FFF]">
-      <div className="md:flex-[0.5] flex justify-center items-center bg-[#FFF]">
-      <IoMdMenu ref={refOne} className='w-7  h-7 cursor-pointer ml-4' onClick={handleSidebar}/>
-        <Link
-          to={`/100035-DowellScale-Function/?session_id=${sessionId}`}
-          className="inline ml-4"
-          style={{borderLeft: '2px solid lightgray', borderRight: '2px solid lightgray'}}
-        >
-          <img
-            src={dowellLogo}
-            alt="Dowell Logo"
-            className="inline w-7 cursor-pointer"
-          />
-        </Link>
-        <h3 className='ml-4 font-medium' style={{fontFamily: 'Roboto', fontSize:'14px', lineHeight: '16.41px'}}>DoWell Scales</h3>
-      </div>
-      <div onMouseEnter={() => setIsModalOpen(true)} onMouseLeave={() => setIsModalOpen(false)} style={{marginLeft: 'auto', fontSize:'large', cursor:'pointer', marginRight: '12%'}}>
-      <IoPersonCircle className='w-7 h-7'  />
-      {isModalOpen && <div className='' style={{}}><Modal modalInfo={modalInfo} /></div>}
-      </div>
-      </div>
+      {showSideBar ? (<></>):(
+ <div className="navbar flex  justify-start items-center w-full pt-4 bg-[#FFF]">
+ <div className="md:flex-[0.5] flex justify- gap-4 items-center bg-[#FFF]">
+ <IoMdMenu ref={refOne} className='w-7  h-7 cursor-pointer ml-4' onClick={handleSidebar}/>
+   <Link
+     to={`/100035-DowellScale-Function/?session_id=${sessionId}`}
+     className="inline ml-4"
+     style={{borderLeft: '2px solid lightgray', borderRight: '2px solid lightgray'}}
+   >
+     <img
+       src={dowellLogo}
+       alt="Dowell Logo"
+       className="inline w-7 cursor-pointer"
+     />
+   </Link>
+   <h3 className='ml-4 font-medium' style={{fontFamily: 'Roboto', fontSize:'14px', lineHeight: '16.41px'}}>DoWell Scales</h3>
+ </div>
+ <div onMouseEnter={() => setIsModalOpen(true)} onMouseLeave={() => setIsModalOpen(false)} style={{marginLeft: 'auto', fontSize:'large', cursor:'pointer', marginRight: '12%'}}>
+ <IoPersonCircle className='w-7 h-7'  />
+ {isModalOpen && <div className='' style={{}}><Modal modalInfo={modalInfo} /></div>}
+ </div>
+ </div>
+      )}
+     
       <div ref={refOne} className='h-screen' style={{width: '250px', backgroundColor: 'white', position: 'fixed', zIndex: '1', borderRight: '1px solid lightgray', marginLeft: showSideBar ? '0' : '70px', opacity: showSideBar ? '1' : '0', visibility: showSideBar ? 'visible' : 'hidden', transition: 'all .3s ease-in .3s'}}>
         <img src={dowellLogo} style={{height: '60px', borderRadius:'8px', marginLeft: '180px'}}/>
         <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', }}>
-        <div onClick={handleHome} className='flex mt-10 hover:bg-[#013220] hover:text-white w-5/6 text-black' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', cursor: 'pointer', }}>
+        <div onClick={handleHome} className='flex mt-10 hover:bg-[#013220] hover:text-white w-5/6 pl-2 text-black' style={{display: 'flex', alignItems:'center', justifyContent: 'start', height:'40px',  borderRadius: '4px', cursor: 'pointer', }}>
         <IoSpeedometerSharp style={{marginRight:'6px', color:'red'}} />
         <button className='' style={{}}>NEW SCALE</button>
       </div>
-      <div className='flex mt-5 hover:bg-[#013220] hover:text-white w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px'}}>
+      <div className='flex mt-5 hover:bg-[#013220] hover:text-white w-5/6 pl-2' style={{display: 'flex', alignItems:'center', justifyContent: 'start', height:'40px',  borderRadius: '4px'}}>
        <MdSpeed style={{marginRight:'6px'}} />
        <button style={{}}>MY SCALES</button>
       </div>
-      <div onClick={handleProfile} className='flex mt-5 hover:bg-[#013220] hover:text-white text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px'}}>
+      <div onClick={handleProfile} className='flex mt-5 hover:bg-[#013220] hover:text-white text-black w-5/6 pl-2' style={{display: 'flex', alignItems:'center', justifyContent: 'start', height:'40px',  borderRadius: '4px'}}>
        <FaUsers style={{marginRight:'6px'}} />
        <button style={{}}>CLIENT ADMIN</button>
       </div>
       </div>
-      <div onClick={handleLogout} className='flex mt-5 bg-white text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', color: 'red', marginTop: '200px'}}>
+      <div onClick={handleLogout} className='flex mt-5 bg-white text-black w-5/6 pl-8' style={{display: 'flex', alignItems:'center', justifyContent: 'start', height:'40px',  borderRadius: '4px', color: 'red', marginTop: '200px'}}>
        <LuLogOut style={{marginRight:'6px'}} />
        <button style={{}}>LOGOUT</button>
       </div>

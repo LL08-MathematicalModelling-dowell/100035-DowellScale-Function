@@ -117,13 +117,13 @@ console.log(confirmed)
 
 const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
     return(
-       <div className="fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-max h-max p-5 bg-white rounded-lg " style={{ fontFamily: 'Roboto, sans-serif' }}>
-         <p className="font-bold">{header}</p>
-         <p className="mt-3 ">{text1}</p>
+       <div className="fixed top-[35%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-max h-max p-5 bg-gray-200 rounded-lg " style={{ fontFamily: 'Roboto, sans-serif' }}>
+         <p className="font-bold text-[14px] sm:text-[16px]">{header}</p>
+         <p className="mt-3 text-[14px] sm:text-[16px]">{text1}</p>
          <p className="hidden md:block">{text2}</p>
          <div className="flex gap-8 justify-center items-center mt-3">
-         <button className="p-2 md:px-8 bg-[#129561] rounded" onClick={onCancel}>No</button>
-         <button className="p-2 md:px-8 bg-[#ff4a4a] rounded" onClick={()=>onConfirm()}>Yes</button>
+         <button className="p-2 px-4  md:px-8 bg-[#129561] rounded" onClick={onCancel}>No</button>
+         <button className="p-2 px-4 md:px-8 bg-[#ff4a4a] rounded" onClick={()=>onConfirm()}>Yes</button>
          </div>
        </div>
     )
@@ -134,9 +134,9 @@ console.log(confirmText)
 const sharingText=`Share your ${textContent.scale}  across different platforms and add to your customer touch points `
 
 return (
-    <div className="flex w-[100%]  lg:w-[80%] xl:w-[83%] ml-[10%] mr-[10%] lg:ml-[18%]">
-        <div className="h-full overflow-hidden flex flex-col justify-center items-center w-[100%]" style={{ fontFamily: 'Roboto, sans-serif' }}>
-            <div className="flex justify-center items-center xl:justify-start xl:items-start gap-3 w-full p-5 xl:pl-10">
+    <div className="flex w-[100%]  lg:w-[80%] xl:w-[82%] lg:ml-[18%]">
+        <div className="h-full overflow-hidden flex flex-col justify-end items-end w-[100%] sm:mr-8" style={{ fontFamily: 'Roboto, sans-serif' }}>
+            <div className="flex justify-center items-center xl:justify-start xl:items-start gap-3 w-full p-2 xl:pl-10">
                 <FaArrowCircleLeft onClick={handleBack} className="cursor-pointer text-[24px]" />
                 <span className="font-bold text-black">{textContent.scale}</span>
             </div>
@@ -145,17 +145,17 @@ return (
                 <>
                     
 
-                    <div className="mt-5 bg-[#E8E8E8] rounded-lg h-max w-[90%] sm:w-[80%] p-5">
+                    <div className="mt-5 bg-[#fbfbfb] rounded-lg h-max w-[100%] m-1 sm:w-[90%]  xl:w-[95%] p-5">
                         <div className="flex flex-col justify-start items-start">
                             <p className="font-medium">{textContent.scaleEg}</p>
                             <p className="text-[14px]">{textContent.scaleDescription}</p>
                         </div>
-                        <p className="flex justify-center items-center font-sans p-3 mt-5 text-changes">{textContent.experiencePrompt}</p>
+                        <p className="flex justify-center items-center font-sans p-3 mt-5 text-[12px] sm:text-[16px]">{textContent.experiencePrompt}</p>
                        {typeof textContent.experience[0]=="string" && textContent.experience[0].includes("Bad") ? (
-                        <div className="flex justify-center items-center gap-3 sm:gap-12 mt-5">
-                            <button className="bg-[#ff4a4a] rounded sm:px-5 lg:px-10 p-2 text-[12px] sm:text-[16px]">{textContent.experience[0]}</button>
-                            <button className="bg-[#f3dd1f] rounded sm:px-5 lg:px-10 p-2 text-[12px] sm:text-[16px]">{textContent.experience[1]}</button>
-                            <button className="bg-[#129561] rounded  sm:px-5 lg:px-10 p-2 text-[12px] sm:text-[16px]">{textContent.experience[2]}</button>
+                        <div className="flex justify-center items-center gap-1 sm:gap-12 mt-5">
+                            <button className="bg-[#ff4a4a] rounded sm:px-5 lg:px-10 xl:px-20 p-2 text-[12px] sm:text-[16px]">{textContent.experience[0]}</button>
+                            <button className="bg-[#f3dd1f] rounded sm:px-5 lg:px-10 xl:px-20 p-2 text-[12px] sm:text-[16px]">{textContent.experience[1]}</button>
+                            <button className="bg-[#129561] rounded  sm:px-5 lg:px-10 xl:px-20  p-2 text-[12px] sm:text-[16px]">{textContent.experience[2]}</button>
                         </div>  
                        ):(
                         
@@ -197,14 +197,14 @@ return (
                         
                     </div>
 
-                    <div className="mt-14 pt-10 bg-[#E8E8E8] rounded-lg h-max w-[90%] sm:w-[80%] ">
+                    <div className="mt-14 py-6 pl-2 sm:px-4 bg-[#fbfbfb] rounded-lg h-max w-[100%] m-1 sm:w-[90%]  xl:w-[95%]  ">
                         {!confirmed ? (
                             <>
                             {textContent.scale!=="LIKERT SCALE" ? (
                                 <>
-                                 <div className="flex justify-center items-center">
+                                 <div className="flex justify-center items-center p-2">
                                  <div className="flex flex-col justify-center items-center">
-                                     <p className="w-max text-[24px] font-bold text-orange-600">{textContent.configureYourScale}</p>
+                                     <p className="w-max text-[16px] sm:text-[24px] font-bold text-orange-600">{textContent.configureYourScale}</p>
                                  </div>
                              </div>
                              {step == 1 && (

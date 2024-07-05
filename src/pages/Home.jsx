@@ -158,10 +158,10 @@ console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
        {/* {isSidebarVisible && <SideBar />} */}
         {/* </div> */}
       <div className=''>
-        <h3 className='mb-4 font-bold' style={{fontFamily: 'Roboto, sans-serif', fontSize:'16px', lineHeight: '18.75px', }}>DoWell Scales offers different types of scales for your business</h3>
-        <p className='font-normal' style={{fontFamily: 'Roboto, sans-serif', fontSize:'12px', lineHeight: '14.06px'}}>Select the type of scale you want to create</p>
+        <h3 className='mb-2 font-medium text-[12px] sm:text-[16px] sm:mb-4 sm:font-bold text-center' style={{fontFamily: 'Roboto, sans-serif', lineHeight: '18.75px', }}>DoWell Scales offers different types of scales for your business</h3>
+        <p className='font-normal text-center' style={{fontFamily: 'Roboto, sans-serif', fontSize:'12px', lineHeight: '14.06px'}}>Select the type of scale you want to create</p>
       </div>
-      <div className="" style={{width: '100%',filter: popuOption ? 'blur(8px)' : '', pointerEvents: popuOption ? 'none' : '', display:'flex', flexWrap: 'wrap', justifyContent: 'flex-start', backgroundColor:'white'}}>
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-0 items-center" style={{width: '100%',filter: popuOption ? 'blur(8px)' :  '', pointerEvents: popuOption ? 'none' : ''}}>
         {scaleTypes.map((scale, index) => (
           <ScaleCard scaleName={scale.name} 
           description={scale.description}
@@ -174,23 +174,23 @@ console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
       </div>
 
       {popuOption && 
-      <div className='popup' style={{width: '550px', height: '240px', display: 'flex', left: '51%', top: '53%', WebkitTransform:'translate(-50%, -50%)', MozTransformStyle: 'translate(-50%, -50%)', transform: 'translate(-50%, -50%)', position: 'fixed', backgroundColor:'white', borderRadius: '8px'}}>
+      <div  className='popup w-[300px] sm:w-[550px] h-[240px] bg-gray-50 flex left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 fixed  rounded-md p-2'>
       <button
           onClick={() => setPopupOption(false)}
-          className="absolute px-2 text-black bg-white rounded-full right-2 top-2"
+          className="absolute px-2 text-black bg-gray-200 rounded-full right-2 top-2"
         >
           X
         </button>
-        <div className='border' style={{ marginRight: '40px', width: '100px',height:"100px", marginTop: '30px', marginLeft: '40px' }}>
+        <div className='hidden sm:block sm:border' style={{ marginRight: '40px', width: '100px',height:"100px", marginTop: '30px', marginLeft: '40px' }}>
             <img src={scaleTypes[scaleIndex].image} style={{ width: '100px',height:"100px",objectFit:"cover",background:"black", marginRight: '10px' }} alt={scaleTypes[scaleIndex].name} />
           </div>
 
-          <div style={{marginTop: '20px'}}>
+          <div style={{marginTop: '20px'}} className='flex flex-col justify-center items-center sm:justify-start sm:items-start'>
             <h3 style={{ fontFamily:"Changa, sans-serif", fontWeight:'500' }}>{scaleTypes[scaleIndex].name}</h3>
-            <p className="text-black-600" style={{ width: '340px', fontSize: 'medium' }}>{scaleTypes[scaleIndex].description}</p>
-            <button
-              className="text-center text-white capitalize bg-primary"
-              style={{ width: '200px', marginTop:"10px", height: '40px' }}
+            <p className="text-black-600 text-[12px] sm:text-[14px] mt-4" >{scaleTypes[scaleIndex].description}</p>
+            <button 
+              className="text-center text-white capitalize bg-primary w-max mt-10 py-3 px-2 rounded-lg"
+              
               onClick={handleStartCreating}
              >
              Start creating

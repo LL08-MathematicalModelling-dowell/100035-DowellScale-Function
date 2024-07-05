@@ -7,12 +7,12 @@ export default function FontOptions({ name, text, options, txt, formData, handle
 console.log(value)
   return (
     <div className="flex flex-col gap-3 relative w-max">
-      <label htmlFor={name} className="font-medium">{text}</label>
+      <label htmlFor={name} className="font-medium text-[13px] sm:text-[16px]">{text}</label>
       <div className="relative">
         <select
           id={name}
           name={name}
-          className={`appearance-none block text-md ${name === "fontSize" ? "w-[80px]" : "w-[280px]"} text-[#989093] font-light border border-[#DDDADB] p-2 pr-10`}
+          className={`appearance-none block text-md ${name === "fontSize" ? "w-[80px]" :`${window.innerWidth<500 ? "w-[200px]" :"w-[280px]"}`} text-[#989093] font-light border border-[#DDDADB] p-2 pr-10`}
           value={value}
           onChange={(e) => {
             handleChange(e.target.name, e.target.value);

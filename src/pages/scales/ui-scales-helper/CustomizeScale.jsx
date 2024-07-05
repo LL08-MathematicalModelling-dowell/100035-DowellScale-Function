@@ -89,11 +89,9 @@ export default function CustomizeScale({formData,setFormData,setStep}){
 
 
     return(
-        <div className="flex flex-col gap-5 mt-10 ml-5">
+        <div className="flex flex-col gap-5 mt-10 ">
             <div>
-                <style>
-
-                </style>
+      
                <FontOptions name="orientation" text="Scale Orientation" txt="orientation" formData={formData} options={orientations} handleChange={handleChange}/>
                {empty.orientation && <p className="text-xs text-red-600 p-1">**required</p>}
                </div>
@@ -128,8 +126,8 @@ export default function CustomizeScale({formData,setFormData,setStep}){
                     <div className="flex flex-col gap-4 w-full">
                       <div className="flex flex-wrap gap-6 justify-start">
                         {Array.from({ length: formData.likertPointers[0] }).map((_, index) => (
-                          <div key={index} className="flex flex-col gap-2 justify-center  w-1/2 md:w-1/4 ">
-                            <label htmlFor={`pointersText${index}`} className="font-medium">
+                          <div key={index} className="flex flex-col gap-2 justify-center  w-[70%] md:w-1/4 ">
+                            <label htmlFor={`pointersText${index}`} className="font-medium text-[13px] sm:text-[16px]">
                               Scale Pointer {index + 1}
                             </label>
                             <input
@@ -151,8 +149,8 @@ export default function CustomizeScale({formData,setFormData,setStep}){
                   
                 )}
                   <div className="w-full flex justify-center items-center gap-5 mt-5" >        
-                        <button className="bg-gray-400 p-2 px-20 rounded " onClick={()=>setStep((prev)=>prev-1)}>Previous</button>
-                        <button className="bg-green-600 p-2 px-20 rounded " onClick={()=>handleNext()}>Next</button>    
+                        <button className="bg-gray-400 p-2 px-4 sm:px-20 rounded " onClick={()=>setStep((prev)=>prev-1)}>Previous</button>
+                        <button className="bg-green-600 p-2 px-8 sm:px-20 rounded " onClick={()=>handleNext()}>Next</button>    
                     </div>
                
         </div>

@@ -53,21 +53,12 @@ function ScaleCard({ scaleName, description, imageSource, slug, btnLinks, index 
         <div className='card'
          
         >
-          <h6 style={{fontFamily:"Changa, sans-serif", fontWeight:'500', color:'white',display:showScaleTitle ? 'block' : 'none'}}>{scaleName}</h6>
+          <p className={`font-changa font-medium text-[12px] sm:text-[16px] text-white ${showScaleTitle ? 'block' : 'hidden'}`}>{scaleName}</p>
 
           <img className='scaleImage' src={imageSource} alt={scaleName} />
-          <h6 style={{fontFamily:"Changa, sans-serif", fontWeight:'500', marginTop:'15px', display: showScaleTitle ? 'none' : 'block'}}>{scaleName}</h6>
+          <p className='text-[12px] sm:text-[16px]' style={{fontFamily:"Changa, sans-serif", fontWeight:'500', marginTop:'15px', display: showScaleTitle ? 'none' : 'block'}}>{scaleName}</p>
           <button
-            style={{
-              width: '130px',
-              // padding: '10px',
-              fontSize: '20px',
-              background: 'white',
-              fontWeight: '400',
-              borderRadius: '5px',
-              marginTop: '12px',
-              display: showScaleTitle ? 'block' : 'none'
-            }}
+       className={`sm:w-[130px] text-[14px] sm:text-[20px] bg-white font-normal rounded-md mt-[4px] sm:mt-3 ${showScaleTitle ? 'block' : 'hidden'}`}
             onClick={handleLearnMoreBtn}
             // disabled = {slug !== 'nps-lite-scale' ? true : false}
           >
