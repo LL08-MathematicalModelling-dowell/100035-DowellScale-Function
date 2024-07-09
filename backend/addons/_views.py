@@ -149,30 +149,27 @@ class ScaleCreateAPI(APIView):
                 else:
                     return Response("Scale not found", status=status.HTTP_404_NOT_FOUND)
                 
-            elif 'workspace_id' and 'username' in request.GET:
+            elif 'workspace_id' and 'username' and "scale_type" in request.GET:
                 workspace_id = request.GET.get('workspace_id')
                 username = request.GET.get('username')
+                scale_type = request.GET.get('scale_type')
 
-                response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"workspace_id":workspace_id}, 10000, 0, False))
-            
-                if response_data['data']:
-                    response = response_data['data']
-                    
-                    matching_user_scales = [data for data in response if data["settings"].get('username')==username]
-                    print(matching_user_scales)
-                    scale_details = [{
-                        "scale_id":scale["_id"],
-                        "scale_name": scale["settings"].get("scale_name"),
-                        "scale_type":scale["settings"].get("scale_category"),
-                        "no_of_channels":scale["settings"].get("no_of_channels"),
-                        "channel_instance_details": scale["settings"].get("channel_instance_list")
-                     } for scale in matching_user_scales]
+                response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"workspace_id":workspace_id,"settings.username": username,"settings.scale_category":scale_type}, 10000, 0, False))
                 
-                    
-                    return Response(
-                        {"success": True, "message": "settings fetched successfully","total":len(matching_user_scales), "scale_data": scale_details},
-                        status=status.HTTP_200_OK)
-            
+                response = response_data['data']
+                
+                scale_details = [{
+                    "scale_id":scale["_id"],
+                    "scale_name": scale["settings"].get("scale_name"),
+                    "scale_type":scale["settings"].get("scale_category"),
+                    "no_of_channels":scale["settings"].get("no_of_channels"),
+                    "channel_instance_details": scale["settings"].get("channel_instance_list")
+                    } for scale in response]
+                
+                return Response(
+                    {"success": True, "message": "settings fetched successfully","total_scales":len(response), "scale_data": scale_details},
+                    status=status.HTTP_200_OK)
+        
             elif 'workspace_id' in request.GET:
                 workspace_id = request.GET.get('workspace_id')
 
