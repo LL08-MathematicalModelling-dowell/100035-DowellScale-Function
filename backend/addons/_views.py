@@ -14,7 +14,7 @@ import json
 
 class ScaleCreateAPI(APIView):
 
-    def post(self, request, format=None):
+    def post(self, request, format=None): 
         scale_serializer = ScaleSerializer(data=request.data)
         if scale_serializer.is_valid():
             workspace_id = scale_serializer.validated_data['workspace_id']
@@ -23,6 +23,7 @@ class ScaleCreateAPI(APIView):
             scale_type = scale_serializer.validated_data['scale_type']
             user_type = scale_serializer.validated_data['user_type']
             no_of_responses = scale_serializer.validated_data['no_of_responses']
+            redirect_url = scale_serializer.validated_data['redirect_url']
             
             channel_instance_list = scale_serializer.validated_data['channel_instance_list']
     
@@ -148,6 +149,30 @@ class ScaleCreateAPI(APIView):
                 else:
                     return Response("Scale not found", status=status.HTTP_404_NOT_FOUND)
                 
+            elif 'workspace_id' and 'username' in request.GET:
+                workspace_id = request.GET.get('workspace_id')
+                username = request.GET.get('username')
+
+                response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"workspace_id":workspace_id}, 10000, 0, False))
+            
+                if response_data['data']:
+                    response = response_data['data']
+                    
+                    matching_user_scales = [data for data in response if data["settings"].get('username')==username]
+                    print(matching_user_scales)
+                    scale_details = [{
+                        "scale_id":scale["_id"],
+                        "scale_name": scale["settings"].get("scale_name"),
+                        "scale_type":scale["settings"].get("scale_category"),
+                        "no_of_channels":scale["settings"].get("no_of_channels"),
+                        "channel_instance_details": scale["settings"].get("channel_instance_list")
+                     } for scale in matching_user_scales]
+                
+                    
+                    return Response(
+                        {"success": True, "message": "settings fetched successfully","total":len(matching_user_scales), "scale_data": scale_details},
+                        status=status.HTTP_200_OK)
+            
             elif 'workspace_id' in request.GET:
                 workspace_id = request.GET.get('workspace_id')
 
@@ -157,8 +182,9 @@ class ScaleCreateAPI(APIView):
                     response = response_data['data'][0]
                     print(response)
                     settings = response["settings"]
+                    
                     return Response(
-                        {"success": True, "message": "settings fetched successfully", "scale_data": response_data['data']},
+                        {"success": True, "message": "settings fetched successfully", "total":len(response),"scale_data": response_data['data']},
                         status=status.HTTP_200_OK)
                 else:
                     return Response("No scales found in the requested workspace", status=status.HTTP_404_NOT_FOUND)

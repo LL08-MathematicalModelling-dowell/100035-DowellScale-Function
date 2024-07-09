@@ -1,3 +1,4 @@
+import requests
 from itertools import chain
 from dowellnps_scale_function.settings import public_url
 
@@ -146,3 +147,35 @@ def determine_category(scale_type, item):
         elif item in range(9, 11):
             return "applying"
     return None
+
+# Targeted population API
+def targeted_population(period,api_key):
+    url = "http://100032.pythonanywhere.com/api/targeted_population/v3/?api_key=3db9086b-527f-408b-9fea-ff552160bf40"
+
+    payload = {
+                "database_details": {
+                "database_name": "datacube",
+                "collection": "collection_1",
+                "database": "livinglab_scale_response",
+                "fields": [
+                    "score"
+                ]
+            },
+            "distribution_input": {
+                "normal": 1,
+                "poisson": 1,
+                "binomial": 1,
+                "bernoulli": 1
+            },
+            "number_of_variable": 1,
+            "stages": [
+            ],
+            "time_input": {
+                "column_name": "dowell_time.current_time",
+                "split": "week",
+                "period": period
+            }
+        }
+
+    response = requests.post(url, json = payload)
+    return response.json()

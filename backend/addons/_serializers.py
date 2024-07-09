@@ -10,6 +10,7 @@ class ScaleSerializer(serializers.Serializer):
     channel_instance_list = serializers.ListField()
     pointers = serializers.IntegerField(required=False)
     axis_limit = serializers.IntegerField(required=False)
+    redirect_url = serializers.URLField(required=False)
 
 
 class InstanceDetailsSerializer(serializers.Serializer):
@@ -21,3 +22,5 @@ class ChannelInstanceSerializer(serializers.Serializer):
     channel_display_name = serializers.CharField()
     instances_details = InstanceDetailsSerializer(many=True)
 
+class ReportsSerializer(serializers.Serializer):
+    period= serializers.CharField()
