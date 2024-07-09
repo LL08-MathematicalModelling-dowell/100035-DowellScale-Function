@@ -3,19 +3,19 @@ from itertools import chain
 from dowellnps_scale_function.settings import public_url
 
 
-def build_urls(self, channel_instance,payload,instance_idx):
+def build_urls(channel_instance,payload,instance_idx):
         urls = []
         print(payload)
         settings = payload["settings"]
         scale_range = settings["scale_range"]
         
         for idx in scale_range:
-            url = f"{public_url}/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
-            # url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
+            # url = f"{public_url}/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
+            url = f"http://127.0.0.1:8000/addons/create-response/v3/?user={settings['user_type']}&scale_type={settings['scale_category']}&channel={channel_instance['channel_name']}&instance={channel_instance['instances_details'][instance_idx]['instance_name']}&workspace_id={payload['workspace_id']}&username={settings['username']}&scale_id={settings['scale_id']}&item={idx}"
             urls.append(url)
         return urls
 
-def generate_urls(self, payload):
+def generate_urls(payload):
     response = []
     settings = payload["settings"]
     for channel_instance in settings["channel_instance_list"]:
@@ -29,7 +29,7 @@ def generate_urls(self, payload):
             instance_response = {
                 "instance_name": instance_detail["instance_name"],
                 "instance_display_name": instance_detail["instance_display_name"],
-                "instance_urls": self.build_urls(channel_instance, payload,instance_idx)
+                "instance_urls": build_urls(channel_instance, payload,instance_idx)
             }
             channel_response["urls"].append(instance_response)
         response.append(channel_response)
@@ -37,10 +37,11 @@ def generate_urls(self, payload):
     return response
 
 
-def adjust_scale_range(self, payload):
+def adjust_scale_range(payload):
     print("Inside adjust_scale_range function")
     settings = payload["settings"]
     scale_type = settings['scale_type']
+    print(scale_type)
     print(f"Scale type: {scale_type}")
     
     total_no_of_items = int(settings['total_no_of_items'])
@@ -72,7 +73,7 @@ def adjust_scale_range(self, payload):
     else:
         raise ValueError("Unsupported scale type")
 
-def scale_type(self, scale_type, payload):
+def scale_type_fn(scale_type, payload):
     print("inside scale type")
     print(payload)
     settings = payload["settings"]

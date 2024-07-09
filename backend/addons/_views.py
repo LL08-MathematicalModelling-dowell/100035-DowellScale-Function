@@ -6,14 +6,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from ._serializers import ScaleSerializer, InstanceDetailsSerializer, ChannelInstanceSerializer
 from .datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
-from .utils import generate_urls, adjust_scale_range, scale_type, calcualte_learning_index, determine_category
+from .utils import generate_urls, adjust_scale_range, scale_type_fn, calcualte_learning_index, determine_category
 from api.utils import dowell_time
 from nps.eventID import get_event_id
 import json
 
 
 class ScaleCreateAPI(APIView):
-
     def post(self, request, format=None): 
         scale_serializer = ScaleSerializer(data=request.data)
         if scale_serializer.is_valid():
@@ -23,7 +22,12 @@ class ScaleCreateAPI(APIView):
             scale_type = scale_serializer.validated_data['scale_type']
             user_type = scale_serializer.validated_data['user_type']
             no_of_responses = scale_serializer.validated_data['no_of_responses']
-            redirect_url = scale_serializer.validated_data['redirect_url']
+            
+            if not "redirect_url" in request.data:
+                redirect_url = "https://dowellresearch.sg/"
+            else:
+                redirect_url = scale_serializer.validated_data['redirect_url']
+
             
             channel_instance_list = scale_serializer.validated_data['channel_instance_list']
     
@@ -59,11 +63,11 @@ class ScaleCreateAPI(APIView):
                 else:
                     return Response("Missing field for stapel", status=status.HTTP_400_BAD_REQUEST)
             print("???????????????",payload)
-            total_no_of_items = self.scale_type(scale_type, payload)
+            total_no_of_items = scale_type_fn(scale_type, payload)
             settings["total_no_of_items"] = total_no_of_items
             print("???????????????",payload)
            
-            scale_range = self.adjust_scale_range(payload)
+            scale_range = adjust_scale_range(payload)
             print("Scale range",scale_range)
             payload["scale_range"] = scale_range
 
@@ -82,6 +86,7 @@ class ScaleCreateAPI(APIView):
                             "no_of_responses": no_of_responses,
                             "allow_resp": True,
                             "scale_range": list(scale_range),
+                            "redirect_url":redirect_url,
                             "pointers": pointers if scale_type == "likert" else None,
                             "axis_limit": axis_limit if scale_type == "stapel" else None,
                             "event_id": event_id
@@ -94,7 +99,7 @@ class ScaleCreateAPI(APIView):
                 payload['settings'].update({"scale_id":scale_id})
 
                 # generate the button urls
-                urls = self.generate_urls(payload)
+                urls = generate_urls(payload)
                
                 # insert urls into the db
                 datacube_data_update(api_key, "livinglab_scales", "collection_3", {"_id": scale_id}, {"urls":urls})
@@ -109,7 +114,8 @@ class ScaleCreateAPI(APIView):
                     "total_no_of_buttons": total_no_of_items,
                     "no_of_responses": no_of_responses,
                     "no_of_channels":len(channel_instance_list),
-                    "urls": urls
+                    "urls": urls,
+                    "redirect_to":redirect_url
                 }
                 return Response(response_data, status=status.HTTP_201_CREATED)
             except Exception as e:
@@ -393,6 +399,7 @@ def create_scale_response(request):
 
             no_of_responses = data["no_of_responses"]
             channel_instance_list = data["channel_instance_list"]
+            redirect_url = data["redirect_url"]
 
             for data in channel_instance_list:
                 if channel_name == data["channel_name"]:
@@ -458,7 +465,7 @@ def create_scale_response(request):
 
                 if user_type == "True":
                     product_url = "https://www.uxlive.me/dowellscale/npslitescale"
-                    generated_url = f"{product_url}/?workspace_id={workspace_id}&scale_type={scale_type}&score={item}&channel={channel_name}&instance={instance_name}"
+                    generated_url = f"{product_url}/?workspace_id={workspace_id}&scale_type={scale_type}&score={item}&channel={channel_name}&instance={instance_name}&redirect_to={redirect_url}"
                     return redirect(generated_url)
                 else:
                     return Response({
