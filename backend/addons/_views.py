@@ -131,22 +131,17 @@ class ScaleCreateAPI(APIView):
 
                 response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"_id":scale_id}, 10000, 0, False))
                 response = response_data['data'][0]
-                settings = response["settings"]
             
                 if response:
                     # Extract the relevant information from the response
-                    scale_name = settings.get('scale_name')
-                    scale_type = settings.get('scale_category')
-                    total_no_of_items = settings.get('total_no_of_items')
-                    urls = response.get('urls')
 
                     api_response_data = {
-                        "scale_id": scale_id,
-                        "scale_name": scale_name,
-                        "scale_type": scale_type,
-                        "total_no_of_buttons": total_no_of_items,
-                        "urls": urls
-                    }
+                    "scale_id":response["_id"],
+                    "scale_name": response["settings"].get("scale_name"),
+                    "scale_type":response["settings"].get("scale_category"),
+                    "no_of_channels":response["settings"].get("no_of_channels"),
+                    "channel_instance_details": response["settings"].get("channel_instance_list")
+                    } 
 
                     return Response(
                         {"success": True, "message": "settings fetched successfully", "scale_data": api_response_data},

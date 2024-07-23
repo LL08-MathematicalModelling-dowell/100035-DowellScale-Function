@@ -23,4 +23,15 @@ class ChannelInstanceSerializer(serializers.Serializer):
     instances_details = InstanceDetailsSerializer(many=True)
 
 class ReportsSerializer(serializers.Serializer):
-    period= serializers.CharField()
+    time_period= serializers.ChoiceField(choices=["7","30","90"], required=True)
+    scale_id = serializers.CharField(required=True)
+    channel_names = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=True
+    )
+    instance_names = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=True
+    )
