@@ -62,7 +62,8 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'thurstone',
     "scale_report",
-    "addons"
+    "addons",
+    "public"
 ]
 
 
