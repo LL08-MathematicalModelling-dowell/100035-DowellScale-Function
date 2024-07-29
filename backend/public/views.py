@@ -26,16 +26,12 @@ class ScaleCreateAPI(APIView):
             no_of_responses = scale_serializer.validated_data['no_of_responses']
             
             if public_api_key:
-                print("API Key present")
+                print("api key present")
                 try:
-                    auth_response = processApikey(public_api_key)
+                    api_response = processApikey(public_api_key)
                 except Exception as e:
                     return Response({"error":"Error Authenticating","details":str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-                try:
-                    api_response = json.loads(auth_response)
-                except json.JSONDecodeError as e:
-                    return Response({"error":"Error parsing API response as JSON","details":str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
                 if api_response["success"] == True:
                     credit_count = api_response["total_credits"]
@@ -142,7 +138,8 @@ class ScaleCreateAPI(APIView):
                     else:
                         return Response({"success":False,"message":api_response["message"],"total credits":api_response["total_credits"]},status=status.HTTP_401_UNAUTHORIZED)
                 else: 
-                    return Response({"success":False,"message":api_response["message"], "total credits":api_response["total_credits"]}, status=status.HTTP_401_UNAUTHORIZED)
+                    print("Invalid API key")
+                    return Response({"success":False,"message":api_response["message"]}, status=status.HTTP_401_UNAUTHORIZED)
 
 
             else:
@@ -159,17 +156,12 @@ class ScaleCreateAPI(APIView):
             if public_api_key:
                 print("api key present")
                 try:
-                    auth_response = processApikey(public_api_key)
+                    api_response = processApikey(public_api_key)
                 except Exception as e:
                     return Response({"error":"Error Authenticating","details":str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-                
-                try:
-                    api_response = json.loads(auth_response)
-                except json.JSONDecodeError as e:
-                    return Response({"error":"Error parsing API response as JSON","details":str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-                if api_response["success"] == True:
+                if api_response["success"] is True:
                     print("Valid API key")
                     credit_count = api_response["total_credits"]
                     if credit_count >= 0:
@@ -240,14 +232,14 @@ class ScaleCreateAPI(APIView):
                         return Response({"success":False,"message":api_response["message"],"total credits":api_response["total_credits"]},status=status.HTTP_401_UNAUTHORIZED)
                 else: 
                     print("Invalid API key")
-                    return Response({"success":False,"message":api_response["message"], "total credits":api_response["total_credits"]}, status=status.HTTP_401_UNAUTHORIZED)
+                    return Response({"success":False,"message":api_response["message"]}, status=status.HTTP_401_UNAUTHORIZED)
 
             else:
                 return Response({"success":False,"message":"Provide a valid API key"}, status=status.HTTP_403_FORBIDDEN)
 
         except Exception as e:
             print(e)
-            return Response(f"Unexpected error occured while fetching your data", status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error":"Unexpected error occured while fetching your data","details":str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
 
@@ -274,14 +266,11 @@ def create_scale_response(request):
 
             print("api key present")
             try:
-                auth_response = processApikey(public_api_key)
+                print("this block is runnning")
+                api_response = processApikey(public_api_key)
+                print("api_response",api_response)
             except Exception as e:
                 return Response({"error":"Error Authenticating","details":str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            try:
-                api_response = json.loads(auth_response)
-            except json.JSONDecodeError as e:
-                return Response({"error":"Error parsing API response as JSON","details":str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             if api_response["success"] == True:
                 credit_count = api_response["total_credits"]
@@ -390,7 +379,8 @@ def create_scale_response(request):
                 else:
                     return Response({"success":False,"message":api_response["message"],"total credits":api_response["total_credits"]},status=status.HTTP_401_UNAUTHORIZED)
             else: 
-                return Response({"success":False,"message":api_response["message"], "total credits":api_response["total_credits"]}, status=status.HTTP_401_UNAUTHORIZED)
+                print("Invalid API key")
+                return Response({"success":False,"message":api_response["message"]}, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
             return Response({"success":False,"message":"Provide a valid API key"}, status=status.HTTP_403_FORBIDDEN)
@@ -413,14 +403,11 @@ def get_scale_response(request):
         if public_api_key:
             print("api key present")
             try:
-                auth_response = processApikey(public_api_key)
+                print("this block is runnning")
+                api_response = processApikey(public_api_key)
+                print("api_response",api_response)
             except Exception as e:
                 return Response({"error":"Error Authenticating","details":str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-            try:
-                api_response = json.loads(auth_response)
-            except json.JSONDecodeError as e:
-                return Response({"error":"Error parsing API response as JSON","details":str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             if api_response["success"] == True:
                 credit_count = api_response["total_credits"]
@@ -493,7 +480,8 @@ def get_scale_response(request):
                 else:
                     return Response({"success":False,"message":api_response["message"],"total credits":api_response["total_credits"]},status=status.HTTP_401_UNAUTHORIZED)
             else: 
-                return Response({"success":False,"message":api_response["message"], "total credits":api_response["total_credits"]}, status=status.HTTP_401_UNAUTHORIZED)
+                print("Invalid API key")
+                return Response({"success":False,"message":api_response["message"]}, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
             return Response({"success":False,"message":"Provide a valid API key"}, status=status.HTTP_403_FORBIDDEN)
