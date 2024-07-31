@@ -25,6 +25,14 @@ SECRET_KEY = 'django-insecure-yl1lznvti^x!)s1c*$7@d&t_vuqrg00s4gv-8x%meao1-!&)+=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+#Remember to disable DEBUG status before deployment
+
+
+if DEBUG != True:
+    public_url = "https://100035.pythonanywhere.com"
+else:
+    public_url = "https://100035.pythonanywhere.com"
+
 ALLOWED_HOSTS = []
 
 
@@ -37,9 +45,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'MAIN'
 ]
 
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CORS_ALLOW_ALL_ORIGINS=True
+
+
+
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
