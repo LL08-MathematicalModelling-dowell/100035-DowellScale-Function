@@ -3,7 +3,7 @@ export default async function handleSharing(formData,setButtonLinks,setButtonLin
 //   let pointers=scaleType=="likert"?5:0
 setSubmitted(true)
 const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
-console.log(scaleType,axis_limit,formData.likertPointers[0])
+
     try {
         let { channels } = formData;
         let channelInstanceList = [];
@@ -26,7 +26,7 @@ console.log(scaleType,axis_limit,formData.likertPointers[0])
                 instances_details: instancesDetails
             });
         });
-        console.log(channelInstanceList)
+     
     
         let requestOptions = {
             method: "POST",
@@ -46,7 +46,7 @@ console.log(scaleType,axis_limit,formData.likertPointers[0])
             }
             )
         };
-console.log(requestOptions)
+
 
         const response = await fetch(
             "https://100035.pythonanywhere.com/addons/create-scale/v3/",
@@ -68,7 +68,7 @@ console.log(requestOptions)
         console.error("Error:", error);
     } finally {
         setSubmitted(false)
-        console.log("finally");
+      
     }
 
     return null;

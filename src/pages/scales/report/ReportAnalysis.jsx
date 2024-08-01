@@ -313,9 +313,9 @@ const ReportAnalysis = () => {
     let dataSets = [{label: 'No', data:[], backgroundColor:'red'}, {label: 'Maybe', data:[], backgroundColor:'yellow'}, {label: 'yes', data:[],backgroundColor:'green'}]
     allData.map((item, index)=>{
         labels.push([instanceNames[`${item.instanceName}`]])
-        console.log(item.scoreCounts.No.percentage, "GGGGGGGG")
+       
         item.chartData.datasets.map((name, index)=>{
-          console.log(name.label, "BBBBB")
+        
           if(name.label === 'No'){
             dataSets[0].data.push(item.scoreCounts.No.percentage)
           }else if(name.label === 'Yes'){
@@ -324,15 +324,14 @@ const ReportAnalysis = () => {
             dataSets[1].data.push(item.scoreCounts.Maybe.percentage)
           }
         })
-        console.log(item.chartData.datasets, "EEEEEEEE")
+        
         // StackBarData.push({datasets: item.chartData.datasets, labels: [`${item.instanceName}`]
         // })
       })
       StackBarData.push({labels:labels, datasets: dataSets})
   }, [selectedChannel, data, instances]);
 
-  console.log(StackBarData, "TTTTTTTTTTTTTTTT")
-  console.log(displayDataForAllSelection, "YYYYYYYYYYYYYYYYYYYYYY")
+ 
 
   const fetchData = async () => {
     try {
@@ -340,14 +339,13 @@ const ReportAnalysis = () => {
         `https://100035.pythonanywhere.com/addons/get-response/?scale_id=${slug}`
       );
       const data = response.data.data;
-      console.log(data, "BBBBBBBBBBBBBBB")
       const uniqueChannels = Array.from(
         new Set(data.map((item) => item.channel_name))
       );
       const uniqueInstances = Array.from(
         new Set(data.map((item) => item.instance_name.trim()))
       );
-      console.log("Channel", uniqueChannels)
+     
       setChannels([allChannelsNameTag, ...uniqueChannels]);
       setInstances(uniqueInstances);
       setData(data);
@@ -368,7 +366,7 @@ const ReportAnalysis = () => {
       setTotalCount(0);
     }
   };
-  console.log(channels, "ChannelsGGGGG")
+
 
   const handleInstanceSelect = (event) => {
     setSelectedInstance(event.target.value);
@@ -420,7 +418,7 @@ const ReportAnalysis = () => {
     setScores(scorePercentages);
     setTotalCount(totalCount);
   };
-console.log(scores)
+
   if (loading) {
     return <CircularProgress />;
   }

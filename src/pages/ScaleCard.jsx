@@ -27,7 +27,7 @@ function ScaleCard({ scaleName, description, imageSource, slug, btnLinks, index 
   };
 
   const handleLearnMoreBtn = () => {
-    console.log("GGGGGGGGGGG", index)
+  
     setShowScaleTitle (true);
     setScaleIndex(index)
     setPopupOption(true)

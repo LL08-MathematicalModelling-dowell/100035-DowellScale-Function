@@ -41,10 +41,10 @@ const SideBar = () => {
       })
 
       .then((response) => {
-        console.log(response?.data);
+       
         setUserInfo(response?.data?.userinfo);
         setModalInfo(response?.data?.portfolio_info[0]);
-        console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTT",userInfo);
+       
         sessionStorage.setItem('userInfo', JSON.stringify(response.data));
         // setLoadingFetchUserInfo(false);
       })
@@ -61,8 +61,9 @@ const SideBar = () => {
   }, [searchParams]);
 
   const screenWidth = screen.width
-  
+ 
   const handleMyScales = () =>{
+    console.log("handling")
     setMyScalesBtn(true)
     setNewScaleBtn(false)
     setScaleIndex(10)
@@ -83,7 +84,7 @@ const SideBar = () => {
     setNewScaleBtn(true)
     if(scaleIndex >= 0 && scaleIndex <= 9){
       setPopUp(true)
-      console.log(scaleIndex, "TTTTTTTTTTTTTTTTTTTTTt")
+   
     }else {
       navigateTo(`/100035-DowellScale-Function/home?session_id=${sessionId}`)
     }
@@ -133,26 +134,14 @@ const handleConfirm = () =>{
      <AiOutlineMenuFold onClick={handleSizeToggle} style={{fontSize: '25px', color:'#6D6E70', cursor: 'pointer', display: reduceSize ? 'none' : 'block'}} />
      </div>
      <div style={{color: '#6D6E70', fontSize:'15px', display: 'flex', alignItems:'center', flexDirection: reduceSize ? 'column' : 'row', justifyContent: 'space-between', marginTop:'10px', padding: '30px'}}>
-     {/* <Link
-          to={`/100035-DowellScale-Function/?session_id=${sessionId}`}
-          className="inline"
-          style={{display: reduceSize ? 'block' : 'none', marginBottom:'10px'}}
-        >
-     <FaHome style={{fontSize: '25px', cursor:'pointer'}} />
-     </Link> */}
+   
      <FaUser title={`Welcome, ${userInfo?.username}`} style={{fontSize: '25px', cursor:'pointer', marginBottom: '10px'}} onClick={handleProfile} />
      
      <div className='relative'><FaPowerOff 
      style={{fontSize: '25px', cursor:'pointer' }} onMouseEnter={()=>setshowData("Logout")} onMouseLeave={()=>setshowData("")} onClick={handlePageChange}/>
      {showData.length>0 && <span className='text-white absolute top-6'>{showData}</span>}
      </div>
-     {/* <Link
-          to={`/100035-DowellScale-Function/?session_id=${sessionId}`}
-          className="inline"
-          style={{display: reduceSize ? 'none' : 'block'}}
-        >
-     <FaHome style={{fontSize: '25px', cursor:'pointer'}} />
-     </Link> */}
+     
      <FaEllipsisV onMouseEnter={() => setIsModalOpen(true)} onMouseLeave={() => setIsModalOpen(false)} style={{marginRight: '15px', fontSize: '25px', cursor:'pointer', display: reduceSize ? 'none' : ''}} />
      
       {isModalOpen && <Modal modalInfo={modalInfo} />}
@@ -166,9 +155,9 @@ const handleConfirm = () =>{
         <MdNewLabel style={{marginRight:'6px'}} />
         <button className='' style={{display: reduceSize ? 'none' : 'block'}}>New scale</button>
       </div>
-      <div onClick={handleMyScales} className='flex mt-5 hover:bg-[#013220] hover:text-white bg-white text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', backgroundColor: myScalesBtn ? '#013220' : 'white', color: myScalesBtn ? 'white' : 'black', cursor: 'pointer'}}>
+      <div  className='flex mt-5 hover:bg-[#013220] hover:text-white bg-white text-black w-5/6' style={{display: 'flex', alignItems:'center', justifyContent: 'center', height:'40px',  borderRadius: '4px', backgroundColor: myScalesBtn ? '#013220' : 'white', color: myScalesBtn ? 'white' : 'black', cursor: 'pointer'}}>
        <LiaCloudscale style={{marginRight:'6px'}} />
-       <button style={{display: reduceSize ? 'none' : 'block'}}>My scales</button>
+       <button onClick={handleMyScales} style={{display: reduceSize ? 'none' : 'block'}}>My scales</button>
       </div>
      </div>
      {myScalesPopUp &&<div className='fixed top-[55%] md:left-[40%] sm:left-[30%] left-[20%] sm:w-[55%] w-[65%] md:w-[420px] h-max p-5 bg-white rounded-lg' style={{ fontFamily: 'Roboto, sans-serif', zIndex:'999'}}>

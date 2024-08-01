@@ -8,7 +8,7 @@ import ScaleCard from './ScaleCard';
 // import Cookies from 'universal-cookie';
 
 const Home = () => {
-console.log(sessionStorage.getItem("session_id"))
+
   const {  
     popuOption, 
     setPopupOption,
@@ -126,9 +126,9 @@ console.log(sessionStorage.getItem("session_id"))
       })
 
       .then((response) => {
-        console.log(response?.data);
+     
         setUserInfo(response?.data?.userinfo);
-        console.log(userInfo);
+   
         sessionStorage.setItem('userInfo', JSON.stringify(response.data));
         // setLoadingFetchUserInfo(false);
       })
@@ -150,7 +150,7 @@ console.log(sessionStorage.getItem("session_id"))
     setNewScaleBtn(true)
     // setLoggedIn(true);
   }, []);
-console.log(screenWidth, "YYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
+
 
   return (
     <div className="w-[100%] ml-[1%] mt-10 mr-[1%] lg:ml-[24.5%] xl:ml-[19.5%]">

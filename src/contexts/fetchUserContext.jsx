@@ -16,7 +16,7 @@ export const FetchUserContextProvider = ({ children }) => {
   const [rSize, setRSize] = useState(false)
   const [newScaleBtn, setNewScaleBtn] = useState(true)
   const [myScalesBtn, setMyScalesBtn] = useState(false)
-console.log("sdncksjndakl")
+
   useEffect(() => {
     const fetchData = async () => {
       if (userSessionId !== null) {

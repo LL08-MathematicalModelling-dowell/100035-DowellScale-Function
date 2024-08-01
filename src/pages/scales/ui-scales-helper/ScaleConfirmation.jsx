@@ -6,7 +6,7 @@ export default function ConfirmationScale({formData,setButtonLinks,setButtonLink
     const[submitted,setSubmitted]=useState(false)
     const[err,setErr]=useState("")
     let scaleType;
-console.log(text)
+
 if (text.includes("LITE")) {
     scaleType = "nps_lite";
 } else if (text.includes("STAPEL")) {

@@ -30,7 +30,7 @@ export default function ScaleSharingScreen({setFinished,buttonLinks,text,formDat
     const[isCopied,setIsCopied]=useState(false)
     const[showCopyIcon,setShowCopyIcon]=useState(-1)
     const [csvArray,setCsvArray] = useState([]);
-    console.log(buttonLinks)
+ 
     const[showData,setShowData]=useState("raw")
     const[picked,setPicked]=useState("")
    
@@ -44,9 +44,9 @@ export default function ScaleSharingScreen({setFinished,buttonLinks,text,formDat
      function clicked(channelId,instanceId){
         let arr=[]
        let linkData=buttonLinks[channelId].urls[instanceId]
-       console.log(linkData)
+   
        linkData.instance_urls.forEach((link, index) => {  
-        console.log(link)
+    
         const obj = {
             rating: ratings[index],
             buttonLink: link
@@ -66,7 +66,7 @@ export default function ScaleSharingScreen({setFinished,buttonLinks,text,formDat
       }
       
     ]
-console.log(csvArray)
+
     const csvLink={
       filename:"buttonLinks.csv",
       headers,

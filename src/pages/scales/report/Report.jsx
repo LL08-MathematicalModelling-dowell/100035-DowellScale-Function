@@ -34,6 +34,7 @@ function Report() {
         //await handleFetchSingleScale(slug);
         try {
           setIsLoading(true);
+          console.log(userinfo.userinfo.client_admin_id)
           const response = await axios.get(
             `https://100035.pythonanywhere.com/addons/create-scale/v3/?workspace_id=${userinfo.userinfo.client_admin_id}`
           );
@@ -70,7 +71,27 @@ function Report() {
   }
 
   const handleUserReport = (scale) =>{
-    navigateTo(`/100035-DowellScale-Function/home/scale-analysis/${scale._id}`)
+    console.log(scale)
+const scaleDisplayName = scale.settings.scale_name;
+const scaleId = scale._id;
+const scaleName = scale.settings.scale_category; // Adjust according to your data structure
+const channelInstanceList = scale.settings.channel_instance_list;
+
+// Extract channel display names
+const channelDisplayNames = channelInstanceList.map(channel => channel.channel_display_name).join(',');
+
+// Extract instance display names
+const instanceDisplayNames = channelInstanceList.flatMap(channel => 
+  channel.instances_details.map(instance => instance.instance_display_name)
+).join(',');
+
+// Construct the URL
+const url = `/100035-DowellScale-Function/home/scale-analysis/${scaleName}?scaleId=${scaleId}&scaleDisplayName=${scaleDisplayName}&channelDetails=${channelDisplayNames}&instanceDetails=${instanceDisplayNames}`;
+
+// Use the URL
+navigateTo(url);
+
+navigateTo(url);
   }
 
   const handleBack = () =>{
@@ -78,7 +99,7 @@ function Report() {
     navigateTo(`/100035-DowellScale-Function/home?session_id=${sessionId}`)
   }
 
-  console.log(scaleData, 'scaleData ***');
+ 
 
     // window.onresize = function(){
     //   setScreenWidth(screen.width)
@@ -90,6 +111,7 @@ function Report() {
 
   return (
     <div className='flex flex-col justify-start w-5/6 mt-5 ml-[10%] lg:ml-[20%]'>
+
       <div className='flex justify-start'>
       <IoIosArrowBack onClick={handleBack} className="cursor-pointer text-[24px]"/>
         <div className='flex flex-col justify-start ml-[25px]'>
@@ -99,7 +121,7 @@ function Report() {
       </div>
       </div>
       <div className='report-data mt-10 rounded-lg bg-[#E8E8E8] pb-10'>
-        <div className='flex flex-wrap justify-between w-full flex mt-10 mb-10'>
+        <div className='flex flex-wrap justify-between w-full  mt-10 mb-10'>
         <div className='flex items-center justify-start bg-[#FFF] rounded-lg w-1/3 ml-5'>
           <input className='rounded-lg w-full ml-5 outline-none' style={{height: '29px'}}/>
           <IoIosSearch className='w-10 cursor-pointer' />

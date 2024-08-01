@@ -95,7 +95,7 @@ const navigateTo = useNavigate();
     }
 
     function handleConfirm(text){//nmeed to know the details
-        console.log(text)
+     
         if(text=="confirm"){
            setConfirmed(true);
            setConfirmScale(false)
@@ -111,7 +111,7 @@ const navigateTo = useNavigate();
         }
        
     }
-console.log(confirmed)
+
 
 
 
@@ -130,7 +130,7 @@ const PopUp=({onCancel,onConfirm,header,text1,text2})=>{
 }
 
 const confirmText=`Your ${textContent.scale} has been confirmed`
-console.log(confirmText)
+
 const sharingText=`Share your ${textContent.scale}  across different platforms and add to your customer touch points `
 
 return (

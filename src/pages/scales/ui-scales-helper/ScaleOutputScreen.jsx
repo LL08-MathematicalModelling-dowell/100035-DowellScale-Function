@@ -28,7 +28,7 @@ export default function ScaleOutputScreen({codeToCopy,buttonLinks,ratings}){
       }
       
     ]
-console.log(csvArray)
+
     const csvLink={
       filename:"buttonLinks.csv",
       headers,
