@@ -401,14 +401,13 @@ class LearningIndexReports(APIView):
         start_ = request.data.get("start_date")
         end_ = request.data.get("end_date")
 
-        if custom:
+        if period == "custom":
             serializer = ScaleReportRequestCustomSerializer(data={
                 "scale_id": scale_id,
                 "workspace_id": workspace_id,
                 "channel_names": channel_names,
                 "instance_names": instance_names,
                 "period": period,
-                "custom": custom,
                 "start_date":start_,
                 "end_date":end_
             })

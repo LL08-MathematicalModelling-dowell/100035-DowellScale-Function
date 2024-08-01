@@ -43,7 +43,9 @@ class ScaleReportRequestSerializer(serializers.Serializer):
         ("seven_days", "Seven Days"),
         ("fifteen_days", "Fifteen Days"),
         ("thirty_days", "Thirty Days"),
-        ("one_year", "One Year")
+        ("one_year", "One Year"),
+        ("custom","Custom")
+
     )
     scale_id = serializers.CharField(allow_blank=False, allow_null= False)
     workspace_id = serializers.CharField(allow_null=False, allow_blank=True)
@@ -51,11 +53,6 @@ class ScaleReportRequestSerializer(serializers.Serializer):
     instance_names = serializers.ListField(child=serializers.CharField())
     period = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=choices)
 
-class ScaleReportRequestCustomSerializer(serializers.Serializer):
-    scale_id = serializers.CharField(allow_blank=False, allow_null= False)
-    workspace_id = serializers.CharField(allow_null=False, allow_blank=True)
-    channel_names = serializers.ListField(child=serializers.CharField())
-    instance_names = serializers.ListField(child=serializers.CharField())
-    custom = serializers.BooleanField()
+class ScaleReportRequestCustomSerializer(ScaleReportRequestSerializer):
     start_date = serializers.DateField(allow_null=False)
     end_date = serializers.DateField( allow_null=False)
