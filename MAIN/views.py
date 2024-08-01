@@ -5,10 +5,12 @@ from rest_framework.decorators import api_view
 from django.shortcuts import redirect
 from rest_framework import status
 from .eventID import get_event_id
-from .serializers import ScaleSerializer, InstanceDetailsSerializer, ChannelInstanceSerializer, ScaleReportRequestSerializer
+from .serializers import ScaleSerializer, InstanceDetailsSerializer, ChannelInstanceSerializer, ScaleReportRequestSerializer, ScaleReportRequestCustomSerializer
 from .datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
-from .utils import  generate_urls, adjust_scale_range, scale_type_fn, calcualte_learning_index, determine_category, dowell_time, get_date_range
+from .utils import  generate_urls, adjust_scale_range, scale_type_fn, calcualte_learning_index, determine_category, dowell_time, get_date_range, get_dates
 import json
+import time
+from datetime import datetime
 
 
 # Create your views here.
@@ -395,94 +397,204 @@ class LearningIndexReports(APIView):
         channel_names = request.data.get("channel_names")
         instance_names = request.data.get("instance_names")
         period = request.data.get("period")
+        custom = request.data.get("custom")
+        start_ = request.data.get("start_date")
+        end_ = request.data.get("end_date")
 
-        serializer = ScaleReportRequestSerializer(data={
-            "scale_id": scale_id,
-            "workspace_id": workspace_id,
-            "channel_names": channel_names,
-            "instance_names": instance_names,
-            "period": period,
-        })
-
-        if not serializer.is_valid():
-            return Response({
+        if custom:
+            serializer = ScaleReportRequestCustomSerializer(data={
+                "scale_id": scale_id,
+                "workspace_id": workspace_id,
+                "channel_names": channel_names,
+                "instance_names": instance_names,
+                "period": period,
+                "custom": custom,
+                "start_date":start_,
+                "end_date":end_
+            })
+            if not serializer.is_valid():
+                return Response({
                 "success": False,
                 "message": "Posting wrong data in payload",
                 "errors": serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            start_date, end_date = get_date_range(period)
+            try:
+                start_date, end_date = get_dates(start_,end_)
+                print("start date", start_date)
+                print("end date",end_date)
 
-            filters = {
-                "scale_id": scale_id,
-                "workspace_id": workspace_id,
-                "dowell_time.current_time": {"$gte": start_date, "$lte": end_date}
-            }
-            if "all" not in channel_names:
-                filters["channel_name"] = {"$in": channel_names}
-            if "all" not in instance_names:
-                filters["instance_name"] = {"$in": instance_names}
-
-
-            response_text = datacube_data_retrieval(
-                api_key,
-                "livinglab_scale_response",
-                "collection_1",
-                filters,
-                0,
-                0,
-                False
-            )
-            response = json.loads(response_text)
+                filters = {
+                    "scale_id": scale_id,
+                    "workspace_id": workspace_id,
+                    "dowell_time.current_time": {"$gte": start_date, "$lte": end_date}
+                }
+                if "all" not in channel_names:
+                    filters["channel_name"] = {"$in": channel_names}
+                if "all" not in instance_names:
+                    filters["instance_name"] = {"$in": instance_names}
 
 
-            if "data" not in response:
-                raise ValueError("Data key not found in response")
+                response_text = datacube_data_retrieval(
+                    api_key,
+                    "livinglab_scale_response",
+                    "collection_1",
+                    filters,
+                    0,
+                    0,
+                    False
+                )
+                response = json.loads(response_text)
 
-            response_data = response["data"]
-            report_data = {}
-            total_count = len(response_data)
 
-            for item in response_data:
-                channel = item.get("channel_name", "")
-                instance = item.get("instance_name", "")
+                if "data" not in response:
+                    raise ValueError("Data key not found in response")
 
-                if channel not in report_data:
-                    report_data[channel] = []
+                response_data = response["data"]
+                report_data = {}
+                total_count = len(response_data)
 
-                report_data[channel].append({
-                    "instance_name": instance,
-                    "score": item.get("score", 0),
-                    "category": item.get("category", ""),
-                    "date": item.get("dowell_time", {}).get("current_time", ""),
-                    "channel_display_name": item.get("channel_display_name", ""),
-                    "instance_display_name": item.get("instance_display_name", ""),
-                    "learning_index_data": item.get("learning_index_data", {})
+                for item in response_data:
+                    channel = item.get("channel_name", "")
+                    instance = item.get("instance_name", "")
+
+                    if channel not in report_data:
+                        report_data[channel] = []
+
+                    report_data[channel].append({
+                        "instance_name": instance,
+                        "score": item.get("score", 0),
+                        "category": item.get("category", ""),
+                        "date": item.get("dowell_time", {}).get("current_time", ""),
+                        "channel_display_name": item.get("channel_display_name", ""),
+                        "instance_display_name": item.get("instance_display_name", ""),
+                        "learning_index_data": item.get("learning_index_data", {})
+                    })
+
+                return Response({
+                    "success": "true",
+                    "message": "Successfully fetched the learning index reports",
+                    "response": {
+                        "workspace_id": workspace_id,
+                        "scale_id": scale_id,
+                        "total_count": total_count,
+                        "report_data": report_data
+                    }
                 })
 
-            return Response({
-                "success": "true",
-                "message": "Successfully fetched the learning index reports",
-                "response": {
-                    "workspace_id": workspace_id,
-                    "scale_id": scale_id,
-                    "total_count": total_count,
-                    "report_data": report_data
-                }
-            })
+            except ValueError as ve:
+                return Response({
+                    "success": "false",
+                    "message": str(ve)
+                }, status=status.HTTP_400_BAD_REQUEST)
 
-        except ValueError as ve:
-            return Response({
-                "success": "false",
-                "message": str(ve)
+            except Exception as e:
+                return Response({
+                    "success": "false",
+                    "message": "An error occurred while processing the request: " + str(e)
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+        else:
+            time1 = time.time()
+            serializer = ScaleReportRequestSerializer(data={
+                "scale_id": scale_id,
+                "workspace_id": workspace_id,
+                "channel_names": channel_names,
+                "instance_names": instance_names,
+                "period": period
+            })
+            if not serializer.is_valid():
+                return Response({
+                "success": False,
+                "message": "Posting wrong data in payload",
+                "errors": serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        except Exception as e:
-            return Response({
-                "success": "false",
-                "message": "An error occurred while processing the request: " + str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            try:
+                start_date, end_date = get_date_range(period)
+                print("start date", start_date)
+                print("end date",end_date)
+
+                filters = {
+                    "scale_id": scale_id,
+                    "workspace_id": workspace_id,
+                    "dowell_time.current_time": {"$gte": start_date, "$lte": end_date}
+                }
+                if "all" not in channel_names:
+                    filters["channel_name"] = {"$in": channel_names}
+                if "all" not in instance_names:
+                    filters["instance_name"] = {"$in": instance_names}
+
+                time2 = time.time()
+
+                response_text = datacube_data_retrieval(
+                    api_key,
+                    "livinglab_scale_response",
+                    "collection_1",
+                    filters,
+                    0,
+                    0,
+                    False
+                )
+                response = json.loads(response_text)
+
+
+                #Using time differences to measure speed of code
+                time3 = time.time()
+                print("time difference 2 & 1", time2-time1)
+                print("time difference 3 & 1", time3-time1)
+                print("time difference 3 & 2", time3-time2)
+
+
+
+                if "data" not in response:
+                    raise ValueError("Data key not found in response")
+
+                response_data = response["data"]
+                report_data = {}
+                total_count = len(response_data)
+
+                for item in response_data:
+                    channel = item.get("channel_name", "")
+                    instance = item.get("instance_name", "")
+
+                    if channel not in report_data:
+                        report_data[channel] = []
+
+                    report_data[channel].append({
+                        "instance_name": instance,
+                        "score": item.get("score", 0),
+                        "category": item.get("category", ""),
+                        "date": item.get("dowell_time", {}).get("current_time", ""),
+                        "channel_display_name": item.get("channel_display_name", ""),
+                        "instance_display_name": item.get("instance_display_name", ""),
+                        "learning_index_data": item.get("learning_index_data", {})
+                    })
+
+                return Response({
+                    "success": "true",
+                    "message": "Successfully fetched the learning index reports",
+                    "response": {
+                        "workspace_id": workspace_id,
+                        "scale_id": scale_id,
+                        "total_count": total_count,
+                        "report_data": report_data
+                    }
+                })
+
+            except ValueError as ve:
+                return Response({
+                    "success": "false",
+                    "message": str(ve)
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            except Exception as e:
+                return Response({
+                    "success": "false",
+                    "message": "An error occurred while processing the request: " + str(e)
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
     def get(self, request):
         workspace_id = request.query_params.get("workspace_id")

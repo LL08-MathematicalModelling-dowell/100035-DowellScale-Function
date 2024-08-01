@@ -246,7 +246,9 @@ dowell_time_asian_culta = partial(dowell_time , "Asia/Calcutta")
 
 def get_date_range(period):
     now = datetime.utcnow()
-    if period == 'seven_days':
+    if period == '24_hours':
+        start_date = now - timedelta(days=1)
+    elif period == 'seven_days':
         start_date = now - timedelta(days=7)
     elif period == 'one_month':
         start_date = now - timedelta(days=30)
@@ -257,3 +259,20 @@ def get_date_range(period):
     else:
         raise ValueError("Invalid time period")
     return start_date.isoformat(), now.isoformat()
+
+def get_dates(start_date,end_date):
+    start = datetime.strptime(start_date, '%Y-%m-%d')
+    end = datetime.strptime(end_date, '%Y-%m-%d')
+    current_date = datetime.now()
+    print("current_time",current_date)
+
+    start_ = start.replace(hour=0, minute=1, second=21)
+
+    if end.date() == current_date.date():    
+        print("same day")
+        end_ = datetime.combine(end.date(), current_date.time())
+    else:
+        print("different day")
+        end_ = end.replace(hour=23, minute=50, second=21)
+
+    return start_.isoformat(), end_.isoformat()
