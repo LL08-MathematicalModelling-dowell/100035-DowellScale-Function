@@ -82,14 +82,17 @@ const channelDisplayNames = channelInstanceList.map(channel => channel.channel_d
 
 // Extract instance display names
 const instanceDisplayNames = channelInstanceList.flatMap(channel => 
+ 
   channel.instances_details.map(instance => instance.instance_display_name)
 ).join(',');
 
+const counts=channelInstanceList.flatMap(channel => channel.instances_details.length).join(',')
+console.log(counts)
 // Construct the URL
-const url = `/100035-DowellScale-Function/home/scale-analysis/${scaleName}?scaleId=${scaleId}&scaleDisplayName=${scaleDisplayName}&channelDetails=${channelDisplayNames}&instanceDetails=${instanceDisplayNames}`;
+const url = `/100035-DowellScale-Function/home/scale-analysis/${scaleName}?scaleId=${scaleId}&scaleDisplayName=${scaleDisplayName}&channelDetails=${channelDisplayNames}&instanceDetails=${instanceDisplayNames}&counts=${counts}`;
 
 // Use the URL
-navigateTo(url);
+//navigateTo(url);
 
 navigateTo(url);
   }

@@ -12,6 +12,7 @@ const[requiredInstance,setRequiredInstance]=useState({index:-1,idx:-1})
 
 
 function handleFormData(value, name, index = 0, idx = 0) {
+    console.log(value,name)
     switch (name) {
         case "scaleName":
             setFormData(prev => ({
@@ -76,7 +77,7 @@ function handleFormData(value, name, index = 0, idx = 0) {
     }
 }
 
-
+console.log(formData)
 
 function increaseInstance(index){
     setFormData((prev)=>({

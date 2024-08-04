@@ -15,7 +15,7 @@ const userinfo = JSON.parse(sessionStorage.getItem('userInfo'));
 
             channel.instances.forEach((instance, instanceIndex) => {
                 instancesDetails.push({
-                    instance_name: `instances_${instanceIndex + 1}`,
+                    instance_name: `instance_${instanceIndex + 1}`,
                     instance_display_name: instance
                 });
             });

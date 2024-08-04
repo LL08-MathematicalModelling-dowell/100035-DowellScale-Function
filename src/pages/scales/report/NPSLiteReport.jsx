@@ -39,9 +39,9 @@ ChartJS.register(
 
 
 const initialScoreData = {
-    Detractor: { count: 0, percentage: 0 },
-    Passive: { count: 0, percentage: 0 },
-    Promoter: { count: 0, percentage: 0 },
+    No: { count: 0, percentage: 0 },
+    Maybe: { count: 0, percentage: 0 },
+    Yes: { count: 0, percentage: 0 },
    
 };
 
@@ -55,22 +55,22 @@ function processData(responseData) {
     const category = response.category;
     let count = -1;
 
-    if (category === "promoter") {
+    if (category === "yes") {
       count = 1;
-    } else if (category !== "detractor") {
+    } else if (category !== "no") {
       count = 0;
     }
 
     if (!dataByDate[dateCreated]) {
-      dataByDate[dateCreated] = { totalCount: 0, detractorCount: 0, promoterCount: 0, passiveCount: 0 };
+      dataByDate[dateCreated] = { totalCount: 0, noCount: 0, yesCount: 0, maybeCount: 0 };
     }
 
     if (count === 1) {
-      dataByDate[dateCreated].promoterCount++;
+      dataByDate[dateCreated].yesCount++;
     } else if(count==0) {
-      dataByDate[dateCreated].passiveCount++;
+      dataByDate[dateCreated].maybeCount++;
     }else{
-      dataByDate[dateCreated].detractorCount++;
+      dataByDate[dateCreated].noCount++;
     }
 
     dataByDate[dateCreated].totalCount++;
@@ -80,9 +80,9 @@ function processData(responseData) {
   Object.keys(dataByDate).forEach((date) => {
     const obj = dataByDate[date];
     if (previousDateData !== null) {
-      obj.promoterCount += previousDateData.promoterCount;
-      obj.passiveCount += previousDateData.passiveCount;
-      obj.detractorCount += previousDateData.detractorCount;
+      obj.yesCount += previousDateData.yesCount;
+      obj.maybeCount += previousDateData.maybeCount;
+      obj.noCount += previousDateData.noCount;
       obj.totalCount += previousDateData.totalCount;
     }
 
@@ -138,11 +138,11 @@ function transformData(originalData,days) {
     const dateKey = formatDate(currentDate);
 
     if (originalData.hasOwnProperty(dateKey)) {
-      const { detractorCount,promoterCount,passiveCount} = originalData[dateKey];
+      const { noCount,yesCount,maybeCount} = originalData[dateKey];
     
-     transformedData[dateKey]={detractorCount,promoterCount,passiveCount}
+     transformedData[dateKey]={noCount,yesCount,maybeCount}
     } else {
-      transformedData[dateKey] = transformedData[formatDate(new Date(currentDate.getTime() - 86400000))] || {detractorCount: 0, promoterCount: 0, passiveCount: 0}; // Get the value of the previous day or 0 if it doesn't exist
+      transformedData[dateKey] = transformedData[formatDate(new Date(currentDate.getTime() - 86400000))] || {noCount: 0, yesCount: 0, maybeCount: 0}; // Get the value of the previous day or 0 if it doesn't exist
     }
 
     currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
@@ -180,20 +180,20 @@ function pickSevenKeys(transformedData) {
 
 
 function getIndividualCounts(data) {
-  let detractorCounts = [];
-  let promoterCounts = [];
-  let passiveCounts = [];
+  let noCounts = [];
+  let yesCounts = [];
+  let maybeCounts = [];
 
   data.forEach(entry => {
-      detractorCounts.push(entry.detractorCount);
-      promoterCounts.push(entry.promoterCount);
-      passiveCounts.push(entry.passiveCount);
+      noCounts.push(entry.noCount);
+      yesCounts.push(entry.yesCount);
+     maybeCounts.push(entry.maybeCount);
   });
 
   return {
-      detractorCounts,
-      promoterCounts,
-      passiveCounts
+      noCounts,
+     yesCounts,
+     maybeCounts
   };
 }
 
@@ -400,15 +400,15 @@ useEffect(()=>{
     
       
       setScores({
-        Detractor: {
+        No: {
           count: 0,
           percentage: 0,
         },
-        Passive: {
+        Maybe: {
           count:0,
           percentage: 0,
         },
-        Promoter: {
+        Yes: {
           count: 0,
           percentage:0,
         },
@@ -451,15 +451,15 @@ useEffect(()=>{
 
   if(arr.length==0){
     const scorePercentages = {
-      Detractor: {
+      No: {
         count: 0,
         percentage: 0,
       },
-      Passive: {
+      Maybe: {
         count:0,
         percentage: 0,
       },
-      Promoter: {
+      Yes: {
         count: 0,
         percentage:0,
       },
@@ -471,19 +471,19 @@ setDataForChart({
   labels: [1,2,3,4,5],
   datasets: [
                 {
-                  label: "Detractor",
+                  label: "No",
                   data:[0,0,0,0,0],
                   borderColor: "red",
                   backgroundColor: "red",
                 },
                 {
-                  label: "Promoter",
+                  label: "Yes",
                   data:[0,0,0,0,0],
                   borderColor: "green",
                   backgroundColor: "green",
                 },
                 {
-                  label: "Passive",
+                  label: "Maybe",
                   data: [0,0,0,0,0],
                   borderColor: "yellow",
                   backgroundColor: "yellow",
@@ -508,9 +508,9 @@ setNpsDataForChart({
   
   setMsg(false)
   let scoreCounts={
-    detractor:0,
-    passive:0,
-    promoter:0
+    no:0,
+    maybe:0,
+    yes:0
    
   }
   let score=0
@@ -523,24 +523,24 @@ setNpsDataForChart({
   const totalResponses=arr.length
 
   let percentages={
-    Detractor:((scoreCounts.detractor/totalResponses)*100),
-    Passive:((scoreCounts.passive/totalResponses)*100),
-    Promoter:((scoreCounts.promoter/totalResponses)*100),
+    No:((scoreCounts.no/totalResponses)*100),
+    Maybe:((scoreCounts.maybe/totalResponses)*100),
+    Yes:((scoreCounts.yes/totalResponses)*100),
    
   }
 
   const scorePercentages = {
-    Detractor: {
-      count: scoreCounts["detractor"],
-      percentage: percentages["Detractor"],
+    No: {
+      count: scoreCounts["no"],
+      percentage: percentages["No"],
     },
-    Passive: {
-      count: scoreCounts["passive"],
-      percentage: percentages["Passive"],
+    Maybe: {
+      count: scoreCounts["maybe"],
+      percentage: percentages["Maybe"],
     },
-    Promoter: {
-      count: scoreCounts["promoter"],
-      percentage: percentages["Promoter"],
+    Yes: {
+      count: scoreCounts["yes"],
+      percentage: percentages["Yes"],
     },
   };
 
@@ -557,7 +557,7 @@ setDateCountPair(objectPair)
 
   
   let labels,datasetsInfo,options,npsOptions
-  let detractorCounts=[], passiveCounts=[], promoterCounts=[], npsCounts=[]
+  let noCounts=[], maybeCounts=[],yesCounts=[], npsCounts=[]
 if(!objectPair || !arr || arr.length==0){
   labels= [1,2,3,4,5],
   datasetsInfo= [0,0,0,0,0],
@@ -592,16 +592,16 @@ if(!objectPair || !arr || arr.length==0){
    datasetsInfo=Object.values(objectPair)
 
    let obj=getIndividualCounts(datasetsInfo)
-   detractorCounts=obj.detractorCounts
-   promoterCounts=obj.promoterCounts
-   passiveCounts=obj.passiveCounts
-   const arr=[...detractorCounts,...passiveCounts,...promoterCounts]
-   for(let i=0;i<detractorCounts.length;i++){
-    const val=detractorCounts[i]+promoterCounts[i]+passiveCounts[i]
+   noCounts=obj.noCounts
+   yesCounts=obj.yesCounts
+  maybeCounts=obj.maybeCounts
+   const arr=[...noCounts,...maybeCounts,...yesCounts]
+   for(let i=0;i<noCounts.length;i++){
+    const val=noCounts[i]+yesCounts[i]+maybeCounts[i]
     if(val==0)
       npsCounts[i]=0
     else
-    npsCounts[i]=(((promoterCounts[i]-detractorCounts[i])/val)*100).toFixed(2)
+    npsCounts[i]=(((yesCounts[i]-noCounts[i])/val)*100).toFixed(2)
    }
    const maxValue=arr.reduce((val,ele)=>Number(val)>ele?val:ele,0)
    const minNps = Math.min(...npsCounts);
@@ -673,20 +673,20 @@ setNpsOptionData(npsOptions)
     labels: labels,
     datasets: [
                   {
-                    label: "Detractor",
-                    data: detractorCounts,
+                    label: "No",
+                    data: noCounts,
                     borderColor: "red",
                     backgroundColor: "red",
                   },
                   {
-                    label: "Promoter",
-                    data:promoterCounts,
+                    label: "Yes",
+                    data:yesCounts,
                     borderColor: "green",
                     backgroundColor: "green",
                   },
                   {
-                    label: "Passive",
-                    data: passiveCounts,
+                    label: "Maybe",
+                    data: maybeCounts,
                     borderColor: "yellow",
                     backgroundColor: "yellow",
                   },
@@ -728,15 +728,15 @@ setNpsOptionData(npsOptions)
     
        
       let dummyCount={
-        detractor: 0,
-         passive: 0,
-          promoter: 0, 
+        no:0,
+        maybe:0,
+        yes:0
          
       }
       let dummyPercentages={
-        detractor: 0,
-        passive: 0,
-         promoter: 0, 
+        no:0,
+    maybe:0,
+    yes:0
       }
   
 let scoreCounts,percentages,objectPair,totalResponses, score=0
@@ -754,9 +754,9 @@ let scoreCounts,percentages,objectPair,totalResponses, score=0
  
   setMsg(false)
    scoreCounts={
-    detractor:0,
-    passive:0,
-    promoter:0
+    no:0,
+    maybe:0,
+    yes:0
    
   }
 
@@ -768,9 +768,9 @@ let scoreCounts,percentages,objectPair,totalResponses, score=0
    totalResponses=arr.length
 
    percentages={
-    Detractor:((scoreCounts.detractor/totalResponses)*100),
-    Passive:((scoreCounts.passive/totalResponses)*100),
-    Promoter:((scoreCounts.promoter/totalResponses)*100),
+    No:((scoreCounts.no/totalResponses)*100),
+    Maybe:((scoreCounts.maybe/totalResponses)*100),
+    Yes:((scoreCounts.yes/totalResponses)*100),
    
   }
   const processedData = processData(arr);
@@ -780,17 +780,17 @@ let scoreCounts,percentages,objectPair,totalResponses, score=0
   }
   
    const scorePercentages = {
-    Detractor: {
-      count: scoreCounts["detractor"],
-      percentage: percentages["Detractor"],
+    No: {
+      count: scoreCounts["no"],
+      percentage: percentages["No"],
     },
-    Passive: {
-      count: scoreCounts["passive"],
-      percentage: percentages["Passive"],
+    Maybe: {
+      count: scoreCounts["maybe"],
+      percentage: percentages["Maybe"],
     },
-    Promoter: {
-      count: scoreCounts["promoter"],
-      percentage: percentages["Promoter"],
+    Yes: {
+      count: scoreCounts["yes"],
+      percentage: percentages["Yes"],
     },
   };
 
@@ -799,7 +799,7 @@ let scoreCounts,percentages,objectPair,totalResponses, score=0
 
    
      let labels,datasetsInfo,options,npsOptions
-     let detractorCounts=[], passiveCounts=[], promoterCounts=[], npsCounts=[]
+     let noCounts=[], maybeCounts=[], yesCounts=[], npsCounts=[]
 if(!objectPair || dataForInstanceAndChannel.length==0){
   labels= [1,2,3,4,5],
   datasetsInfo= [0,0,0,0,0],
@@ -835,23 +835,23 @@ if(!objectPair || dataForInstanceAndChannel.length==0){
    datasetsInfo=Object.values(objectPair)
 
    let obj=getIndividualCounts(datasetsInfo)
+   noCounts=obj.noCounts
+   yesCounts=obj.yesCounts
+  maybeCounts=obj.maybeCounts
+   
 
-   detractorCounts=obj.detractorCounts
-   promoterCounts=obj.promoterCounts
-   passiveCounts=obj.passiveCounts
-
-   for(let i=0;i<detractorCounts.length;i++){
-    const val=detractorCounts[i]+promoterCounts[i]+passiveCounts[i]
+   for(let i=0;i<noCounts.length;i++){
+    const val=noCounts[i]+yesCounts[i]+maybeCounts[i]
     if(val==0)
       npsCounts[i]=0
     else
-    npsCounts[i]=(((promoterCounts[i]-detractorCounts[i])/val)*100).toFixed(2)
+    npsCounts[i]=(((yesCounts[i]-noCounts[i])/val)*100).toFixed(2)
    }
   //  npsCounts[0]=-20
   //  npsCounts[1]=-80
   //  npsCounts[2]=-100
 
-   const arr=[...detractorCounts,...passiveCounts,...promoterCounts]
+   const arr=[...noCounts,...maybeCounts,...yesCounts]
    const maxValue=arr.reduce((val,ele)=>Number(val)>ele?val:ele,0)
 
     options = {
@@ -936,20 +936,20 @@ const minNps = Math.min(...npsCounts);
           labels: labels,
           datasets: [
                         {
-                          label: "Detractor",
-                          data:detractorCounts,
+                          label: "No",
+                          data:noCounts,
                           borderColor: "red",
                           backgroundColor: "red",
                         },
                         {
-                          label: "Promoter",
-                          data: promoterCounts,
+                          label: "Yes",
+                          data:yesCounts,
                           borderColor: "green",
                           backgroundColor: "green",
                         },
                         {
-                          label: "Passive",
-                          data:passiveCounts,
+                          label: "Maybe",
+                          data:maybeCounts,
                           borderColor: "yellow",
                           backgroundColor: "yellow",
                         },
@@ -1104,8 +1104,8 @@ setErr(false)
   return (
     <Box   className='p-0 ml-[10%] lg:ml-[20%] w-full sm:p-3'>
       <Typography variant="h6" align="center" gutterBottom>
-     {scaleDisplayName}
-      </Typography>
+{scaleDisplayName}      
+</Typography>
       {msg && <p className="text-red-500 self-center w-full flex justify-center">Provide feedback to check report</p>}
       <Grid container spacing={3} alignItems="center" justifyContent="center">
         <Grid item xs={12} md={4}>
@@ -1167,7 +1167,7 @@ setErr(false)
         </p>
       
         <p className="text-[20px] font-bold text-blue-600 mb-2" >
-         NPS:  {(item.scoreCounts.Promoter.percentage-item.scoreCounts.Detractor.percentage).toFixed(2)}
+         NPS:  {(item.scoreCounts.Yes.percentage-item.scoreCounts.No.percentage).toFixed(2)}
         </p>
         </div>
         <div className="flex flex-col lg:flex-row justify-center md:gap-3 items-center w-[100%]">
@@ -1220,9 +1220,9 @@ setErr(false)
         width={`${data.percentage || 0}%`}
        height="100%"
         bgcolor={
-          score === "Detractor"
+          score === "No"
             ? "red"
-            : score === "Passive"
+            : score === "Maybe"
             ? "yellow"
             : "green"
         }
@@ -1306,7 +1306,7 @@ setErr(false)
         </p>
       
         <p className="text-[20px] font-bold text-blue-600 mb-2" >
-         NPS:  {(scores.Promoter.percentage-scores.Detractor.percentage).toFixed(2)}
+         NPS:  {(scores.Yes.percentage-scores.No.percentage).toFixed(2)}
         </p>
         </div>
       <div className="flex flex-col lg:flex-row justify-center md:gap-3 items-center w-[100%]">
@@ -1361,9 +1361,9 @@ setErr(false)
           height="100%"
           bgcolor={
            
-            score === "Detractor"
+            score === "No"
               ? "red"
-              : score === "Passive"
+              : score === "Maybe"
               ? "yellow"
               : "green"
           }

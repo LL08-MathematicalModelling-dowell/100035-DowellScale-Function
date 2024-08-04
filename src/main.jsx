@@ -102,6 +102,8 @@ import PercentSumScaleSettings from './pages/scales/percent-sum-scale.jsx/Percen
 import GenerateReport from './pages/GenerateReport.jsx';
 import LoadingScreen from './pages/LoadingScreen.jsx';
 import NPSReport from './pages/scales/report/NPSReport.jsx';
+import LLXReport from './pages/scales/report/LLXReport.jsx';
+import NPSLiteReport from './pages/scales/report/NPSLiteReport.jsx';
 
 export const basePath = '/100035-DowellScale-Function/';
 const base2='/100035-DowellScale-Function/home'
@@ -284,6 +286,15 @@ const router = createBrowserRouter([
         path: `${basePath}/home/scale-analysis/nps`,
         element: <NPSReport />,
       },
+      {
+        path: `${basePath}/home/scale-analysis/llx`,
+        element: <LLXReport/>,
+      },
+      {
+        path: `${basePath}/home/scale-analysis/nps_lite`,
+        element: <NPSLiteReport/>,
+      },
+      
       // {
       //   path: `${basePath}/home/scale-analysis/:slug`,
       //   element: <ReportAnalyis />,
