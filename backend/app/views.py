@@ -20,7 +20,7 @@ class healthCheck(APIView):
             "success":True,
             "message":"If you are seeing this, then the server is up for Voice of Customer v1.0.0!"
         }, status=status.HTTP_200_OK)
-
+@method_decorator(csrf_exempt, name='dispatch')
 class UserManagement(APIView):
     def post(self, request):
         type = request.GET.get('type')
@@ -186,7 +186,7 @@ class UserManagement(APIView):
             "message": "Invalid request type"
         }, status=status.HTTP_400_BAD_REQUEST)
       
-
+@method_decorator(csrf_exempt, name='dispatch')
 class ScaleManagement(APIView):
 
     def post(self, request):
@@ -198,9 +198,11 @@ class ScaleManagement(APIView):
         else:
             return self.handle_error(request)
 
+    @login_required
     def save_scale_details(self, request):
         pass  
 
+    @login_required
     def scale_details(self, request):
         workspace_id = request.data.get("workspace_id")
         portfolio = request.data.get("portfolio")
