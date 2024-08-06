@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'thurstone',
     "scale_report",
     "addons",
-    "public"
+    "public",
+    "app"
 ]
 
 

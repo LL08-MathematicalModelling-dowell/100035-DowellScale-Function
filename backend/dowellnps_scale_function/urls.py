@@ -44,7 +44,8 @@ urlpatterns = [
     path('thurstone/', include('thurstone.urls')),
     path('report/', include('scale_report.urls')),
     path('edu/',include('ScaleEdu.urls')),
-    path('public/',include('public.urls'))
+    path('public/',include('public.urls')),
+    path('users/',include('app.urls'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
