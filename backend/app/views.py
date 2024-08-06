@@ -101,3 +101,31 @@ class UserManagement(APIView):
 
       
 
+class ScaleManagement(APIView):
+    def get(self,request):
+        workspace_id = request.GET.get("workspace_id")
+        portfolio_id = request.GET.get("portfolio_id")
+        scale_id = request.GET.get("scale_id")
+        if workspace_id and portfolio_id and scale_id:
+            try:
+                existing_scale = json.loads(datacube_data_retrieval(api_key,"voc","voc_user_management",{ "workspace_id":workspace_id,"portfolio_id":portfolio_id,"scale_id":scale_id},10000, 0, False))
+                response_ = existing_scale['data']
+                print("repsonse",response_)
+                if response_:
+                    return Response({
+                        "success":True,
+                        "message":f"scale with ID {scale_id} found",
+                        "response":response_
+                    },status=status.HTTP_200_OK)
+
+            except Exception as e:
+                return Response({
+                    "success":False,
+                    "message":e
+                },status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response({
+                "success":False,
+                "message":"Provide workspace_id, porfolio_id and password"
+            },status=status.HTTP_400_BAD_REQUEST)
