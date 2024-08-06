@@ -117,6 +117,11 @@ class ScaleManagement(APIView):
                         "message":f"scale with ID {scale_id} found",
                         "response":response_
                     },status=status.HTTP_200_OK)
+                else:
+                    return Response({
+                        "success":False,
+                        "message":"No scale was found"
+                    }, status=status.HTTP_400_BAD_REQUEST)
 
             except Exception as e:
                 return Response({
