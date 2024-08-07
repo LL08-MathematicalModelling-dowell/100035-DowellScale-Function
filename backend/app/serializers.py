@@ -9,3 +9,8 @@ class UserSerializer(serializers.Serializer):
 class ScaleDetailsSerializer(serializers.Serializer):
     workspace_id = serializers.CharField()
     portfolio = serializers.CharField()
+
+class ScaleRetrieveSerializer(serializers.Serializer):
+    workspace_id = serializers.CharField()
+    username = serializers.CharField()
+    portfolio = serializers.CharField()

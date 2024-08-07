@@ -200,7 +200,148 @@ class ScaleManagement(APIView):
 
     @login_required
     def save_scale_details(self, request):
-        pass  
+        workspace_id = request.data.get("workspace_id")
+        username = request.data.get("username")
+        portfolio = request.data.get("portfolio")
+
+        serializer = ScaleRetrieveSerializer(data={
+            "workspace_id": workspace_id,
+            "username": username,
+            "portfolio": portfolio
+        })
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Invalid data",
+                "errors": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        voc_scale_data = json.loads(datacube_data_retrieval(
+            api_key,
+            "voc",
+            "voc_scales",
+            {
+                "workspace_id": workspace_id,
+                "portfolio": portfolio
+            },
+            0,
+            0,
+            False
+        ))
+
+        if not voc_scale_data['success']:
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve scale data",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if voc_scale_data["data"]:
+            return Response({
+                "success": False,
+                "message": "Scale details already exist for this workspace, username, and portfolio",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        scale_data_response = scale_data(workspace_id, username)
+        if not scale_data_response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve scale data",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        data_for_voc_scale = json.loads(datacube_data_retrieval(
+            api_key,
+            "voc",
+            "voc_scales",
+            {},
+            0,
+            0,
+            False
+        ))
+
+        if not data_for_voc_scale['success']:
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve scale data for VOC",
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        
+        existing_scale_ids = {scale['scale_id'] for scale in data_for_voc_scale.get('data', [])}
+        
+        
+        available_scales = [scale for scale in scale_data_response['response'] if scale['scale_id'] not in existing_scale_ids]
+
+        if not available_scales:
+            return Response({
+                "success": False,
+                "message": "No new scale data available to assign",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        assigned_scale = available_scales[0]  
+
+       
+        links_details = []
+        for channel in assigned_scale.get('channel_instance_details', []):
+            channel_name = channel.get('channel_name', '') 
+            channel_display_name = channel.get('channel_display_name', '')
+            for instance in channel.get('instances_details', []):
+                instance_name = instance.get('instance_name', '')  
+                instance_display_name = instance.get('instance_display_name', '')
+                link = (
+                    f"https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/?workspace_id={workspace_id}&username={username}&"
+                    f"scale_id={assigned_scale['scale_id']}&channel={channel_name}&"
+                    f"instance_name={instance_name}&channel_display_name={channel_display_name}&instance_display_name={instance_display_name}"
+                )
+                qrcode_image = generate_qr_code(link)
+                file_name = generate_file_name(prefix='qrcode', extension='png')
+                qrcode_image_url = upload_qr_code_image(qrcode_image, file_name)
+                links_details.append({
+                    "scale_link": link,
+                    "qrcode_image_url": qrcode_image_url
+                })
+        
+        
+        report_link = {
+            "report_link": f"https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/?workspace_id={workspace_id}&username={username}&scale_id={assigned_scale['scale_id']}",
+            "qrcode_image_url": None
+        }
+        
+       
+        report_qrcode_image = generate_qr_code(report_link["report_link"])
+        report_qrcode_file_name = generate_file_name(prefix='report_qrcode', extension='png')
+        report_qrcode_image_url = upload_qr_code_image(report_qrcode_image, report_qrcode_file_name)
+        report_link["qrcode_image_url"] = report_qrcode_image_url
+
+        
+        data_to_be_inserted = {
+            "workspace_id": workspace_id,
+            "username": username,
+            "portfolio": portfolio,
+            "scale_id": assigned_scale['scale_id'],
+            "links_details": links_details,
+            "report_link": report_link,
+            "created_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "records": [{"record": "1", "type": "overall"}]
+        }
+
+        response = json.loads(datacube_data_insertion(
+            api_key,
+            "voc",
+            "voc_scales",
+            data_to_be_inserted
+        ))
+        
+        if not response['success']:
+            return Response({
+                "success": False,
+                "message": "Failed to save scale details"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({
+            "success": True,
+            "message": "Scale details saved successfully",
+            "response": data_to_be_inserted
+        })
 
     @login_required
     def scale_details(self, request):
@@ -251,3 +392,11 @@ class ScaleManagement(APIView):
             "message": "Invalid request type"
         }, status=status.HTTP_400_BAD_REQUEST)
     
+# https://scale.come/?
+# workspace_id=6385c0f18eca0fb652c94558
+# &username=manish_test error_login
+# &scale_id=66b326e41f6cf39544a2b438
+# &channel=VOC Channel 1
+# &instance_name=Website
+# &channel_display_name=VOC Channel 1
+# &instance_display_name=Website

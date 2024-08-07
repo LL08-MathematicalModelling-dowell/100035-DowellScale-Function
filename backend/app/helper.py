@@ -4,6 +4,12 @@ from datetime import datetime, timedelta
 from typing import Dict, Optional
 from functools import wraps
 from django.http import JsonResponse
+import requests
+import time
+import qrcode
+from io import BytesIO
+
+from PIL import Image
 
 auth_jwt_config = {
     'JWT_SECRET_KEY': os.getenv("JWT_SECRET_KEY", "voc"),
@@ -47,10 +53,8 @@ class JWTUtils:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
             return payload
         except jwt.ExpiredSignatureError:
-            # Token has expired
             return None
         except jwt.InvalidTokenError:
-            # Token is invalid
             return None
 
 def login_required(view_func):
@@ -86,3 +90,58 @@ def login_required(view_func):
             }, status=401)
 
     return _wrapped_view
+
+def scale_data(worksapce_id,username,scale_type="nps"):
+    resonse = requests.get(
+        f"https://100035.pythonanywhere.com/addons/create-scale/v3/?workspace_id={worksapce_id}&username={username}&scale_type={scale_type}"
+    )
+
+    if resonse.status_code == 200:
+        return {
+            "success": True,
+            "message": "Scale data was successfully retrieved",
+            "response": resonse.json()["scale_data"]
+        }
+    else:
+        return {
+            "success": False, 
+            "message": "Failed to fetch scale data"
+        }
+def generate_file_name(prefix='qrcode', extension='png'):
+    timestamp = int(time.time() * 1000)
+    filename = f'{prefix}_{timestamp}.{extension}'
+    return filename
+
+def generate_qr_code(data):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+    
+    img = qr.make_image(fill='black', back_color='white')
+    return img
+
+def upload_qr_code_image(img, file_name):
+    url = 'https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-qrcode-to-drive/'
+    with BytesIO() as buffer:
+        img.save(buffer, format='PNG')
+        buffer.seek(0)
+        files = {
+            'file': (file_name, buffer, 'image/png')
+        }
+        try:
+            response = requests.post(url, files=files)
+            response.raise_for_status()  # Raises an HTTPError for bad responses
+            file_url = response.json().get('file_url')
+            return file_url
+        except requests.exceptions.HTTPError as http_err:
+            print(f'Server responded with non-success status: {http_err.response.status_code}')
+        except requests.exceptions.RequestException as req_err:
+            print(f'Error making request: {req_err}')
+        except Exception as err:
+            print(f'Unexpected error: {err}')
+        return None
