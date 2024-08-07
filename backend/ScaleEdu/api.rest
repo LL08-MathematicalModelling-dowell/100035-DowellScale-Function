@@ -1,0 +1,28 @@
+POST http://127.0.0.1:8000/edu/report/ HTTP/1.1
+content-type: application/json
+
+{
+    "scale_id": "6687e18aa74d1fcdca15fde3",
+    "workspace_id": "66879a901c299b49c227088b",
+    "channel_names": ["all"],
+    "instance_names": ["all"],
+    "period": "seven_days"
+}
+
+
+###
+
+GET http://127.0.0.1:8000/edu/report/?workspace_id=66879a901c299b49c227088b&scale_id=6687e18aa74d1fcdca15fde3 HTTP/1.1
+
+###
+
+POST http://127.0.0.1:8000/edu/report/ HTTP/1.1
+content-type: application/json
+
+{
+    "scale_id": "6687e18aa74d1fcdca15fde3",
+    "workspace_id": "66879a901c299b49c227088b",
+    "channel_names": ["channel_1","channel_2"],
+    "instance_names": ["instance_3","instance_1"],
+    "period": "seven_days"
+}

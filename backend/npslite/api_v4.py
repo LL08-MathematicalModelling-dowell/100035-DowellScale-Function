@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from addons.datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
-from addons.v3_serializers import ChannelInstanceSerializer, InstanceDetailsSerializer
+from addons._serializers import ChannelInstanceSerializer, InstanceDetailsSerializer
 from .serializer import ScaleSerializer, ScaleSettingsSerializer, ScaleResponseSerializer
 from api.utils import dowell_time
 from nps.eventID import get_event_id

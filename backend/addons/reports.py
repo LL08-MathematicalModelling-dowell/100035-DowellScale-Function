@@ -1,8 +1,11 @@
 from rest_framework.decorators import APIView
+import requests
 from rest_framework import status
 from rest_framework.response import Response
 import json
 from .db_operations import datacube_db, datacube_db_response, api_key
+from ._serializers import ReportsSerializer
+from .utils import targeted_population
 # from EvaluationModule import stattricks, normality
 from EvaluationModule.stattricks import stattricks_api
 import random
@@ -52,3 +55,11 @@ class ScaleWiseReport(APIView):
             print(e)
             return Response("Unexpected error occured. Contact admin support.")
 
+class reports(APIView):
+    def get(self, request):
+        period = request.GET.get('period')
+        scale_id = request.GET.get('scale_id')
+
+        data = targeted_population(period, api_key)
+        print(data)
+        return Response(data)
