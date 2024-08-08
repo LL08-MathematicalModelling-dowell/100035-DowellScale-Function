@@ -211,110 +211,110 @@ def create_scale_response(request):
     instance_name = request.GET.get('instance')
     header = dict(request.headers)
 
-    if request.method == "GET":
-        try:
-            # Category determination
-            category = determine_category(scale_type, item)
-            if category is None:
-                return Response({"success": "false", "message": "Invalid value for score"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Fetch the relevant settings meta data
-            settings_meta_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"_id": scale_id}, 10000, 0, False))
-            data = settings_meta_data['data'][0]['settings']
+    try:
+        # Category determination
+        category = determine_category(scale_type, item)
+        if category is None:
+            return Response({"success": "false", "message": "Invalid value for score"}, status=status.HTTP_400_BAD_REQUEST)
 
-            no_of_responses = data["no_of_responses"]
-            channel_instance_list = data["channel_instance_list"]
-            redirect_url = data["redirect_url"]
+        # Fetch the relevant settings meta data
+        settings_meta_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"_id": scale_id}, 10000, 0, False))
+        data = settings_meta_data['data'][0]['settings']
 
-            for data in channel_instance_list:
-                if channel_name == data["channel_name"]:
-                    for instance in data["instances_details"]:
-                        if instance_name == instance["instance_name"]:
-                            channel_display_names = [data["channel_display_name"]]
-                            instance_display_names = [instance["instance_display_name"]]
-                            break
+        no_of_responses = data["no_of_responses"]
+        channel_instance_list = data["channel_instance_list"]
+        # redirect_url = data["redirect_url"]
 
-            if not channel_display_names or not instance_display_names:
-                return Response({"success": "false", "message": "Channel or Instance not found"}, status=status.HTTP_404_NOT_FOUND)
+        for data in channel_instance_list:
+            if channel_name == data["channel_name"]:
+                for instance in data["instances_details"]:
+                    if instance_name == instance["instance_name"]:
+                        channel_display_names = [data["channel_display_name"]]
+                        instance_display_names = [instance["instance_display_name"]]
+                        break
 
-            # Response submission logic
-            fields = {"scale_id": scale_id, "channel_name": channel_name, "instance_name": instance_name}
-            response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
+        if not channel_display_names or not instance_display_names:
+            return Response({"success": "false", "message": "Channel or Instance not found"}, status=status.HTTP_404_NOT_FOUND)
 
-            current_response_count = len(response_data['data']) + 1 if response_data['data'] else 1
+        # Response submission logic
+        fields = {"scale_id": scale_id, "channel_name": channel_name, "instance_name": instance_name}
+        response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
 
-            if current_response_count <= no_of_responses:
-                event_id = get_event_id()
-                created_time = dowell_time("Asia/Calcutta")
+        current_response_count = len(response_data['data']) + 1 if response_data['data'] else 1
 
-                learning_index_data = ""
-                if scale_type == 'learning_index':
-                    learner_category = {
-                        "reading": 0,
-                        "understanding": 0,
-                        "explaining": 0,
-                        "evaluating": 0,
-                        "applying": 0
-                    } if current_response_count == 1 else response_data['data'][-1].get("learning_index_data", {}).get("learning_level_count", {})
+        if current_response_count <= no_of_responses:
+            event_id = get_event_id()
+            created_time = dowell_time("Asia/Calcutta")
 
-                    percentages, LLx, learning_stage, learner_category_cal = calcualte_learning_index(item, current_response_count, learner_category, category)
-                    learning_index_data = {
-                        "control_group_size": current_response_count,
-                        "learning_level_count": learner_category_cal,
-                        "learning_level_percentages": percentages,
-                        "learning_level_index": LLx,
-                        "learning_stage": learning_stage
-                    }
+            learning_index_data = ""
+            if scale_type == 'learning_index':
+                learner_category = {
+                    "reading": 0,
+                    "understanding": 0,
+                    "explaining": 0,
+                    "evaluating": 0,
+                    "applying": 0
+                } if current_response_count == 1 else response_data['data'][-1].get("learning_index_data", {}).get("learning_level_count", {})
 
-                existing_data = {
-                    "workspace_id": workspace_id,
-                    "username": username,
-                    "scale_id": scale_id,
+                percentages, LLx, learning_stage, learner_category_cal = calcualte_learning_index(item, current_response_count, learner_category, category)
+                learning_index_data = {
+                    "control_group_size": current_response_count,
+                    "learning_level_count": learner_category_cal,
+                    "learning_level_percentages": percentages,
+                    "learning_level_index": LLx,
+                    "learning_stage": learning_stage
+                }
+
+            existing_data = {
+                "workspace_id": workspace_id,
+                "username": username,
+                "scale_id": scale_id,
+                "score": item,
+                "category": category,
+                "user_type": user_type,
+                "user_info": header,
+                "event_id": event_id,
+                "dowell_time": created_time,
+                "current_response_count": current_response_count,
+                "channel_name": channel_name,
+                "channel_display_name": channel_display_names[0],
+                "instance_name": instance_name,
+                "instance_display_name": instance_display_names[0],
+                "learning_index_data": learning_index_data
+            }
+
+            # Insertion into the DB
+            responses = json.loads(datacube_data_insertion(api_key, "livinglab_scale_response", "collection_1", existing_data))
+            response_id = responses['data']['inserted_id']
+
+            if user_type == "True":
+                product_url = "https://www.uxlive.me/dowellscale/npslitescale"
+                # generated_url = f"{product_url}/?workspace_id={workspace_id}&scale_type={scale_type}&score={item}&channel={channel_name}&instance={instance_name}&redirect_to={redirect_url}"
+                generated_url = f"{product_url}/?workspace_id={workspace_id}&scale_type={scale_type}&score={item}&channel={channel_name}&instance={instance_name}"
+                return redirect(generated_url)
+            else:
+                return Response({
+                    "success": responses['success'],
+                    "message": "Response recorded successfully",
+                    "response_id": response_id,
                     "score": item,
                     "category": category,
-                    "user_type": user_type,
-                    "user_info": header,
-                    "event_id": event_id,
-                    "dowell_time": created_time,
-                    "current_response_count": current_response_count,
-                    "channel_name": channel_name,
+                    "channel": channel_name,
                     "channel_display_name": channel_display_names[0],
                     "instance_name": instance_name,
                     "instance_display_name": instance_display_names[0],
-                    "learning_index_data": learning_index_data
-                }
+                    "current_response_no": current_response_count,
+                    "no_of_available_responses": no_of_responses - current_response_count,
+                    "time_stamp": created_time["current_time"]
+                })
+        else:
+            return Response({"success": False, "message": "All instances for this scale have been consumed. Create a new scale to continue"}, status=status.HTTP_200_OK)
 
-                # Insertion into the DB
-                responses = json.loads(datacube_data_insertion(api_key, "livinglab_scale_response", "collection_1", existing_data))
-                response_id = responses['data']['inserted_id']
+    except Exception as e:
+        print("response", e)
+        return Response({"Resource not found! Contact the admin"}, status=status.HTTP_404_NOT_FOUND)
 
-                if user_type == "True":
-                    product_url = "https://www.uxlive.me/dowellscale/npslitescale"
-                    generated_url = f"{product_url}/?workspace_id={workspace_id}&scale_type={scale_type}&score={item}&channel={channel_name}&instance={instance_name}&redirect_to={redirect_url}"
-                    return redirect(generated_url)
-                else:
-                    return Response({
-                        "success": responses['success'],
-                        "message": "Response recorded successfully",
-                        "response_id": response_id,
-                        "score": item,
-                        "category": category,
-                        "channel": channel_name,
-                        "channel_display_name": channel_display_names[0],
-                        "instance_name": instance_name,
-                        "instance_display_name": instance_display_names[0],
-                        "current_response_no": current_response_count,
-                        "no_of_available_responses": no_of_responses - current_response_count,
-                        "time_stamp": created_time["current_time"]
-                    })
-            else:
-                return Response({"success": False, "message": "All instances for this scale have been consumed. Create a new scale to continue"}, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            print("response", e)
-            return Response({"Resource not found! Contact the admin"}, status=status.HTTP_404_NOT_FOUND)
-    else:
-        return Response("Method not allowed")
 
     
 

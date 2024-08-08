@@ -44,7 +44,6 @@ class UserManagement(APIView):
                 "portfolio":portfolio,
                 "password":make_password(password)
             }
-            print(payload)
             try:
                 existing_user = json.loads(datacube_data_retrieval(api_key,"voc","voc_user_management",{ "workspace_id":workspace_id,"portfolio":portfolio},10000, 0, False))
                 response_ = existing_user['data']
@@ -98,13 +97,11 @@ class UserManagement(APIView):
 
                 existing_user = json.loads(datacube_data_retrieval(api_key,"voc","voc_user_management",{ "workspace_id":workspace_id,"portfolio":portfolio},0, 0, False))
                 response_ = existing_user['data']
-                print("repsonse",response_)
                 if response_:
                     response_pass = response_[0]["password"]
                     if check_password(password,response_pass):
 
                         token = jwt_utils.generate_jwt_tokens(response_[0]["_id"],workspace_id,portfolio)
-                        print("token",token)
                         return Response({
                             "success":True,
                             "message":"User Found",
