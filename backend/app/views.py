@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -30,6 +30,8 @@ class UserManagement(APIView):
             return self.login(request)
         elif type == 'get_access_token':
             return self.get_access_token(request)
+        elif type == 'update_userprofile':
+            return self.update_userprofile(request)
         else:
             return self.handle_error(request)
     def sign_up(self,request):
@@ -245,6 +247,7 @@ class ScaleManagement(APIView):
                 "message": "Failed to retrieve scale data",
             }, status=status.HTTP_400_BAD_REQUEST)
         
+        
         data_for_voc_scale = json.loads(datacube_data_retrieval(
             api_key,
             "voc",
@@ -272,12 +275,12 @@ class ScaleManagement(APIView):
                 "success": False,
                 "message": "No new scale data available to assign",
             }, status=status.HTTP_400_BAD_REQUEST)
-        
-        
+
         assigned_scale = available_scales[0]  
 
        
         links_details = []
+        scale_type = assigned_scale.get('scale_type')
         for channel in assigned_scale.get('channel_instance_details', []):
             channel_name = channel.get('channel_name', '') 
             channel_display_name = channel.get('channel_display_name', '')
@@ -285,8 +288,8 @@ class ScaleManagement(APIView):
                 instance_name = instance.get('instance_name', '')  
                 instance_display_name = instance.get('instance_display_name', '')
                 link = (
-                    f"https://ll08-mathematicalmodelling-dowell.github.io/voc/scale?workspace_id={workspace_id}&username={username}&"
-                    f"scale_id={assigned_scale['scale_id']}&channel={channel_name}&"
+                    f"https://100035.pythonanywhere.com/voc/?workspace_id={workspace_id}&username={username}&"
+                    f"scale_id={assigned_scale['scale_id']}&scale_type={scale_type}&channel={channel_name}&"
                     f"instance_name={instance_name}&channel_display_name={channel_display_name}&instance_display_name={instance_display_name}"
                 )
                 qrcode_image = generate_qr_code(link)
@@ -299,7 +302,7 @@ class ScaleManagement(APIView):
         
         
         report_link = {
-            "report_link": f"https://ll08-mathematicalmodelling-dowell.github.io/voc/report?workspace_id={workspace_id}&username={username}&scale_id={assigned_scale['scale_id']}",
+            "report_link": f"https://100035.pythonanywhere.com/voc/report/?workspace_id={workspace_id}&username={username}&scale_id={assigned_scale['scale_id']}",
             "qrcode_image_url": None
         }
         
@@ -388,12 +391,5 @@ class ScaleManagement(APIView):
             "success": False,
             "message": "Invalid request type"
         }, status=status.HTTP_400_BAD_REQUEST)
-    
-# https://scale.come/?
-# workspace_id=6385c0f18eca0fb652c94558
-# &username=manish_test error_login
-# &scale_id=66b326e41f6cf39544a2b438
-# &channel=VOC Channel 1
-# &instance_name=Website
-# &channel_display_name=VOC Channel 1
-# &instance_display_name=Website
+
+        

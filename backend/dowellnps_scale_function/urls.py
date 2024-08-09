@@ -22,6 +22,8 @@ from django.views.generic import TemplateView
 from dowellnps_scale_function import views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
+from redirectqrcode import *
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('nps.urls')),
@@ -45,7 +47,9 @@ urlpatterns = [
     path('report/', include('scale_report.urls')),
     path('edu/',include('ScaleEdu.urls')),
     path('public/',include('public.urls')),
-    path('voc/api/v1/',include('app.urls'))
+    path('voc/api/v1/',include('app.urls')),
+    path('voc/',RedirectURL.as_view()),
+    path('voc/report/',ReportRedirectURL.as_view())
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
