@@ -20,7 +20,7 @@ class RedirectURL(APIView):
 
         try:
             link = (
-                f"https://ll08-mathematicalmodelling-dowell.github.io/voc/scale/?"
+                f"https://ll08-mathematicalmodelling-dowell.github.io/voc/#/scale/?"
                 f"workspace_id={workspace_id}&username={username}&"
                 f"scale_id={scale_id}&scale_type={scale_type}&"
                 f"channel={channel_name}&instance_name={instance_name}&"
@@ -44,7 +44,7 @@ class ReportRedirectURL(APIView):
 
         try:
             report_link = (
-                f"https://ll08-mathematicalmodelling-dowell.github.io/voc/report/?"
+                f"https://ll08-mathematicalmodelling-dowell.github.io/voc/#/report/?"
                 f"workspace_id={workspace_id}&username={username}&scale_id={scale_id}"
             )
 
@@ -52,3 +52,4 @@ class ReportRedirectURL(APIView):
         except Exception as e:
             print("Exception:", e)
             return redirect("https://dowellresearch.sg/")
+        
