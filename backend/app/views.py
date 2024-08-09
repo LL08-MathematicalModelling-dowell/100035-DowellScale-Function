@@ -285,7 +285,7 @@ class ScaleManagement(APIView):
                 instance_name = instance.get('instance_name', '')  
                 instance_display_name = instance.get('instance_display_name', '')
                 link = (
-                    f"https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/?workspace_id={workspace_id}&username={username}&"
+                    f"https://ll08-mathematicalmodelling-dowell.github.io/voc/scale?workspace_id={workspace_id}&username={username}&"
                     f"scale_id={assigned_scale['scale_id']}&channel={channel_name}&"
                     f"instance_name={instance_name}&channel_display_name={channel_display_name}&instance_display_name={instance_display_name}"
                 )
@@ -299,7 +299,7 @@ class ScaleManagement(APIView):
         
         
         report_link = {
-            "report_link": f"https://ll08-mathematicalmodelling-dowell.github.io/100035-DowellScale-Function/?workspace_id={workspace_id}&username={username}&scale_id={assigned_scale['scale_id']}",
+            "report_link": f"https://ll08-mathematicalmodelling-dowell.github.io/voc/report?workspace_id={workspace_id}&username={username}&scale_id={assigned_scale['scale_id']}",
             "qrcode_image_url": None
         }
         
