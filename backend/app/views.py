@@ -412,7 +412,7 @@ class ScaleManagement(APIView):
         report_link["qrcode_image_url"] = report_qrcode_image_url
 
         login = {
-            "login_link": f"https://ll08-mathematicalmodelling-dowell.github.io/voc/?workspace_name={username}",
+            "login_link": f"https://ll08-mathematicalmodelling-dowell.github.io/voc/#/?workspace_name={username}",
             "qrcode_image_url": None
         }
 
