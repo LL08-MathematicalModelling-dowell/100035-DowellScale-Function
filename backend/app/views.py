@@ -32,6 +32,8 @@ class UserManagement(APIView):
             return self.get_access_token(request)
         elif type == 'update_userprofile':
             return self.update_userprofile(request)
+        elif type == 'authenticate_user':
+            return self.authenticate_user(request)
         else:
             return self.handle_error(request)
     def sign_up(self,request):
@@ -179,6 +181,103 @@ class UserManagement(APIView):
             "response": user_response['data'][0]
         })
     
+    def authenticate_user(self, request):
+        workspace_name = request.data.get("workspace_name")
+        portfolio = request.data.get("portfolio")
+        password = request.data.get("password")
+
+        serializer = UserAuthSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Posting wrong data to API",
+                "errors": serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        client_admin_login_response = dowell_login(workspace_name, portfolio, password)
+        if not client_admin_login_response.get("success") or client_admin_login_response.get("response") == 0:
+            return Response({
+                "success": False,
+                "message": client_admin_login_response.get("message", "Authentication failed")
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        data = client_admin_login_response.get("response", {})
+        user_info = {
+            "workspace_name": workspace_name,
+            "portfolio": portfolio
+        }
+
+        existing_user_response = json.loads(datacube_data_retrieval(api_key, "voc", "voc_user_management", user_info, 10000, 0, False))
+        existing_user = existing_user_response.get('data', [])
+
+        if not existing_user:
+            create_user_response = json.loads(datacube_data_insertion(
+                api_key,
+                "voc",
+                "voc_user_management",
+                {
+                    **user_info,
+                    "email": "",
+                    "profile_image": "",
+                    "workspace_id": data["userinfo"]["owner_id"],
+                    "workspace_owner_name": data["userinfo"]["owner_name"],
+                    "portfolio_username": data["portfolio_info"]["username"][0],
+                    "member_type": data["portfolio_info"]["member_type"],
+                    "data_type": data["portfolio_info"]["data_type"],
+                    "operations_right": data["portfolio_info"]["operations_right"],
+                    "status": data["portfolio_info"]["status"]
+                }
+            ))
+
+            if not create_user_response.get("success"):
+                return Response({
+                    "success": False,
+                    "message": "Error while creating user",
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            data = {
+                "_id": create_user_response["data"]["inserted_id"],
+                **user_info,
+                "email": "",
+                "profile_image": "",
+                "workspace_id": data["userinfo"]["owner_id"],
+                "workspace_owner_name": data["userinfo"]["owner_name"],
+                "portfolio_username": data["portfolio_info"]["username"][0],
+                "member_type": data["portfolio_info"]["member_type"],
+                "data_type": data["portfolio_info"]["data_type"],
+                "operations_right": data["portfolio_info"]["operations_right"],
+                "status": data["portfolio_info"]["status"]
+            }
+
+            message = "User created successfully"
+        else:
+            existing_user_data = existing_user[0]
+            data = {
+                "_id": existing_user_data["_id"],
+                **user_info,
+                "email": existing_user_data["email"],
+                "profile_image": existing_user_data["profile_image"],
+                "workspace_id": existing_user_data["workspace_id"],
+                "workspace_owner_name": existing_user_data["workspace_owner_name"],
+                "portfolio_username": existing_user_data["portfolio_username"],
+                "member_type": existing_user_data["member_type"],
+                "data_type": existing_user_data["data_type"],
+                "operations_right": existing_user_data["operations_right"],
+                "status": existing_user_data["status"]
+            }
+
+            message = "User authenticated successfully"
+
+        token = jwt_utils.generate_jwt_tokens(data)
+        return Response({
+            "success": True,
+            "message": message,
+            "access_token": token["access_token"],
+            "refresh_token": token["refresh_token"],
+            "response": data
+        })
+    
+
     def handle_error(self, request): 
         return Response({
             "success": False,
@@ -312,6 +411,17 @@ class ScaleManagement(APIView):
         report_qrcode_image_url = upload_qr_code_image(report_qrcode_image, report_qrcode_file_name)
         report_link["qrcode_image_url"] = report_qrcode_image_url
 
+        login = {
+            "login_link": f"https://ll08-mathematicalmodelling-dowell.github.io/voc/?workspace_name={username}",
+            "qrcode_image_url": None
+        }
+
+
+        login_qrcode_image = generate_qr_code(login["login_link"])
+        login_qrcode_file_name = generate_file_name(prefix='login_qrcode', extension='png')
+        login_qrcode_image_url = upload_qr_code_image(login_qrcode_image, login_qrcode_file_name)
+        login["qrcode_image_url"] = login_qrcode_image_url
+
         
         data_to_be_inserted = {
             "workspace_id": workspace_id,
@@ -320,6 +430,7 @@ class ScaleManagement(APIView):
             "scale_id": assigned_scale['scale_id'],
             "links_details": links_details,
             "report_link": report_link,
+            "login": login,
             "created_at": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             "records": [{"record": "1", "type": "overall"}]
         }
