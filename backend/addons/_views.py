@@ -214,9 +214,13 @@ def create_scale_response(request):
 
     try:
         # Category determination
-        category = determine_category(scale_type, item)
-        if category is None:
-            return Response({"success": "false", "message": "Invalid value for score"}, status=status.HTTP_400_BAD_REQUEST)
+        if scale_type == "nps_lite" or scale_type == "nps" or scale_type =="learning_index":
+            category = determine_category(scale_type, item)
+            print(category)
+            if category is None:
+                return Response({"success": "false", "message": "Invalid value for score"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            category = None
 
         # Fetch the relevant settings meta data
         settings_meta_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scales", "collection_3", {"_id": scale_id}, 10000, 0, False))
