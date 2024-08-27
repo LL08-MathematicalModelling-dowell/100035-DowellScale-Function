@@ -26,19 +26,36 @@ class JWTUtils:
         self.expiry_delta = auth_jwt_config['JWT_EXPIRATION_DELTA']
         self.refresh_expiry_delta = auth_jwt_config['JWT_REFRESH_EXPIRATION_DELTA']
 
-    def generate_jwt_tokens(self, _id: str, workspace_id: str, portfolio: str) -> Dict[str, str]:
+    def generate_jwt_tokens(self, data: Dict[str, any]) -> Dict[str, str]:
+        
         access_payload = {
-            '_id': _id,
-            'workspace_id': workspace_id,
-            'portfolio': portfolio,
+            '_id': data["_id"],
+            'workspace_id': data["workspace_id"],
+            'portfolio': data["portfolio"],
+            'email': data["email"],
+            'profile_image': data["profile_image"],
+            'workspace_owner_name': data["workspace_owner_name"],
+            'portfolio_username': data["portfolio_username"],
+            'member_type': data["member_type"],
+            'data_type': data["data_type"],
+            'operations_right': data["operations_right"],
+            'status': data["status"],
             'exp': datetime.utcnow() + self.expiry_delta
         }
         access_token = jwt.encode(access_payload, self.secret_key, algorithm=self.algorithm)
 
         refresh_payload = {
-            '_id': _id,
-            'workspace_id': workspace_id,
-            'portfolio': portfolio,
+            '_id': data["_id"],
+            'workspace_id': data["workspace_id"],
+            'portfolio': data["portfolio"],
+            'email': data["email"],
+            'profile_image': data["profile_image"],
+            'workspace_owner_name': data["workspace_owner_name"],
+            'portfolio_username': data["portfolio_username"],
+            'member_type': data["member_type"],
+            'data_type': data["data_type"],
+            'operations_right': data["operations_right"],
+            'status': data["status"],
             'exp': datetime.utcnow() + self.refresh_expiry_delta
         }
         refresh_token = jwt.encode(refresh_payload, self.secret_key, algorithm=self.algorithm)
@@ -145,3 +162,38 @@ def upload_qr_code_image(img, file_name):
         except Exception as err:
             print(f'Unexpected error: {err}')
         return None
+    
+
+def dowell_login(workspace_name, username, password):
+    url = 'https://100093.pythonanywhere.com/api/portfoliologin'
+    payload = {
+        'portfolio': username,
+        'password': password,
+        'workspace_name': workspace_name
+    }
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return {
+            "success": True,
+            "message": "Login successful",
+            "response": response.json()
+        }
+    except requests.exceptions.HTTPError as http_err:
+        return {
+            "success": False,
+            "message": f"Server responded with status code {response.status_code}: {http_err}"
+        }
+    except requests.exceptions.RequestException as req_err:
+        return {
+            "success": False,
+            "message": f"Request failed: {req_err}"
+        }
+    except ValueError as json_err:
+        return {
+            "success": False,
+            "message": f"Error parsing JSON response: {json_err}"
+        }
+
+        
+    
