@@ -46,11 +46,11 @@ def adjust_scale_range(payload):
     
     total_no_of_items = int(settings['total_no_of_items'])
     print(f"Total number of items: {total_no_of_items}")
-    print("++++++++++++++")
-    if "pointers" in payload:
-        pointers = payload['pointers']
-    if "axis_limit" in payload:
-        axis_limit = payload['axis_limit']
+   
+    if "pointers" in settings:
+        pointers = settings['pointers']
+    if "axis_limit" in settings:
+        axis_limit = settings['axis_limit']
     print(f"Scale type: {scale_type}, Total number of items: {total_no_of_items}")
 
     if scale_type == 'nps' or scale_type == 'learning_index':

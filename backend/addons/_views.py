@@ -320,7 +320,6 @@ def create_scale_response(request):
 
 @api_view(['GET'])
 def get_scale_response(request):
-
     scale_id = request.GET.get('scale_id')
     channel = request.GET.get('channel')
     instance = request.GET.get('instance')
@@ -328,7 +327,9 @@ def get_scale_response(request):
     if request.method == "GET":
         try:
             fields = {"scale_id":scale_id}
+            print(fields)
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
+            print(response_data)
             data = response_data['data']
 
             if 'channel' and 'instance' in request.GET:
@@ -420,3 +421,4 @@ def learning_index_report(request):
                              }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(e)
+        

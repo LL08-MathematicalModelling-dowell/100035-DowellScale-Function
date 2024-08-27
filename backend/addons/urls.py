@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import ScaleCreateAPIView, post_scale_response
 from ._views import ScaleCreateAPI, create_scale_response, get_scale_response, learning_index_report
-from .reports import reports
+# from .reports import reports
 from .visitors_count import CreateCounterScale, VisitorsCountAPI
 from django.views.decorators.csrf import csrf_exempt
 
@@ -16,5 +16,5 @@ urlpatterns = [
     path('create-response/v3/', csrf_exempt(create_scale_response), name='create-response-1'),
     path('get-response/', csrf_exempt(get_scale_response), name='get-response'),
     path('learning-index-report/', csrf_exempt(learning_index_report), name='learning-index-report'),
-    path('get-report/',reports.as_view(),name='reports')
+    # path('get-report/',csrf_exempt(scale_report), name='scale-report')
 ]
