@@ -7,7 +7,7 @@ base_url = "https://www.dowelldatacube.uxlivinglab.online/db_api"
 
 def datacube_data_insertion(api_key, database_name, collection_name, data):
     global base_url
-    url = f"{base_url}/crud"
+    url = f"{base_url}/crud/"
     payload = {
         "api_key": api_key,
         "db_name": database_name,

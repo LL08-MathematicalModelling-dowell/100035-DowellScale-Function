@@ -48,7 +48,6 @@ class ScaleCreateAPI(APIView):
                         }
             }
             settings = payload["settings"]
-            print(settings)
            
             if scale_type == "likert":
                 pointers = scale_serializer.validated_data.get('pointers')
@@ -68,7 +67,7 @@ class ScaleCreateAPI(APIView):
             settings["total_no_of_items"] = total_no_of_items
             
             scale_range = adjust_scale_range(payload)
-            print("Scale range",scale_range)
+
             payload["scale_range"] = scale_range
 
             event_id = get_event_id()
@@ -126,7 +125,6 @@ class ScaleCreateAPI(APIView):
 
     def get(self, request):
         try:
-            print(request.GET)
             if 'scale_id' in request.GET:
                 scale_id = request.query_params.get('scale_id')
 
@@ -178,7 +176,7 @@ class ScaleCreateAPI(APIView):
             
                 if response_data['data']:
                     response = response_data['data'][0]
-                    print(response)
+                    
                     settings = response["settings"]
                     
                     return Response(
@@ -217,7 +215,6 @@ def create_scale_response(request):
         # Category determination
         if scale_type == "nps_lite" or scale_type == "nps" or scale_type =="learning_index":
             category = determine_category(scale_type, item)
-            print(category)
             if category is None:
                 return Response({"success": "false", "message": "Invalid value for score"}, status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -332,14 +329,11 @@ def get_scale_response(request):
     if request.method == "GET":
         try:
             fields = {"scale_id":scale_id}
-            print(fields)
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
-            print(response_data)
             data = response_data['data']
 
             if 'channel' and 'instance' in request.GET:
                 matching_instance_list = [response for response in data if response["channel_name"] == channel and response["instance_name"] == instance]
-                print(matching_instance_list)
                 no_of_responses = len(matching_instance_list)
                 if no_of_responses == 0:
                     return Response({"success":"true",
@@ -356,7 +350,7 @@ def get_scale_response(request):
             elif 'channel' in request.GET:
 
                 matching_instance_list = [response for response in data if response["channel_name"] == channel]
-                print(matching_instance_list)
+             
                 no_of_responses = len(matching_instance_list)
                 if no_of_responses == 0:
                     return Response({"success":"true",
@@ -373,7 +367,7 @@ def get_scale_response(request):
 
             elif 'instance' in request.GET:
                 matching_instance_list = [response for response in data if response["instance_name"] == instance]
-                print(matching_instance_list)
+                
                 no_of_responses = len(matching_instance_list)
                 if no_of_responses == 0:
                     return Response({"success":"true",
@@ -409,7 +403,6 @@ def learning_index_report(request):
             fields = {"scale_id":scale_id}
             response_data = json.loads(datacube_data_retrieval(api_key, "livinglab_scale_response", "collection_1", fields, 10000, 0, False))
             data = response_data['data']
-            print(data)
             
             results =[{
                     "response_id":data["_id"],
