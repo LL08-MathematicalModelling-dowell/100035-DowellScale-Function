@@ -1,13 +1,14 @@
 from itertools import chain
+import math
 from django.shortcuts import redirect
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ._serializers import ScaleSerializer, InstanceDetailsSerializer, ChannelInstanceSerializer
-from .datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
-from .utils import generate_urls, adjust_scale_range, scale_type_fn, calcualte_learning_index, determine_category
-from api.utils import dowell_time
+from ._serializers import ScaleSerializer, InstanceDetailsSerializer, ChannelInstanceSerializer, ScaleReportSerializer
+from .services.datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
+from .services.dowellclock import dowell_time
+from .utils.helper import generate_urls, adjust_scale_range, scale_type_fn, calcualte_learning_index, determine_category, get_date_range
 from nps.eventID import get_event_id
 import json
 
@@ -23,10 +24,10 @@ class ScaleCreateAPI(APIView):
             user_type = scale_serializer.validated_data['user_type']
             no_of_responses = scale_serializer.validated_data['no_of_responses']
             
-            if not "redirect_url" in request.data:
-                redirect_url = "https://dowellresearch.sg/"
-            else:
-                redirect_url = scale_serializer.validated_data['redirect_url']
+            # if not "redirect_url" in request.data:
+            #     redirect_url = "https://dowellresearch.sg/"
+            # else:
+            #     redirect_url = scale_serializer.validated_data['redirect_url']
 
             
             channel_instance_list = scale_serializer.validated_data['channel_instance_list']
@@ -85,7 +86,7 @@ class ScaleCreateAPI(APIView):
                             "no_of_responses": no_of_responses,
                             "allow_resp": True,
                             "scale_range": list(scale_range),
-                            "redirect_url":redirect_url,
+                            # "redirect_url":redirect_url,
                             "pointers": pointers if scale_type == "likert" else None,
                             "axis_limit": axis_limit if scale_type == "stapel" else None,
                             "event_id": event_id
@@ -93,7 +94,7 @@ class ScaleCreateAPI(APIView):
             }
             
             try:
-                response = json.loads(datacube_data_insertion(api_key, "livinglab_scales", "collection_3", payload))
+                response = json.loads(datacube_data_insertion(api_key=api_key,database_name= "livinglab_scales",collection_name= "collection_3",data= payload))
                 scale_id = response['data'].get("inserted_id")
                 payload['settings'].update({"scale_id":scale_id})
 
@@ -114,7 +115,7 @@ class ScaleCreateAPI(APIView):
                     "no_of_responses": no_of_responses,
                     "no_of_channels":len(channel_instance_list),
                     "urls": urls,
-                    "redirect_to":redirect_url
+                    # "redirect_to":redirect_url
                 }
                 return Response(response_data, status=status.HTTP_201_CREATED)
             except Exception as e:
@@ -425,4 +426,71 @@ def learning_index_report(request):
                              }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(e)
+
+class ScaleReport(APIView):
+   def post(self, request):
+        scale_type = request.GET.get('scale_type')
+
+        if scale_type == 'nps':
+            return self.get_nps_report(request)
+        elif scale_type == 'likert':
+            return self.get_likert_report(request)
+        elif scale_type == 'stapel':
+            return self.get_likert_report(request)
+        elif scale_type == 'nps_lite':
+            return self.get_nps_lite_report(request)
+        else:
+            return self.handle_errors(request)
         
+        
+   def get_nps_report(self, request):
+        serializer = ScaleReportSerializer(data = request.data)
+
+        if not serializer.is_valid():
+            return Response({"success": False, 
+                            "message": "Posting invalid data",
+                            "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+        try:
+            scale_id = serializer.validated_data['scale_id']
+            workspace_id = serializer.validated_data
+            channel_names = serializer.validated_data['channel_names']
+            instance_names = serializer.validated_data['instance_names']
+            period = serializer.validated_data['period']
+            start_date, end_date = get_date_range(period)
+            
+            filters = {"scale_id":scale_id,"dowell_time.current_time":{"$gte":start_date,"$lte":end_date},}
+
+            responses = json.loads(datacube_data_retrieval(api_key,'livinglab_scale_response','collection_1',filters,10000,0,False))
+            print(responses)
+            if not responses['data']:
+                return Response({"success":False, "message":"No data found"}, status=status.HTTP_404_NOT_FOUND)
+
+            category_dict = {
+                                "promoter":0,
+                                "detractor":0,
+                                "passive":0
+                            }
+            score_list = [response['score'] for response in responses['data']]
+            for key,value in category_dict.items():
+                for response in responses['data']:
+                    if response["category"]==key:
+                        category_dict[key]+=1
+                    percentage_category_distribution = {key: value/len(score_list) * 100 for key,value in category_dict.items()}
+                    nps = percentage_category_distribution["promoter"] - percentage_category_distribution["detractor"]
+                    total_score = sum(score_list)
+                    max_score = len(score_list)*10
+            
+            return Response({"success":True, 
+                             "message":f"Fetched {period} data successfully",
+                            #  "data":score_list,
+                             "report":{
+                                        "no_of_responses":len(score_list),
+                                        "total_score":f"{total_score}/ {max_score}",
+                                        "nps":nps,
+                                        "nps_category_distribution":percentage_category_distribution,
+                                    }
+                             },status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(e)
+
+            

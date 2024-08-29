@@ -5,8 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import ScaleSerializer, InstanceDetailsSerializer, ChannelInstanceSerializer
-from addons.datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
-from addons.utils import generate_urls, adjust_scale_range, scale_type_fn, calcualte_learning_index, determine_category
+from addons.services.datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
+from addons.utils.helper import generate_urls, adjust_scale_range, scale_type_fn, calcualte_learning_index, determine_category
 from .auth import processApikey
 from api.utils import dowell_time
 from nps.eventID import get_event_id

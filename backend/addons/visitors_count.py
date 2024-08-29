@@ -1,8 +1,8 @@
 from rest_framework.decorators import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
-from .dowellclock import dowell_time
+from .services.datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
+from .services.dowellclock import dowell_time
 from nps.eventID import get_event_id
 import json
 

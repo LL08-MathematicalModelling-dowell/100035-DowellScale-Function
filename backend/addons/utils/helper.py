@@ -1,6 +1,26 @@
+from datetime import datetime, timedelta
 import requests
 from itertools import chain
 from dowellnps_scale_function.settings import public_url
+
+
+def get_date_range(period):
+    now = datetime.utcnow()
+    if period == 'seven_days':
+        start_date = now - timedelta(days=7)
+    elif period == 'fifteen_days':
+        start_date = now - timedelta(days=15)
+    elif period == 'thirty_days':
+        start_date = now - timedelta(days=30)
+    elif period == 'ninety_days':
+        start_date = now - timedelta(days=90)
+    elif period == 'one_year':
+        start_date = now - timedelta(days=365)
+    # elif period == 'custom':
+        # start_date = now - timedelta(days=30)
+    else:
+        raise ValueError("Invalid time period")
+    return start_date.isoformat(), now.isoformat()
 
 
 def build_urls(channel_instance,payload,instance_idx):
@@ -61,12 +81,12 @@ def adjust_scale_range(payload):
     elif scale_type == 'nps_lite':
         return range(0, 3)
     elif scale_type == 'stapel':
-        if 'axis_limit' in payload:
-            pointers = int(payload['axis_limit'])
+        if 'axis_limit' in settings:
+            axis_limit = int(settings['axis_limit'])
             return chain(range(-axis_limit, 0), range(1, axis_limit + 1))
     elif scale_type == 'likert':
-        if 'pointers' in payload:
-            pointers = int(payload['pointers'])
+        if 'pointers' in settings:
+            pointers = int(settings['pointers'])
             return range(1, pointers + 1)
         else:
             raise ValueError("Number of pointers not specified for Likert scale")

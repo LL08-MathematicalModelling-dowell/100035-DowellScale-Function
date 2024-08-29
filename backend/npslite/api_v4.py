@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from addons.datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
+from addons.services.datacube import datacube_data_insertion, datacube_data_retrieval, datacube_data_update, api_key
 from addons._serializers import ChannelInstanceSerializer, InstanceDetailsSerializer
 from .serializer import ScaleSerializer, ScaleSettingsSerializer, ScaleResponseSerializer
 from api.utils import dowell_time

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
-from addons.datacube import datacube_data_insertion,datacube_data_retrieval,api_key
+from addons.services.datacube import datacube_data_insertion,datacube_data_retrieval,api_key
 from django.contrib.auth.hashers import make_password, check_password
 import asyncio
 import json

@@ -10,7 +10,7 @@ class ScaleSerializer(serializers.Serializer):
     channel_instance_list = serializers.ListField()
     pointers = serializers.IntegerField(required=False)
     axis_limit = serializers.IntegerField(required=False)
-    redirect_url = serializers.URLField(required=False)
+    # redirect_url = serializers.URLField(required=False)
 
 
 class InstanceDetailsSerializer(serializers.Serializer):
@@ -35,3 +35,17 @@ class ReportsSerializer(serializers.Serializer):
         required=False,
         allow_empty=True
     )
+
+class ScaleReportSerializer(serializers.Serializer):
+    scale_id = serializers.CharField(allow_blank=False)
+    # workspace_id = serializers.CharField(allow_blank=False)
+    channel_names = serializers.ListField(child=serializers.CharField())
+    instance_names = serializers.ListField(child=serializers.CharField())
+    period_choices = (
+        ("seven_days", "Seven Days"),
+        ("fifteen_days", "Fifteen Days"),
+        ("thirty_days", "Thirty Days"),
+        ("ninety_days","Ninety Days"),
+        ("one_year", "One Year")
+    )
+    period = serializers.ChoiceField(allow_blank=False, choices=period_choices)

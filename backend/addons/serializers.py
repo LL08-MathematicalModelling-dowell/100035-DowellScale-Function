@@ -24,3 +24,4 @@ class ScaleResponseSerializer(serializers.Serializer):
     @classmethod
     def as_view(cls):
         pass
+
