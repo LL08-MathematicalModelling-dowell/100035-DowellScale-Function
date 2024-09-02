@@ -42,6 +42,7 @@ class ScaleReportSerializer(serializers.Serializer):
     channel_names = serializers.ListField(child=serializers.CharField())
     instance_names = serializers.ListField(child=serializers.CharField())
     period_choices = (
+        ("twenty_four_hours", "24 hours"),
         ("seven_days", "Seven Days"),
         ("fifteen_days", "Fifteen Days"),
         ("thirty_days", "Thirty Days"),

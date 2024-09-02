@@ -11,6 +11,8 @@ from .services.dowellclock import dowell_time
 from .utils.helper import generate_urls, adjust_scale_range, scale_type_fn, calcualte_learning_index, determine_category, get_date_range
 from nps.eventID import get_event_id
 import json
+from collections import defaultdict
+from datetime import datetime
 
 
 class ScaleCreateAPI(APIView):
@@ -139,7 +141,8 @@ class ScaleCreateAPI(APIView):
                     "scale_name": response["settings"].get("scale_name"),
                     "scale_type":response["settings"].get("scale_category"),
                     "no_of_channels":response["settings"].get("no_of_channels"),
-                    "channel_instance_details": response["settings"].get("channel_instance_list")
+                    "channel_instance_details": response["settings"].get("channel_instance_list"),
+                    "urls":response["urls"]
                     } 
 
                     return Response(
@@ -162,7 +165,8 @@ class ScaleCreateAPI(APIView):
                     "scale_name": scale["settings"].get("scale_name"),
                     "scale_type":scale["settings"].get("scale_category"),
                     "no_of_channels":scale["settings"].get("no_of_channels"),
-                    "channel_instance_details": scale["settings"].get("channel_instance_list")
+                    "channel_instance_details": scale["settings"].get("channel_instance_list"),
+                    "urls":scale["urls"]
                     } for scale in response]
                 
                 return Response(
@@ -420,8 +424,9 @@ def learning_index_report(request):
         except Exception as e:
             return Response(e)
 
+
 class ScaleReport(APIView):
-   def post(self, request):
+    def post(self, request):
         scale_type = request.GET.get('scale_type')
 
         if scale_type == 'nps':
@@ -429,61 +434,164 @@ class ScaleReport(APIView):
         elif scale_type == 'likert':
             return self.get_likert_report(request)
         elif scale_type == 'stapel':
-            return self.get_likert_report(request)
+            return self.get_stapel_report(request)
         elif scale_type == 'nps_lite':
             return self.get_nps_lite_report(request)
         else:
             return self.handle_errors(request)
         
-        
-   def get_nps_report(self, request):
-        serializer = ScaleReportSerializer(data = request.data)
+    # NPS scale report
+    def get_nps_report(self, request):
+        serializer = ScaleReportSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return Response({"success": False, 
-                            "message": "Posting invalid data",
-                            "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "success": False, 
+                "message": "Posting invalid data",
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             scale_id = serializer.validated_data['scale_id']
-            workspace_id = serializer.validated_data
+            # workspace_id = serializer.validated_data['workspace_id']
             channel_names = serializer.validated_data['channel_names']
             instance_names = serializer.validated_data['instance_names']
             period = serializer.validated_data['period']
             start_date, end_date = get_date_range(period)
             
-            filters = {"scale_id":scale_id,"dowell_time.current_time":{"$gte":start_date,"$lte":end_date},}
+            filters = {
+                "scale_id": scale_id,
+                "dowell_time.current_time": {"$gte": start_date, "$lte": end_date}
+            }
+            if "all" not in channel_names:
+                filters["channel_name"] = {"$in": channel_names}
+            if "all" not in instance_names:
+                filters["instance_name"] = {"$in": instance_names}
 
-            responses = json.loads(datacube_data_retrieval(api_key,'livinglab_scale_response','collection_1',filters,10000,0,False))
-            print(responses)
+            responses = json.loads(datacube_data_retrieval(api_key, 'livinglab_scale_response', 'collection_1', filters, 10000, 0, False))
             if not responses['data']:
-                return Response({"success":False, "message":"No data found"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"success": False, "message": "No data found"}, status=status.HTTP_404_NOT_FOUND)
 
-            category_dict = {
-                                "promoter":0,
-                                "detractor":0,
-                                "passive":0
-                            }
-            score_list = [response['score'] for response in responses['data']]
-            for key,value in category_dict.items():
-                for response in responses['data']:
-                    if response["category"]==key:
-                        category_dict[key]+=1
-                    percentage_category_distribution = {key: value/len(score_list) * 100 for key,value in category_dict.items()}
-                    nps = percentage_category_distribution["promoter"] - percentage_category_distribution["detractor"]
-                    total_score = sum(score_list)
-                    max_score = len(score_list)*10
+            daily_counts = defaultdict(lambda: {"promoter": 0, "detractor": 0, "passive": 0, "nps": 0})
+
+            for response in responses['data']:
+                response_date = datetime.strptime(response['dowell_time']['current_time'], "%Y-%m-%d %H:%M:%S").date()
+                daily_counts[response_date][response["category"]] += 1
             
-            return Response({"success":True, 
-                             "message":f"Fetched {period} data successfully",
-                            #  "data":score_list,
-                             "report":{
-                                        "no_of_responses":len(score_list),
-                                        "total_score":f"{total_score}/ {max_score}",
-                                        "nps":nps,
-                                        "nps_category_distribution":percentage_category_distribution,
-                                    }
-                             },status=status.HTTP_200_OK)
+            for date, counts in daily_counts.items():
+                total_responses = counts["promoter"] + counts["detractor"] + counts["passive"]
+                if total_responses > 0:
+                    counts["nps"] = (counts["promoter"] - counts["detractor"]) / total_responses * 100
+                else:
+                    counts["nps"] = 0 
+            
+            daily_counts = {str(date): counts for date, counts in daily_counts.items()}
+
+            score_list = [response['score'] for response in responses['data']]
+            category_dict = {key: sum(counts[key] for counts in daily_counts.values()) for key in ["promoter", "detractor", "passive"]}
+            percentage_category_distribution = {key: value / len(score_list) * 100 for key, value in category_dict.items()}
+            nps = percentage_category_distribution["promoter"] - percentage_category_distribution["detractor"]
+            total_score = sum(score_list)
+            max_score = len(score_list) * 10
+            
+            return Response({
+                "success": True, 
+                "message": f"Fetched {period} NPS data successfully",
+                "report": {
+                    "no_of_responses": len(score_list),
+                    "total_score": f"{total_score} / {max_score}",
+                    "nps": nps,
+                    "nps_category_distribution": percentage_category_distribution,
+                    "daily_counts": daily_counts
+                }
+            }, status=status.HTTP_200_OK)
+        
         except Exception as e:
-            return Response(e)
+            print(f"Error in get_nps_report: {e}")
+            return Response({
+                "success": False,
+                "message": "An error occurred while processing the NPS report.",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # Likert scale report
+    def get_likert_report(self, request):
+        serializer = ScaleReportSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response({
+                "success": False, 
+                "message": "Posting invalid data",
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            scale_id = serializer.validated_data['scale_id']
+            channel_names = serializer.validated_data['channel_names']
+            instance_names = serializer.validated_data['instance_names']
+            period = serializer.validated_data['period']
+            start_date, end_date = get_date_range(period)
+            
+            filters = {
+                "scale_id": scale_id,
+                "dowell_time.current_time": {"$gte": start_date, "$lte": end_date}
+            }
+            if "all" not in channel_names:
+                filters["channel_name"] = {"$in": channel_names}
+            if "all" not in instance_names:
+                filters["instance_name"] = {"$in": instance_names}
+
+            responses = json.loads(datacube_data_retrieval(api_key, 'livinglab_scale_response', 'collection_1', filters, 10000, 0, False))
+            if not responses['data']:
+                return Response({"success": False, "message": "No data found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            score_list = [response['score'] for response in responses['data']]
+            pointers = 5  # Max score value
+            
+            # Initialize daily_counts to track count of each score (1 to 5) per day
+            daily_counts = defaultdict(lambda: {score: 0 for score in range(1, 6)})
+            score_distribution = defaultdict(int)  # To track count of each score (1 to 5) overall
+
+            for response in responses['data']:
+                response_date = str(datetime.strptime(response['dowell_time']['current_time'], "%Y-%m-%d %H:%M:%S").date())
+                score = response['score']
+                daily_counts[response_date][score] += 1
+                score_distribution[score] += 1
+
+            # Calculate the total and average score
+            total_score = sum(score_list)
+            average_score = total_score / len(score_list) if score_list else 0
+
+            # Initialize percentage_distribution with all scores from 1 to 5 set to 0%
+            total_responses = len(score_list)
+            percentage_distribution = {score: 0 for score in range(1, 6)}
+            max_score = pointers * total_responses
+            
+            # Update percentage for scores found in the responses
+            for score, count in score_distribution.items():
+                percentage_distribution[score] = (count / total_responses) * 100
+
+            return Response({
+                "success": True,
+                "message": f"Fetched {period} Likert data successfully",
+                "report": {
+                    "no_of_responses": total_responses,
+                    "total_score": f"{total_score} / {max_score}" ,  # Include total score in the report
+                    "average_score": average_score,  # Include average score in the report
+                    "score_list": score_list,
+                    "pointers": pointers,
+                    "daily_counts": daily_counts,  # Include daily count for each score
+                    "overall_score_distribution": percentage_distribution  # Include percentage distribution in the report
+                }
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(f"Error in get_likert_report: {e}")
+            return Response({
+                "success": False,
+                "message": "An error occurred while processing the Likert report.",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
             

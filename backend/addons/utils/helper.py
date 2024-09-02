@@ -6,7 +6,9 @@ from dowellnps_scale_function.settings import public_url
 
 def get_date_range(period):
     now = datetime.utcnow()
-    if period == 'seven_days':
+    if period == 'twenty_four_hours':
+        start_date = now - timedelta(hours=24)
+    elif period == 'seven_days':
         start_date = now - timedelta(days=7)
     elif period == 'fifteen_days':
         start_date = now - timedelta(days=15)
